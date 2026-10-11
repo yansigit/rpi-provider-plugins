@@ -57,7 +57,23 @@ jobs:
           test -f "$archive"
           echo "archive=$archive" >> "$GITHUB_OUTPUT"
 
-      - name: Upload archive to GitHub Release
+      - name: Package ACP bridge
+        id: acp
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Standalone ACP agent for the Agent Client Protocol registry: a flat
+          # archive whose root holds rpi-acp-bridge (see registry/README.md).
+          cargo run --release -p rpi-package-install -- pack-acp
+          archive="$(ls dist/rpi-acp-${{ matrix.platform }}.*)"
+          test -f "$archive"
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+
+      - name: Upload archives to GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ inputs.tag }}" "${{ steps.bundle.outputs.archive }}" --repo "${{ github.repository }}" --clobber
+        run: |
+          gh release upload "${{ inputs.tag }}" \
+            "${{ steps.bundle.outputs.archive }}" \
+            "${{ steps.acp.outputs.archive }}" \
+            --repo "${{ github.repository }}" --clobber

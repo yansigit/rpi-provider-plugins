@@ -1877,6 +1877,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpi-acp"
+version = "0.1.0"
+dependencies = [
+ "rpi-plugin-sdk",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "rpi-ask-user"
 version = "0.1.5"
 dependencies = [
@@ -1937,14 +1947,12 @@ dependencies = [
 name = "rpi-mcp-adapter"
 version = "0.2.0"
 dependencies = [
- "libc",
  "reqwest 0.12.28",
  "rpi-plugin-sdk",
  "serde",
  "serde_json",
  "tokio",
  "url",
- "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -1954,8 +1962,17 @@ dependencies = [
  "anyhow",
  "flate2",
  "serde_json",
+ "sha2",
  "tar",
  "zip",
+]
+
+[[package]]
+name = "rpi-permission-gate"
+version = "0.1.0"
+dependencies = [
+ "rpi-plugin-sdk",
+ "serde_json",
 ]
 
 [[package]]
@@ -1976,9 +1993,11 @@ dependencies = [
 
 [[package]]
 name = "rpi-plugin-sdk"
-version = "0.3.17"
+version = "0.3.19"
 dependencies = [
+ "libc",
  "serde_json",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

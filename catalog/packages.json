@@ -133,5 +133,23 @@
     "inspiredBy": "hands-free voice assistants, made local",
     "sourceDownloadsPerMonth": null,
     "install": "rpi install rpi-voice"
+  },
+  {
+    "name": "rpi-acp",
+    "version": "0.1.0",
+    "type": "extension",
+    "tool": "--acp (Agent Client Protocol stdio server)",
+    "inspiredBy": "Zed external agents / agent-client-protocol",
+    "sourceDownloadsPerMonth": null,
+    "install": "rpi install rpi-acp"
+  },
+  {
+    "name": "rpi-permission-gate",
+    "version": "0.1.0",
+    "type": "extension",
+    "tool": "--permission-gate (confirm bash/write/edit via the host UI dialog)",
+    "inspiredBy": "upstream Pi permission-gate extension",
+    "sourceDownloadsPerMonth": null,
+    "install": "rpi install rpi-permission-gate"
   }
 ]
