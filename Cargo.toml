@@ -34,7 +34,10 @@ repository = "https://github.com/pi-rust/rpi-package"
 [workspace.dependencies]
 # Use the published SDK so CI and cargo publish build against the same source.
 # The optional smoke tool keeps its local pi-rust dependencies.
-rpi-plugin-sdk = { version = "0.3.12" }
+# Pin the SDK used by this workspace: newer 0.3.x releases make raw ABI
+# string operations unsafe and require migrating the plugin callbacks.
+# Cargo.lock alone does not constrain SDK resolution for published extensions.
+rpi-plugin-sdk = { version = "=0.3.20" }
 feishu-sdk = { version = "0.1.2", default-features = false, features = ["websocket"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
