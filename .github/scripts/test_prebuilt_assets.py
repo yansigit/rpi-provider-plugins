@@ -136,11 +136,11 @@ class PrebuiltAssetsTests(unittest.TestCase):
             {"id": "demo", "name": "rpi-demo", "version": "1.2.3", "publish": None, "targets": [{"crate_types": ["cdylib"]}]},
             {"id": "old", "name": "rpi-old", "version": "0.1.0", "publish": None, "targets": [{"crate_types": ["cdylib"]}]},
             {"id": "tool", "name": "installer", "version": "0.0.0", "publish": [], "targets": [{"crate_types": ["bin"]}]},
-            {"id": "core", "name": "rpi-acp-core", "version": "0.1.0", "publish": None, "targets": [{"crate_types": ["lib"]}]},
+            {"id": "core", "name": "rpi-shared", "version": "0.1.0", "publish": None, "targets": [{"crate_types": ["lib"]}]},
         ]}
         refs = {"refs/tags/rpi-demo-v1.2.3": "tag-object", "refs/tags/rpi-demo-v1.2.3^{}": self.args.source_ref,
                 "refs/tags/rpi-old-v0.1.0": "b" * 40, "refs/tags/installer-v0.0.0": self.args.source_ref,
-                "refs/tags/rpi-acp-core-v0.1.0": self.args.source_ref}
+                "refs/tags/rpi-shared-v0.1.0": self.args.source_ref}
         self.assertEqual(selector.select(metadata, refs, self.args.source_ref), [self.tag])
 
     def test_published_tag_must_point_to_the_exact_build_commit(self):

@@ -79,16 +79,13 @@ jobs:
       - name: Test the prebuilt distribution contract
         run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
 
-      - name: Test ACP streaming and Open WebUI integration
+      - name: Test native ACP streaming and plugin lifecycle
         run: |
-          python3 -m venv /tmp/rpi-webui-tests
-          /tmp/rpi-webui-tests/bin/pip install 'pydantic>=2,<3'
-          cargo build -p rpi-acp --bin rpi-acp-bridge --example fake_rpc --locked
+          cargo build -p rpi-acp --bin rpi-acp-bridge --example fake_rpc --lib --locked
           export RPI_TEST_ACP_BRIDGE="$GITHUB_WORKSPACE/target/debug/rpi-acp-bridge"
           export RPI_TEST_RPC_PEER="$GITHUB_WORKSPACE/target/debug/examples/fake_rpc"
-          /tmp/rpi-webui-tests/bin/python packages/rpi-acp/tests/streaming.py --bridge "$RPI_TEST_ACP_BRIDGE"
-          /tmp/rpi-webui-tests/bin/python -m unittest discover -s packages/rpi-acp/tests -v
-          /tmp/rpi-webui-tests/bin/python -m unittest discover -s integrations/openwebui/tests -v
+          python3 packages/rpi-acp/tests/streaming.py --bridge "$RPI_TEST_ACP_BRIDGE"
+          python3 -m unittest discover -s packages/rpi-acp/tests -v
 
       - name: Verify crate packages before publishing
         run: cargo publish --workspace --dry-run --allow-dirty --locked
