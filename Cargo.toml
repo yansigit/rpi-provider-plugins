@@ -14,7 +14,9 @@ members = [
     "packages/rpi-webfetch",
     "packages/rpi-im-message",
     "packages/rpi-server",
+    "packages/rpi-webui",
     "packages/rpi-acp",
+    "packages/rpi-acp-core",
     "packages/rpi-permission-gate",
     "packages/rpi-langfuse",
     "packages/rpi-voice",
@@ -24,7 +26,7 @@ exclude = ["tools/rpi-package-smoke"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 rust-version = "1.78"
 license = "MIT"
