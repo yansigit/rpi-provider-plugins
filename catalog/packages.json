@@ -185,16 +185,5 @@
     "install": "rpi install rpi-permission-gate",
     "repository": "https://github.com/pi-rust/rpi-package",
     "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-permission-gate-v0.1.0/rpi-extension.json"
-  },
-  {
-    "name": "rpi-webui",
-    "version": "0.1.1",
-    "type": "extension",
-    "tool": "--webui (Open WebUI launcher with ACP Pipe)",
-    "inspiredBy": "Open WebUI / Agent Client Protocol",
-    "sourceDownloadsPerMonth": null,
-    "install": "rpi install rpi-webui",
-    "repository": "https://github.com/pi-rust/rpi-package",
-    "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-webui-v0.1.1/rpi-extension.json"
   }
 ]
