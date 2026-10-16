@@ -2512,20 +2512,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rpi-provider-deepseek"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "rpi-ai",
- "rpi-extensions",
- "rpi-plugin-sdk 0.3.24",
- "rpi-provider-runtime",
- "serde_json",
- "tempfile",
- "tokio",
-]
-
-[[package]]
 name = "rpi-provider-runtime"
 version = "0.3.24"
 source = "git+https://github.com/bigfish1913/pi-rust?rev=cf4241d2ecef274dabec0b60108fe1ba14c738af#cf4241d2ecef274dabec0b60108fe1ba14c738af"
@@ -2535,6 +2521,22 @@ dependencies = [
  "rpi-plugin-sdk 0.3.24",
  "serde",
  "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "rpi-providers"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "reqwest 0.12.28",
+ "rpi-ai",
+ "rpi-extensions",
+ "rpi-plugin-sdk 0.3.24",
+ "rpi-provider-runtime",
+ "serde",
+ "serde_json",
+ "tempfile",
  "tokio",
 ]
 
