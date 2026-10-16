@@ -87,6 +87,14 @@ jobs:
           python3 packages/rpi-acp/tests/streaming.py --bridge "$RPI_TEST_ACP_BRIDGE"
           python3 -m unittest discover -s packages/rpi-acp/tests -v
 
+      - name: Test Open WebUI UI adapter
+        # UI adapter checks use a local ACP peer and never call a model.
+        # Keep this environment separate from the runner's system Python.
+        run: |
+          python3 -m venv "$RUNNER_TEMP/ui-adapter-venv"
+          "$RUNNER_TEMP/ui-adapter-venv/bin/pip" install 'aiohttp>=3.10,<4' 'pydantic>=2,<3'
+          "$RUNNER_TEMP/ui-adapter-venv/bin/python" -m unittest discover -s packages/rpi-ui-adapter/tests -v
+
       - name: Verify crate packages before publishing
         run: cargo publish --workspace --dry-run --allow-dirty --locked
 
