@@ -177,24 +177,24 @@
   },
   {
     "name": "rpi-acp",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "type": "extension",
     "tool": "--acp (Agent Client Protocol stdio server)",
     "inspiredBy": "Zed external agents / agent-client-protocol",
     "sourceDownloadsPerMonth": null,
     "install": "rpi install rpi-acp",
     "repository": "https://github.com/pi-rust/rpi-package",
-    "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-acp-v0.1.7/rpi-extension.json"
+    "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-acp-v0.1.8/rpi-extension.json"
   },
   {
     "name": "rpi-permission-gate",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "type": "extension",
     "tool": "--permission-gate (confirm bash/write/edit via the host UI dialog)",
     "inspiredBy": "upstream Pi permission-gate extension",
     "sourceDownloadsPerMonth": null,
     "install": "rpi install rpi-permission-gate",
     "repository": "https://github.com/pi-rust/rpi-package",
-    "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-permission-gate-v0.1.1/rpi-extension.json"
+    "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-permission-gate-v0.1.2/rpi-extension.json"
   }
 ]
