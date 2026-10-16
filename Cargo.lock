@@ -1970,10 +1970,10 @@ dependencies = [
 
 [[package]]
 name = "rpi-orchestrator"
-version = "0.1.4"
+version = "0.1.6"
 dependencies = [
  "nix",
- "rpi-plugin-sdk 0.3.21",
+ "rpi-plugin-sdk",
  "serde_json",
  "wait-timeout",
 ]
