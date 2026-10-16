@@ -33,6 +33,17 @@
     "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-subagents-v0.1.6/rpi-extension.json"
   },
   {
+    "name": "rpi-orchestrator",
+    "version": "0.1.6",
+    "type": "extension",
+    "tool": "subagent + plan + dispatch",
+    "inspiredBy": "DAG subagent orchestration",
+    "sourceDownloadsPerMonth": null,
+    "install": "rpi install rpi-orchestrator",
+    "repository": "https://github.com/pi-rust/rpi-package",
+    "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-orchestrator-v0.1.6/rpi-extension.json"
+  },
+  {
     "name": "rpi-lens",
     "version": "0.1.6",
     "type": "extension",

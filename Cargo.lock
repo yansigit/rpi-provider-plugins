@@ -1957,6 +1957,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpi-orchestrator"
+version = "0.1.6"
+dependencies = [
+ "rpi-plugin-sdk",
+ "serde_json",
+ "wait-timeout",
+]
+
+[[package]]
 name = "rpi-package-install"
 version = "0.0.0"
 dependencies = [
