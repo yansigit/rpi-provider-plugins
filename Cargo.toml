@@ -18,6 +18,7 @@ members = [
     "packages/rpi-permission-gate",
     "packages/rpi-langfuse",
     "packages/rpi-voice",
+    "packages/rpi-provider-deepseek",
     "tools/rpi-package-install",
 ]
 exclude = ["tools/rpi-package-smoke"]

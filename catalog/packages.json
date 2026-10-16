@@ -185,5 +185,15 @@
     "install": "rpi install rpi-permission-gate",
     "repository": "https://github.com/pi-rust/rpi-package",
     "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-permission-gate-v0.1.0/rpi-extension.json"
+  },
+  {
+    "name": "rpi-provider-deepseek",
+    "version": "0.1.0",
+    "type": "extension",
+    "tool": null,
+    "inspiredBy": "DeepSeek streaming provider",
+    "sourceDownloadsPerMonth": null,
+    "install": "rpi package link deepseek --path packages/rpi-provider-deepseek --debug",
+    "repository": "https://github.com/pi-rust/rpi-package"
   }
 ]

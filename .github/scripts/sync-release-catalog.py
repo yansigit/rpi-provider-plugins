@@ -14,6 +14,12 @@ for entry in catalog:
     package = packages[entry["name"]]
     entry["version"] = package["version"]
     entry["repository"] = package["repository"]
+    # Source-only extensions can participate in local workspace installs before
+    # their SDK dependencies are published. Do not advertise a nonexistent
+    # per-crate release for a package excluded from publishing.
+    if package.get("publish") == []:
+        entry.pop("prebuilt_manifest", None)
+        continue
     entry["prebuilt_manifest"] = (
         f"{package['repository'].removesuffix('.git').rstrip('/')}/releases/download/"
         f"{package['name']}-v{package['version']}/rpi-extension.json"
