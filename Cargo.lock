@@ -1878,7 +1878,7 @@ dependencies = [
 
 [[package]]
 name = "rpi-acp"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "rpi-plugin-sdk",
  "serde",
@@ -1979,7 +1979,7 @@ dependencies = [
 
 [[package]]
 name = "rpi-permission-gate"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "rpi-plugin-sdk",
  "serde_json",
