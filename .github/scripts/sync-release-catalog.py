@@ -14,6 +14,12 @@ for entry in catalog:
     package = packages[entry["name"]]
     entry["version"] = package["version"]
     entry["repository"] = package["repository"]
+    # Source-only extensions do not advertise releases unless they explicitly
+    # opt into GitHub prebuilt distribution independently of crates.io.
+    prebuilt = (package.get("metadata") or {}).get("rpi", {}).get("prebuilt", False)
+    if package.get("publish") == [] and not prebuilt:
+        entry.pop("prebuilt_manifest", None)
+        continue
     entry["prebuilt_manifest"] = (
         f"{package['repository'].removesuffix('.git').rstrip('/')}/releases/download/"
         f"{package['name']}-v{package['version']}/rpi-extension.json"

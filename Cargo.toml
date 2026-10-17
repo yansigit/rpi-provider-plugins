@@ -16,9 +16,11 @@ members = [
     "packages/rpi-im-message",
     "packages/rpi-server",
     "packages/rpi-acp",
+    "packages/rpi-ui-adapter",
     "packages/rpi-permission-gate",
     "packages/rpi-langfuse",
     "packages/rpi-voice",
+    "packages/rpi-providers",
     "tools/rpi-package-install",
 ]
 exclude = ["tools/rpi-package-smoke"]
