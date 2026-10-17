@@ -16,7 +16,7 @@ for entry in catalog:
     entry["repository"] = package["repository"]
     # Source-only extensions do not advertise releases unless they explicitly
     # opt into GitHub prebuilt distribution independently of crates.io.
-    prebuilt = package.get("metadata", {}).get("rpi", {}).get("prebuilt", False)
+    prebuilt = (package.get("metadata") or {}).get("rpi", {}).get("prebuilt", False)
     if package.get("publish") == [] and not prebuilt:
         entry.pop("prebuilt_manifest", None)
         continue

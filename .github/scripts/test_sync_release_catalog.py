@@ -24,7 +24,7 @@ class SyncReleaseCatalogTests(unittest.TestCase):
             ]), encoding="utf-8")
             metadata = {"packages": [
                 {"name": "provider", "version": "0.1.0", "publish": [], "repository": "https://github.com/example/packages"},
-                {"name": "published", "version": "1.2.3", "publish": None, "repository": "https://github.com/example/packages"},
+                {"name": "published", "version": "1.2.3", "publish": None, "metadata": None, "repository": "https://github.com/example/packages"},
                 {"name": "prebuilt-only", "version": "0.1.0", "publish": [], "repository": "https://github.com/example/packages", "metadata": {"rpi": {"prebuilt": True}}},
             ]}
             previous = pathlib.Path.cwd()

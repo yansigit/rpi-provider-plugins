@@ -56,7 +56,7 @@ jobs:
       - name: Install release-plz
         uses: taiki-e/install-action@v2
         with:
-          tool: release-plz@0.3.172
+          tool: release-plz@0.3.171
 
       - name: Restore Rust build cache
         uses: Swatinem/rust-cache@v2
@@ -94,6 +94,14 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/ui-adapter-venv"
           "$RUNNER_TEMP/ui-adapter-venv/bin/pip" install 'aiohttp>=3.10,<4' 'pydantic>=2,<3'
           "$RUNNER_TEMP/ui-adapter-venv/bin/python" -m unittest discover -s packages/rpi-ui-adapter/tests -v
+
+      # The ACP Registry only lists agents that advertise an agent/terminal auth
+      # method, and its verifier's handshake is the exact shape this reproduces.
+      # Failing here beats discovering it in the registry's CI.
+      - name: Verify the ACP Registry auth handshake
+        run: |
+          python3 packages/rpi-acp/tests/registry_auth.py \
+            --bridge "$GITHUB_WORKSPACE/target/debug/rpi-acp-bridge"
 
       - name: Verify crate packages before publishing
         run: cargo publish --workspace --dry-run --allow-dirty --locked

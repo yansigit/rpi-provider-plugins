@@ -4,6 +4,7 @@ members = [
     "packages/rpi-mcp-adapter",
     "packages/rpi-subagents",
     "packages/rpi-lens",
+    "packages/rpi-orchestrator",
     "packages/rpi-todo",
     "packages/rpi-goal",
     "packages/rpi-plan-mode",
@@ -26,7 +27,7 @@ exclude = ["tools/rpi-package-smoke"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 rust-version = "1.78"
 license = "MIT"
