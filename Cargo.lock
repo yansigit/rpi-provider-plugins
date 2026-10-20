@@ -2389,8 +2389,8 @@ dependencies = [
 
 [[package]]
 name = "rpi-agent"
-version = "0.6.2"
-source = "git+https://github.com/bigfish1913/pi-rust?rev=a711da68981d20540a67e1411cd9aac0f9f0138b#a711da68981d20540a67e1411cd9aac0f9f0138b"
+version = "0.6.3"
+source = "git+https://github.com/bigfish1913/pi-rust?rev=5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b#5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b"
 dependencies = [
  "async-trait",
  "futures",
@@ -2407,8 +2407,8 @@ dependencies = [
 
 [[package]]
 name = "rpi-ai"
-version = "0.6.2"
-source = "git+https://github.com/bigfish1913/pi-rust?rev=a711da68981d20540a67e1411cd9aac0f9f0138b#a711da68981d20540a67e1411cd9aac0f9f0138b"
+version = "0.6.3"
+source = "git+https://github.com/bigfish1913/pi-rust?rev=5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b#5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -2455,8 +2455,8 @@ dependencies = [
 
 [[package]]
 name = "rpi-extensions"
-version = "0.6.2"
-source = "git+https://github.com/bigfish1913/pi-rust?rev=a711da68981d20540a67e1411cd9aac0f9f0138b#a711da68981d20540a67e1411cd9aac0f9f0138b"
+version = "0.6.3"
+source = "git+https://github.com/bigfish1913/pi-rust?rev=5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b#5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b"
 dependencies = [
  "async-trait",
  "dirs",
@@ -2464,7 +2464,7 @@ dependencies = [
  "libloading",
  "rpi-agent",
  "rpi-ai",
- "rpi-plugin-sdk 0.6.2",
+ "rpi-plugin-sdk 0.6.3",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -2585,8 +2585,8 @@ dependencies = [
 
 [[package]]
 name = "rpi-plugin-sdk"
-version = "0.6.2"
-source = "git+https://github.com/bigfish1913/pi-rust?rev=a711da68981d20540a67e1411cd9aac0f9f0138b#a711da68981d20540a67e1411cd9aac0f9f0138b"
+version = "0.6.3"
+source = "git+https://github.com/bigfish1913/pi-rust?rev=5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b#5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b"
 dependencies = [
  "reqwest 0.12.28",
  "rpi-ai",
@@ -2603,7 +2603,7 @@ dependencies = [
  "reqwest 0.12.28",
  "rpi-ai",
  "rpi-extensions",
- "rpi-plugin-sdk 0.6.2",
+ "rpi-plugin-sdk 0.6.3",
  "serde",
  "serde_json",
  "tempfile",
@@ -2639,8 +2639,8 @@ dependencies = [
 
 [[package]]
 name = "rpi-telemetry"
-version = "0.6.2"
-source = "git+https://github.com/bigfish1913/pi-rust?rev=a711da68981d20540a67e1411cd9aac0f9f0138b#a711da68981d20540a67e1411cd9aac0f9f0138b"
+version = "0.6.3"
+source = "git+https://github.com/bigfish1913/pi-rust?rev=5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b#5f3a552ef12b03266f83cd99c97ed9ac2d0e6f6b"
 dependencies = [
  "async-trait",
  "serde",
