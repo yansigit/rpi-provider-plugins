@@ -68,7 +68,7 @@
     "This is not an installable native extension yet.",
     "Native credential store, delegated stream wrapper, virtual providers, commands and services remain required.",
     "Host journal commit, child-session lifecycle and service announcement integration remain required.",
-    "Managed-provider custom classifiers are a separate pending implementation.",
+    "Managed-provider authentication isolation and per-attempt request sanitization are separate pending implementations.",
     "Actual native loading and Linux/macOS/Windows combined acceptance remain required.",
     "Whole-workspace warning-denied checks are not passing; existing compiler/dead-code failures are recorded above."
   ],
