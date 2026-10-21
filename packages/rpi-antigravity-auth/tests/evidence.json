@@ -541,7 +541,7 @@
     },
     "collation": {
       "referenceRuntime": "Node 24.22.0 / ICU 78.3 / Unicode 17 / CLDR 48",
-      "artifact": "data/icu78-collation.postcard",
+      "artifact": "../../crates/rpi-node-collation/data/icu78-collation.postcard",
       "sha256": "7cc7de342224f2abe4fbec382c3bae6c870a73a908bda512d796f10bb19684ff",
       "reproduction": {
         "log": "/tmp/rpi-roster-collation-reproduce.log",
@@ -1014,5 +1014,12 @@
       "approvedOn": "2026-10-21",
       "approval": "Return the error and release resources (recommended)"
     }
-  ]
+  ],
+  "sharedCollationExtraction": {
+    "crate": "crates/rpi-node-collation",
+    "dataChanged": false,
+    "toolchain": "1.78.0",
+    "warnings": "denied",
+    "vaultRosterTestsPassed": 6
+  }
 }

@@ -4,9 +4,9 @@ Native port of `monotykamary/pi-multiprovider` at
 `bd97d65a36f541935dc91e33ba15d7910a30f9d7` (0.11.3), targeting this fork's
 native provider contracts and Pi 1.3.0 behavior. Original MIT notice is in `LICENSE`.
 
-Implementation is in progress. The scheduler and session-pin parser/replay are
+Implementation is in progress. The scheduler, account records and session-pin parser/replay are
 implemented; this package does not yet register an installable native extension.
-Account persistence/authentication, stream wrapping, virtual providers, commands,
+Native account authentication, stream wrapping, virtual providers, commands,
 services, session lifecycle wiring and combined acceptance remain required.
 
 `src/services.rs` retains inventory order, first-account bias, randomized smooth
@@ -35,3 +35,11 @@ every operation result, snapshot, error, pin notification and cooldown boundary;
 JSON integer/float representations compare by numeric value. They also exercise
 inventory waits during registration changes and cancelled-lease cleanup.
 See `tests/scheduler-evidence.json` for the measured checks and remaining limits.
+
+`src/store/` retains account-file validation, ordered JSON, private permissions,
+atomic replacement, interprocess locking, account identity and normalized settings.
+The source comparison checks every public result and exact persisted file; native
+fault tests cover competing writers, stale locks, cancellation and failed writes.
+See `tests/store-evidence.json`. Native provider auth/refresh and the malformed-JSON
+diagnostic policy still require integration. Regenerate the source fixture with
+Node 24 and `tests/store-reference.mjs` from this workspace.

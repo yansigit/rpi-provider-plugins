@@ -140,10 +140,7 @@ fn collation_decomposition_matches_node_for_every_unicode_scalar_and_reordering(
     use icu_provider_adapters::fallback::LocaleFallbackProvider;
     use icu_provider_blob::BlobDataProvider;
     use sha2::{Digest, Sha256};
-    let blob = BlobDataProvider::try_new_from_static_blob(include_bytes!(
-        "../data/icu78-collation.postcard"
-    ))
-    .unwrap();
+    let blob = BlobDataProvider::try_new_from_static_blob(rpi_node_collation::DATA).unwrap();
     let provider = LocaleFallbackProvider::try_new_with_buffer_provider(blob).unwrap();
     let normalizer = DecomposingNormalizer::try_new_nfd_with_buffer_provider(&provider).unwrap();
     let mut digest = Sha256::new();

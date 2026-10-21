@@ -17,10 +17,7 @@ serde.workspace = true
 serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
 # Ordered transcript/schema maps must still build on Rust 1.78.
 indexmap = "=2.11.4"
-# Native locale-aware roster ordering; keep the host Rust 1.78 baseline.
-icu_collator = { version = "=1.5.0", default-features = false, features = ["serde"] }
-icu_provider_blob = "=1.5.0"
-icu_provider_adapters = { version = "=1.5.0", features = ["serde"] }
+rpi-node-collation = { path = "../../crates/rpi-node-collation" }
 # Newer releases require edition 2024; retain the host's Rust 1.78 baseline.
 encoding_rs = "=0.8.35"
 regex = "1"
@@ -50,6 +47,8 @@ subc-transport = "=0.13.0"
 subc-client-rs = { path = "../../vendor/subc-client-rs" }
 
 [dev-dependencies]
+icu_provider_blob = "=1.5.0"
+icu_provider_adapters = { version = "=1.5.0", features = ["serde"] }
 icu_normalizer = { version = "=1.5.0", features = ["serde"] }
 tokio = { workspace = true, features = ["test-util"] }
 

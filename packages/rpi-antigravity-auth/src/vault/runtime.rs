@@ -129,16 +129,7 @@ impl Vault {
         if let Some(source) = self.source.get() {
             return Ok(source.clone());
         }
-        let locale = ["LC_ALL", "LC_MESSAGES", "LANG"]
-            .iter()
-            .find_map(|key| std::env::var(key).ok().filter(|v| !v.is_empty()))
-            .unwrap_or_else(|| "en-US".into());
-        let locale = locale.split(['.', '@']).next().unwrap().replace('_', "-");
-        let locale = if matches!(locale.as_str(), "C" | "POSIX") {
-            "en-US".into()
-        } else {
-            locale
-        };
+        let locale = rpi_node_collation::default_locale();
         Projection::new(&locale, now()).map_err(|e| e.to_string())?;
         let port = Arc::new(Port {
             files: self.authority.store.clone(),

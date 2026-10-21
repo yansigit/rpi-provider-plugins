@@ -1,9 +1,7 @@
 //! Identity-bound roster projection and persisted-state validation.
 use super::policy::ConsumerError;
 use crate::json::trim;
-use icu_collator::Collator;
-use icu_provider_adapters::fallback::LocaleFallbackProvider;
-use icu_provider_blob::BlobDataProvider;
+use rpi_node_collation::Collator;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use std::collections::{HashMap, HashSet};
@@ -60,37 +58,11 @@ pub struct Projection {
 }
 impl Projection {
     pub fn new(locale: &str, now: f64) -> Result<Self, ConsumerError> {
-        let locale = locale.parse().map_err(|e| {
-            ConsumerError::new(
-                "invalid-state",
-                format!("Unable to initialize vault roster locale: {e}"),
-            )
-        })?;
-        let blob = BlobDataProvider::try_new_from_static_blob(include_bytes!(
-            "../../data/icu78-collation.postcard"
-        ))
-        .map_err(|e| {
-            ConsumerError::new(
-                "invalid-state",
-                format!("Unable to initialize vault roster locale: {e}"),
-            )
-        })?;
-        let provider = LocaleFallbackProvider::try_new_with_buffer_provider(blob).map_err(|e| {
-            ConsumerError::new(
-                "invalid-state",
-                format!("Unable to initialize vault roster locale: {e}"),
-            )
-        })?;
         Ok(Self {
             now,
             prefix: "vault:".into(),
             reserved: HashSet::new(),
-            collator: Collator::try_new_with_buffer_provider(
-                &provider,
-                &locale,
-                Default::default(),
-            )
-            .map_err(|e| {
+            collator: rpi_node_collation::collator(locale).map_err(|e| {
                 ConsumerError::new(
                     "invalid-state",
                     format!("Unable to initialize vault roster locale: {e}"),

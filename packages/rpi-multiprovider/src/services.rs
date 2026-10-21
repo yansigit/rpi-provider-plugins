@@ -151,7 +151,7 @@ impl std::fmt::Display for Error {
 }
 impl std::error::Error for Error {}
 
-fn iso_date(at: f64) -> String {
+pub(crate) fn iso_date(at: f64) -> String {
     // Date.toISOString spans years beyond common platform time libraries.
     let millis = at as i64;
     let z = millis.div_euclid(86_400_000) + 719_468;

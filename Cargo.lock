@@ -2594,7 +2594,6 @@ dependencies = [
  "getrandom 0.2.17",
  "http",
  "hyper",
- "icu_collator",
  "icu_normalizer",
  "icu_provider_adapters",
  "icu_provider_blob",
@@ -2603,6 +2602,7 @@ dependencies = [
  "percent-encoding",
  "regex",
  "reqwest 0.12.28",
+ "rpi-node-collation",
  "rpi-plugin-sdk 0.7.0",
  "serde",
  "serde_json",
@@ -2731,10 +2731,21 @@ dependencies = [
  "getrandom 0.2.17",
  "indexmap 2.11.4",
  "regex",
+ "rpi-node-collation",
  "serde",
  "serde_json",
  "tokio",
+ "tokio-util",
  "uuid",
+]
+
+[[package]]
+name = "rpi-node-collation"
+version = "0.1.6"
+dependencies = [
+ "icu_collator",
+ "icu_provider_adapters",
+ "icu_provider_blob",
 ]
 
 [[package]]

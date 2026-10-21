@@ -1,0 +1,38 @@
+{
+  "status": "Native account records and file locking verified; credential resolution, native callbacks and command integration pending",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "checks": {
+    "toolchain": "1.78.0",
+    "warnings": "denied",
+    "nativePackageTestsPassed": 12,
+    "subprocessEntryReportedIgnored": 1,
+    "actualConcurrentWriterProcesses": 8,
+    "referenceScenarios": 38,
+    "referenceOperations": 160,
+    "referenceFixtureSha256": "da4d367e7b1eddcac7adb8b6d59c02acc0e4480d82f92f35456f401617b523bd",
+    "antigravityRosterRegressionTestsPassed": 6
+  },
+  "comparisons": [
+    "Ordered public results and validation errors",
+    "Exact persisted JSON bytes and Unix permissions",
+    "Account identity, timestamps and credentials across replacement",
+    "Pool preferences, scheduler overrides and virtual template normalization",
+    "Unknown fields and source schema quirks",
+    "ICU 78.3 / CLDR 48 virtual-provider ordering"
+  ],
+  "faultChecks": [
+    "Competing processes retain all accounts",
+    "Cancelled lock waiter leaves the owner lock intact",
+    "Stale lock replacement and live lock timeout",
+    "Temporary-file failure retains the old file and releases its lock",
+    "An admitted write completes after its waiter is dropped"
+  ],
+  "limits": [
+    "The original atomic account-store writer does not fsync; journal durability is a separate contract.",
+    "Malformed JSON error presentation awaits the requested redaction exception.",
+    "Provider-owned authentication, OAuth refresh and native credential-store callbacks are not covered by these record tests.",
+    "Native extension loading, commands, session lifecycle, stream wrapping and combined acceptance remain required.",
+    "Only Linux execution was performed."
+  ]
+}
