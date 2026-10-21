@@ -45,6 +45,11 @@ Provider auth and awaited catalog publication boundaries are covered by
 and host-selected account environment, and delay private catalog/cache updates
 until host acceptance. Complete ModelRuntime refresh orchestration, configuration
 recomposition, availability and native dispatcher wiring remain required.
+`tests/catalog-evidence.json` covers concurrent discovery: only publication waits
+for earlier acknowledgements, so a slow superseded fetch cannot block a newer
+refresh or dispatch using the current catalog. The host's
+`providers.refreshIsolation` capability prevents unrelated providers' updates
+from invalidating a refresh and cancels superseded refreshes of the same provider.
 
 The native directory boundary selects rpi-owned configuration, caches and SDK
 SQLite stores before adapter registration. Its real SDK store and retained Pi

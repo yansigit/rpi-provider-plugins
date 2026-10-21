@@ -1,0 +1,66 @@
+{
+  "status": "Catalog supersession and publication ordering verified; complete refresh orchestration and native dispatcher wiring pending",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "integratedPi": "1.3.0",
+  "checks": {
+    "retainedSuite": {
+      "files": 168,
+      "passed": 1695,
+      "skipped": 2
+    },
+    "piLoaderPassed": 53,
+    "nativeFactoryPassed": 5,
+    "catalogTestsPassed": 6,
+    "types": "src, tests and replay compile passed",
+    "packageFiles": 2780,
+    "bundledCursorSdkFiles": 0
+  },
+  "review": {
+    "kind": "Manual deep exact-diff review of overlapping discovery, publication admission, cancellation and acknowledgement",
+    "findingsResolved": [
+      "Discovery does not serialize behind superseded network requests",
+      "Only publications wait for previous acknowledgements",
+      "Queued publication rechecks cancellation before admission",
+      "Acknowledged publication updates the private catalog even if its caller cancels"
+    ],
+    "remainingInBoundaryChunk": []
+  },
+  "limitations": [
+    "Offline/live phase orchestration, configuration recomposition and availability remain required.",
+    "Native dispatcher wiring, live Cursor inference and supported-platform execution remain required."
+  ],
+  "logs": [
+    {
+      "path": "/tmp/rpi-cursor-catalog-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-catalog-targeted.log",
+      "sha256": "a1b3edef17e0f3b5ed546ab6df24ef6c10a5774ecdfc6f497b57b76e17d19bbe"
+    },
+    {
+      "path": "/tmp/rpi-cursor-catalog-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    {
+      "path": "/tmp/rpi-cursor-catalog-all.log",
+      "sha256": "1eb0268c2e83d82340d9b5a0c3ee658593ff6053e2e876e6a72f356e6ac14742"
+    },
+    {
+      "path": "/tmp/rpi-cursor-catalog-pi.log",
+      "sha256": "d351afc2a8e1cc1026fb75249133b5f65d3950eb6565f7568b8009d3a6da8fc0"
+    },
+    {
+      "path": "/tmp/rpi-cursor-catalog-stage.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    {
+      "path": "/tmp/rpi-cursor-catalog-extension.log",
+      "sha256": "259cfe02c7afeeb29fe703e27312a0c265bfb5d4715f12aba2dac04d88c4123a"
+    },
+    {
+      "path": "/tmp/rpi-cursor-catalog-pack.json",
+      "sha256": "45f6e3de2e3a62c9444e9092a49335d7bfd906e9db74ff61babc361e763743bf"
+    }
+  ]
+}

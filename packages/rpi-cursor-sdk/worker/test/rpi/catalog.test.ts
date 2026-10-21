@@ -49,3 +49,33 @@ it("retains the ordinary Pi publication contract", async () => {
 	await publishCursorCatalog({ publish, allowNetwork: false, signal: new AbortController().signal }, [makeModel()], update);
 	expect(publish).toHaveBeenCalledWith({ update }); expect(update).toHaveBeenCalledTimes(1);
 });
+
+it("superseding discovery proceeds while an older uncooperative fetch is still pending", async () => {
+	const f = fixture(), oldController = new AbortController();
+	let finish!: () => void, calls = 0;
+	const gate = new Promise<void>(resolve => { finish = resolve; });
+	f.provider.refreshModels = async context => {
+		if (++calls === 1) await gate;
+		await publishCursorCatalog(context, [makeModel()], f.update);
+	};
+	const oldRequest = vi.fn(async () => ({ revision: 2 })), newRequest = vi.fn(async () => ({ revision: 3 }));
+	const older = f.catalog.refresh(input, oldRequest, oldController.signal);
+	await f.catalog.settled();
+	oldController.abort();
+	await expect(f.catalog.refresh({ ...input, publicationId: "new" }, newRequest, new AbortController().signal)).resolves.toEqual({ published: true });
+	expect(calls).toBe(2); expect(newRequest).toHaveBeenCalledTimes(1);
+	finish(); await expect(older).rejects.toThrow();
+	expect(oldRequest).not.toHaveBeenCalled(); expect(f.update).toHaveBeenCalledTimes(1);
+});
+
+it("serializes acknowledgements and rechecks cancellation before admitting a queued publication", async () => {
+	const f = fixture(), controller = new AbortController();
+	let acknowledge!: () => void;
+	const first = f.catalog.refresh(input, async () => { await new Promise<void>(resolve => { acknowledge = resolve; }); return { revision: 2 }; }, new AbortController().signal);
+	await Promise.resolve();
+	const request = vi.fn(async () => ({ revision: 3 }));
+	const second = f.catalog.refresh({ ...input, publicationId: "queued" }, request, controller.signal);
+	controller.abort(); acknowledge();
+	await first; await expect(second).rejects.toThrow(); await f.catalog.settled();
+	expect(request).not.toHaveBeenCalled(); expect(f.update).toHaveBeenCalledTimes(1);
+});

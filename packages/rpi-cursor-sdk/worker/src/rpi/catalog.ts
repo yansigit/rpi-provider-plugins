@@ -19,13 +19,7 @@ export class NativeCursorCatalog {
 	async settled(): Promise<void> {
 		for (;;) { const pending = this.pending; await pending; if (pending === this.pending) return; }
 	}
-	refresh(input: NativeRefresh, request: Request, signal: AbortSignal): Promise<unknown> {
-		const previous = this.pending;
-		const operation = previous.then(() => this.run(input, request, signal));
-		this.pending = operation.then(() => {}, () => {});
-		return operation;
-	}
-	private async run(input: NativeRefresh, request: Request, signal: AbortSignal): Promise<unknown> {
+	async refresh(input: NativeRefresh, request: Request, signal: AbortSignal): Promise<unknown> {
 		if (typeof input.publicationId !== "string" || !input.publicationId || typeof input.allowNetwork !== "boolean" || typeof input.force !== "boolean") {
 			throw new Error("Invalid native Cursor catalog refresh");
 		}
@@ -35,18 +29,23 @@ export class NativeCursorCatalog {
 			allowNetwork: input.allowNetwork, force: input.force, signal,
 			publish: async () => { throw new Error("Native Cursor catalog requires candidate publication"); },
 		};
-		publishers.set(context, async (models, update) => {
-			if (published) throw new Error("Cursor catalog was published twice in one refresh");
-			signal.throwIfAborted();
-			// Once admitted, the Rust port retains this commit through cancellation.
-			const receipt = await request({ port: "providers", action: "publish", providerId: this.provider.id,
-				publicationId: input.publicationId, models });
-			if (!receipt || typeof receipt !== "object" || !("revision" in receipt) ||
-				!Number.isSafeInteger(receipt.revision) || (receipt.revision as number) <= 0) {
-				throw new Error("Invalid native catalog acknowledgement; refresh before using the catalog");
-			}
-			update(); published = true;
-			return true;
+		publishers.set(context, (models, update) => {
+			// Pi serializes publication, while overlapping discovery can be superseded independently.
+			const operation = this.pending.then(async () => {
+				if (published) throw new Error("Cursor catalog was published twice in one refresh");
+				signal.throwIfAborted();
+				// Once admitted, the Rust port retains this commit through cancellation.
+				const receipt = await request({ port: "providers", action: "publish", providerId: this.provider.id,
+					publicationId: input.publicationId, models });
+				if (!receipt || typeof receipt !== "object" || !("revision" in receipt) ||
+					!Number.isSafeInteger(receipt.revision) || (receipt.revision as number) <= 0) {
+					throw new Error("Invalid native catalog acknowledgement; refresh before using the catalog");
+				}
+				update(); published = true;
+				return true;
+			});
+			this.pending = operation.then(() => {}, () => {});
+			return operation;
 		});
 		try {
 			await this.provider.refreshModels?.(context);
