@@ -2,7 +2,7 @@ import type {
 	BuildSystemPromptOptions,
 	ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
-import { getAgentDir } from "./rpi/paths.js";
+import { getAgentDir, renderContextFilePath } from "./rpi/paths.js";
 import { parseEnvBoolean } from "./cursor-env-boolean.js";
 import { isCursorModel } from "./cursor-model.js";
 import {
@@ -111,7 +111,7 @@ function shouldSuppressPiAgentsContext(
 
 /** Exact pi `buildSystemPrompt()` serialization for one context file block (including trailing blank line). */
 export function serializePiProjectInstructionsBlock(file: PiAgentsContextFile): string {
-	return `${PI_PROJECT_INSTRUCTIONS_OPEN_PREFIX}${file.path}">\n${file.content}\n${PI_PROJECT_INSTRUCTIONS_CLOSE}\n\n`;
+	return `${PI_PROJECT_INSTRUCTIONS_OPEN_PREFIX}${renderContextFilePath(file.path)}">\n${file.content}\n${PI_PROJECT_INSTRUCTIONS_CLOSE}\n\n`;
 }
 
 /** The two supported Pi project-context serializations; legacy includes outer spacing. */

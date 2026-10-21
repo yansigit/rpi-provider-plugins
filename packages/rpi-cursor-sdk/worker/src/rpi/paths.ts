@@ -13,6 +13,10 @@ export function initializeNativePaths(agentDir: string): void {
 }
 export function getAgentDir(): string { return nativeAgentDir ?? getPiAgentDir(); }
 export function getConfigDirName(): string { return nativeAgentDir ? ".rpi" : CONFIG_DIR_NAME; }
+/** Match rpi's context-file renderer while leaving retained Pi serialization unchanged. */
+export function renderContextFilePath(path: string): string {
+	return nativeAgentDir ? path.replace(/[&"<>]/g, character => ({ "&": "&amp;", '"': "&quot;", "<": "&lt;", ">": "&gt;" })[character]!) : path;
+}
 export function getNativeSdkWorkspaceRoot(cwd: string): string | undefined {
 	return nativeAgentDir ? join(nativeAgentDir, "cursor-sdk", "stores", createHash("sha256").update(cwd).digest("hex")) : undefined;
 }

@@ -133,7 +133,11 @@ export class NativeCursorExtension {
 			case "before_agent_start": {
 				// Native distribution pins Pi 1.3.0; its trigger replaced the older prompt/images pair.
 				if (this.hooks.emitBeforeAgentStart.length !== 2) throw new Error("Native Cursor hooks require Pi 1.3.0");
-				return Reflect.apply(this.hooks.emitBeforeAgentStart, this.hooks, [event, event.systemPromptOptions]);
+				const started = await Reflect.apply(this.hooks.emitBeforeAgentStart, this.hooks, [event, event.systemPromptOptions]) as {
+					messages: unknown[]; systemPromptOptions: { forceSystemPrompt?: string };
+				};
+				if (typeof started.systemPromptOptions.forceSystemPrompt !== "string") throw new Error("Native Cursor prompt hooks require the host's composed prompt");
+				return { ...started, systemPrompt: started.systemPromptOptions.forceSystemPrompt };
 			}
 			default: return this.hooks.emit(event as Parameters<ExtensionRunner["emit"]>[0]);
 		}

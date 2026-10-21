@@ -65,11 +65,38 @@ test("loads the complete retained factory and runs native hooks with Pi 1.3.0", 
 		const started = await f.extension.event({ type: "before_agent_start", trigger: "prompt", prompt: "hello",
 			systemPromptOptions: { cwd: directory, forceSystemPrompt: "native system prompt" }, systemPrompt: "native system prompt" });
 		assert(started.systemPromptOptions);
+		assert.equal(started.systemPrompt, "native system prompt");
 		assert.deepEqual(f.errors, []);
 	} finally {
 		await f.extension.event({ type: "session_shutdown" }); f.extension.invalidate();
 	}
 	assert.throws(() => f.extension.api.getAllTools(), /owner is closed/);
+});
+
+test("native prompt hooks preserve loaded context, skill rules and all ordered custom messages", async () => {
+	const f = fixture();
+	try {
+		await f.extension.load(); f.ctx.model = f.extension.provider().getModels()[0];
+		await f.extension.event({ type: "session_start", reason: "startup" });
+		const path = join(directory, "project&one", "AGENTS.md");
+		const renderedPath = join(directory, "project&amp;one", "AGENTS.md");
+		const prompt = `base\n\n<project_context>\n\nProject-specific instructions and guidelines:\n\n<project_instructions path="${renderedPath}">\ncaptured rules\n</project_instructions>\n\n</project_context>\n`;
+		for (const name of ["first", "second"]) f.extension.api.on("before_agent_start", () => ({
+			message: { customType: name, content: name, display: false },
+		}));
+		const started = await f.extension.event({ type: "before_agent_start", messageType: "user", prompt: "fixture", systemPrompt: prompt,
+			systemPromptOptions: { cwd: directory, forceSystemPrompt: prompt, contextFiles: [{ path, content: "captured rules" }],
+				skills: [{ name: "fixture", description: "loaded skill", filePath: join(directory, "skill", "SKILL.md"), disableModelInvocation: false }] } });
+		assert(!started.systemPrompt.includes("captured rules"));
+		assert(started.systemPrompt.startsWith("base"));
+		assert(started.systemPrompt.includes("pi__cursor_activate_skill"));
+		assert(started.systemPrompt.includes("loaded skill"));
+		assert.deepEqual(started.messages.map(message => message.customType), ["first", "second"]);
+		assert.equal(started.systemPromptOptions.contextFiles[0].content, "captured rules");
+		assert.deepEqual(f.errors, []);
+	} finally {
+		await f.extension.event({ type: "session_shutdown", reason: "quit" }); f.extension.invalidate();
+	}
 });
 
 test("native append is awaited and private header receipts are consumed once by both stream entries", async () => {

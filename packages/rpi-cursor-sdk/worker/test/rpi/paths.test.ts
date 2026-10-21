@@ -12,6 +12,7 @@ it("leaves the retained Pi path unchanged until native initialization", async ()
 	expect(paths.getAgentDir()).toBe(getPiAgentDir());
 	expect(paths.getConfigDirName()).toBe(CONFIG_DIR_NAME);
 	expect(paths.getNativeSdkWorkspaceRoot("/project")).toBeUndefined();
+	expect(paths.renderContextFilePath('/a&<"b>/AGENTS.md')).toBe('/a&<"b>/AGENTS.md');
 });
 
 it("selects rpi configuration/cache paths once and never calls the original SDK store resolver", async () => {
@@ -20,6 +21,7 @@ it("selects rpi configuration/cache paths once and never calls the original SDK 
 		const paths = await import("../../src/rpi/paths.js");
 		paths.initializeNativePaths(directory);
 		paths.initializeNativePaths(directory);
+		expect(paths.renderContextFilePath('/a&<"b>/AGENTS.md')).toBe('/a&amp;&lt;&quot;b&gt;/AGENTS.md');
 		expect(paths.getAgentDir()).toBe(directory); expect(paths.getConfigDirName()).toBe(".rpi");
 		expect(() => paths.initializeNativePaths(join(directory, "other"))).toThrow("ownership cannot change");
 		const config = await import("../../src/cursor-config.js");

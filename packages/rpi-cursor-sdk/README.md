@@ -150,3 +150,11 @@ binding. Shutdown also drains and reaps when event delivery fails before a
 session context becomes available, and repeated shutdown is harmless.
 `tests/shutdown-evidence.json` records those three installed-library checks;
 unchanged Node adapter evidence is retained from the registration checkpoint.
+
+Native prompt hooks require `events.promptContext` (host commit `40af9b1` or later). The host captures loaded
+instruction files and skill metadata with the composed prompt, and the retained
+adapter applies its original instruction deduplication and skill guidance.
+Only the native boundary adapts context-path XML escaping; original Pi rendering
+is unchanged. All custom messages retain listener order. `tests/prompt-evidence.json`
+records the retained suite, factory/dispatcher checks and actual Linux DLL prompt
+round trip. Complete trigger, lifecycle and tool parity remains required.

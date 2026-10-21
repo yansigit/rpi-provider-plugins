@@ -1,0 +1,64 @@
+{
+  "status": "Native prompt boundary verified against the retained adapter and Pi 1.3.0",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "node": "24.22.0",
+  "checks": {
+    "retainedSuite": {
+      "log": "/tmp/rpi-cursor-prompt-suite.log",
+      "sha256": "7fbd12414d2c6bd2e2123251ddf29872c01b5ab7078ca5c2e8d0c90b01e37e5d",
+      "passed": 1701,
+      "skipped": 2
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-prompt-types.log",
+      "sha256": "fbf47940d5bf2108117e89fa2802d83b7f2acf85f08679335d5f72f7860d0bc2"
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-prompt-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    "stage": {
+      "log": "/tmp/rpi-cursor-prompt-stage.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    "pack": {
+      "log": "/tmp/rpi-cursor-prompt-pack.log",
+      "sha256": "8c904edc9bfff116c45c506a1af18af9c03f527f9bbe4196fc28f0630b0bb300"
+    },
+    "nativeBoundary": {
+      "log": "/tmp/rpi-cursor-prompt-native.log",
+      "sha256": "db9b0d061db07ffd84e85d55099018ce567fa173927dcc24dee5bd904cd981c3",
+      "passed": 7
+    },
+    "rust": {
+      "log": "/tmp/rpi-cursor-prompt-package.log",
+      "sha256": "bffb04e47196a4d57320065999f78b1c7492cf2edec5a26e07c5cc75751b9fe7",
+      "passed": 34
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-prompt-dll-host.log",
+      "sha256": "2130464add1efa3f9aa925f0f6360d0ce55429eac3ffe1ed58a67e492f56619b",
+      "passed": 3
+    },
+    "sdkPin": {
+      "log": "/tmp/rpi-cursor-prompt-pin-check.log",
+      "sha256": "d77efc76e08496aeefcae8b150545704182009b06b7e55abe381618eb1090bc1"
+    }
+  },
+  "review": {
+    "kind": "Manual deep maintainability review of the exact host prompt, retained adapter boundary, fixtures, capability requirement and documentation diff",
+    "resolved": [
+      "Return Pi 1.3.0's rendered forceSystemPrompt to the host reducer and preserve plural custom messages",
+      "Match only native host path escaping; original Pi serializer unchanged",
+      "Keep original context metadata available for skill and instruction policy",
+      "Capture file contents when composing the prompt, never reread mutable files at hook time",
+      "Use renderer-compatible lossy non-UTF-8 path conversion"
+    ]
+  },
+  "notTested": [
+    "Full lifecycle and tool contracts",
+    "Live Cursor inference or cloud mutations",
+    "macOS and Windows native loading"
+  ],
+  "hostMinimumCommit": "40af9b1f3b1160523f4542aa02947603e54158c9"
+}

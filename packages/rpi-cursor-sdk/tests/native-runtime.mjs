@@ -98,6 +98,9 @@ test("packaged dispatcher runs retained hooks, auth, commands and both streams t
 		await begin("extension.event", { event: { type: "session_info_changed", name: `name-${index}` } }).result();
 	}
 	operation = null;
+	const prompt = await begin("extension.event", { event: { type: "before_agent_start", messageType: "user", prompt: "offline",
+		systemPrompt: "native prompt", systemPromptOptions: { cwd, forceSystemPrompt: "native prompt", contextFiles: [], skills: [] } } }).result();
+	assert.equal(prompt.systemPrompt, "native prompt"); assert.deepEqual(prompt.messages, []);
 	const login = await begin("provider.auth", { action: "login", input: { methodId: "api_key" } }).result();
 	assert.equal(login.kind, "interaction");
 	let release; appendGate = new Promise(resolve => { release = resolve; });
