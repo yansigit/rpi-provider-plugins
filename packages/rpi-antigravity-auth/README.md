@@ -237,3 +237,10 @@ closed after shutdown. These are component tests, not loaded vault acceptance.
 Pi never calls the embedded consumer's background `start` method. Consequently
 its roster watch, periodic discovery and Insula paths are outside this Pi port's
 runtime behavior. Enrollment approval watching in Pi's setup remains required.
+
+The Antigravity send policy now matches 37 original traces, 189 admission checks
+and 244 route projections. Each attempt uses a fresh receipt and project; a 401
+retries once only when the same credential/account has a different record version.
+The tests preserve kept-receipt handling, retry-body cancellation, final-attempt
+failure reporting and cancellation ordering. These component tests do not yet
+qualify the loaded provider's custody path or live inference.

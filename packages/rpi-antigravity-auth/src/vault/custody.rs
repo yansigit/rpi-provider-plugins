@@ -156,7 +156,8 @@ impl<P: Port> Custody<P> {
         self.check(signal)?;
         // A cancelled caller stops waiting; the original operation still owns its transport.
         let port = self.port.clone();
-        let pending = tokio::spawn(async move { port.call(operation, input).await });
+        let pending =
+            super::promise::spawn_started(async move { port.call(operation, input).await });
         let result = tokio::select! {
             biased;
             _ = signal.cancelled() => Err(Failure::Cancelled),
@@ -498,9 +499,11 @@ impl<P: Port> Custody<P> {
                 let custody = self.clone();
                 let attempt = attempt.clone();
                 let reporter = reporter.to_owned();
-                let pending = tokio::spawn(async move {
+                let pending = super::promise::spawn_started(async move {
                     let metadata = attempt.metadata();
                     let result = custody.call(Operation::Report, json!({"credentialId":metadata["credentialId"],"enrollmentToken":attempt.enrollment_token,"providerStatus":401,"recordVersion":metadata["recordVersion"],"reporterSource":reporter}), &CancellationToken::new()).await;
+                    // Completion follows initiation, including immediately settled client calls.
+                    tokio::task::yield_now().await;
                     if result.is_ok() {
                         custody.port.log("debug", "scoped 401 reported", json!({"credentialId":metadata["credentialId"],"recordVersion":metadata["recordVersion"],"reporterSource":reporter}));
                     } else {

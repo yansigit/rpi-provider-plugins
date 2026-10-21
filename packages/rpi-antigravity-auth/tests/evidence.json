@@ -605,5 +605,40 @@
       "macOS and Windows execution",
       "live acceptance"
     ]
+  },
+  "vaultSend": {
+    "status": "physical-send-policy-tested-native-wiring-pending",
+    "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+    "fixture": {
+      "fixture": "vault-send.json",
+      "sha256": "b318a08097b469babb45dffc41e779fb598961f39adbd10e4785c5446db65923",
+      "sendTraces": 37,
+      "admissionChecks": 189,
+      "routeProjections": 244,
+      "runtime": "Node 24.22.0",
+      "reproduction": "Two independent original runs produced identical fixture bytes."
+    },
+    "linuxRegression": {
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "log": "/tmp/rpi-vault-send-regression.log",
+      "sha256": "d0fffaa542dab7b781bf9dd46249dfd2b5006ade3d23e70002ec027b8a18fe9d",
+      "passed": 61,
+      "failed": 0
+    },
+    "windowsCrossCheck": {
+      "target": "x86_64-pc-windows-gnu",
+      "log": "/tmp/rpi-vault-send-windows.log",
+      "sha256": "e767c993cf94146e7a2faee923fb5629579e23e0cc08fd63729ae643b9bcea2d",
+      "execution": "not tested"
+    },
+    "qualification": "Exact original results, ordered token/client/dispatch/log calls, committed bytes and cancellation checkpoints. Covers receipt provenance, changed-version single retry, failed reauthorization, kept receipts, retry-body cleanup, final-attempt reports, report deduplication and source closure. Tests run on a serialized executor; loaded native concurrency remains pending.",
+    "pending": [
+      "native production ports and recovery menus",
+      "Pi enrollment approval watcher",
+      "loaded concurrent execution and shutdown",
+      "macOS and Windows execution",
+      "live acceptance"
+    ]
   }
 }
