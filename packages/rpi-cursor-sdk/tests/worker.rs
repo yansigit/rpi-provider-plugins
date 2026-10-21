@@ -31,6 +31,72 @@ fn echo() -> HostHandler {
     })
 }
 
+#[test]
+#[ignore = "requires Node 24+ and npm run build in worker/"]
+fn blocked_native_emission_keeps_ipc_callbacks_replies_and_cancellation_running() {
+    use rpi_cursor_sdk::runtime::drive;
+    use rpi_plugin_sdk::provider::ProviderContext;
+    use tokio_util::sync::CancellationToken;
+
+    let context = Arc::new(ProviderContext::new());
+    let signal = CancellationToken::new();
+    let worker = context.run(&signal, worker(echo())).unwrap();
+    let call = context
+        .run(&signal, worker.call("burst", json!({"count": 1})))
+        .unwrap()
+        .unwrap();
+    let (entered, waiting) = std::sync::mpsc::channel();
+    let (release, resume) = std::sync::mpsc::channel();
+    let delivery = std::thread::spawn({
+        let context = context.clone();
+        move || {
+            let signal = CancellationToken::new();
+            let thread = std::thread::current().id();
+            context
+                .run(
+                    &signal,
+                    drive(call, &signal, &|| false, |_| {
+                        assert_eq!(std::thread::current().id(), thread);
+                        entered.send(()).unwrap();
+                        resume.recv_timeout(Duration::from_secs(10)).unwrap();
+                        Ok(())
+                    }),
+                )
+                .unwrap()
+        }
+    });
+    waiting.recv_timeout(Duration::from_secs(10)).unwrap();
+    // The only async runtime worker must stay free while the foreign emit blocks.
+    let progress = context.run(&signal, async {
+        tokio::time::timeout(Duration::from_secs(5), async {
+            let hold = worker.call("hold", Value::Null).await?;
+            hold.cancel().await?;
+            assert_eq!(hold.result().await?, json!({"cancelled": true}));
+            worker
+                .call("nested", json!({"reply": true}))
+                .await?
+                .result()
+                .await
+        })
+        .await
+    });
+    release.send(()).unwrap();
+    assert_eq!(delivery.join().unwrap().unwrap(), json!({"count": 1}));
+    assert_eq!(progress.unwrap().unwrap().unwrap(), json!({"reply": true}));
+    let rejected = context
+        .run(&signal, async {
+            let call = worker.call("burst", json!({"count":10000})).await.unwrap();
+            bounded(drive(call, &signal, &|| false, |_| {
+                Err("host stopped accepting events".into())
+            }))
+            .await
+        })
+        .unwrap();
+    assert_eq!(rejected.unwrap_err(), "host stopped accepting events");
+    context.run(&signal, worker.shutdown()).unwrap().unwrap();
+    context.finish_shutdown();
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "requires Node 24+ and npm run build in worker/"]
 async fn callbacks_are_bound_before_send_and_retain_the_invoking_owner() {

@@ -112,3 +112,12 @@ cannot reuse the registry context captured by an earlier event or restore the
 worker process's inherited API key when the host reports no credentials. The
 ordinary retained Pi registry/credential path is unchanged. The complete retained
 suite passes 1,700 tests with two existing skips at this boundary.
+
+`src/runtime.rs` owns adapter startup, one-time host flag configuration and
+shutdown. Stream delivery runs on the foreign callback thread while IPC reads
+continue on the provider runtime. Rejected emissions cancel and drain the call.
+`tests/runtime-evidence.json` records real Node startup/auth/shutdown and a
+blocked-emission test that still completes host callbacks, replies and cancellation.
+`src/installed.rs` resolves assets beside the loaded module; installation and
+actual DLL registration remain pending. The image resolver has executed on Linux
+only.

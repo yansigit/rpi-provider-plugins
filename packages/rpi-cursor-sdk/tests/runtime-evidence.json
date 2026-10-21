@@ -1,0 +1,43 @@
+{
+  "status": "Retained worker lifecycle verified; native registration and installation pending",
+  "platform": "Linux",
+  "node": "24.22.0",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "checks": {
+    "rustPackage": {
+      "log": "/tmp/rpi-cursor-native-runtime-package.log",
+      "sha256": "804f5ea1b79bea3e77e5eac781b567fe6a33dd0a6cfcffba75682a536615b0ce",
+      "passed": 13,
+      "ignoredOrSkipped": 16
+    },
+    "runtime": {
+      "log": "/tmp/rpi-cursor-native-runtime-tests.log",
+      "sha256": "601e5cc9c18e07a0c24c08673eec8818d08feedd02d1ab9966794d0c5da3eba1",
+      "passed": 2,
+      "ignoredOrSkipped": 0
+    },
+    "blockedDelivery": {
+      "log": "/tmp/rpi-cursor-native-blocked-emission.log",
+      "sha256": "b55353d9d4df513ab9ec6128b8f11fab277e5e8855ee5531bc2e754d08b3a75b",
+      "passed": 1,
+      "ignoredOrSkipped": 0
+    }
+  },
+  "unchangedEvidence": "native-host-evidence.json retains exact unchanged Node adapter, type, build and package verification",
+  "review": {
+    "kind": "Manual deep review of new runtime, image-location resolver, dependency feature, exports, tests and documentation",
+    "resolved": [
+      "Refuse cancelled calls before initial configuration",
+      "Drain events and replies after emission rejection",
+      "Run synchronous emission on foreign callback thread, keeping IPC reader independent",
+      "Bound initial manifest and shutdown waits; release origin readers before worker callback drain",
+      "Resolve assets beside the loaded image rather than project working directory"
+    ]
+  },
+  "notTested": [
+    "Native DLL registration and loading",
+    "Installed runtime asset distribution",
+    "macOS and Windows image-location execution",
+    "Cursor live local/cloud acceptance"
+  ]
+}
