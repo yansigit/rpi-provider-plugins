@@ -1,0 +1,34 @@
+{
+  "status": "Failed worker cleanup reports failure while retaining callback data",
+  "hostMinimumCommit": "189e7975d5bdd777769b189679e0400f478c4ade",
+  "platform": "Linux",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "checks": {
+    "build": {
+      "log": "/tmp/rpi-cursor-shutdown-report-build.log",
+      "sha256": "cd7dc2545d226e92801d17f639d500fabae2e13b6c1ba2a39a11e3e6d2a6bbab"
+    },
+    "rust": {
+      "log": "/tmp/rpi-cursor-shutdown-report-rust.log",
+      "sha256": "d8fa78cd37e7061a82b629c2c9d7987289f7b1b35a5918181f557cf1213a77cc",
+      "passed": 34
+    },
+    "installedLibraryBefore": {
+      "log": "/tmp/rpi-cursor-shutdown-report-before.log",
+      "sha256": "7c97056aa466d847563d53bcf43baac43efa17d9fe38e08dc1859b142a4f9f1f",
+      "expectedFailure": "Native finish incorrectly returned success after worker connection failure; production loader emitted no failure diagnostic."
+    },
+    "installedLibraryAfter": {
+      "log": "/tmp/rpi-cursor-shutdown-report-after.log",
+      "sha256": "e0f521b6fec12277d3cfbf112052b3ad919929486ab2279ad82d71d8eee96778",
+      "passed": 4
+    }
+  },
+  "retainedNodeEvidence": "options-evidence.json (Node source unchanged)",
+  "review": "Manual deep maintainability review of exact native finish diff, host loader retention contract, Runtime/Owner close paths, callback lifetime, killed-worker fixture and documentation. Error path deliberately retains registration data with the mapped library; successful cleanup still drops it.",
+  "notTested": [
+    "macOS and Windows worker-crash execution",
+    "SDK-created subprocess cleanup after actual inference",
+    "Live Cursor inference and cloud mutations"
+  ]
+}

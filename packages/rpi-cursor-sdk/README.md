@@ -195,3 +195,8 @@ The package requires `tools.boundedProgress` so its host tool callbacks share th
 same count/byte backpressure as provider streaming. Accepted partials drain before
 the terminal result; cancellation releases blocked producers and retains ownership
 through cleanup. Older hosts report the missing capability during registration.
+
+Worker cleanup errors are reported as failed native shutdowns. The worker is still
+reaped; the host retains the library and callback data for the process lifetime
+when shutdown cannot be confirmed successful. A killed-worker acceptance test
+checks that this failure reaches the production loader's diagnostics.

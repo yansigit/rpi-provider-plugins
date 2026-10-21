@@ -192,11 +192,17 @@ extern "C" fn finish_shutdown(data: *mut c_void) -> i32 {
             return 2;
         }
         let registration = unsafe { Box::from_raw(data.cast::<Registration>()) };
-        if let Err(error) = registration.runtime.close() {
-            eprintln!("rpi-cursor-sdk shutdown: {error}");
-        }
+        let result = registration.runtime.close();
         registration.runtime.context.finish_shutdown();
-        0
+        match result {
+            Ok(()) => 0,
+            Err(error) => {
+                eprintln!("rpi-cursor-sdk shutdown: {error}");
+                // The host retains failed-shutdown callbacks, so their data must remain valid.
+                std::mem::forget(registration);
+                1
+            }
+        }
     })
 }
 fn request(
