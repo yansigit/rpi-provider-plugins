@@ -4,7 +4,7 @@ import { createAssistantMessageEventStream, type AssistantMessage, type Assistan
 const StreamBase = createAssistantMessageEventStream().constructor as new () => AssistantMessageEventStream;
 
 type Sink = (event: AssistantMessageEvent) => void;
-const sinks = new AsyncLocalStorage<Sink>();
+const factories = new AsyncLocalStorage<() => NativeMessageStream>();
 
 /** Emits directly through the worker's synchronous credit gate; no second event queue. */
 export class NativeMessageStream extends StreamBase {
@@ -53,7 +53,9 @@ export class NativeMessageStream extends StreamBase {
 }
 
 export function createCursorMessageStream(): AssistantMessageEventStream {
-	const sink = sinks.getStore();
-	return sink ? new NativeMessageStream(sink) : createAssistantMessageEventStream();
+	return factories.getStore()?.() ?? createAssistantMessageEventStream();
 }
-export function withNativeStreamSink<T>(sink: Sink, operation: () => T): T { return sinks.run(sink, operation); }
+export function withNativeStreamFactory<T>(factory: () => NativeMessageStream, operation: () => T): T { return factories.run(factory, operation); }
+export function withNativeStreamSink<T>(sink: Sink, operation: () => T): T {
+	return withNativeStreamFactory(() => new NativeMessageStream(sink), operation);
+}

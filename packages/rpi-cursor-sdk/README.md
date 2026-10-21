@@ -50,3 +50,8 @@ The native directory boundary selects rpi-owned configuration, caches and SDK
 SQLite stores before adapter registration. Its real SDK store and retained Pi
 regressions are recorded in `tests/paths-evidence.json`; worker startup wiring
 and installation verification remain required.
+
+Native stream replay maps owned Cursor results to the host recorded-tool path,
+including incomplete partial markers and cancellation-safe terminal results.
+`tests/replay-evidence.json` compares outcomes with the retained Pi replay wrapper.
+Native library integration and execution-count acceptance remain required.
