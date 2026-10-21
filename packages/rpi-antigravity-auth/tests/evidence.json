@@ -715,5 +715,54 @@
       "macOS and Windows execution",
       "live acceptance"
     ]
+  },
+  "vaultSetupMenus": {
+    "status": "component-parity-tested-native-command-wiring-pending",
+    "upstream": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+    "fixtures": [
+      {
+        "fixture": "vault-setup.json",
+        "sha256": "3536d98bb19a5bbcaf0e8b2cd8333ebf13cc314e7811fe4b7574b75e577bd28e"
+      },
+      {
+        "fixture": "vault-menu.json",
+        "sha256": "573bb11dd32bf85ec0872f7d44881128ac46df7d2f8c4473026bac835311aee1"
+      },
+      {
+        "fixture": "vault-watch.json",
+        "sha256": "9ef1ae992e9e24d6659221d32ccf5981427598d7d9fdf9d1ae9dd14b27e2031e"
+      }
+    ],
+    "counts": {
+      "setupTransitions": 106,
+      "hostSlotClassifications": 10,
+      "menuModelsAndActions": 260,
+      "menuWalks": 12,
+      "approvalWatchTraces": 18,
+      "textRedactions": 90,
+      "sharedFolderRefusals": 7
+    },
+    "linuxRegression": {
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "log": "/tmp/rpi-vault-menu-regression.log",
+      "sha256": "669a3d03151b20740168eb9fe5b9448c1d62e745127549c27ab4c29856859d9e",
+      "passed": 67,
+      "failed": 0
+    },
+    "windowsCrossCheck": {
+      "target": "x86_64-pc-windows-gnu",
+      "log": "/tmp/rpi-vault-menu-windows.log",
+      "sha256": "1712c103347687efdfa53c369331d2627eed182e973f5311fa43d1204d637025",
+      "execution": "not tested"
+    },
+    "qualification": "Original Pi setup with isolated real files, fixed time and enrollment secret. Menu model, action results, section rebuild order, exact opaque IDs under an injected process salt, and ordered UI prompts/choices/confirmations/notifications. Original public request-access action drives approval watches with scripted decisions and a clock; no producer or live account used. Native setup transitions preserve their committed mode and enrollment files after callback errors. The production command callback and approval watcher are not yet connected.",
+    "pending": [
+      "native setup and command registration",
+      "loaded command/dialog and background-watch ownership acceptance",
+      "complete storage-fault and cancellation qualification",
+      "macOS and Windows execution",
+      "live enrollment and inference"
+    ]
   }
 }

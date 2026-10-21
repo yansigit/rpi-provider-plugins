@@ -272,41 +272,7 @@ impl<S: Store, C: Client> Manager<S, C> {
         result
     }
     pub async fn disconnect(&self) -> Result<&'static str, Failure> {
-        let Some(lease) = self.store.acquire().await? else {
-            return Ok("busy");
-        };
-        let result = async {
-            let state = async {
-                self.store
-                    .read(Slot::State)
-                    .await?
-                    .as_ref()
-                    .map(enrollment::decode_state)
-                    .transpose()
-                    .map_err(Failure::from)
-            }
-            .await;
-            match state {
-                Ok(Some(state)) if state["proposedName"] != self.proposed_name => {
-                    return Err(wrong_consumer())
-                }
-                Err(Failure::Consumer(error)) if error.kind == "invalid-state" => {}
-                Err(error) => return Err(error),
-                _ => {}
-            }
-            lease.assert_owned().await?;
-            let token = self.store.remove(Slot::Token).await?;
-            lease.assert_owned().await?;
-            let state = self.store.remove(Slot::State).await?;
-            Ok(if token || state {
-                "disconnected"
-            } else {
-                "idle"
-            })
-        }
-        .await;
-        lease.release().await?;
-        result
+        disconnect(&self.store, &self.proposed_name).await
     }
 }
 fn secret_bytes(value: &Value) -> Vec<u8> {
@@ -333,4 +299,42 @@ fn secret_bytes(value: &Value) -> Vec<u8> {
         .chunks_exact(2)
         .map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap())
         .collect()
+}
+
+pub async fn disconnect<S: Store>(store: &S, proposed_name: &str) -> Result<&'static str, Failure> {
+    let Some(lease) = store.acquire().await? else {
+        return Ok("busy");
+    };
+    let result = async {
+        let state = async {
+            store
+                .read(Slot::State)
+                .await?
+                .as_ref()
+                .map(enrollment::decode_state)
+                .transpose()
+                .map_err(Failure::from)
+        }
+        .await;
+        match state {
+            Ok(Some(state)) if state["proposedName"] != proposed_name => {
+                return Err(wrong_consumer())
+            }
+            Err(Failure::Consumer(error)) if error.kind == "invalid-state" => {}
+            Err(error) => return Err(error),
+            _ => {}
+        }
+        lease.assert_owned().await?;
+        let token = store.remove(Slot::Token).await?;
+        lease.assert_owned().await?;
+        let state = store.remove(Slot::State).await?;
+        Ok(if token || state {
+            "disconnected"
+        } else {
+            "idle"
+        })
+    }
+    .await;
+    lease.release().await?;
+    result
 }

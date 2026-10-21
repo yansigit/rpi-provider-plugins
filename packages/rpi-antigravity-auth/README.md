@@ -262,3 +262,12 @@ not yet establish successful loaded vault inference, enrollment UI, or live acce
 The new host capabilities are documented at `pi-rust@fb95b27`; the package probes
 `auth.providerPolicy`, `context.inspect`, initialization, and locked slot transitions
 before registration. Existing ABI offsets and package versions are unchanged.
+
+The setup controller and menu components now match 106 original setup transitions,
+260 menu/action models, 12 complete UI walks and 18 approval-watch traces. Tests
+compare committed mode/enrollment files, callback order, exact salted account IDs,
+messages, confirmation, choices and notifications. The watcher stops when another
+process forgets the enrollment. The seam keeps the original secret-shape redaction
+and shared-folder remedies. All 67 package tests pass with warnings denied on
+Rust 1.78; the Windows cross-check compiles, without platform execution. Native
+command registration and its production setup/watch ownership remain pending.

@@ -1,6 +1,7 @@
 //! Native port of the pinned Antigravity Pi integration. See PARITY.md.
 pub mod auth;
 pub mod catalog;
+pub mod commands;
 pub mod convert;
 pub mod driver;
 pub mod local;

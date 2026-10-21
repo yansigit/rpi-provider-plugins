@@ -21,6 +21,7 @@ pub mod private;
 mod promise;
 pub mod runtime;
 pub mod send;
+pub mod setup;
 pub mod slot;
 pub mod source;
 pub mod stream;
