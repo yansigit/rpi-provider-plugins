@@ -67,6 +67,7 @@ impl Runtime {
                             "context.abort",
                             "context.scopeLifetime",
                             "context.trustProvenance",
+                            "events.lifecycleReasons",
                             "tools.provenance",
                             "tools.activation",
                             "sessions.location",

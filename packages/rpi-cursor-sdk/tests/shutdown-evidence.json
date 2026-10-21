@@ -1,0 +1,32 @@
+{
+  "status": "Native shutdown and reload verified on Linux",
+  "hostMinimumCommit": "014d492e4324eae2c49e3a7cfb334cc03fc7bb18",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "node": "24.22.0",
+  "checks": {
+    "build": {
+      "log": "/tmp/rpi-cursor-shutdown-build.log",
+      "sha256": "13ddd74111e22195f901bab683ee1337808d09befc27ab95edd50ac172df6967"
+    },
+    "nativeLibrary": {
+      "log": "/tmp/rpi-cursor-shutdown-native.log",
+      "sha256": "c2faefc851459c0e5dca59d1d26bd480dce5621027c50fee726a7dbe312e0bd7",
+      "passed": 3
+    }
+  },
+  "review": {
+    "kind": "Manual deep maintainability review of exact native event callback, capability requirement, host failure fixture and documentation diff",
+    "resolved": [
+      "Run cleanup even when scoped context capture or worker event delivery fails",
+      "Return original event failure after awaited cleanup",
+      "Repeated shutdown does not enter a stopped runtime",
+      "Failure fixture retains the library while asserting Node has been reaped"
+    ]
+  },
+  "unchangedEvidence": "native-registration-evidence.json: Node adapter, retained suite, types, build and packaging inputs unchanged",
+  "notTested": [
+    "Full lifecycle event parity",
+    "Live Cursor inference or cloud mutations",
+    "macOS and Windows loading"
+  ]
+}

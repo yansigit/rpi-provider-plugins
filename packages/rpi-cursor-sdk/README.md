@@ -143,3 +143,10 @@ stream entries with replacement credentials that cannot restore an ambient key.
 This does not test Cursor inference. Lifecycle payload parity, full tool metadata,
 child catalog publication, fake-SDK feature acceptance, imports, distribution,
 macOS/Windows loading and bounded live local/cloud acceptance remain required.
+
+Native loading requires `events.lifecycleReasons` (host commit `014d492` or later).
+The Linux reload check observes old-worker reaping and a newly active provider
+binding. Shutdown also drains and reaps when event delivery fails before a
+session context becomes available, and repeated shutdown is harmless.
+`tests/shutdown-evidence.json` records those three installed-library checks;
+unchanged Node adapter evidence is retained from the registration checkpoint.

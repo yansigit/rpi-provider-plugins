@@ -328,44 +328,53 @@ extern "C" fn event_request(
                 .iter()
                 .find(|(tag, _)| input["tag"].as_u64() == Some(*tag as u64))
                 .ok_or("Unknown Cursor event")?;
-            let client = runtime.client.scoped()?;
-            let mut event = input["event"]
-                .as_object()
-                .ok_or("Invalid Cursor event payload")?
-                .clone();
-            event.insert("type".into(), (*name).into());
-            let result = if *tag == EventTag::AgentEnd {
-                Value::Null
-            } else {
-                runtime.invoke(
-                    client.clone(),
-                    "extension.event",
-                    json!({"event":event}),
-                    &cancelled,
-                    |_, _| Ok(()),
-                )?
-            };
-            if matches!(
-                tag,
-                EventTag::AgentEnd
-                    | EventTag::SessionCompact
-                    | EventTag::SessionCompactFailed
-                    | EventTag::SessionTree
-            ) {
-                if let Some(id) = input["identity"]["operationId"].as_str() {
+            if *tag == EventTag::SessionShutdown && runtime.stopping.is_cancelled() {
+                return runtime.close().map(|_| Value::Null);
+            }
+            let result = (|| {
+                let client = runtime.client.scoped()?;
+                let mut event = input["event"]
+                    .as_object()
+                    .ok_or("Invalid Cursor event payload")?
+                    .clone();
+                event.insert("type".into(), (*name).into());
+                let result = if *tag == EventTag::AgentEnd {
+                    Value::Null
+                } else {
                     runtime.invoke(
-                        client,
-                        "operation.end",
-                        json!({"operationId":id}),
+                        client.clone(),
+                        "extension.event",
+                        json!({"event":event}),
                         &cancelled,
                         |_, _| Ok(()),
-                    )?;
+                    )?
+                };
+                if matches!(
+                    tag,
+                    EventTag::AgentEnd
+                        | EventTag::SessionCompact
+                        | EventTag::SessionCompactFailed
+                        | EventTag::SessionTree
+                ) {
+                    if let Some(id) = input["identity"]["operationId"].as_str() {
+                        runtime.invoke(
+                            client,
+                            "operation.end",
+                            json!({"operationId":id}),
+                            &cancelled,
+                            |_, _| Ok(()),
+                        )?;
+                    }
                 }
-            }
+                Ok(result)
+            })();
             if *tag == EventTag::SessionShutdown {
-                runtime.close()?;
+                // Event failure must not defer cleanup until the last host reference disappears.
+                let closed = runtime.close();
+                result.and_then(|value| closed.map(|_| value))
+            } else {
+                result
             }
-            Ok(result)
         },
         false,
     )
