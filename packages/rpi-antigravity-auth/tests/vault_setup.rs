@@ -70,13 +70,13 @@ impl Port for Fixture {
         self.calls.lock().unwrap().push(json!(["hostSlot"]));
         Ok(setup::classify_host_slot(&self.spec["hostSlot"]).into())
     }
-    async fn changed(&self, value: Value) -> Result<(), Failure> {
+    async fn changed(&self, value: Value) -> Result<(), Error> {
         self.calls
             .lock()
             .unwrap()
             .push(json!(["changed", value, self.snapshot()]));
         if self.spec["changeError"] == true {
-            return Err(Failure::Storage("change failed".into()));
+            return Err(Failure::Storage("change failed".into()).into());
         }
         Ok(())
     }

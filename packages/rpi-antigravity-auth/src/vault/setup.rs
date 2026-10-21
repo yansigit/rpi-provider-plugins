@@ -32,7 +32,7 @@ pub trait Port: Send + Sync + 'static {
     fn connect(&self) -> impl Future<Output = Result<Self::Client, Failure>> + Send;
     fn close(&self, client: Self::Client) -> impl Future<Output = ()> + Send;
     fn host_slot(&self) -> impl Future<Output = Result<String, Failure>> + Send;
-    fn changed(&self, mode: Value) -> impl Future<Output = Result<(), Failure>> + Send;
+    fn changed(&self, mode: Value) -> impl Future<Output = Result<(), Error>> + Send;
     fn now_ms(&self) -> u64;
     fn mint_secret(&self) -> Result<String, Failure>;
 }

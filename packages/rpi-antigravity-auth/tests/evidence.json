@@ -717,7 +717,7 @@
     ]
   },
   "vaultSetupMenus": {
-    "status": "component-parity-tested-native-command-wiring-pending",
+    "status": "component-and-linux-native-command-parity-tested-full-package-pending",
     "upstream": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
     "fixtures": [
       {
@@ -756,13 +756,98 @@
       "sha256": "1712c103347687efdfa53c369331d2627eed182e973f5311fa43d1204d637025",
       "execution": "not tested"
     },
-    "qualification": "Original Pi setup with isolated real files, fixed time and enrollment secret. Menu model, action results, section rebuild order, exact opaque IDs under an injected process salt, and ordered UI prompts/choices/confirmations/notifications. Original public request-access action drives approval watches with scripted decisions and a clock; no producer or live account used. Native setup transitions preserve their committed mode and enrollment files after callback errors. The production command callback and approval watcher are not yet connected.",
+    "qualification": "Original Pi setup with isolated real files, fixed time and enrollment secret. Menu model, action results, section rebuild order, exact opaque IDs under an injected process salt, and ordered UI prompts/choices/confirmations/notifications. Original public request-access action drives approval watches with scripted decisions and a clock; no producer or live account used. Native setup transitions preserve their committed mode and enrollment files after callback errors. Production command registration, awaited native dialogs, private slot inspection, background watch ownership and shutdown joining are connected. See nativeCommandAcceptance for loaded evidence.",
     "pending": [
-      "native setup and command registration",
-      "loaded command/dialog and background-watch ownership acceptance",
       "complete storage-fault and cancellation qualification",
+      "production Subc connection error diagnostics",
       "macOS and Windows execution",
       "live enrollment and inference"
-    ]
+    ],
+    "nativeCommandAcceptance": {
+      "host": "572f969b35dab9619c64166a70fa36d64fce271b",
+      "platform": "Linux",
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "reference": "Node 24.22.0; original Pi factory, original common-auth menu, real Subc transport against authenticated scripted local producer",
+      "qualification": "The same script compares complete UI traces, ordered physical vault method calls and persisted selected-route files. Approval completes after command closure. Assertions verify the proposal secret is persisted before transmission, backup and marker precede custody requests, account selection/decline/accept, cancelled and confirmed disconnect, byte-preserving credential restoration and no private values in UI. Five additional original UI walks, ten raw credential classifications, four malformed/BOM/UTF-8 cases and EOF while a dialog is open execute in a real host with the native library. Setup callback errors retain the original actionable refusal class. No inference or remote account use.",
+      "loaded": {
+        "log": "/tmp/rpi-native-menu-loaded-final.log",
+        "sha256": "0b0acba343f8cfedf981b827f18a88e24d7e3730d026fd690da591de85e268aa",
+        "results": [
+          "{\"loadedMenuWalks\": 5, \"hostSlotInspections\": 10, \"rawStoreEncodingCases\": 4, \"eof\": \"passed\", \"liveNetwork\": false}"
+        ]
+      },
+      "framedDifferential": {
+        "log": "/tmp/rpi-native-menu-framed-final.log",
+        "sha256": "01bec35c6fa9207491ee487c803b87b6037d1042b6570e1b593fd364028c2e4b",
+        "results": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.76s"
+        ]
+      },
+      "regressionBeforeRefusalClassFix": {
+        "log": "/tmp/rpi-native-menu-regression.log",
+        "sha256": "fd832244a314a8a1b2cf84ee813afb33926f50d06f0774a5c6402a39e85681ab",
+        "results": [
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.91s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s",
+          "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s",
+          "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.66s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s",
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 25.35s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.03s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.80s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        ]
+      },
+      "refusalClassAndSetupRegression": {
+        "log": "/tmp/rpi-native-menu-refusal.log",
+        "sha256": "00fe189cfbbd88b0b9619439b70e08834d8e92548877545690ea316ebbe60fc7",
+        "results": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s"
+        ]
+      },
+      "windowsCrossCheck": {
+        "log": "/tmp/rpi-native-menu-windows.log",
+        "sha256": "b1092a4fcccf721c0278f491a8cb402d0622881ee09c6b84bdbc3853ce5820f8",
+        "results": [
+          "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.77s"
+        ]
+      },
+      "windowsExecution": "not tested",
+      "nativeBuild": {
+        "log": "/tmp/rpi-native-menu-build-final.log",
+        "sha256": "410f4374d98a3f9e1bc254cc61e7201a30edbc1489f40d93a97f349f6c74969c",
+        "results": [
+          "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.13s"
+        ]
+      }
+    }
   }
 }

@@ -2549,7 +2549,7 @@ dependencies = [
 [[package]]
 name = "rpi-ai"
 version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=63818ded388b09a7bdf4cd5fb59d20fa73f87cb1#63818ded388b09a7bdf4cd5fb59d20fa73f87cb1"
+source = "git+https://github.com/yansigit/pi-rust?rev=572f969b35dab9619c64166a70fa36d64fce271b#572f969b35dab9619c64166a70fa36d64fce271b"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -2766,7 +2766,7 @@ dependencies = [
 [[package]]
 name = "rpi-plugin-sdk"
 version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=63818ded388b09a7bdf4cd5fb59d20fa73f87cb1#63818ded388b09a7bdf4cd5fb59d20fa73f87cb1"
+source = "git+https://github.com/yansigit/pi-rust?rev=572f969b35dab9619c64166a70fa36d64fce271b#572f969b35dab9619c64166a70fa36d64fce271b"
 dependencies = [
  "async-trait",
  "reqwest 0.12.28",
@@ -2847,7 +2847,7 @@ dependencies = [
 [[package]]
 name = "rpi-telemetry"
 version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=63818ded388b09a7bdf4cd5fb59d20fa73f87cb1#63818ded388b09a7bdf4cd5fb59d20fa73f87cb1"
+source = "git+https://github.com/yansigit/pi-rust?rev=572f969b35dab9619c64166a70fa36d64fce271b#572f969b35dab9619c64166a70fa36d64fce271b"
 dependencies = [
  "async-trait",
  "serde",
@@ -4132,7 +4132,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]

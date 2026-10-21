@@ -76,6 +76,18 @@ impl State {
         if !path.is_absolute() {
             return Err("Invalid host credential path".into());
         }
+        if input["input"]["operation"] == "inspect" {
+            // Pi inspects the stored record, without resolving key commands or environment names.
+            let record = std::fs::read(path)
+                .ok()
+                .and_then(|bytes| {
+                    let text = String::from_utf8_lossy(&bytes);
+                    serde_json::from_str::<Value>(text.strip_prefix('\u{feff}').unwrap_or(&text))
+                        .ok()
+                })
+                .unwrap_or(Value::Null);
+            return Ok(crate::vault::setup::classify_host_slot(&record["google"]).into());
+        }
         let vault = self.vault()?;
         let slot = Slot::new(
             path,

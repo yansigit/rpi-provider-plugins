@@ -258,8 +258,8 @@ streams with an explicit marker, plus 40 persistent-session auth cases after the
 stored credential changes. Discovery matches 68 original filesystem cases and
 21 user tokens; account presentation matches 1,247 original lists and 81 request
 selections. These tests use private temporary files and fake credentials. They do
-not yet establish successful loaded vault inference, enrollment UI, or live access.
-The new host capabilities are documented at `pi-rust@fb95b27`; the package probes
+not yet establish successful loaded vault inference or live access.
+The new host capabilities are documented at `pi-rust@572f969`; the package probes
 `auth.providerPolicy`, `context.inspect`, initialization, and locked slot transitions
 before registration. Existing ABI offsets and package versions are unchanged.
 
@@ -269,5 +269,26 @@ compare committed mode/enrollment files, callback order, exact salted account ID
 messages, confirmation, choices and notifications. The watcher stops when another
 process forgets the enrollment. The seam keeps the original secret-shape redaction
 and shared-folder remedies. All 67 package tests pass with warnings denied on
-Rust 1.78; the Windows cross-check compiles, without platform execution. Native
-command registration and its production setup/watch ownership remain pending.
+Rust 1.78; the Windows cross-check compiles, without platform execution.
+
+The native `/antigravity` command now uses awaited host dialogs and ordered
+notifications. Its setup operations retain the registration while each menu owns
+its dialogs. Approval watching continues after the initiating command closes;
+shutdown cancels its delay and joins admitted enrollment work. The host reads the
+raw Google credential only under its store lock and returns a classification,
+without resolving credential commands or exposing secrets to the menu.
+
+Loaded Linux acceptance compares the original Pi factory and native library
+against one authenticated framed vault script: proposal, pending approval after
+menu closure, backup/marker installation before custody requests, account
+selection, decline/accept, cancelled disconnect and confirmed restoration. UI
+traces, wire operation order and selected-route files match. Five additional
+original menu walks and ten credential classifications pass through RPC, including
+malformed-store handling and EOF with an open dialog. Reproduce with
+`scripts/native-vault-menu.py` and the ignored `tests/native_menu.rs` test; set
+`RPI_TEST_HOST`, `RPI_TEST_PROVIDER_LIBRARY`, `RPI_PRIVATE_TMP`,
+`RPI_REFERENCE_NODE` (Node 24+) and `RPI_REFERENCE_DIR` (locked upstream checkout).
+
+Complete fault/cancellation coverage, production connection diagnostics, successful
+loaded HTTP inference, other platform execution and live acceptance remain pending.
+This is not a parity-complete package.

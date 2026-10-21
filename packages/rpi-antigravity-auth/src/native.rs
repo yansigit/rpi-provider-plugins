@@ -1,4 +1,5 @@
 //! C ABI ownership boundary. No request credentials live in global state.
+mod commands;
 mod vault;
 use crate::{
     auth::{self, network::Network, Admission},
@@ -23,6 +24,7 @@ struct Runtime {
     vault: Arc<vault::State>,
     client: Client,
     stopping: CancellationToken,
+    watch: Arc<commands::Watch>,
 }
 impl Runtime {
     fn new(client: Client) -> Self {
@@ -32,6 +34,7 @@ impl Runtime {
             vault: Arc::new(vault::State::default()),
             client,
             stopping: CancellationToken::new(),
+            watch: Arc::new(commands::Watch::default()),
         }
     }
 }
@@ -86,6 +89,9 @@ pub fn register(api: &PluginApi) -> i32 {
         let events = api
             .register_event_result_handler
             .ok_or("rpi-antigravity-auth requires awaited lifecycle events; upgrade rpi")?;
+        let command = api
+            .register_native_command
+            .ok_or("rpi-antigravity-auth requires owned native commands; upgrade rpi")?;
         let client = Client::new(api)?.scoped()?;
         // A loader may run inside a host runtime; never nest Tokio block_on on that thread.
         std::thread::scope(|scope| {
@@ -106,6 +112,8 @@ pub fn register(api: &PluginApi) -> i32 {
                                 "auth.credentialStoreLock",
                                 "providers.initialize",
                                 "context.inspect",
+                                "commands.owned",
+                                "ui.notifications",
                             ],
                             signal.clone(),
                         ),
@@ -125,6 +133,7 @@ pub fn register(api: &PluginApi) -> i32 {
             return Err("Antigravity lifecycle registration failed".into());
         }
         for rc in [
+            command(StbStringRef::from_str(&json!({"version":1,"name":"antigravity","description":"Google Antigravity: the account Pi serves, and the Claustrum vault"}).to_string()),commands::request,free_string,state.cast()),
             events(sdk::EventTag::SessionStart,session_start,free_string,state.cast()),
             declare(StbStringRef::from_str(&json!({"providers":[{"id":catalog::PROVIDER,"replaceCatalog":true,"models":models(),"apiKeyEnv":"GEMINI_API_KEY","requiresAuth":true}]}).to_string())),
             runtime(StbStringRef::from_str(&json!({"version":1,"id":catalog::PROVIDER,"actions":["preflight","authMethods","initialize","credentialStore","requestAuth"]}).to_string()),runtime_request,free_string,state.cast()),
@@ -153,9 +162,10 @@ extern "C" fn finish_shutdown(context: *mut c_void) -> i32 {
     sdk::guard_or(1, || {
         let state = unsafe { Box::from_raw(context.cast::<Runtime>()) };
         state.stopping.cancel();
-        let _ = state
-            .context
-            .run(&CancellationToken::new(), state.vault.close());
+        let _ = state.context.run(&CancellationToken::new(), async {
+            state.watch.finish().await;
+            state.vault.close().await;
+        });
         state.context.finish_shutdown();
         0
     })

@@ -25,11 +25,33 @@ use std::{
 };
 use tokio_util::sync::CancellationToken;
 
-fn now() -> f64 {
+pub fn now() -> f64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_millis() as f64
+}
+pub fn connector() -> Result<SubcConnector, String> {
+    let env: HashMap<_, _> = std::env::vars().collect();
+    let connection_file = discovery::connection_file(&env).map_err(|e| e.to_string())?;
+    let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
+    let canonical = std::fs::canonicalize(&cwd).map_err(|e| e.to_string())?;
+    let canonical = canonical.to_string_lossy();
+    #[cfg(windows)]
+    let canonical = canonical
+        .strip_prefix(r"\\?\UNC\")
+        .map(|v| format!(r"\\{v}"))
+        .unwrap_or_else(|| canonical.strip_prefix(r"\\?\").unwrap_or(&canonical).into());
+    let identity = subc_protocol::BindIdentity::new(
+        cwd,
+        "opencode",
+        format!("store-{:x}", Sha256::digest(canonical.as_bytes())),
+    );
+    Ok(SubcConnector {
+        connection_file,
+        identity,
+        handshake_timeout: Duration::from_secs(10),
+    })
 }
 struct Client {
     connection: Arc<Enrolled<SubcConnector>>,
@@ -69,28 +91,9 @@ struct Port {
 impl consumer::Port for Port {
     type Client = Client;
     async fn connect(&self) -> Result<Arc<Client>, Failure> {
-        let env: HashMap<_, _> = std::env::vars().collect();
-        let connection_file = discovery::connection_file(&env).map_err(|_| Failure::Other)?;
-        let cwd = std::env::current_dir().map_err(|_| Failure::Other)?;
-        let canonical = std::fs::canonicalize(&cwd).map_err(|_| Failure::Other)?;
-        let canonical = canonical.to_string_lossy();
-        #[cfg(windows)]
-        let canonical = canonical
-            .strip_prefix(r"\\?\UNC\")
-            .map(|v| format!(r"\\{v}"))
-            .unwrap_or_else(|| canonical.strip_prefix(r"\\?\").unwrap_or(&canonical).into());
-        let identity = subc_protocol::BindIdentity::new(
-            cwd,
-            "opencode",
-            format!("store-{:x}", Sha256::digest(canonical.as_bytes())),
-        );
-        let connection = Enrolled::connect(SubcConnector {
-            connection_file,
-            identity,
-            handshake_timeout: Duration::from_secs(10),
-        })
-        .await
-        .map_err(|_| Failure::Unreachable)?;
+        let connection = Enrolled::connect(connector().map_err(|_| Failure::Other)?)
+            .await
+            .map_err(|_| Failure::Unreachable)?;
         Ok(Arc::new(Client {
             connection,
             files: self.files.clone(),
