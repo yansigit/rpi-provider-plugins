@@ -1,0 +1,4106 @@
+{
+  "runtime": "v26.3.0",
+  "cases": [
+    {
+      "spec": {
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit OAuth)",
+        "oauth": true,
+        "apiKey": null,
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit OAuth)",
+        "oauth": true,
+        "apiKey": null,
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit OAuth)",
+        "oauth": true,
+        "apiKey": null,
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit OAuth)",
+        "oauth": true,
+        "apiKey": null,
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment must be approved before activating vault credentials. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment must be approved before activating vault credentials. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment must be approved before activating vault credentials. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "other",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit OAuth)",
+        "oauth": true,
+        "apiKey": null,
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit OAuth)",
+        "oauth": true,
+        "apiKey": null,
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit OAuth)",
+        "oauth": true,
+        "apiKey": null,
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit OAuth)",
+        "oauth": true,
+        "apiKey": null,
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment must be approved before activating vault credentials. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment must be approved before activating vault credentials. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment must be approved before activating vault credentials. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}}",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":null,\"entryJson\":null,\"sha256\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Pi slot: invalid-auth Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": " chosen "
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{}"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{}",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "pending",
+          "proposedName": "antigravity-auth-pi",
+          "requestSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "createdAt": 1,
+          "updatedAt": 1
+        },
+        "token": {
+          "token": "invalid",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "invalid"
+        },
+        "auth": "{"
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{",
+      "stash": null
+    },
+    {
+      "spec": {
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "afterSwap": {
+          "state": {
+            "version": 1,
+            "phase": "approved",
+            "proposedName": "antigravity-auth-pi",
+            "tokenGeneration": 1,
+            "updatedAt": 1000
+          }
+        }
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment changed while the credential slot was being synchronized. The account source was not activated. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "afterSwap": {
+          "state": null,
+          "token": null
+        }
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment changed while the credential slot was being synchronized. The account source was not activated. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": "old"
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "afterSwap": {
+          "mode": {
+            "version": 1,
+            "mode": "custody",
+            "routeId": "new"
+          }
+        }
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit vault)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": null
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    },
+    {
+      "spec": {
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "afterSwap": {
+          "mode": {
+            "version": 1,
+            "mode": "custody"
+          }
+        }
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment must be approved before activating vault credentials. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+      "stash": null
+    },
+    {
+      "spec": {
+        "state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "tokenGeneration": 1,
+          "updatedAt": 1000
+        },
+        "token": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 1
+        },
+        "auth": "{ \"google\": { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "afterSwap": {
+          "state": {
+            "invalid": true
+          }
+        }
+      },
+      "configuration": {
+        "name": "Google Antigravity (CortexKit, unavailable)",
+        "oauth": false,
+        "apiKey": "antigravity-vault-custody",
+        "commands": [
+          "antigravity"
+        ],
+        "refusal": "Vault enrollment or source settings cannot be read. Local credentials remain unavailable. Resolve it from /antigravity; Antigravity requests are refused until then. No request was sent."
+      },
+      "auth": "{ \"google\": {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+      "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+    }
+  ]
+}

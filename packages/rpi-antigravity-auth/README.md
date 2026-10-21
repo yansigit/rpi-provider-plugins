@@ -197,3 +197,12 @@ Pi mkdir/mtime lock is not used on native rpi's lock file. Its lease-specific ti
 and compromise cases still need qualification at this native integration boundary;
 these results do not declare A07 or vault startup complete. Malformed numeric JSON,
 lone-surrogate JSON strings and filesystem close failures also remain unqualified.
+
+Source selection now re-reads enrollment authority in the original order and
+retains custody for an approved ceremony with a corrupt or missing token. The
+settings parser preserves route identifiers and the distinct damaged/unreadable
+messages. `vault-source-reference.ts` captures 286 settings/source scenarios;
+`vault-startup-reference.ts` runs the original factory for 149 startup cases,
+including enrollment changes after the slot write. Native source/slot logic matches
+these fixtures. Actual registration, recovery menus, dynamic auth availability,
+and custody requests are still pending; this is not loaded-provider vault acceptance.

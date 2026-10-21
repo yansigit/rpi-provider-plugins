@@ -440,5 +440,40 @@
       "macOS and Windows execution",
       "live enrolled vault acceptance"
     ]
+  },
+  "vaultSource": {
+    "status": "source-and-slot-logic-tested-native-wiring-pending",
+    "fixtures": [
+      {
+        "fixture": "vault-source.json",
+        "sha256": "4d1e65d42d7b9028aa9b01420deba6d6693844e46fdad4f8276015383c5e31b4",
+        "scenarios": 286
+      },
+      {
+        "fixture": "vault-startup.json",
+        "sha256": "92fe43085c18297fe64d06810a890f06a07fd75f7039a33bcc03ba8b5eea4c5b",
+        "scenarios": 149
+      }
+    ],
+    "linuxCheck": {
+      "log": "/tmp/rpi-vault-source-final.log",
+      "sha256": "9284b2fa0bf1d1277542a434dc2eb4bfa37cc7332024d09519f8df003255215b",
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "passed": 7,
+      "failed": 0
+    },
+    "windowsCrossCheck": {
+      "log": "/tmp/rpi-vault-source-windows-check.log",
+      "sha256": "5e938b49256aa03d58921d86d2904b6bacaf79a66268ec1f2d308007edafad71",
+      "execution": "not tested"
+    },
+    "pending": [
+      "native initialization/session-start/mode-change wiring",
+      "private provider request-auth defaults and dynamic auth methods",
+      "vault roster/send and complete setup menus",
+      "macOS and Windows execution",
+      "live acceptance"
+    ]
   }
 }

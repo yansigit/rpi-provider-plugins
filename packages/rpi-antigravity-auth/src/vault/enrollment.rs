@@ -171,6 +171,59 @@ pub fn authority(
         }
     }
 }
+
+pub async fn read_status<S: super::ceremony::Store>(
+    store: &S,
+    proposed_name: &str,
+) -> Result<Value, super::ceremony::Failure> {
+    use super::ceremony::Slot;
+    let token = store.read(Slot::Token).await?;
+    let token = token.as_ref().map(decode_token).transpose()?;
+    let state = store.read(Slot::State).await?;
+    Ok(status(token.as_ref(), state.as_ref(), proposed_name)?)
+}
+
+pub async fn read_authority<S: super::ceremony::Store>(
+    store: &S,
+    proposed_name: &str,
+) -> &'static str {
+    use super::ceremony::{Failure, Slot};
+    match read_status(store, proposed_name).await {
+        Ok(status) => {
+            if status
+                .get("proposedName")
+                .is_some_and(|name| name != proposed_name)
+            {
+                "unreadable"
+            } else if status["state"] == "approved"
+                || (status["state"] == "blocked" && status["code"] == "missing_token")
+            {
+                "vault"
+            } else {
+                "local"
+            }
+        }
+        Err(Failure::Consumer(error))
+            if matches!(error.kind, "invalid-state" | "invalid-token") =>
+        {
+            match store
+                .read(Slot::State)
+                .await
+                .ok()
+                .flatten()
+                .and_then(|state| decode_state(&state).ok())
+            {
+                Some(state)
+                    if state["phase"] == "approved" && state["proposedName"] == proposed_name =>
+                {
+                    "vault"
+                }
+                _ => "unreadable",
+            }
+        }
+        Err(_) => "unreadable",
+    }
+}
 pub fn retryable(error: &Error) -> bool {
     match error.code.as_str() {
         "invalid_params" | "pending_exists" | "not_found" | "already_consumed" | "superseded"

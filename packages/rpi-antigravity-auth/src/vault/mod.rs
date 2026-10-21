@@ -13,3 +13,4 @@ pub mod file_lease;
 pub mod file_store;
 pub mod private;
 pub mod slot;
+pub mod source;

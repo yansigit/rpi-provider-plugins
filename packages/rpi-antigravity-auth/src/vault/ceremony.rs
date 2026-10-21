@@ -106,15 +106,7 @@ fn wrong_consumer() -> Failure {
 }
 impl<S: Store, C: Client> Manager<S, C> {
     pub async fn status(&self) -> Result<Value, Failure> {
-        let token = self.store.read(Slot::Token).await?;
-        // Decode before the second read, including its possible I/O errors.
-        let token = token.as_ref().map(enrollment::decode_token).transpose()?;
-        let state = self.store.read(Slot::State).await?;
-        Ok(enrollment::status(
-            token.as_ref(),
-            state.as_ref(),
-            &self.proposed_name,
-        )?)
+        enrollment::read_status(&self.store, &self.proposed_name).await
     }
     async fn block(&self, state: &Value, code: &str) -> Result<Value, Failure> {
         let state = json!({"version":1,"phase":"blocked","proposedName":state["proposedName"],"errorCode":code,"updatedAt":(self.now)()});
