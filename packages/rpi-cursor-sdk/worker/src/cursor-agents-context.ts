@@ -2,7 +2,7 @@ import type {
 	BuildSystemPromptOptions,
 	ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
-import { getAgentDir } from "@earendil-works/pi-coding-agent";
+import { getAgentDir } from "./rpi/paths.js";
 import { parseEnvBoolean } from "./cursor-env-boolean.js";
 import { isCursorModel } from "./cursor-model.js";
 import {

@@ -12,7 +12,7 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
-import { CONFIG_DIR_NAME, getAgentDir } from "@earendil-works/pi-coding-agent";
+import { getConfigDirName, getAgentDir } from "./rpi/paths.js";
 import type { ModelThinkingLevel } from "@earendil-works/pi-ai";
 import { parseOptionalEnvBoolean } from "./cursor-env-boolean.js";
 import { asRecord } from "./cursor-record-utils.js";
@@ -350,7 +350,7 @@ export function getCursorSdkUserConfigPath(agentDir = getAgentDir()): string {
 	return join(agentDir, CURSOR_SDK_CONFIG_FILE);
 }
 
-export function getCursorSdkProjectConfigPath(cwd: string, configDirName = CONFIG_DIR_NAME): string {
+export function getCursorSdkProjectConfigPath(cwd: string, configDirName = getConfigDirName()): string {
 	return join(cwd, configDirName, CURSOR_SDK_CONFIG_FILE);
 }
 

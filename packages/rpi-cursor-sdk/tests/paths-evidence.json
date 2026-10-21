@@ -1,0 +1,59 @@
+{
+  "status": "Native directory boundary verified; native runtime startup wiring pending",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "sdk": "1.0.37",
+  "node": "24.22.0",
+  "checks": {
+    "retainedSuite": {
+      "files": 165,
+      "passed": 1679,
+      "skipped": 2
+    },
+    "piLoaderPassed": 53,
+    "focusedPathStoreConfigPassed": 47,
+    "types": "src, tests and replay compile passed",
+    "packageFiles": 2772,
+    "bundledCursorSdkFiles": 0
+  },
+  "review": {
+    "kind": "Manual deep review of changed path callers, store admission/cleanup, tests and package contents",
+    "findingsResolved": [
+      "Native initialization is one-time and precedes adapter registration",
+      "Native default stores do not call SDK source-directory resolver or migration",
+      "Private store preparation preserves trusted platform path aliases and identity guards",
+      "Actual installed SDK SQLite open/disposal and cache writes run under isolated native root"
+    ],
+    "remainingInBoundaryChunk": []
+  },
+  "pending": [
+    "Call initializeNativePaths from native owning worker startup",
+    "Verify installed native package and worker on Linux, macOS and Windows",
+    "Isolated imports and full acceptance"
+  ],
+  "logs": [
+    {
+      "path": "/tmp/rpi-cursor-paths-types-full.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-paths-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    {
+      "path": "/tmp/rpi-cursor-paths-targeted.log",
+      "sha256": "78277b46861984e0c83aeb57e8fea3ca27c5b0f1a7a9892db937dad60d92b326"
+    },
+    {
+      "path": "/tmp/rpi-cursor-paths-all.log",
+      "sha256": "7a4cecec5655f63d946499ec8c4a3615917858b424e7b6591b75a7eb17821fec"
+    },
+    {
+      "path": "/tmp/rpi-cursor-paths-pi.log",
+      "sha256": "7d151ff8042d5d82ab970bbdd8bf8bdd28149cced8a8a7ba60c75bf51e804c3c"
+    },
+    {
+      "path": "/tmp/rpi-cursor-paths-pack.json",
+      "sha256": "753e344624199300450c1dfb017bdeedf838ecf792b8a99670861fca305dd513"
+    }
+  ]
+}

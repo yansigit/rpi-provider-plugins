@@ -2,9 +2,10 @@ import { createHash, randomUUID } from "node:crypto";
 import { existsSync, lstatSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
-import { dirname, isAbsolute, join, relative, resolve, sep, toNamespacedPath } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep, toNamespacedPath } from "node:path";
 import type { LocalAgentStore } from "@cursor/sdk";
 import { loadCursorSdk } from "./cursor-sdk-runtime.js";
+import { getNativeSdkWorkspaceRoot } from "./rpi/paths.js";
 import { guardCursorCustomStorePath, normalizeCursorCustomStoreRoot, prepareCursorCustomStoreRoot } from "./cursor-custom-store-path.js";
 
 export interface CursorSessionStoreIdentity {
@@ -106,6 +107,13 @@ function acquireWorkspaceRoot(cwd: string, storeRoot: string | undefined) {
 				if (storeRoot !== undefined) {
 					const root = prepareCursorCustomStoreRoot(storeRoot);
 					return join(root, createHash("sha256").update(resolve(cwd)).digest("hex").slice(0, 32));
+				}
+				const nativeRoot = getNativeSdkWorkspaceRoot(cwd);
+				if (nativeRoot) {
+					const base = prepareCursorCustomStoreRoot(dirname(nativeRoot));
+					const root = join(base, basename(nativeRoot));
+					assertSafeStorePath(root, base, "local store");
+					return root;
 				}
 				const operations = await getSdkOperations();
 				assertSafeWorkspaceLayout(cwd);
@@ -281,7 +289,7 @@ async function openOwnedCursorSessionStore(
 		await lease?.root;
 		const base = "workspaceRoot" in options ? dirname(options.workspaceRoot) : options.removalRoot;
 		assertSafeStorePath(openedIdentity.stateRoot, base, "local store");
-		const guard = "workspaceRoot" in options && options.storeRoot !== undefined
+		const guard = "workspaceRoot" in options && (options.storeRoot !== undefined || getNativeSdkWorkspaceRoot(cwd) !== undefined)
 			? guardCursorCustomStorePath(base, openedIdentity.stateRoot) : undefined;
 		const operations = await getSdkOperations();
 		guard?.verify();

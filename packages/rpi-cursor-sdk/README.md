@@ -45,3 +45,8 @@ Provider auth and awaited catalog publication boundaries are covered by
 and host-selected account environment, and delay private catalog/cache updates
 until host acceptance. Complete ModelRuntime refresh orchestration, configuration
 recomposition, availability and native dispatcher wiring remain required.
+
+The native directory boundary selects rpi-owned configuration, caches and SDK
+SQLite stores before adapter registration. Its real SDK store and retained Pi
+regressions are recorded in `tests/paths-evidence.json`; worker startup wiring
+and installation verification remain required.
