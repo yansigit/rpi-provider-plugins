@@ -210,3 +210,10 @@ available for reentrant auth/catalog calls before its startup event completes;
 ordinary child operations await startup. This prevents startup refresh from
 waiting on its own initialization. Child close retains its independent drain and
 worker reaping path. Evidence is recorded in `tests/child-catalog-evidence.json`.
+
+`events.compactionDetails` is also required: successful, failed and cancelled
+compactions must finish their tracked operation. The host's installed-library
+test runs 70 consecutive cancelled compactions, exceeding the worker's 64 live
+operation limit, and verifies shutdown and reaping. The host records the Pi 1.3.0
+lifecycle projection and remaining compaction gaps in
+`docs/provider-parity/host-compaction-results.json`.

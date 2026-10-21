@@ -71,6 +71,7 @@ impl Runtime {
                             "context.scopeLifetime",
                             "context.trustProvenance",
                             "events.lifecycleReasons",
+                            "events.compactionDetails",
                             "events.promptContext",
                             "tools.provenance",
                             "tools.metadata",

@@ -1,0 +1,28 @@
+{
+  "host": "16a37be56093d7c9cb5264c6f1eed1b24aeb3786",
+  "status": "Required compaction lifecycle capability verified on Linux",
+  "compiler": "Rust 1.78.0; warnings denied",
+  "checks": {
+    "rust": {
+      "log": "/tmp/rpi-cursor-compaction-rust.log",
+      "sha256": "d31ee14b8b32f77899f35aa928f325a293ce858f8087c4b087731936c225e4cb",
+      "passed": 34
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-compaction-pinned-dll.log",
+      "sha256": "8db149a13556f9642801d6ddac5fa9fb5811dd6b3441e673cd5a7819c35af568",
+      "passed": 4
+    }
+  },
+  "assertions": [
+    "Installed native package requires compaction failure/cancellation callbacks instead of accepting hosts that leak worker operation scopes",
+    "Actual worker processes 70 consecutive cancelled compactions, then continues normal operations and shuts down",
+    "SDK lock changes only advance the pinned host source; existing provider packages and workspace versions are unchanged"
+  ],
+  "review": "Manual deep review of the exact capability, dependency/lock and README diff completed before commit. Checked host advertisement, old-host refusal, worker operation cleanup and unchanged adapter policy. No material findings.",
+  "notTested": [
+    "Full compaction preparation and automatic-trigger parity",
+    "macOS and Windows native execution",
+    "Live Cursor inference"
+  ]
+}
