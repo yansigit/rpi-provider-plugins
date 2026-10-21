@@ -7,7 +7,8 @@ export interface WorkerCall {
 	readonly id: string;
 	readonly signal: AbortSignal;
 	emit(event: unknown): void;
-	host(method: string, input: unknown): Promise<unknown>;
+	/** Optional waiter cancellation; admitted persistence uses null and awaits the host receipt. */
+	host(method: string, input: unknown, signal?: AbortSignal | null): Promise<unknown>;
 }
 export type WorkerHandler = (method: string, input: unknown, call: WorkerCall) => Promise<unknown>;
 type Deferred = { resolve: (value: unknown) => void; reject: (error: Error) => void };
@@ -75,15 +76,27 @@ export class WorkerPeer {
 				// Only the encoded frame is transferred; a placeholder avoids cloning the payload twice.
 				this.worker.postMessage({ kind: "frame", frame: { ...outgoing, event: null }, encoded, weight }, [encoded.buffer]);
 			},
-			host: (method, input) => {
+			host: (method, input, signal = null) => {
 				if (complete || this.closed) return Promise.reject(new Error("Cursor worker call is closed"));
+				if (signal?.aborted) return Promise.reject(signal.reason);
 				if (this.pending.size >= MAX_CALLS) return Promise.reject(new Error("Cursor worker host call capacity exhausted"));
 				if (this.nextId === Number.MAX_SAFE_INTEGER) return Promise.reject(new Error("Cursor worker request IDs exhausted"));
 				const id = `w${++this.nextId}`;
 				return new Promise((resolve, reject) => {
-					this.pending.set(id, { resolve, reject });
+					const abort = () => {
+						try { if (signal !== controller.signal) this.send({ ...envelope, id, kind: "cancel" }); }
+						catch { this.disconnect(); }
+						reject(signal?.reason);
+					};
+					const cleanup = () => signal?.removeEventListener("abort", abort);
+					this.pending.set(id, {
+						resolve: value => { cleanup(); resolve(value); },
+						reject: error => { cleanup(); reject(error); },
+					});
 					try { this.send({ ...envelope, id, kind: "request", method, input, parent: frame.id }); }
-					catch (error) { this.pending.delete(id); reject(error); }
+					catch (error) { this.pending.delete(id); cleanup(); reject(error); return; }
+					signal?.addEventListener("abort", abort, { once: true });
+					if (signal?.aborted) abort();
 				});
 			},
 		};

@@ -1,12 +1,11 @@
+import { start } from "./peer-harness.mjs";
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import { spawn } from "node:child_process";
-import { randomBytes } from "node:crypto";
-import { createServer } from "node:net";
 import { setTimeout as delay } from "node:timers/promises";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { encodeFrame, FrameReader, EVENT_CAPACITY, PAYLOAD_BYTES } from "../../dist/rpi/protocol.js";
+import { encodeFrame, EVENT_CAPACITY, PAYLOAD_BYTES } from "../../dist/rpi/protocol.js";
 
 test("invalid bootstrap does not echo private input in process errors", { timeout: 10_000 }, async () => {
 	const child = spawn(process.execPath, [fileURLToPath(new URL("./fixture-worker.mjs", import.meta.url))], { stdio: ["pipe", "pipe", "pipe"] });
@@ -18,36 +17,6 @@ test("invalid bootstrap does not echo private input in process errors", { timeou
 	assert.doesNotMatch(output, /private-fixture-connection-secret/);
 });
 
-async function start(t) {
-	const server = createServer(); server.listen(0, "127.0.0.1"); await once(server, "listening");
-	const config = { version: 1, port: server.address().port, generation: randomBytes(16).toString("hex"), token: randomBytes(32).toString("hex") };
-	const connection = once(server, "connection");
-	const child = spawn(process.execPath, [fileURLToPath(new URL("./fixture-worker.mjs", import.meta.url))], { stdio: ["pipe", "pipe", "pipe"] });
-	let output = ""; child.stdout.on("data", chunk => { output += chunk; }); child.stderr.on("data", chunk => { output += chunk; });
-	const exited = once(child, "exit");
-	child.stdin.end(JSON.stringify(config));
-	const [socket] = await connection;
-	t.after(async () => { socket.destroy(); server.close(); if (child.exitCode === null) child.kill(); await exited; });
-	const frames = []; const waiters = []; const reader = new FrameReader();
-	let hello;
-	let ready; const authenticated = new Promise(resolve => { ready = resolve; });
-	socket.on("data", chunk => reader.push(chunk, frame => {
-		if (!hello) {
-			assert.deepEqual(frame, { version: 1, generation: config.generation, token: config.token }); hello = true;
-			socket.write(encodeFrame({ version: 1, generation: config.generation, ready: true })); ready();
-		} else { frames.push(frame); for (const wake of waiters.splice(0)) wake(); }
-	}));
-	const send = frame => socket.write(encodeFrame({ version: 1, generation: config.generation, ...frame }));
-	const take = async predicate => {
-		for (;;) {
-			const index = frames.findIndex(predicate);
-			if (index >= 0) return frames.splice(index, 1)[0];
-			await new Promise(resolve => waiters.push(resolve));
-		}
-	};
-	await authenticated;
-	return { send, take, frames, socket, exited, output: () => output, config };
-}
 
 test("private framing supports nested host calls and never consumes stdio as messages", { timeout: 10_000 }, async t => {
 	const peer = await start(t);
@@ -62,6 +31,28 @@ test("private framing supports nested host calls and never consumes stdio as mes
 	assert.equal((await peer.take(f => f.id === "h3")).error, "Cursor worker request failed");
 	await delay(20); assert.match(peer.output(), /stdout is not IPC/); assert.match(peer.output(), /stderr is not IPC/);
 	assert.doesNotMatch(peer.output(), /fixture secret/);
+});
+
+test("cancellation reaches a nested host call and its late reply is drained", { timeout: 10_000 }, async t => {
+	const peer = await start(t);
+	peer.send({ id: "h1", kind: "request", method: "nestedAbort", input: {} });
+	const request = await peer.take(f => f.kind === "request");
+	peer.send({ id: "h1", kind: "cancel" });
+	assert.equal((await peer.take(f => f.kind === "cancel")).id, request.id);
+	assert.equal((await peer.take(f => f.id === "h1")).kind, "error");
+	peer.send({ id: request.id, kind: "reply", result: { committed: true }, lastEvent: 0 });
+	peer.send({ id: "h2", kind: "request", method: "echo", input: "still connected" });
+	assert.equal((await peer.take(f => f.id === "h2")).result, "still connected");
+});
+
+test("an explicit waiter abort racing an already received reply keeps the connection usable", { timeout: 10_000 }, async t => {
+	const peer = await start(t);
+	peer.send({ id: "h1", kind: "request", method: "nestedSignalRace", input: {} });
+	const request = await peer.take(frame => frame.kind === "request");
+	peer.send({ id: request.id, kind: "reply", result: { committed: true }, lastEvent: 0 });
+	assert.equal((await peer.take(frame => frame.id === "h1")).kind, "error");
+	peer.send({ id: "h2", kind: "request", method: "echo", input: "connected" });
+	assert.equal((await peer.take(frame => frame.id === "h2")).result, "connected");
 });
 
 test("count pressure is lossless and cancellation wakes a blocked synchronous producer", { timeout: 10_000 }, async t => {

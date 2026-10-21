@@ -76,3 +76,22 @@ directory to exercise the staged runtime. Background session leases and late
 cloud/usage completion are covered by `tests/lifetime-evidence.json`. The native
 dispatcher must drain these leases before closing its host connection;
 installed-library loading still requires integration.
+
+The worker entry is `runtime/main.mjs`, outside the retained Pi loader graph. It
+sets rpi-owned paths before importing the adapter, then keeps a standing private
+IPC call open while provider results and late session work have different
+lifetimes. The dispatcher runs the retained factory, auth, catalog, hooks,
+commands and skill/question tools. The Rust transport installs each supplied
+invocation callback before sending its request. The native DLL must retain and
+route the dispatcher's origin bindings until acknowledged release. Presentation
+effects are acknowledged, while session writes and journals
+continue using their explicitly awaited persistence ports.
+
+`tests/dispatcher-evidence.json` records the dispatcher checks and remaining
+integration work. `tests/native-runtime.mjs` executes this packaged entry with scripted host
+responses. It covers reentrant startup catalog publication, awaited command
+persistence, API-key login, both provider stream entries, and origin cleanup.
+`worker/test/rpi/context.test.ts` checks private-auth conversion, dialog controls
+and acknowledgement failures. These are offline process-boundary checks. The
+native DLL dispatcher, complete host event/tool translation, per-child worker
+ownership, installation and live Cursor acceptance remain required.

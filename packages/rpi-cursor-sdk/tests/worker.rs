@@ -33,6 +33,34 @@ fn echo() -> HostHandler {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "requires Node 24+ and npm run build in worker/"]
+async fn callbacks_are_bound_before_send_and_retain_the_invoking_owner() {
+    let worker = worker(echo()).await;
+    let owner = Arc::new("invocation".to_owned());
+    let weak = Arc::downgrade(&owner);
+    let scoped: HostHandler = Arc::new(move |call| {
+        let owner = owner.clone();
+        Box::pin(async move { Ok(json!({"owner":*owner,"input":call.input})) })
+    });
+    let bound = worker
+        .call_with_host("nested", json!({"request":1}), scoped)
+        .await
+        .unwrap();
+    let ordinary = worker.call("nested", json!({"request":2})).await.unwrap();
+    assert!(weak.upgrade().is_some());
+    assert_eq!(
+        bounded(bound.result()).await.unwrap(),
+        json!({"owner":"invocation","input":{"request":1}})
+    );
+    assert_eq!(
+        bounded(ordinary.result()).await.unwrap(),
+        json!({"request":2})
+    );
+    worker.shutdown().await.unwrap();
+    assert!(weak.upgrade().is_none());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "requires Node 24+ and npm run build in worker/"]
 async fn concurrent_calls_keep_identity_and_wire_admission_in_the_same_order() {
     let worker = Arc::new(worker(echo()).await);
     let mut callers = Vec::new();

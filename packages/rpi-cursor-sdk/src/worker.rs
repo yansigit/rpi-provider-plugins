@@ -35,6 +35,7 @@ pub type HostResult = Pin<Box<dyn Future<Output = Result<Value, String>> + Send>
 pub type HostHandler = Arc<dyn Fn(HostCall) -> HostResult + Send + Sync>;
 
 struct Request {
+    host: Option<HostHandler>,
     events: Option<mpsc::Sender<(u64, Value)>>,
     completion: Option<oneshot::Sender<Result<Value, String>>>,
     sequence: u64,
@@ -315,6 +316,25 @@ impl Worker {
     }
 
     pub async fn call(&self, method: &str, input: Value) -> Result<Call, String> {
+        self.start_call(method, input, None).await
+    }
+
+    /// Install the invocation binding before the worker can issue a host callback.
+    pub async fn call_with_host(
+        &self,
+        method: &str,
+        input: Value,
+        host: HostHandler,
+    ) -> Result<Call, String> {
+        self.start_call(method, input, Some(host)).await
+    }
+
+    async fn start_call(
+        &self,
+        method: &str,
+        input: Value,
+        host: Option<HostHandler>,
+    ) -> Result<Call, String> {
         if method.is_empty() || method.len() > 128 {
             return Err("invalid Cursor worker method".into());
         }
@@ -335,6 +355,7 @@ impl Worker {
             requests.insert(
                 id.clone(),
                 Request {
+                    host,
                     events: Some(events),
                     completion: Some(completion),
                     sequence: 0,
@@ -483,11 +504,17 @@ async fn read_loop(
             } => {
                 let number = wire::id_number(&id).ok_or("invalid host call identity")?;
                 let parent = parent.ok_or("missing host call scope")?;
+                let host = state
+                    .requests
+                    .lock()
+                    .unwrap()
+                    .get(&parent)
+                    .map(|request| request.host.clone().unwrap_or_else(|| Arc::clone(&host)))
+                    .ok_or("unknown worker host call scope")?;
                 if !id.starts_with('w')
                     || number <= last_worker_id
                     || method.is_empty()
                     || method.len() > 128
-                    || !state.requests.lock().unwrap().contains_key(&parent)
                 {
                     return Err("invalid worker host call".into());
                 }
@@ -502,7 +529,6 @@ async fn read_loop(
                 }
                 let calls = Arc::clone(&host_calls);
                 let task_state = Arc::clone(state);
-                let host = Arc::clone(&host);
                 let task = tokio::spawn(async move {
                     let result = tokio::spawn(async move {
                         host(HostCall {

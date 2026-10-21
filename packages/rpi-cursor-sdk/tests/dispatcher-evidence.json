@@ -1,0 +1,86 @@
+{
+  "status": "packaged Node dispatcher verified offline; native DLL integration and full parity pending",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "node": "24.22.0",
+  "integratedPi": "1.3.0",
+  "baselinePi": "1.1.0 (unchanged upstream lock)",
+  "cursorSdk": "1.0.37 (external dependency)",
+  "checks": {
+    "retainedSuite": {
+      "log": "/tmp/rpi-cursor-dispatch-suite-final.log",
+      "sha256": "6c822db9f0a4ee4144b9f5205397b6ec6d4167882251a39143257bc85a615769",
+      "files": 169,
+      "passed": 1698,
+      "skipped": 2
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-dispatch-types-final.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b",
+      "passed": true
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-dispatch-build-final.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04",
+      "passed": true
+    },
+    "packagedProcessAndFactory": {
+      "log": "/tmp/rpi-cursor-dispatch-process-final.log",
+      "sha256": "abd117488fb1c1c2de4b2881665504d127f2b9b3d7388310c5ede4e0491da2f9",
+      "passed": 6
+    },
+    "transport": {
+      "log": "/tmp/rpi-cursor-dispatch-transport-final.log",
+      "sha256": "af19bd6466622784ba168a44e612760ce0f4cfd02416310cf1dd27792e168319",
+      "passed": 7
+    },
+    "rustWorker": {
+      "log": "/tmp/rpi-cursor-dispatch-rust-worker-final.log",
+      "sha256": "b8dbd968e82fcc0cadb52f171eadc843099e6cbc144504fd6a3a441a7964f797",
+      "passed": 11,
+      "compiler": "Rust 1.78.0, warnings denied"
+    },
+    "packages": [
+      {
+        "log": "/tmp/rpi-cursor-dispatch-runtime-pack-final.json",
+        "sha256": "2efcd62e8aff72217cbf72038fe327af306214105d19849b3d786308e8c20ebc",
+        "package": "runtime",
+        "files": 155,
+        "bundledCursorSdkFiles": 0,
+        "license": true,
+        "nativeEntry": true
+      },
+      {
+        "log": "/tmp/rpi-cursor-dispatch-worker-pack-final.json",
+        "sha256": "90c268fa8af5fd4dd99da3490a2266491556fd5b0d221be51b3dc19da6cb410b",
+        "package": "worker",
+        "files": 2784,
+        "bundledCursorSdkFiles": 0,
+        "license": true,
+        "nativeEntry": false
+      }
+    ]
+  },
+  "review": {
+    "kind": "Manual deep review of the exact dispatcher, context, transport, tests and package diff against connected retained code",
+    "findingsResolved": [
+      "Native bootstrap is a separate runtime entry; unchanged Pi loader architecture checks pass",
+      "Private host authentication is validated and converted to the retained AuthResult shape",
+      "No broad TypeScript escape hatches",
+      "Parent cancellation retains acknowledgement semantics; explicit waiter aborts drain late replies",
+      "IO cancellation tolerates an already received reply without closing the connection",
+      "Invocation callback installed before sending a worker request",
+      "Presentation effects participate in session-work retention and acknowledgement barriers",
+      "Shutdown continues draining after hook errors and redacts process-level cleanup failures"
+    ]
+  },
+  "remaining": [
+    "Native DLL registration and installed library asset resolution",
+    "Authoritative native origin binding and journal routing",
+    "Complete event/tool translation, operation lifecycle and child runtime ownership",
+    "Fake SDK acceptance for all local/resume/cleanup/usage/cloud feature groups",
+    "Native tool execution counts and no replay execution",
+    "Imports, complete distribution and combined acceptance",
+    "Actual macOS/Windows native loading and worker execution",
+    "Authorized Cursor local/cloud live acceptance (not tested)"
+  ]
+}

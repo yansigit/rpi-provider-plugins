@@ -14,6 +14,7 @@ function run(): void {
 	const incoming = new Map<string, Incoming>();
 	const outgoing = new Map<string, string>();
 	let lastHostId = 0n;
+	let lastWorkerId = 0n;
 	let authenticated = false;
 	let stopped = false;
 	const socket = connect({ host: "127.0.0.1", port: config.port });
@@ -73,7 +74,8 @@ function run(): void {
 			if (!authenticated) throw new Error("Worker handshake incomplete");
 			const frame = parseFrame(message.frame, config.generation);
 			if (frame.kind === "request") {
-				if (!frame.id.startsWith("w") || outgoing.has(frame.id) || outgoing.size >= MAX_CALLS || !frame.parent || !incoming.has(frame.parent)) throw new Error("Invalid worker host call");
+				if (!frame.id.startsWith("w") || BigInt(frame.id.slice(1)) <= lastWorkerId || outgoing.size >= MAX_CALLS || !frame.parent || !incoming.has(frame.parent)) throw new Error("Invalid worker host call");
+				lastWorkerId = BigInt(frame.id.slice(1));
 				outgoing.set(frame.id, frame.parent);
 			} else if (frame.kind === "event") {
 				const call = incoming.get(frame.id);
@@ -84,7 +86,11 @@ function run(): void {
 				if (!call || call.completed || frame.lastEvent !== call.sequence) throw new Error("Invalid worker completion");
 				call.completed = true;
 				if (!call.credits.size) incoming.delete(frame.id);
-			} else if (frame.kind !== "cancel" || !outgoing.has(frame.id)) throw new Error("Invalid outgoing worker frame");
+			} else if (frame.kind === "cancel") {
+				if (!frame.id.startsWith("w") || BigInt(frame.id.slice(1)) > lastWorkerId) throw new Error("Invalid outgoing worker cancellation");
+				// The IO thread may have received the reply before the adapter observed its abort.
+				if (!outgoing.has(frame.id)) return;
+			} else throw new Error("Invalid outgoing worker frame");
 			writer.write(message.encoded ? Buffer.from(message.encoded.buffer, message.encoded.byteOffset, message.encoded.byteLength) : encodeFrame(frame), frame.kind === "event");
 		} catch { stop(); }
 	});

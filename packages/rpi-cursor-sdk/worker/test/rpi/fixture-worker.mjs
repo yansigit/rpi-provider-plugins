@@ -45,6 +45,15 @@ const peer = new WorkerPeer(config, async (method, input, call) => {
 		}
 		case "echo": return input;
 		case "nested": return await call.host("fixture.host", input);
+		case "nestedAbort": return await call.host("fixture.host", input, call.signal);
+		case "nestedSignalRace": {
+			const controller = new AbortController();
+			const result = call.host("fixture.host", input, controller.signal);
+			// The IO thread receives the reply while this thread has not observed it yet.
+			Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 200);
+			controller.abort();
+			return await result;
+		}
 		case "burst":
 			for (let i = 0; i < input.count; i++) call.emit({ i, text: "x".repeat(input.bytes ?? 0) });
 			return { count: input.count };
