@@ -8,6 +8,7 @@ use url::Url;
 
 pub mod body;
 pub mod network;
+pub(crate) mod trust;
 
 pub const RESPONSE_HEADER_TIMEOUT_MS: u64 = 180_000;
 pub const IDLE_TIMEOUT_MS: u64 = 180_000;

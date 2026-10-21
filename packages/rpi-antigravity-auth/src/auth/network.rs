@@ -52,7 +52,8 @@ impl Network {
             );
         }
         // Undici's ordinary fetch is direct; the separate AGY transport owns proxy selection.
-        reqwest::Client::builder()
+        let mut builder = reqwest::Client::builder()
+            .tls_built_in_root_certs(false)
             .no_proxy()
             .http1_only()
             .no_gzip()
@@ -60,7 +61,14 @@ impl Network {
             .no_deflate()
             .no_zstd()
             .default_headers(headers)
-            .redirect(reqwest::redirect::Policy::limited(20))
+            .redirect(reqwest::redirect::Policy::limited(20));
+        for certificate in crate::transport::trust::certificates() {
+            builder = builder.add_root_certificate(
+                reqwest::Certificate::from_der(certificate.as_ref())
+                    .expect("validated certificate"),
+            );
+        }
+        builder
     }
     pub fn with_clients(http: reqwest::Client, agy: Client, options: Options) -> Self {
         Self { http, agy, options }

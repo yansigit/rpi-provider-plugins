@@ -849,5 +849,168 @@
         ]
       }
     }
+  },
+  "productionTrustAndInference": {
+    "status": "partial-acceptance-not-parity-complete",
+    "referenceRuntime": "Node 24.22.0 / Pi 1.3.0",
+    "platform": "Linux execution; Windows compilation only",
+    "compiler": "Rust 1.78.0 -Dwarnings",
+    "bundledCertificates": 121,
+    "bundledCertificateSha256": "1f20173c6c5bd4e836fbd5d025ec4eb7464e1521439cde2fea0aca3122c7a1a9",
+    "trustScenarios": 7,
+    "loadedLocalScenarios": 4,
+    "loadedVaultScenarios": 6,
+    "qualification": "Pinned bundled certificates match Node byte for byte. Real TLS decisions for unset, valid, cached, empty, missing, malformed and partially valid extra roots match both original transports. Actual rpi CLI/native library preserves credential bytes in local sends, signatures, usage, ordered headers, chunking, gzip, project acquisition and error redaction. Loaded enrolled-Subc vault sends verify custody backup/marker, fresh scoped receipts, version-aware 401 retry, report version, and no HTTP after identity/project refusal. Existing deterministic request and stream fixtures supply full source comparisons; these loaded CLI scenarios are additional production-wiring checks, not a claim of full end-to-end differential parity.",
+    "notTested": [
+      "macOS/Windows native execution",
+      "system/OpenSSL trust switches and OS-specific diagnostics",
+      "complete loaded OAuth login/refresh",
+      "pending-body cancellation equivalence",
+      "live vault enrollment/inference"
+    ],
+    "evidence": [
+      {
+        "log": "/tmp/rpi-antig-trust-unit.log",
+        "sha256": "a2a8505f58aaa9b7735ea82113394dd8a03430f0f454e9f1c360676adb017d3f",
+        "results": [
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-trust-loaded.log",
+        "sha256": "edc7512d2387465d5dfba0c3b2dca54ee539f3210925f959f9b71cea013d011c",
+        "results": [
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.54s"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-trust-regression.log",
+        "sha256": "7054658f47fe84d91ac968d6f761d82439055ad4a26d41bd1dd490ab4b7afe62",
+        "results": [
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.90s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s",
+          "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s",
+          "test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.67s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s",
+          "test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.43s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.30s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+          "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s",
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.92s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.03s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.83s",
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-trust-windows.log",
+        "sha256": "fdd1d0076dc21c6bca1576e497e01e6cef6db1b6cc477a1ccac4d59f0434cf94",
+        "results": [
+          "Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.19s"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-native-inference.log",
+        "sha256": "c2e6a4855564bf18808308438ad3da3714ddd026a55081b0934bc7bc31eaf8fc",
+        "results": [
+          "{\"scenarios\": 4, \"physicalRequests\": 5, \"credentialsUnchanged\": true, \"network\": \"loopback authenticated TLS proxy only\", \"liveInference\": false}"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-native-vault-inference.log",
+        "sha256": "1f2b78e8ca1409ae128c43c2d0e3556255725c12f56a8b9afeccdd0a66fc7181",
+        "results": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.97s"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-trust-native-build-final.log",
+        "sha256": "5f95ffcac12863958ee37b07bf8181c24ec849c3d9323fc65e06f9d3eb0cb6a5",
+        "results": [
+          "Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.12s"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-native-inference-final.log",
+        "sha256": "c2e6a4855564bf18808308438ad3da3714ddd026a55081b0934bc7bc31eaf8fc",
+        "results": [
+          "{\"scenarios\": 4, \"physicalRequests\": 5, \"credentialsUnchanged\": true, \"network\": \"loopback authenticated TLS proxy only\", \"liveInference\": false}"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-trust-and-vault-final.log",
+        "sha256": "ec6c1a22c9d0e7f125e01a203db5a86494b70b07192b59e06d8a167c8e23030c",
+        "results": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.07s",
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.53s"
+        ]
+      },
+      {
+        "log": "/tmp/rpi-antig-trust-windows-final.log",
+        "sha256": "2950bc692ab76468e9a6c96a484b627f37d1e6363f8ba4e2be4ce6a588f857e3",
+        "results": [
+          "Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.00s"
+        ]
+      }
+    ],
+    "requiredHostCapability": "auth.configuredValues",
+    "hostRevision": "fa009982179d92d82be1fd2a45807b1d8ad66c1a",
+    "liveLocalAcceptance": {
+      "model": "antigravity-gemini-3.8-flash",
+      "exitCode": 0,
+      "timedOut": false,
+      "elapsedSeconds": 3.36,
+      "assistantMessages": 1,
+      "stopReasons": [
+        "stop"
+      ],
+      "refreshPersisted": true,
+      "refreshTokenChanged": false,
+      "sourceUnchanged": true,
+      "isolatedDirectory": "/home/user/.rpi/provider-parity-live/antigravity-20261021-100819",
+      "usage": [
+        {
+          "input": 548,
+          "output": 40,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 588,
+          "cost": {
+            "input": 0.0,
+            "output": 0.0,
+            "cacheRead": 0.0,
+            "cacheWrite": 0.0,
+            "total": 0.0
+          }
+        }
+      ],
+      "exactOK": true,
+      "status": "passed",
+      "qualification": "One authorized account copied to isolated rpi storage, converted explicit millisecond expiry to legacy seconds, and packed its project metadata. Existing source store byte-identical afterward. One native request refreshed and durably persisted the access credential, then returned exactly OK. No refresh-token rotation occurred. Displayed cost values are the upstream zero-price catalog, not a billing assertion. Vault and Cursor live acceptance are not covered."
+    }
   }
 }

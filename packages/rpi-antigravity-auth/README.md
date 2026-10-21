@@ -67,7 +67,10 @@ when the original SSE parser produces frames, even across split CRLF and UTF-8.
 The UTF-8 decoder uses the existing encoding_rs dependency, pinned to 0.8.35 for
 Rust 1.78. JSON enables exact float round trips; usage values are compared without
 rounding tolerances. The host compatibility contract also retains Pi 1.3.0's
-`durationMs` on terminal results. Live acceptance remains not tested.
+`durationMs` on terminal results. One authorized live Gemini 3.8 Flash request
+passed on Linux, including credential refresh and durable persistence: exact `OK`,
+588 reported tokens, 3.36 seconds, and unchanged source Pi storage. The copied
+refresh token did not rotate. Vault, other models and other platforms remain untested live.
 
 HTTP request framing and proxy selection are tested separately through the
 original transport's intercepted TLS boundary. `transport-reference.test.ts`
@@ -98,7 +101,22 @@ body reads remain pending after idle timeout or cancellation. The candidate
 currently closes the connection and returns a terminal error. This is a proposed
 parity exception awaiting user agreement, not a passing parity assertion.
 The driver implements the 600-second pre-response deadline and one-second trailing-usage
-window. Production TLS trust settings and OS-specific socket diagnostics remain pending.
+window. The production transports share Node 24.22.0's bundled certificates and
+`NODE_EXTRA_CA_CERTS`, captured when the library registers. Seven real TLS scenarios
+match the original transports, including retained valid certificates before a bad
+PEM block and reuse after the extra file is deleted. System/OpenSSL trust switches
+and OS-specific socket diagnostics remain pending.
+
+`scripts/native-inference.py` exercises the actual host/library through a local
+TLS proxy: plain and gzip streaming, project discovery, signatures, usage, error
+redaction and unchanged credential bytes. `tests/native_vault_inference.rs` adds
+the authenticated Subc producer, custody backup/marker, fresh scoped credentials,
+rotation-aware 401 retries, receipt-bound reports, and zero HTTP after identity or
+project refusal. These are production-wiring checks with fixture credentials;
+they do not establish live acceptance or full end-to-end differential parity.
+Set `RPI_TEST_HOST`, `RPI_TEST_PROVIDER_LIBRARY`, and `RPI_PRIVATE_TMP` to the built
+artifacts and a private scratch directory, then run the Python script and
+`cargo test -p rpi-antigravity-auth --test native_vault_inference -- --ignored`.
 
 `auth-reference.ts` uses the original core and packed extension with Pi 1.3.0.
 It captures 56 exchange/refresh cases and four complete callback/code login
@@ -258,9 +276,10 @@ streams with an explicit marker, plus 40 persistent-session auth cases after the
 stored credential changes. Discovery matches 68 original filesystem cases and
 21 user tokens; account presentation matches 1,247 original lists and 81 request
 selections. These tests use private temporary files and fake credentials. They do
-not yet establish successful loaded vault inference or live access.
-The new host capabilities are documented at `pi-rust@572f969`; the package probes
-`auth.providerPolicy`, `context.inspect`, initialization, and locked slot transitions
+not by themselves establish successful loaded vault inference or live access;
+production send and bounded live-local evidence is recorded above.
+The required host capabilities are documented through `pi-rust@fa00998`; the package probes
+`auth.providerPolicy`, `auth.configuredValues`, `context.inspect`, initialization, and locked slot transitions
 before registration. Existing ABI offsets and package versions are unchanged.
 
 The setup controller and menu components now match 106 original setup transitions,
@@ -289,6 +308,6 @@ malformed-store handling and EOF with an open dialog. Reproduce with
 `RPI_TEST_HOST`, `RPI_TEST_PROVIDER_LIBRARY`, `RPI_PRIVATE_TMP`,
 `RPI_REFERENCE_NODE` (Node 24+) and `RPI_REFERENCE_DIR` (locked upstream checkout).
 
-Complete fault/cancellation coverage, production connection diagnostics, successful
-loaded HTTP inference, other platform execution and live acceptance remain pending.
+Complete fault/cancellation coverage, production connection diagnostics, other
+platform execution and live vault acceptance remain pending.
 This is not a parity-complete package.

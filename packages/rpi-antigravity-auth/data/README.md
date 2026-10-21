@@ -22,3 +22,10 @@ reordering against Node. Collation uses the Unihan database, as Node does.
 The datagen lock differs from the published 1.5.0 lock only by zerovec 0.10.4,
 whose explicit C tuple layout makes serialized fallback data portable across
 compiler versions. The package uses that same zerovec version.
+
+`node24-roots.pem` is the exact 121-certificate bundled trust list from the pinned
+Node 24.22.0 reference, also verified against `nodejs/node@v24.22.0`'s
+`src/node_root_certs.h`. Its Node notice is in `NODE-LICENSE`. Reproduce it using
+that Node binary: `node -p 'require("node:tls").rootCertificates.join("\n")' > data/node24-roots.pem`.
+The acceptance evidence records its SHA256. Trust-list updates require a deliberate
+reference pin change and TLS acceptance rerun.

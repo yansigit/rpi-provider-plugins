@@ -70,6 +70,7 @@ fn models() -> Vec<Value> {
         .collect()
 }
 pub fn register(api: &PluginApi) -> i32 {
+    crate::transport::trust::certificates();
     let result = (|| {
         let lifecycle = api
             .register_plugin_lifecycle
@@ -108,6 +109,7 @@ pub fn register(api: &PluginApi) -> i32 {
                                 "auth.publicErrors",
                                 "auth.providerRequest",
                                 "auth.providerPolicy",
+                                "auth.configuredValues",
                                 "auth.dynamicMethods",
                                 "auth.credentialStoreLock",
                                 "providers.initialize",

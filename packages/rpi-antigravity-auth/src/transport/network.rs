@@ -80,8 +80,12 @@ pub struct Client {
 }
 impl Default for Client {
     fn default() -> Self {
-        let roots =
-            rustls::RootCertStore::from_iter(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+        let mut roots = rustls::RootCertStore::empty();
+        for certificate in super::trust::certificates() {
+            roots
+                .add(certificate.clone())
+                .expect("validated certificate");
+        }
         Self::with_tls(
             rustls::ClientConfig::builder_with_provider(Arc::new(
                 rustls::crypto::ring::default_provider(),

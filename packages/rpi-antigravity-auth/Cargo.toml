@@ -31,7 +31,6 @@ flate2 = { version = "1", default-features = false, features = ["zlib"] }
 tokio = { workspace = true, features = ["net", "io-util", "macros"] }
 tokio-util = { version = "0.7", features = ["rt", "io"] }
 tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
-webpki-roots = "1"
 base64 = "0.22"
 percent-encoding = "2"
 sha2 = "0.10"
