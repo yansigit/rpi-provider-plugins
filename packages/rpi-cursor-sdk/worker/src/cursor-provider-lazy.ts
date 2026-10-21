@@ -1,5 +1,5 @@
+import { createCursorMessageStream, NativeMessageStream } from "./rpi/stream.js";
 import {
-	createAssistantMessageEventStream,
 	type Api,
 	type AssistantMessage,
 	type AssistantMessageEventStream,
@@ -33,7 +33,7 @@ function makeProviderRuntimeErrorMessage(model: Model<Api>, error: unknown, apiK
 
 export function createCursorLazyStream(capture: (model: Model<Api>, context: Context, options?: SimpleStreamOptions) => CursorProviderOwnership) {
 	return (model: Model<Api>, context: Context, options?: SimpleStreamOptions): AssistantMessageEventStream => {
-		const outer = createAssistantMessageEventStream();
+		const outer = createCursorMessageStream();
 		const fail = (error: unknown) => {
 			const message = makeProviderRuntimeErrorMessage(model, error, options?.apiKey);
 			outer.push({ type: "error", reason: "error", error: message });
@@ -48,7 +48,12 @@ export function createCursorLazyStream(capture: (model: Model<Api>, context: Con
 		}
 		queueMicrotask(async () => {
 			try {
-				for await (const event of streamCursor(model, context, options, ownership)) outer.push(event);
+				const inner = streamCursor(model, context, options, ownership);
+				if (outer instanceof NativeMessageStream && inner instanceof NativeMessageStream) {
+					outer.end(await inner.finished);
+				} else {
+					for await (const event of inner) outer.push(event);
+				}
 			} catch (error) {
 				fail(error);
 			}

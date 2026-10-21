@@ -1,9 +1,9 @@
+import { createCursorMessageStream } from "./rpi/stream.js";
 import {
 	type Api,
 	type AssistantMessage,
 	type AssistantMessageEventStream,
 	type Context,
-	createAssistantMessageEventStream,
 	type Model,
 	type SimpleStreamOptions,
 } from "@earendil-works/pi-ai";
@@ -66,7 +66,7 @@ export function streamCursor(
 	ownership: CursorProviderOwnership,
 ): AssistantMessageEventStream {
 	const { scope, bridge, nativeDisplay, recordCloudLifecycle, request, usageRecorder } = ownership;
-	const stream = createAssistantMessageEventStream();
+	const stream = createCursorMessageStream();
 	const sdkEventDebugRef: { current?: CursorSdkEventDebugSink } = {};
 	attachCursorSdkEventDebugPiStreamTap(stream, sdkEventDebugRef);
 

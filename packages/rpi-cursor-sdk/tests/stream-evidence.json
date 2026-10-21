@@ -1,0 +1,56 @@
+{
+  "status": "Native streaming boundary verified; complete provider dispatch and package parity remain pending",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "node": "24.22.0",
+  "rust": "1.78.0",
+  "approvedException": {
+    "date": "2026-10-21",
+    "behavior": "Capture native partial-message values at emission time instead of retaining Pi shared mutable references. Order, deltas, signatures, usage and final outcomes are not excepted.",
+    "evidence": "Actual pinned CursorPartialContentEmitter plus installed Pi stream produced text_start containing the later hello delta. test/rpi/stream.test.ts records both behaviors."
+  },
+  "checks": {
+    "typechecks": "src, tests, replay compile passed",
+    "retainedSuite": {
+      "files": 162,
+      "passed": 1669,
+      "skipped": 2
+    },
+    "piLoaderPassed": 53,
+    "nativeStreamTests": 6,
+    "rustNodeBackpressure": "512 ordered events plus terminal; stopped consumers admit at most 64 small or one oversized event; cancellation reaches cleanup",
+    "rustWarningsDenied": true
+  },
+  "review": {
+    "kind": "Manual deep review of exact boundary, both call sites, tests and docs",
+    "corrected": [
+      "Use factory-derived stream class because Pi packed-source loader does not expose implementation subpath",
+      "Track delivery failure separately from its possibly falsy thrown value",
+      "Keep terminal result and wait for explicit producer end after cleanup",
+      "Avoid forwarding the native inner stream through a second queue"
+    ],
+    "remainingInChunk": []
+  },
+  "liveCursorCalls": 0,
+  "logs": [
+    {
+      "path": "/tmp/rpi-cursor-stream-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-stream-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    {
+      "path": "/tmp/rpi-cursor-stream-tests-final.log",
+      "sha256": "b1ff2fbfd31d65553986e8bccb1579075a520bf21108d3d72c568fa3a1ab99e6"
+    },
+    {
+      "path": "/tmp/rpi-cursor-stream-pi-final.log",
+      "sha256": "2056ee2e1057b7b77837171675783dd986fa70d7e7f5240f5a302bb317d16d8d"
+    },
+    {
+      "path": "/tmp/rpi-cursor-stream-rust-final.log",
+      "sha256": "f63a2cb14ee3bb6953115637323eaa7a514cfe0a00324347b77f5dd60b2c9c44"
+    }
+  ]
+}

@@ -11,11 +11,11 @@ The implementation sequence is:
 3. Wire the native library, installed assets and retained adapter; verify local, continuity, cleanup, usage and cloud behavior against the reference host and fake SDK before bounded live acceptance.
 4. Qualify packaging, imports, platform execution and composition with the other two extensions.
 
-Host calls never use stdout/stderr. The worker transport uses a dedicated loopback connection with a random per-process secret passed through the child's private stdin, not argv or environment. Synchronous SDK callbacks use a separate transport thread, so bounded stream pressure cannot stop the IPC reader from processing cancellation or host replies. Queued stream payload uses the host's 64-item / 4 MiB accounting: an oversized item consumes the byte budget exclusively. Completion has a separate slot. These are payload limits, not a bound on SDK state, process memory, or consumer-held results.
+Host calls never use stdout/stderr. The worker transport uses a dedicated loopback connection with a random per-process secret passed through the child's private stdin, not argv or environment. Synchronous SDK callbacks use a separate transport thread, so bounded stream pressure cannot stop the IPC reader from processing cancellation or host replies. Queued stream payload uses the host's 64-item / 4 MiB accounting: an oversized item consumes the byte budget exclusively. Completion has a separate slot. Native provider streams deliver directly through this gate, without the retained Pi adapter’s two unbounded intermediate event queues. The user approved emission-time partial snapshots on 2026-10-21: unlike Pi’s shared mutable partial objects, an earlier IPC event does not acquire content from later events. Event order, deltas, signatures, usage and final results retain their original contract. These are payload limits, not a bound on SDK state, process memory, or consumer-held results.
 
 The retained upstream README and development documents describe the original Pi host. Native installation and behavior are documented here as each boundary is implemented. Existing Pi Cursor agents, SDK stores and cloud management authority are never adopted implicitly.
 
-Transport checks are recorded in `tests/worker-evidence.json`.
+Transport checks are recorded in `tests/worker-evidence.json`; the direct native stream boundary and agreed snapshot exception are verified in `tests/stream-evidence.json`.
 
 The [session boundary](SESSION-PORT.md) adds acknowledged snapshots and committed
 entry receipts, and propagates awaited persistence through the retained adapter.

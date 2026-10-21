@@ -1,3 +1,4 @@
+import { NativeMessageStream } from "../../dist/rpi/stream.js";
 import { NativeJournals } from "../../dist/rpi/journal.js";
 import { WorkerPeer, readBootstrap } from "../../dist/rpi/peer.js";
 
@@ -26,6 +27,21 @@ const peer = new WorkerPeer(config, async (method, input, call) => {
 				if (new Set(rows.map(row => row.id)).size !== rows.length) throw new Error("duplicate fixture record");
 			});
 			return await journals.readUsage();
+		}
+		case "nativeBurst": {
+			const partial = { role: "assistant", content: [{ type: "text", text: "x".repeat(input.bytes ?? 0) }], api: "cursor-sdk", provider: "cursor", model: "fixture",
+				usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } }, stopReason: "stop", timestamp: Date.now() };
+			const stream = new NativeMessageStream(call.emit);
+			let count = 0;
+			try {
+				for (; count < input.count; count++) stream.push({ type: "text_delta", contentIndex: 0, delta: String(count), partial });
+				stream.push({ type: "done", reason: "stop", message: partial });
+			} catch {
+				partial.stopReason = "aborted";
+				stream.push({ type: "error", reason: "aborted", error: partial });
+			} finally { stream.end(); }
+			await stream.finished;
+			return { count, reason: partial.stopReason, cleanup: true };
 		}
 		case "echo": return input;
 		case "nested": return await call.host("fixture.host", input);

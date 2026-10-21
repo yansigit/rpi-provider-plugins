@@ -337,3 +337,37 @@ async fn native_journals_round_trip_through_worker_ipc_with_competing_writes() {
         .unwrap();
     std::fs::remove_dir_all(directory).unwrap();
 }
+
+#[tokio::test]
+#[ignore = "requires Node 24+ and npm run build in worker/"]
+async fn native_adapter_stream_has_no_unbounded_intermediate_queue() {
+    let worker = worker(echo()).await;
+    let mut call = worker
+        .call("nativeBurst", json!({"count":512}))
+        .await
+        .unwrap();
+    for i in 0..512 {
+        let event = bounded(call.next()).await.unwrap();
+        assert_eq!(event["type"], "text_delta");
+        assert_eq!(event["delta"], i.to_string());
+    }
+    assert_eq!(bounded(call.next()).await.unwrap()["type"], "done");
+    assert!(bounded(call.next()).await.is_none());
+    assert_eq!(
+        bounded(call.result()).await.unwrap(),
+        json!({"count":512,"reason":"stop","cleanup":true})
+    );
+    for bytes in [0, 4 * 1024 * 1024 + 100] {
+        let call = worker
+            .call("nativeBurst", json!({"count":10000,"bytes":bytes}))
+            .await
+            .unwrap();
+        tokio::time::sleep(Duration::from_millis(100)).await;
+        call.cancel().await.unwrap();
+        let result = bounded(call.result()).await.unwrap();
+        assert_eq!(result["reason"], "aborted");
+        assert_eq!(result["cleanup"], true);
+        assert!(result["count"].as_u64().unwrap() <= if bytes == 0 { 64 } else { 1 });
+    }
+    worker.shutdown().await.unwrap();
+}
