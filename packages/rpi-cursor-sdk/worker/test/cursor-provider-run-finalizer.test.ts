@@ -12,6 +12,8 @@ import { createCursorLiveRunAccountingState } from "../src/cursor-live-run-accou
 import { captureProviderTestOwnership, createProviderTestTurnUsage } from "./helpers/cursor-provider-ownership.js";
 import { asMockCursorRun } from "./helpers/cursor-provider-harness.js";
 import { collectAssistantEvents, makeAssistantMessage, makeContext, makeModel } from "./helpers/pi-harness.js";
+import { NativeSessionWork } from "../src/rpi/session-work.js";
+import { nativeSessionFixture } from "./helpers/native-session.js";
 
 const { mockAwaitFinalizeCursorRunOutcome } = vi.hoisted(() => {
 	const waitCompletion = new Promise<void>(() => {});
@@ -80,6 +82,23 @@ function makeFinalizer(stream: AssistantMessageEventStream, partial: AssistantMe
 }
 
 describe("CursorRunFinalizer", () => {
+	it("retains native session work through delayed SDK completion and final cleanup", async () => {
+		const f = await nativeSessionFixture(), work = new NativeSessionWork(f.origin);
+		const stream = createAssistantMessageEventStream(), partial = makeAssistantMessage("");
+		const prepared = makePrepared(stream, partial);
+		let finish!: () => void;
+		const waitCompletion = new Promise<void>(resolve => { finish = resolve; });
+		const debugSink = { recordFinalPartial: () => {}, finalize: () => f.origin.sync() } as unknown as CursorSdkEventDebugSink;
+		const { finalizer, guard } = makeFinalizer(stream, partial, debugSink);
+		try {
+			await work.run(() => finalizer.cleanup(prepared, undefined, { waitCompletion, prepared }));
+			await f.origin.release();
+			expect(f.origin.view().id).toBe("native-session");
+			finish(); await work.settled;
+			expect(f.request.mock.calls.map(([input]) => input.action).slice(-2)).toEqual(["sync", "release"]);
+			expect(() => f.origin.view()).toThrow("closed");
+		} finally { guard.dispose(); }
+	});
 	it.each([false, true])("settles live-run ownership before debug writes after wait failure (aborted: %s)", async aborted => {
 		const trackRunCompletion = vi.fn();
 		mockAwaitFinalizeCursorRunOutcome.mockRejectedValueOnce(new Error("run wait failed"));

@@ -8,8 +8,8 @@ the four ports' complete runtime wiring remain in progress.
 and atomic `view`. It accepts only committed append receipts, then verifies the
 entry against a fresh authoritative view. Errors never reserve an ID or fabricate
 durability. Missing custom data and explicit null stay distinct. `sync` reports
-durable or ephemeral storage explicitly. Releasing an origin invalidates its
-getters and operations.
+durable or ephemeral storage explicitly. Origins have explicit retained leases;
+the final release invalidates getters and awaits the host release acknowledgement.
 
 `NativeSessionManager` supplies synchronous read-only getters from acknowledged
 views. Its object identity stays stable; asynchronous operations retain their
@@ -59,8 +59,16 @@ committed entry ID before spend, and late facts remain in the captured journal.
 Native reads of inherited sessions' usage journals still need the runtime's
 history-authorized origin resolver; currently they produce the existing explicit
 incomplete-lineage result instead of reading arbitrary history-selected paths.
-Background operation leases and installed-worker/provider wiring also remain in
-progress. Imported Cursor management authority is not activated by these changes.
+`NativeSessionWork` retains a request's origins through both its streamed response
+and the SDK's background completion. The retained finalizer tracks its cleanup,
+and abandonment callbacks restore their original asynchronous session context.
+Cloud bindings hold their selected origin until replacement or shutdown; captured
+recorders retain that origin through late completion. Released resources are not
+rebound to a newly selected branch. Background failures remain visible through an
+awaited settlement receipt. Runtime shutdown must drain those receipts before
+closing the owning host connection. `tests/lifetime-evidence.json` covers these
+leases; installed-worker/provider wiring remains in progress. Imported Cursor
+management authority is not activated by these changes.
 
 The original source and tests remain pinned by `upstream.json`; host-boundary
 patches are visible in the integration fork. The worker lockfile and SDK version

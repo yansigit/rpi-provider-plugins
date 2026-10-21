@@ -116,6 +116,9 @@ function readView(value: unknown): View {
 /** One captured host origin. Every mutation waits for a committed receipt before reading a new view. */
 export class NativeSessionOrigin {
 	private closed = false;
+	private references = 1;
+	private ownerReleased = false;
+	private releasing?: Promise<void>;
 	readonly origin: string;
 	readonly cwd: string;
 	readonly sessionDir: string;
@@ -190,10 +193,21 @@ export class NativeSessionOrigin {
 		if (response.durability !== "durable" && response.durability !== "ephemeral") throw new Error("Invalid native durability acknowledgement");
 		return response.durability;
 	}
-	async release(): Promise<void> {
-		if (this.closed) return;
+	retain(): () => Promise<void> {
+		this.view();
+		this.references++;
+		let released: Promise<void> | undefined;
+		return () => released ??= this.dropReference();
+	}
+	private dropReference(): Promise<void> {
+		if (--this.references > 0) return Promise.resolve();
 		this.closed = true;
-		await this.request({ action: "release", origin: this.origin });
+		return this.releasing = this.request({ action: "release", origin: this.origin }).then(() => {});
+	}
+	release(): Promise<void> {
+		if (this.ownerReleased) return this.releasing ?? Promise.resolve();
+		this.ownerReleased = true;
+		return this.dropReference();
 	}
 }
 

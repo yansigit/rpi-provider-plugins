@@ -1,4 +1,5 @@
 import type { AssistantMessage } from "@earendil-works/pi-ai";
+import { trackNativeSessionWork } from "./rpi/session-work.js";
 import { cursorLiveRuns } from "./cursor-provider-live-run-drain.js";
 import {
 	classifyCursorRunEmission,
@@ -148,7 +149,7 @@ export class CursorRunFinalizer {
 		const abortRegistration = sendResult?.abortRegistration;
 		this.params.runnerParams.sdkEventDebugRef.current = undefined;
 		if (liveCompletion) {
-			void liveCompletion.waitCompletion
+			const completion = liveCompletion.waitCompletion
 				.finally(async () => {
 					this.safeCleanup(() => prepared?.restoreCursorSdkOutputFilter());
 					if (abortRegistration) {
@@ -158,6 +159,7 @@ export class CursorRunFinalizer {
 					this.safeCleanup(() => this.params.sdkProcessErrorGuard.dispose());
 				})
 				.catch(() => {});
+			trackNativeSessionWork(completion);
 			return;
 		}
 		this.safeCleanup(() => prepared?.restoreCursorSdkOutputFilter());

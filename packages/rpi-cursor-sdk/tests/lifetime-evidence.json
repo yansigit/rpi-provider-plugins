@@ -1,0 +1,66 @@
+{
+  "status": "Native origin leases and retained background completion verified; runtime wiring pending",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "checks": {
+    "retainedSuite": {
+      "files": 168,
+      "passed": 1693,
+      "skipped": 2
+    },
+    "piLoaderPassed": 53,
+    "nativeFactoryPassed": 5,
+    "focusedSessionCloudFinalizerPassed": 46,
+    "types": "src, tests and replay compile passed",
+    "packageFiles": 2780,
+    "bundledCursorSdkFiles": 0
+  },
+  "review": {
+    "kind": "Manual deep exact-diff review of refcounts, one-shot release acknowledgement, original-context callbacks and retained finalizer/cloud lifecycle",
+    "findingsResolved": [
+      "Origins are released only after the owning request and all explicit holders finish",
+      "SDK final cleanup stays tracked after the stream result; detached abandonment restores the original session context",
+      "Cloud recapture and shutdown drop their binding leases while outstanding recorders retain their captured origin",
+      "Late cloud/usage writes leave the newly selected branch untouched",
+      "Repeated captures use distinct fixture identifiers; 140 sequential released operations do not retain origin handles"
+    ],
+    "remainingInBoundaryChunk": []
+  },
+  "limitations": [
+    "The native worker dispatcher must retain its owning host connection until all NativeSessionWork.settled receipts finish.",
+    "Actual native-library loading, live Cursor inference and platform execution remain required."
+  ],
+  "logs": [
+    {
+      "path": "/tmp/rpi-cursor-lifetime-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-lifetime-targeted.log",
+      "sha256": "52b98832ef5013700529fe4113bdddc9c643c7a834237038f7c9b098dc2f5201"
+    },
+    {
+      "path": "/tmp/rpi-cursor-lifetime-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    {
+      "path": "/tmp/rpi-cursor-lifetime-all.log",
+      "sha256": "6f73a7169808ece44be28e14f1121300bc70fda668fad819662262769d0352ee"
+    },
+    {
+      "path": "/tmp/rpi-cursor-lifetime-pi.log",
+      "sha256": "59806137ab659e56bd2346708c55ad474110086184fde7e51291f6ac452c2405"
+    },
+    {
+      "path": "/tmp/rpi-cursor-lifetime-stage.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    {
+      "path": "/tmp/rpi-cursor-lifetime-extension.log",
+      "sha256": "5ff1f0d70ae3799222b1f7cef3924a8fcd8038f460b462b06cb48f72b6ea6f95"
+    },
+    {
+      "path": "/tmp/rpi-cursor-lifetime-pack.json",
+      "sha256": "38bc7e7e8b639d42396f60c5b6ad130e0a814a9315051a4f0451fd4b22ae9021"
+    }
+  ]
+}

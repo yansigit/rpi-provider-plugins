@@ -1,4 +1,5 @@
 import { NativeSessionManager, nativeSessionOrigin, type NativeSessionOrigin } from "./rpi/session.js";
+import { holdNativeSessionOrigin } from "./rpi/session-work.js";
 import { createHash } from "node:crypto";
 import { closeSync, constants, existsSync, fchmodSync, fstatSync, fsyncSync, openSync, readFileSync, readSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -305,16 +306,19 @@ async function appendCloudLifecycleMutationEntry(
 
 export function registerCursorCloudLifecycleLedger(pi: CloudLifecycleApi): void {
 	cloudLifecycleApi = pi;
-	const binding = { api: pi, session: {} as CloudLifecycleSessionState };
+	const binding = { api: pi, session: {} as CloudLifecycleSessionState, release: undefined as (() => Promise<void>) | undefined };
 	cloudBindings.set(pi, binding);
-	const capture = (ctx: CloudLifecycleSessionContext) => {
-		binding.session = captureCloudLifecycleSession(ctx);
+	const capture = async (ctx: CloudLifecycleSessionContext) => {
+		const session = captureCloudLifecycleSession(ctx), release = session.native?.retain();
+		const previous = binding.release;
+		binding.session = session; binding.release = release;
 		cloudLifecycleSession = binding.session;
+		await previous?.();
 	};
 	pi.on("session_start", (_event, ctx) => capture(ctx));
 	pi.on("before_agent_start", (_event, ctx) => capture(ctx));
 	pi.on("session_tree", (_event, ctx) => capture(ctx));
-	pi.on("session_shutdown", () => { cloudBindings.delete(pi); });
+	pi.on("session_shutdown", async () => { cloudBindings.delete(pi); await binding.release?.(); binding.release = undefined; });
 }
 
 export async function recordCursorCloudLifecycleRun(
@@ -345,6 +349,7 @@ export function captureCursorCloudLifecycleRecorder(owner?: object): CursorCloud
 	const current = owner ? cloudBindings.get(owner) : undefined;
 	const api = current?.api ?? (owner ? undefined : cloudLifecycleApi);
 	const session = { ...(current?.session ?? (owner ? {} : cloudLifecycleSession)) };
+	holdNativeSessionOrigin(session.native);
 	return async (report, apiKey) => {
 		if (!api) return false;
 		try {

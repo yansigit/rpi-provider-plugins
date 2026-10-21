@@ -5,13 +5,13 @@ import { NativeSessionManager, NativeSessionOrigin, type SessionRequest } from "
 /** Host-issued IDs and origin-bound branches, without using Node session-file writes. */
 export async function nativeSessionFixture(id = "native-session", path: string | null = "/isolated/sessions.sqlite", journalRequest?: JournalRequest) {
 	const entries: Record<string, unknown>[] = [];
-	let revision = 0, branchRevision = 0, activeLeaf: string | null = null;
+	let revision = 0, branchRevision = 0, nextOrigin = 0, activeLeaf: string | null = null;
 	const captures = new Map<string, { revision: number; anchor: string | null }>();
 	const now = 1_729_000_000_123;
 	const snapshot = () => ({ metadata: { id, createdAt: now }, revision, name: null, labels: {}, entries, branches: [{ lane: "main", revision: branchRevision, leafId: activeLeaf }] });
 	const request = vi.fn<SessionRequest>(async input => {
 		if (input.action === "capture") {
-			const origin = `origin-${id}-${captures.size}`;
+			const origin = `origin-${id}-${nextOrigin++}`;
 			captures.set(origin, { revision: branchRevision, anchor: activeLeaf });
 			return { origin, snapshot: structuredClone(snapshot()) };
 		}

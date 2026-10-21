@@ -1,4 +1,5 @@
 import { CursorLiveRunAbortError } from "./cursor-live-run-coordinator.js";
+import { bindNativeSessionCallback } from "./rpi/session-work.js";
 import { drainExistingCursorLiveRunBeforeSend } from "./cursor-provider-live-run-drain.js";
 import { installCursorSdkProcessErrorGuard } from "./cursor-sdk-process-error-guard.js";
 import type { CursorRuntime } from "./cursor-config.js";
@@ -115,13 +116,13 @@ export class CursorProviderTurnRunner {
 			});
 			started = { ...prepared, usage };
 			if (started.runtime.liveRun) {
-				started.runtime.liveRun.onAbandon = async () => {
+				started.runtime.liveRun.onAbandon = bindNativeSessionCallback(async () => {
 					try {
 						await usage.recordTerminal({ status: "abandon" });
 					} catch (error) {
 						usage.notePersistenceFailure(error);
 					}
-				};
+				});
 			}
 
 			sendResult = await sendCursorProviderTurn({

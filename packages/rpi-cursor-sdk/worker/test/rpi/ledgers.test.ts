@@ -6,6 +6,7 @@ import { captureCursorCloudLifecycleRecorder, registerCursorCloudLifecycleLedger
 import { createExtensionTestContext, createPiHarness, makeModel } from "../helpers/pi-harness.js";
 import { nativeJournalFixture } from "../helpers/native-journals.js";
 import { nativeSessionFixture } from "../helpers/native-session.js";
+import { NativeSessionWork, trackNativeSessionWork } from "../../src/rpi/session-work.js";
 
 const agentId = "bc-00000000-0000-0000-0000-000000000001";
 afterEach(() => cloud.reset());
@@ -69,6 +70,34 @@ async function recordedCloud() {
 	cloud.setRuntimeApiKeyResolver(async () => "test-key");
 	return f;
 }
+
+it("releases replaced cloud bindings while a late recorded result retains its captured origin", async () => {
+	const { journals, session, pi, ctx } = await fixture();
+	registerCursorCloudLifecycleLedger(pi);
+	await pi.runSessionStart(ctx);
+	const work = new NativeSessionWork(session.origin);
+	let finish!: () => void;
+	const completion = new Promise<void>(resolve => { finish = resolve; });
+	await work.run(async () => {
+		const recorder = captureCursorCloudLifecycleRecorder(pi);
+		trackNativeSessionWork(completion.then(async () => {
+			expect(await recorder({ agentId, runId: "late-run" }, undefined)).toBe(true);
+		}));
+	});
+	await session.origin.release();
+	const next = await session.branch(null);
+	await pi.runBeforeAgentStart(ctx);
+	await pi.runSessionShutdown({}, ctx);
+	await next.release();
+	expect(() => next.view()).toThrow("closed");
+	expect(session.origin.view().id).toBe("native");
+	finish(); await work.settled;
+	expect(() => session.origin.view()).toThrow("closed");
+	expect(session.activeLeaf).toBeNull();
+	const rows = journals.contents.get("cloud")!.toString().trim().split("\n").map(line => JSON.parse(line));
+	expect(rows).toHaveLength(1);
+	expect(rows[0]).toMatchObject({ runId: "late-run", sessionId: "native", anchorEntryId: session.entries.at(-1)?.id });
+});
 
 it("retains cloud intent before mutation, records a late result only on its original branch, and never replays", async () => {
 	const { journals, session, pi, ctx } = await recordedCloud();

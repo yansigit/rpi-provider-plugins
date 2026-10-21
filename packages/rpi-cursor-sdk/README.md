@@ -67,5 +67,7 @@ The separate `runtime/` lock pins the integrated Pi 1.3.0 peers and external SDK
 1.0.37. It does not change the retained baseline lock. Build in `worker/`, run
 `npm ci --ignore-scripts --no-audit --no-fund` in `runtime/`, then run
 `node tests/stage-runtime.mjs` and `node --test tests/native-extension.mjs` from this
-directory to exercise the staged runtime. The native dispatcher, background
-session leases and installed-library loading still require integration.
+directory to exercise the staged runtime. Background session leases and late
+cloud/usage completion are covered by `tests/lifetime-evidence.json`. The native
+dispatcher must drain these leases before closing its host connection;
+installed-library loading still requires integration.
