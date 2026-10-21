@@ -8,7 +8,7 @@ use std::{
     sync::{Arc, Mutex},
     time::Duration,
 };
-use tokio::sync::OnceCell;
+use tokio::sync::{Notify, OnceCell};
 use tokio_util::sync::CancellationToken;
 
 pub struct Session {
@@ -17,6 +17,93 @@ pub struct Session {
     standing: Mutex<Option<Call>>,
     router: Arc<Router>,
     configured: OnceCell<()>,
+}
+
+/// Admission and draining for callbacks that can reenter the same worker.
+pub struct Owner {
+    state: Mutex<OwnedState>,
+    idle: Notify,
+    closed: OnceCell<Result<(), String>>,
+    signal: CancellationToken,
+}
+struct OwnedState {
+    session: Option<Arc<Session>>,
+    active: usize,
+}
+pub struct Invocation {
+    session: Option<Arc<Session>>,
+    pub signal: CancellationToken,
+    owner: Arc<Owner>,
+}
+impl Invocation {
+    pub fn session(&self) -> &Session {
+        self.session.as_deref().unwrap()
+    }
+}
+impl Drop for Invocation {
+    fn drop(&mut self) {
+        self.signal.cancel();
+        self.session.take();
+        let mut state = self.owner.state.lock().unwrap();
+        state.active -= 1;
+        if state.active == 0 {
+            self.owner.idle.notify_waiters();
+        }
+    }
+}
+impl Owner {
+    pub fn new(session: Session, signal: CancellationToken) -> Arc<Self> {
+        Arc::new(Self {
+            state: Mutex::new(OwnedState {
+                session: Some(Arc::new(session)),
+                active: 0,
+            }),
+            idle: Notify::new(),
+            closed: OnceCell::new(),
+            signal,
+        })
+    }
+    pub fn enter(self: &Arc<Self>) -> Result<Invocation, String> {
+        let mut state = self.state.lock().unwrap();
+        if self.signal.is_cancelled() {
+            return Err("Cursor runtime is shutting down".into());
+        }
+        let session = state.session.clone().ok_or("Cursor runtime is closed")?;
+        state.active += 1;
+        Ok(Invocation {
+            session: Some(session),
+            signal: self.signal.child_token(),
+            owner: self.clone(),
+        })
+    }
+    /// Await to completion: the retained callback/watcher owns cleanup through reaping.
+    pub async fn close(&self) -> Result<(), String> {
+        self.closed
+            .get_or_init(|| async {
+                self.signal.cancel();
+                let session = self.state.lock().unwrap().session.take();
+                loop {
+                    let idle = self.idle.notified();
+                    tokio::pin!(idle);
+                    idle.as_mut().enable();
+                    if self.state.lock().unwrap().active == 0 {
+                        break;
+                    }
+                    idle.await;
+                }
+                match session {
+                    Some(session) => {
+                        Arc::try_unwrap(session)
+                            .map_err(|_| "Cursor session retained after callback drain")?
+                            .close()
+                            .await
+                    }
+                    None => Ok(()),
+                }
+            })
+            .await
+            .clone()
+    }
 }
 impl Session {
     pub async fn open(

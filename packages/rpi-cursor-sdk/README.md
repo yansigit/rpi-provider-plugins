@@ -21,8 +21,8 @@ The [session boundary](SESSION-PORT.md) adds acknowledged snapshots and committe
 entry receipts, and propagates awaited persistence through the retained adapter.
 Its initial verification is recorded separately in `tests/session-evidence.json`.
 Native cloud/usage journals and cleanup durability are covered by
-`tests/journal-evidence.json`. Runtime wiring and history-authorized inherited
-journal reads remain in progress.
+`tests/journal-evidence.json`. Complete inherited-history and remote-mutation
+acceptance remains in progress.
 
 Reproduce the transport checks with Node 24+ and Rust 1.78:
 
@@ -43,8 +43,8 @@ Manual integration review and regression checks cover ordering, admission releas
 Provider auth and awaited catalog publication boundaries are covered by
 `tests/provider-ports-evidence.json`. They preserve the retained API-key login
 and host-selected account environment, and delay private catalog/cache updates
-until host acceptance. Complete ModelRuntime refresh orchestration, configuration
-recomposition, availability and native dispatcher wiring remain required.
+until host acceptance. Native startup refresh is wired; scoped child catalogs,
+configuration recomposition and full availability acceptance remain required.
 `tests/catalog-evidence.json` covers concurrent discovery: only publication waits
 for earlier acknowledgements, so a slow superseded fetch cannot block a newer
 refresh or dispatch using the current catalog. The host's
@@ -53,13 +53,13 @@ from invalidating a refresh and cancels superseded refreshes of the same provide
 
 The native directory boundary selects rpi-owned configuration, caches and SDK
 SQLite stores before adapter registration. Its real SDK store and retained Pi
-regressions are recorded in `tests/paths-evidence.json`; worker startup wiring
-and installation verification remain required.
+regressions are recorded in `tests/paths-evidence.json`. Worker startup and
+image-relative assets execute in the Linux DLL test; package installation remains required.
 
 Native stream replay maps owned Cursor results to the host recorded-tool path,
 including incomplete partial markers and cancellation-safe terminal results.
 `tests/replay-evidence.json` compares outcomes with the retained Pi replay wrapper.
-Native library integration and execution-count acceptance remain required.
+Complete execution-count acceptance through the native library remains required.
 
 The native factory boundary reuses Pi 1.3.0's ordered hook reducers, registers the
 retained commands and flags, and awaits host session appends. Both provider stream
@@ -74,16 +74,15 @@ The separate `runtime/` lock pins the integrated Pi 1.3.0 peers and external SDK
 `node tests/stage-runtime.mjs` and `node --test tests/native-extension.mjs` from this
 directory to exercise the staged runtime. Background session leases and late
 cloud/usage completion are covered by `tests/lifetime-evidence.json`. The native
-dispatcher must drain these leases before closing its host connection;
-installed-library loading still requires integration.
+dispatcher drains these leases before closing its host connection.
 
 The worker entry is `runtime/main.mjs`, outside the retained Pi loader graph. It
 sets rpi-owned paths before importing the adapter, then keeps a standing private
 IPC call open while provider results and late session work have different
 lifetimes. The dispatcher runs the retained factory, auth, catalog, hooks,
 commands and skill/question tools. The Rust transport installs each supplied
-invocation callback before sending its request. The native DLL must retain and
-route the dispatcher's origin bindings until acknowledged release. Presentation
+invocation callback before sending its request. The native DLL retains and
+routes the dispatcher's origin bindings until acknowledged release. Presentation
 effects are acknowledged, while session writes and journals
 continue using their explicitly awaited persistence ports.
 
@@ -93,8 +92,8 @@ responses. It covers reentrant startup catalog publication, awaited command
 persistence, API-key login, both provider stream entries, and origin cleanup.
 `worker/test/rpi/context.test.ts` checks private-auth conversion, dialog controls
 and acknowledgement failures. These are offline process-boundary checks. The
-native DLL dispatcher, complete host event/tool translation, per-child worker
-ownership, installation and live Cursor acceptance remain required.
+complete host event/tool translation, installation and live Cursor acceptance
+remain required. DLL dispatch and per-child ownership are checked separately below.
 
 `src/native_host.rs` now supplies the Rust origin router used by the dispatcher.
 An invocation installs its captured native context before the worker can call
@@ -118,9 +117,9 @@ shutdown. Stream delivery runs on the foreign callback thread while IPC reads
 continue on the provider runtime. Rejected emissions cancel and drain the call.
 `tests/runtime-evidence.json` records real Node startup/auth/shutdown and a
 blocked-emission test that still completes host callbacks, replies and cancellation.
-`src/installed.rs` resolves assets beside the loaded module; installation and
-actual DLL registration remain pending. The image resolver has executed on Linux
-only.
+`src/installed.rs` resolves assets beside the loaded module; staged assets and
+actual DLL registration are now checked on Linux as described below. Package
+installation and macOS/Windows image resolution remain unverified.
 
 Native context snapshots require `context.trustProvenance`. Cursor project trust
 uses both the effective decision and its explicit CLI/stored-decision provenance;
@@ -128,3 +127,19 @@ rpi default resource loading alone does not authorize project configuration.
 The retained Pi trust path remains unchanged. `tests/trust-evidence.json` records
 1,701 passing retained tests, two existing skips, the native trust boundary checks,
 type/build/package checks and a real packaged dispatcher run.
+
+The native library now registers the retained provider, API-key authentication,
+catalog refresh, ten commands, flags, result hooks and executable skill/question
+tools. Each owning session has a persistent Node worker; child scope leases keep
+the library alive until cancellation, admitted callback drain and worker reaping
+finish. Tool handles retain a single progress item and separate completion, wake
+the host when ready, and join their callback thread on destruction.
+
+`tests/native-registration-evidence.json` records real Linux library loading from
+a staged directory and production host callbacks: login continuation, offline
+startup catalog reentry, committed command entries, a question-tool error through
+the harness, a separate child worker reaped without stopping its parent, and both
+stream entries with replacement credentials that cannot restore an ambient key.
+This does not test Cursor inference. Lifecycle payload parity, full tool metadata,
+child catalog publication, fake-SDK feature acceptance, imports, distribution,
+macOS/Windows loading and bounded live local/cloud acceptance remain required.

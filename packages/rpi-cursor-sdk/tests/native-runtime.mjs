@@ -93,6 +93,11 @@ test("packaged dispatcher runs retained hooks, auth, commands and both streams t
 	await begin("runtime.configure", {}).result();
 	await begin("extension.event", { event: { type: "session_start", reason: "startup" } }).result();
 	assert(revision > 0, "catalog refresh must reenter the worker while session_start awaits its host call");
+	for (let index = 0; index < 70; index++) {
+		operation = { operationId: `info-${index}`, purpose: "session_info_changed" };
+		await begin("extension.event", { event: { type: "session_info_changed", name: `name-${index}` } }).result();
+	}
+	operation = null;
 	const login = await begin("provider.auth", { action: "login", input: { methodId: "api_key" } }).result();
 	assert.equal(login.kind, "interaction");
 	let release; appendGate = new Promise(resolve => { release = resolve; });

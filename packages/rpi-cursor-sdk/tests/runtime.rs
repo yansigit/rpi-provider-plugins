@@ -1,6 +1,6 @@
 use rpi_cursor_sdk::{
     native_host::Router,
-    runtime::{drive, Session},
+    runtime::{drive, Owner, Session},
     worker::{HostHandler, WorkerConfig},
 };
 use serde_json::json;
@@ -108,4 +108,41 @@ async fn failed_runtime_bootstrap_returns_the_adapter_error_and_reaps_the_worker
         .err()
         .unwrap()
         .contains("Invalid native Cursor locations"));
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires Node 24+ and built/staged packaged runtime"]
+async fn closing_waits_for_reentrant_callbacks_and_does_not_close_another_owner() {
+    let directory = Directory::new();
+    let mut owners = Vec::new();
+    for name in ["parent", "child"] {
+        let session = Session::open(directory.config(), json!({"cwd":directory.0,"agentDir":directory.0.join(name),"sessionDir":directory.0.join("sessions")}), Arc::new(Router::default())).await.unwrap();
+        owners.push(Owner::new(session, CancellationToken::new()));
+    }
+    let child = owners.pop().unwrap();
+    let parent = owners.pop().unwrap();
+    let outer = child.enter().unwrap();
+    let reentrant = child.enter().unwrap();
+    let closing = tokio::spawn({
+        let child = child.clone();
+        async move { child.close().await }
+    });
+    outer.signal.cancelled().await;
+    assert!(reentrant.signal.is_cancelled());
+    assert!(child.enter().is_err());
+    assert!(!closing.is_finished());
+    drop(outer);
+    assert!(!closing.is_finished());
+    drop(reentrant);
+    tokio::time::timeout(std::time::Duration::from_secs(10), closing)
+        .await
+        .unwrap()
+        .unwrap()
+        .unwrap();
+    child.close().await.unwrap();
+    let retained = parent.enter().unwrap();
+    assert!(!retained.signal.is_cancelled());
+    assert_eq!(retained.session().manifest["provider"]["id"], "cursor");
+    drop(retained);
+    parent.close().await.unwrap();
 }

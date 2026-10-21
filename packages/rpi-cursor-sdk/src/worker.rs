@@ -18,6 +18,7 @@ use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
 use wire::{Body, CAPACITY, MAX_CALLS, MAX_FRAME, PAYLOAD_BYTES};
 
+#[derive(Clone)]
 pub struct WorkerConfig {
     pub node: PathBuf,
     pub entry: PathBuf,

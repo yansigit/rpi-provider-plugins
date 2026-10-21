@@ -122,7 +122,7 @@ export class NativeCursorRuntime {
 		try {
 			if (origin.view().id !== snapshot.sessionId) throw new Error("Native context and session capture disagree");
 			let controller: AbortController | undefined;
-			if (snapshot.identity) {
+			if (snapshot.identity && ["prompt", "compaction", "tree"].includes(snapshot.identity.purpose)) {
 				controller = this.operations.get(snapshot.identity.operationId);
 				if (!controller) {
 					if (this.operations.size >= 64) throw new Error("Native Cursor operation capacity exhausted");

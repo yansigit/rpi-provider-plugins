@@ -1,0 +1,77 @@
+{
+  "status": "Linux native registration and owned runtime verified; full parity remains in progress",
+  "hostSdkCommit": "d1d612fd461ce1bf1753329f1465a7ee656667ef",
+  "platform": "Linux",
+  "node": "24.22.0",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "checks": {
+    "rustPackageAndOptIn": {
+      "log": "/tmp/rpi-cursor-native-final-all.log",
+      "sha256": "0e0bc99e9fd5ab962f843feba24563fdca7d224131036a7bdc63cb5107145aca",
+      "passed": 34
+    },
+    "linuxNativeLibrary": {
+      "log": "/tmp/rpi-cursor-native-dll-host.log",
+      "sha256": "d368d3d4275fe9fb8060d5d131fcb5ebb35d6d3840b63c0a0f6e9792c3f69dd3",
+      "passed": 1
+    },
+    "retainedSuite": {
+      "log": "/tmp/rpi-cursor-native-registration-suite.log",
+      "sha256": "cf77591e5864f0e0bd7a8ddf23266a2759954f925cccece61a3a256019d88e47",
+      "passed": 1701,
+      "skipped": 2
+    },
+    "packagedDispatcher": {
+      "log": "/tmp/rpi-cursor-native-registration-process.log",
+      "sha256": "55a51e962478d247c2ac8c36a4b97d53965bd497c78bce6bd2bbeedc6ab18de7",
+      "passed": 1
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-native-registration-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-native-registration-node-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    "stage": {
+      "log": "/tmp/rpi-cursor-native-registration-stage.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    "package": {
+      "log": "/tmp/rpi-cursor-native-final-pack.log",
+      "sha256": "f332ae4ea42580187c7d1b8bee155c34ef55ca335647a6be8346bf0d456ecec3"
+    },
+    "hostWorkspace": {
+      "log": "/tmp/rpi-cursor-native-final-host.log",
+      "sha256": "273a31dd75a6a1355e9bf47aaf7b57563b730d23555deeddef1bedc92418a3b7"
+    }
+  },
+  "nativeAssertions": [
+    "Actual cdylib loaded from staged installed directory; assets resolved relative to that image",
+    "Ten commands, flags, API-key continuation and reentrant offline catalog startup",
+    "Command custom entries committed to JSONL; question tool dispatched through harness with original no-UI error",
+    "Fresh child Node process; child shutdown reaps it and releases scope lease while parent remains usable",
+    "Both stream entries with empty replacement credentials reject ambient worker key; no inference sent",
+    "Session shutdown drains native writes and worker cleanup"
+  ],
+  "review": {
+    "kind": "Manual deep maintainability review of complete native registration, runtime ownership, wake-driven tools, worker operation retention, tests, SDK pin and docs",
+    "resolved": [
+      "Preserve callback and library ownership through tool destruction and child shutdown",
+      "Drop invocation session reference before notifying cleanup; close remaining children after watcher failure",
+      "Keep bounded progress cancellation independent from IPC reader",
+      "Release one-shot lifecycle identities instead of exhausting persistent operation capacity",
+      "Clarify actual initialization errors and correct stale documentation",
+      "Cleanup futures are retained and awaited through reaping by foreign callbacks or child watchers"
+    ]
+  },
+  "notTested": [
+    "Full event payload and tool metadata parity",
+    "Scoped child dynamic catalog publication",
+    "Complete fake-SDK local, continuity, tools, usage, cleanup and cloud acceptance",
+    "Imports and package installer distribution",
+    "macOS and Windows native loading",
+    "Cursor live local and cloud acceptance"
+  ]
+}
