@@ -91,6 +91,115 @@ async fn fsync_failure_subprocess() {
             *case
         );
     }
+    credential_slot_fsync_boundaries();
+}
+
+fn credential_slot_fsync_boundaries() {
+    use rpi_antigravity_auth::vault::slot::{Error, Slot, Step};
+    use sha2::{Digest, Sha256};
+    use std::sync::Mutex;
+    let fixture: Value =
+        serde_json::from_str(include_str!("fixtures/vault-slot-fsync.json")).unwrap();
+    for case in fixture["cases"].as_array().unwrap() {
+        let boundary = case["boundary"].as_str().unwrap();
+        let scratch =
+            Scratch(std::env::temp_dir().join(format!("rpi-slot-fsync-{}", uuid::Uuid::new_v4())));
+        fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&scratch.0)
+            .unwrap();
+        let auth_dir = scratch.0.join("auth-dir");
+        let vault_dir = scratch.0.join("vault");
+        for dir in [&auth_dir, &vault_dir] {
+            fs::DirBuilder::new().mode(0o700).create(dir).unwrap();
+        }
+        let auth = auth_dir.join("auth.json");
+        let stash = vault_dir.join("stash.json");
+        fs::write(
+            &auth,
+            "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        )
+        .unwrap();
+        fs::set_permissions(&auth, fs::Permissions::from_mode(0o600)).unwrap();
+        let hash: String = Sha256::digest(json!(auth).to_string().as_bytes())
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect();
+        let events = Arc::new(Mutex::new(Vec::<String>::new()));
+        let observed = events.clone();
+        let slot = Slot::new(&auth, &stash, "google", "antigravity-vault-custody")
+            .unwrap()
+            .with_hook(Arc::new(move |step, _| {
+                let name = match step {
+                    Step::StashWritten => Some("stash-written"),
+                    Step::AuthWritten => Some("auth-written"),
+                    Step::StashDeleted => Some("stash-deleted"),
+                    _ => None,
+                };
+                if let Some(name) = name {
+                    observed.lock().unwrap().push(name.into());
+                }
+                Ok(())
+            }));
+        std::env::set_var("RPI_FSYNC_FAILURE_MATCH", "__disabled__");
+        if boundary == "delete-directory" {
+            slot.enter().unwrap();
+        }
+        std::env::set_var(
+            "RPI_FSYNC_FAILURE_MATCH",
+            match boundary {
+                "stash-file" => "stash.json.",
+                "auth-file" => "auth.json.",
+                "auth-directory" => auth_dir.to_str().unwrap(),
+                _ => vault_dir.to_str().unwrap(),
+            },
+        );
+        std::env::set_var(
+            "RPI_FSYNC_FAILURE_KIND",
+            if boundary.ends_with("directory") {
+                "directory"
+            } else {
+                "file"
+            },
+        );
+        let capture = |result: Result<Value, Error>| {
+            let outcome = match result {
+                Ok(value) => json!({"value":value}),
+                Err(Error::Slot(code)) => {
+                    json!({"error":{"name":"PiSlotError","code":code,"message":format!("Pi slot: {code}")}})
+                }
+                Err(error) => panic!("{error}"),
+            };
+            let read = |path: &PathBuf| {
+                fs::read_to_string(path)
+                    .map(|text| json!(text.replace(&hash, "<auth-identity>")))
+                    .unwrap_or(Value::Null)
+            };
+            let files = |path: &PathBuf| {
+                let mut files: Vec<_> = fs::read_dir(path)
+                    .unwrap()
+                    .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+                    .collect();
+                files.sort();
+                files
+            };
+            json!({"outcome":outcome,"events":*events.lock().unwrap(),"auth":read(&auth),"stash":read(&stash),"authFiles":files(&auth_dir),"vaultFiles":files(&vault_dir)})
+        };
+        let failed = capture(if boundary == "delete-directory" {
+            slot.exit().map(|result| json!(result))
+        } else {
+            slot.enter().map(|()| Value::Null)
+        });
+        assert_eq!(failed, case["failed"], "{boundary}");
+        std::env::set_var("RPI_FSYNC_FAILURE_MATCH", "__disabled__");
+        let recovered = capture((|| {
+            if boundary != "delete-directory" {
+                slot.enter()?;
+            }
+            slot.exit().map(|result| json!(result))
+        })());
+        assert_eq!(recovered, case["recovered"], "{boundary}");
+    }
 }
 #[test]
 fn failed_fsync_matches_original_without_acknowledging_or_leaking_staged_credentials() {

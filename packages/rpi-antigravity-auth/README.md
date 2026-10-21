@@ -180,3 +180,20 @@ compatibility changes. The Rust Subc client preserves response representation
 flags and can suppress inherited supervisor identity without changing process
 environment. Its enrolled-call options preserve the pinned TypeScript response
 timeout and module-reloading retry policy; other callers retain existing defaults.
+
+The custody slot primitive now preserves the original credential bytes, writes
+and synchronizes its private backup before the marker, and restores only a
+matching marker or the already-restored original entry. It retains conflicts and
+ambiguous backups for recovery. `vault-slot-reference.ts` captures 66 original
+scenarios; `vault-slot-fsync-reference.ts` uses the scoped preload fixture to
+capture failures before and after publication, including directory synchronization.
+The Linux differential tests match all 71 scenarios; Windows code cross-checks
+on Rust 1.78 but has not executed on Windows.
+
+The primitive must run inside the host's `auth.credentialStoreLock` callback.
+That callback uses the native login/refresh file lock, retains it through admitted
+writes after cancellation, and cannot select another provider's path. The original
+Pi mkdir/mtime lock is not used on native rpi's lock file. Its lease-specific timing
+and compromise cases still need qualification at this native integration boundary;
+these results do not declare A07 or vault startup complete. Malformed numeric JSON,
+lone-surrogate JSON strings and filesystem close failures also remain unqualified.

@@ -1,0 +1,197 @@
+{
+  "runtime": "v24.22.0",
+  "platform": "linux",
+  "cases": [
+    {
+      "boundary": "stash-file",
+      "failed": {
+        "outcome": {
+          "error": {
+            "name": "PiSlotError",
+            "code": "io",
+            "message": "Pi slot: io"
+          }
+        },
+        "events": [],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": null,
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": []
+      },
+      "recovered": {
+        "outcome": {
+          "value": "restored"
+        },
+        "events": [
+          "stash-written",
+          "auth-written",
+          "auth-written",
+          "stash-deleted"
+        ],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": null,
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": []
+      }
+    },
+    {
+      "boundary": "stash-directory",
+      "failed": {
+        "outcome": {
+          "error": {
+            "name": "PiSlotError",
+            "code": "io",
+            "message": "Pi slot: io"
+          }
+        },
+        "events": [],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}",
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": [
+          "stash.json"
+        ]
+      },
+      "recovered": {
+        "outcome": {
+          "value": "restored"
+        },
+        "events": [
+          "auth-written",
+          "auth-written",
+          "stash-deleted"
+        ],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": null,
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": []
+      }
+    },
+    {
+      "boundary": "auth-file",
+      "failed": {
+        "outcome": {
+          "error": {
+            "name": "PiSlotError",
+            "code": "io",
+            "message": "Pi slot: io"
+          }
+        },
+        "events": [
+          "stash-written"
+        ],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}",
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": [
+          "stash.json"
+        ]
+      },
+      "recovered": {
+        "outcome": {
+          "value": "restored"
+        },
+        "events": [
+          "stash-written",
+          "auth-written",
+          "auth-written",
+          "stash-deleted"
+        ],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": null,
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": []
+      }
+    },
+    {
+      "boundary": "auth-directory",
+      "failed": {
+        "outcome": {
+          "error": {
+            "name": "PiSlotError",
+            "code": "io",
+            "message": "Pi slot: io"
+          }
+        },
+        "events": [
+          "stash-written"
+        ],
+        "auth": "{ \"google\" : {\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"}, \"other\": {} }\n",
+        "stash": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{ \\\"key\\\": \\\"fixture-original\\\" }\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}",
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": [
+          "stash.json"
+        ]
+      },
+      "recovered": {
+        "outcome": {
+          "value": "restored"
+        },
+        "events": [
+          "stash-written",
+          "auth-written",
+          "stash-deleted"
+        ],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": null,
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": []
+      }
+    },
+    {
+      "boundary": "delete-directory",
+      "failed": {
+        "outcome": {
+          "error": {
+            "name": "PiSlotError",
+            "code": "io",
+            "message": "Pi slot: io"
+          }
+        },
+        "events": [
+          "stash-written",
+          "auth-written",
+          "auth-written"
+        ],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": null,
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": []
+      },
+      "recovered": {
+        "outcome": {
+          "value": "nothing-to-do"
+        },
+        "events": [
+          "stash-written",
+          "auth-written",
+          "auth-written"
+        ],
+        "auth": "{ \"google\" : { \"key\": \"fixture-original\" }, \"other\": {} }\n",
+        "stash": null,
+        "authFiles": [
+          "auth.json"
+        ],
+        "vaultFiles": []
+      }
+    }
+  ]
+}

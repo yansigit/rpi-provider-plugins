@@ -403,5 +403,42 @@
       "linuxRegressionTests": 46,
       "windowsTransportTestCompilation": "Retained subc-os library and tests cross-check on Rust 1.78 with -Dwarnings; execution pending"
     }
+  },
+  "credentialSlot": {
+    "status": "primitive-verified-native-integration-pending",
+    "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+    "fixtures": [
+      {
+        "fixture": "vault-slot.json",
+        "sha256": "293c7c9af5a9719831cbd58b29d7bb2ff071465dcb587f946dd5606561f44528",
+        "scenarios": 66
+      },
+      {
+        "fixture": "vault-slot-fsync.json",
+        "sha256": "0aa9bd531ef91392d8e4326e06f72d291232582374ccad36b862202b37571c6d",
+        "scenarios": 5
+      }
+    ],
+    "linuxRegression": {
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "log": "/tmp/rpi-slot-package-regression.log",
+      "sha256": "568ea7955633d372daa2fe17291d511008774206ed85ae5a0888e3d0beea3329",
+      "passed": 47,
+      "failed": 0
+    },
+    "windowsCrossCheck": {
+      "target": "x86_64-pc-windows-gnu",
+      "log": "/tmp/rpi-slot-windows-check.log",
+      "sha256": "36c3b7fe3e1192a23caba971d1bcbc3052aea949fa9b6aad23f61c71fb1d5542",
+      "execution": "not tested"
+    },
+    "pending": [
+      "native startup/custody wiring",
+      "Pi lease timing and compromise qualification against native kernel lock",
+      "full malformed JSON and close-error behavior",
+      "macOS and Windows execution",
+      "live enrolled vault acceptance"
+    ]
   }
 }

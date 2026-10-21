@@ -12,3 +12,4 @@ pub mod ceremony;
 pub mod file_lease;
 pub mod file_store;
 pub mod private;
+pub mod slot;
