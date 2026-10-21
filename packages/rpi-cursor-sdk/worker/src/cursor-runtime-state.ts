@@ -237,15 +237,15 @@ export function restoreCursorCliState(pi: Pick<ExtensionAPI, "getFlag">, scopeKe
 	cli.cloudEnvNames = cloudEnvNames;
 }
 
-function persistCursorRuntimePreference(
+async function persistCursorRuntimePreference(
 	pi: Pick<ExtensionAPI, "appendEntry">,
 	runtime: CursorRuntime,
 	cloudAcknowledged: boolean,
 	scopeKey: string | undefined,
-): void {
+): Promise<void> {
 	const state = getCursorSessionSettings(scopeKey);
 	const acknowledged = state.cloudAcknowledged || cloudAcknowledged;
-	pi.appendEntry<CursorRuntimeEntryData>(CURSOR_RUNTIME_ENTRY_TYPE, {
+	await pi.appendEntry<CursorRuntimeEntryData>(CURSOR_RUNTIME_ENTRY_TYPE, {
 		runtime,
 		...(acknowledged ? { cloudAcknowledged: true } : {}),
 	});
@@ -438,7 +438,7 @@ function registerCursorRuntimeCommand(
 				}
 			}
 			try {
-				persistCursorRuntimePreference(pi, raw, cloudAcknowledged, scopeKey);
+				await persistCursorRuntimePreference(pi, raw, cloudAcknowledged, scopeKey);
 			} catch (error) {
 				const effectiveResolution = resolveCursorStatusRuntime(ctx);
 				refreshStatus(ctx);

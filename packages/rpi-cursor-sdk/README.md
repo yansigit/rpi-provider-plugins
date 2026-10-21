@@ -15,7 +15,14 @@ Host calls never use stdout/stderr. The worker transport uses a dedicated loopba
 
 The retained upstream README and development documents describe the original Pi host. Native installation and behavior are documented here as each boundary is implemented. Existing Pi Cursor agents, SDK stores and cloud management authority are never adopted implicitly.
 
-Current checks are recorded in `tests/worker-evidence.json`. Reproduce the transport checks with Node 24+ and Rust 1.78:
+Transport checks are recorded in `tests/worker-evidence.json`.
+
+The [session boundary](SESSION-PORT.md) adds acknowledged snapshots and committed
+entry receipts, and propagates awaited persistence through the retained adapter.
+Its verification is recorded separately in `tests/session-evidence.json`; complete
+runtime wiring and file-journal ports remain in progress.
+
+Reproduce the transport checks with Node 24+ and Rust 1.78:
 
 ```sh
 cd worker

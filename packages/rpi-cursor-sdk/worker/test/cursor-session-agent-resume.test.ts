@@ -46,6 +46,26 @@ describe("cursor-session-agent-resume", () => {
 		vi.clearAllMocks();
 	});
 
+	it("does not activate a late resume acknowledgement after branch navigation", async () => {
+		const pi = createPiHarness();
+		registerCursorSessionScope(pi);
+		registerCursorSessionAgentResume(pi);
+		await pi.runSessionStart();
+		persistCursorSessionAgentResumeHandle({ runtime: "local", agentId: "agent-1", poolKey: "pool-1",
+			sendState: { bootstrapped: true, contextFingerprint: "fp", incrementalSendCount: 0 },
+			storeIdentity: { version: 1, stateRoot: "/tmp/store" },
+		});
+		let acknowledge!: () => void;
+		pi.appendEntry.mockImplementationOnce(() => new Promise<void>(resolve => { acknowledge = resolve; }));
+		const pending = pi.runTurnEnd();
+		await vi.waitFor(() => expect(pi.appendEntry).toHaveBeenCalledTimes(1));
+		expect(resumeTestUtils.state.activeHandle).toBeUndefined();
+		await pi.invokeEvent("session_tree", { type: "session_tree", oldLeafId: null, newLeafId: null });
+		acknowledge();
+		await pending;
+		expect(resumeTestUtils.state.activeHandle).toBeUndefined();
+	});
+
 	it("rejects non-local and malformed agent IDs in persisted resume records", () => {
 		const valid = {
 			version: 1,

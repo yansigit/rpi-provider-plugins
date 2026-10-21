@@ -116,8 +116,8 @@ describe("owned session snapshots and cleanup", () => {
 		const recorder = captureCursorCloudLifecycleRecorder(a);
 		const b = binding(); registerCursorCloudLifecycleLedger(b); await start(b, scopeB);
 		const agentId = "bc-00000000-0000-0000-0000-000000000234";
-		expect(recorder({ agentId }, "test-key")).toBe(true);
-		expect(recorder({ agentId, runId: "run-parent", branches: [{ repoUrl: "https://github.com/example/repo", branch: "parent-branch" }] }, "test-key")).toBe(true);
+		expect(await recorder({ agentId }, "test-key")).toBe(true);
+		expect(await recorder({ agentId, runId: "run-parent", branches: [{ repoUrl: "https://github.com/example/repo", branch: "parent-branch" }] }, "test-key")).toBe(true);
 		expect(a.appendEntry).toHaveBeenCalledTimes(2);
 		expect(a.appendEntry).toHaveBeenLastCalledWith("cursor-cloud-lifecycle", expect.objectContaining({ agentId, runId: "run-parent", branches: [{ branch: "parent-branch" }] }));
 		expect(b.appendEntry).not.toHaveBeenCalled();

@@ -39,6 +39,7 @@ let state: CursorSessionAgentLineageState = {
 };
 
 const statesByScope = new Map<string, CursorSessionAgentLineageState>();
+const pendingBySession = new WeakMap<Set<string>, Map<string, Promise<void>>>();
 
 export function parseCursorSessionAgentLineageEntryData(value: unknown): CursorSessionAgentLineageEntryData | undefined {
 	const record = asRecord(value);
@@ -80,7 +81,7 @@ function readRecordedAgentIds(entries: readonly SessionEntry[], sessionId: strin
 }
 
 /** Best-effort forensic lineage at the local Agent.send() boundary. Independent of resume. */
-export function recordCursorSessionAgentLineage(agentId: string, turnScopeKey?: string): void {
+export async function recordCursorSessionAgentLineage(agentId: string, turnScopeKey?: string): Promise<void> {
 	const sessionState = turnScopeKey === undefined
 		? state
 		: statesByScope.get(turnScopeKey) ?? ((state.runtimeScopeKey ?? state.scopeKey) === turnScopeKey ? state : undefined);
@@ -88,6 +89,10 @@ export function recordCursorSessionAgentLineage(agentId: string, turnScopeKey?: 
 	const { appendEntry, sessionId, sessionFile, scopeKey, cwd } = sessionState;
 	if (!appendEntry || !sessionId || !scopeKey || !cwd) return;
 	if (!isCursorLocalAgentId(agentId) || sessionState.recordedAgentIds.has(agentId)) return;
+	const recordedAgentIds = sessionState.recordedAgentIds;
+	let pending = pendingBySession.get(recordedAgentIds);
+	if (!pending) { pending = new Map(); pendingBySession.set(recordedAgentIds, pending); }
+	if (pending.has(agentId)) return pending.get(agentId);
 	const data: CursorSessionAgentLineageEntryData = {
 		version: LINEAGE_ENTRY_VERSION,
 		runtime: "local",
@@ -98,12 +103,17 @@ export function recordCursorSessionAgentLineage(agentId: string, turnScopeKey?: 
 		cwd,
 		timestamp: new Date().toISOString(),
 	};
-	try {
-		appendEntry<CursorSessionAgentLineageEntryData>(CURSOR_SESSION_AGENT_LINEAGE_ENTRY_TYPE, data);
-		sessionState.recordedAgentIds.add(agentId);
-	} catch {
-		// Lineage is forensic metadata; a failed stock pi append must not affect the session.
-	}
+	const write = (async () => {
+		try {
+			await appendEntry<CursorSessionAgentLineageEntryData>(CURSOR_SESSION_AGENT_LINEAGE_ENTRY_TYPE, data);
+			// A late acknowledgement belongs to the captured session's set.
+			recordedAgentIds.add(agentId);
+		} catch {
+			// Lineage is forensic metadata; a failed append must not affect the session.
+		}
+	})();
+	pending.set(agentId, write);
+	try { await write; } finally { pending.delete(agentId); }
 }
 
 interface CursorSessionAgentLineageExtensionApi {

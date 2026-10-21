@@ -59,6 +59,7 @@ interface PendingCursorSessionAgentResumeHandle {
 }
 
 interface CursorSessionResumeState {
+	revision: number;
 	appendEntry?: ExtensionAPI["appendEntry"];
 	runtimeScopeKey?: string;
 	scopeKey: string;
@@ -75,6 +76,7 @@ interface CursorSessionResumeState {
 }
 
 let lastBoundState: CursorSessionResumeState = {
+	revision: 0,
 	scopeKey: getCursorSessionScopeKey(),
 	cwd: process.cwd(),
 	branchPathHash: EMPTY_BRANCH_HASH,
@@ -337,6 +339,7 @@ function canRestoreHandleSpanEntry(entry: SessionEntry, state: CursorSessionResu
 }
 
 function restoreFromBranch(branch: readonly SessionEntry[], allEntries: readonly SessionEntry[], state: CursorSessionResumeState): void {
+	state.revision++;
 	const resumeIndex = indexLatestResumeEntries(allEntries);
 	let fold: ResumeBranchFoldState = { branchPathHash: EMPTY_BRANCH_HASH, compactionGeneration: 0 };
 	let lastBranchHandle: CursorSessionAgentResumeEntryData | undefined;
@@ -385,7 +388,7 @@ export function persistCursorSessionAgentResumeHandle(input: PendingCursorSessio
 	};
 }
 
-function flushPendingCursorSessionAgentResumeHandle(branch: readonly SessionEntry[], state: CursorSessionResumeState): void {
+async function flushPendingCursorSessionAgentResumeHandle(branch: readonly SessionEntry[], state: CursorSessionResumeState): Promise<void> {
 	restoreFromBranch(branch, branch, state);
 	const pending = state.pendingHandle;
 	state.pendingHandle = undefined;
@@ -415,8 +418,9 @@ function flushPendingCursorSessionAgentResumeHandle(branch: readonly SessionEntr
 		...(cleanupCandidates ? { cleanupCandidates } : {}),
 	};
 	try {
-		state.appendEntry<CursorSessionAgentResumeEntryData>(CURSOR_SESSION_AGENT_RESUME_ENTRY_TYPE, data);
-		state.activeHandle = data;
+		const revision = state.revision;
+		await state.appendEntry<CursorSessionAgentResumeEntryData>(CURSOR_SESSION_AGENT_RESUME_ENTRY_TYPE, data);
+		if (state.revision === revision) state.activeHandle = data;
 	} catch {
 		// Resume persistence is an optimization; a failed custom-entry append must not fail the completed turn.
 	}
@@ -430,6 +434,7 @@ interface CursorSessionAgentResumeExtensionApi {
 export function registerCursorSessionAgentResume(pi: CursorSessionAgentResumeExtensionApi): void {
 	const scope = getCursorSessionScopeSnapshot(pi);
 	const sessionState: CursorSessionResumeState = {
+		revision: 0,
 		appendEntry: pi.appendEntry, scopeKey: scope.persistentScopeKey ?? scope.scopeKey,
 		cwd: process.cwd(), branchPathHash: EMPTY_BRANCH_HASH,
 		compactionGeneration: 0, unownedUserEntryIds: new Set(),
@@ -459,8 +464,8 @@ export function registerCursorSessionAgentResume(pi: CursorSessionAgentResumeExt
 	pi.on("before_agent_start", (_event, ctx) => {
 		restoreFromSessionManager(ctx.sessionManager);
 	});
-	pi.on("turn_end", (_event, ctx) => {
-		flushPendingCursorSessionAgentResumeHandle(ctx.sessionManager.getBranch(), state);
+	pi.on("turn_end", async (_event, ctx) => {
+		await flushPendingCursorSessionAgentResumeHandle(ctx.sessionManager.getBranch(), state);
 	});
 	pi.on("session_tree", (_event, ctx) => {
 		for (const entry of ctx.sessionManager.getBranch()) {
@@ -469,12 +474,15 @@ export function registerCursorSessionAgentResume(pi: CursorSessionAgentResumeExt
 		restoreFromSessionManager(ctx.sessionManager);
 	});
 	pi.on("session_before_compact", () => {
+		state.revision++;
 		state.pendingHandle = undefined;
 	});
 	pi.on("session_compact_failed", () => {
+		state.revision++;
 		state.pendingHandle = undefined;
 	});
 	pi.on("session_compact", (event, ctx) => {
+		state.revision++;
 		state.pendingHandle = undefined;
 		const branch = ctx.sessionManager.getBranch();
 		if (branch.length > 0) {
@@ -487,6 +495,7 @@ export function registerCursorSessionAgentResume(pi: CursorSessionAgentResumeExt
 		state.branchPathHash = hashBranchStep(state.branchPathHash, event.compactionEntry);
 	});
 	pi.on("session_shutdown", () => {
+		state.revision++;
 		const key = state.runtimeScopeKey ?? state.scopeKey;
 		if (statesByScope.get(key) === state) statesByScope.delete(key);
 		state.appendEntry = undefined;
@@ -500,6 +509,7 @@ function setStateForTests(next: Partial<CursorSessionResumeState>): void {
 
 function resetStateForTests(): void {
 	const state = lastBoundState;
+	state.revision++;
 	state.appendEntry = undefined;
 	state.scopeKey = getCursorSessionScopeKey();
 	state.runtimeScopeKey = undefined;

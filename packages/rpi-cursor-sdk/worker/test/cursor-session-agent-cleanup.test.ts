@@ -508,6 +508,28 @@ describe("cursor-session-agent-cleanup", () => {
 		expect(ctx.ui.notify).toHaveBeenCalledWith(expect.stringContaining("No agents were deleted"), "error");
 	});
 
+	it.each([false, true])("waits for the intent acknowledgement before deletion; failure=%s", async (fails) => {
+		const entries = linearEntries([resumeEntry("r1", resumeData("agent-old")),
+			resumeEntry("r2", resumeData("agent-active", { cleanupCandidateAgentIds: ["agent-old"] }))]);
+		let acknowledge!: () => void;
+		const appendEntry = vi.fn(async (_type: string, value?: unknown) => {
+			const data = value as CursorSessionAgentCleanupEntryData;
+			if (data.phase === "intent") {
+				await new Promise<void>(resolve => { acknowledge = resolve; });
+				if (fails) throw new Error("durability failed");
+			}
+			entries.push(cleanupEntry(`cleanup-${entries.length}`, data, entries.at(-1)?.id));
+		});
+		const deleteAgent = vi.fn().mockResolvedValue(undefined);
+		cleanupTestUtils.setSdkOperations({ delete: deleteAgent });
+		const pending = runCursorSessionAgentCleanupCommand({ appendEntry }, "--yes", makeContext(entries));
+		await Promise.resolve();
+		expect(deleteAgent).not.toHaveBeenCalled();
+		acknowledge();
+		await pending;
+		expect(deleteAgent).toHaveBeenCalledTimes(fails ? 0 : 1);
+	});
+
 	it("keeps a durable intent when result append fails after a delete", async () => {
 		const entries = linearEntries([resumeEntry("r1", resumeData("agent-old")), resumeEntry("r2", resumeData("agent-active", { cleanupCandidateAgentIds: ["agent-old"] }))]);
 		const appendEntry = vi.fn((_type: string, value?: unknown) => {

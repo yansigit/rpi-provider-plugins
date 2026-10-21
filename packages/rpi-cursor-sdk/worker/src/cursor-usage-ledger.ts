@@ -29,7 +29,7 @@ export interface CursorUsageStart {
 	newlyCreated: boolean;
 }
 export interface CursorUsageTurnRecorder {
-	observeRawTurn(usage: unknown): void;
+	observeRawTurn(usage: unknown): void | Promise<void>;
 	recordRun(ids: { runId?: string; requestId?: string }): Promise<void>;
 	recordTerminal(result: { status: "success" | "error" | "abort" | "abandon"; waitUsage?: unknown; handleUsage?: unknown }): Promise<CursorBillingObservation | undefined>;
 	recordSnapshot(): Promise<CursorBillingObservation>;
@@ -282,9 +282,9 @@ function currentMatches(pi: CursorUsageApi, origin: CursorUsageOrigin): boolean 
 	const current = originOf(ctx);
 	return ownerKey(current) === ownerKey(origin) && (origin.anchorId ? ctx.sessionManager.getBranch().some(entry => entry.id === origin.anchorId) : current.anchorId === null);
 }
-function claimOrigin(pi: CursorUsageApi, captured: CursorUsageOrigin, turnId: string): CursorUsageOrigin {
+async function claimOrigin(pi: CursorUsageApi, captured: CursorUsageOrigin, turnId: string): Promise<CursorUsageOrigin> {
 	if (!currentMatches(pi, captured)) throw new Error("Cursor usage origin changed before operation");
-	pi.appendEntry(CLAIM_TYPE, { version: 1, turnId, origin: captured });
+	await pi.appendEntry(CLAIM_TYPE, { version: 1, turnId, origin: captured });
 	const current = bindings.get(pi)!;
 	const entry = current.sessionManager.getLeafEntry();
 	if (entry?.type !== "custom" || entry.customType !== CLAIM_TYPE || asRecord(entry.data)?.turnId !== turnId) throw new Error("Cursor usage origin claim was not appended");
@@ -314,37 +314,37 @@ export function captureCursorUsageRecorder(pi: CursorUsageApi, ctx: ExtensionCon
 		};
 		if (input.resumed && input.newlyCreated) throw new Error("Cursor usage lineage cannot be both resumed and newly created");
 		// Unique public branch claim before spend; ordinary optional mirrors cannot establish ownership.
-		const origin = claimOrigin(pi, captured, turnId);
-		const write = (event: Event) => {
+		const origin = await claimOrigin(pi, captured, turnId);
+		const write = async (event: Event) => {
 			const record: CursorUsageRecord = { ...event, version: 1, id: randomUUID(), turnId, timestamp: new Date().toISOString(), origin: structuredClone(origin) };
 			persist(pi, record);
 			if (currentMatches(pi, origin)) {
-				try { pi.appendEntry(CUSTOM_TYPE, record); } catch { /* Fsynced journal and unique native claim are authoritative. */ }
+				try { await pi.appendEntry(CUSTOM_TYPE, record); } catch { /* Fsynced journal and unique native claim are authoritative. */ }
 			}
 		};
-		write({ kind: "start", data });
+		await write({ kind: "start", data });
 		const recordSnapshot = async () => {
 			const observation = await fetchCursorSdkAgentUsage(input.agent);
-			write({ kind: "billing", observation: billingRevision(observation, latestAgentSnapshot(readOrigin(pi, origin), input.agent.agentId)) });
+			await write({ kind: "billing", observation: billingRevision(observation, latestAgentSnapshot(readOrigin(pi, origin), input.agent.agentId)) });
 			return observation;
 		};
 		return {
-			observeRawTurn(value) {
+			async observeRawTurn(value) {
 				const raw = asRecord(value);
 				if (!raw) return;
 				const reported = readCursorUsageTokens({ ...raw, totalTokens: raw.totalTokens ?? Number(raw.inputTokens) + Number(raw.outputTokens) + Number(raw.cacheReadTokens) + Number(raw.cacheWriteTokens) });
 				if (!reported) throw new Error("invalid Cursor raw numeric usage");
 				const reportedTotalSource = raw.totalTokens === undefined ? "derived-additive" as const : "sdk" as const;
-				if (input.runtime === "cloud") { write({ kind: "raw", reported, reportedTotalSource, normalization: "cloud-unqualified" }); return; }
+				if (input.runtime === "cloud") { await write({ kind: "raw", reported, reportedTotalSource, normalization: "cloud-unqualified" }); return; }
 				const inputTokens = reported.inputTokens - reported.cacheReadTokens - reported.cacheWriteTokens;
 				const corrected = readCursorUsageTokens({ ...reported, inputTokens, totalTokens: inputTokens + reported.cacheReadTokens + reported.cacheWriteTokens + reported.outputTokens });
-				write({ kind: "raw", reported, reportedTotalSource, normalization: corrected ? "local-full-prompt" : "invalid-local-partition", ...(corrected ? { corrected } : {}) });
+				await write({ kind: "raw", reported, reportedTotalSource, normalization: corrected ? "local-full-prompt" : "invalid-local-partition", ...(corrected ? { corrected } : {}) });
 			},
-			async recordRun(ids) { write({ kind: "run", ...ids }); },
+			async recordRun(ids) { await write({ kind: "run", ...ids }); },
 			async recordTerminal(result) {
 				const waitUsage = readCursorUsageTokens(result.waitUsage);
 				const handleUsage = readCursorUsageTokens(result.handleUsage);
-				write({ kind: "terminal", status: result.status, waitUsage, handleUsage,
+				await write({ kind: "terminal", status: result.status, waitUsage, handleUsage,
 					...((result.waitUsage !== undefined && !waitUsage) || (result.handleUsage !== undefined && !handleUsage) ? { invalidReportedUsage: true } : {}) });
 				return result.status === "abandon" ? undefined : recordSnapshot();
 			},
@@ -478,14 +478,14 @@ export async function refreshCursorUsageView(pi: CursorUsageApi, ctx: ExtensionC
 		const source = view.records.find(record => (record.kind === "start" && record.data.agentId === agent.agentId) || (record.kind === "refresh" && record.agentId === agent.agentId));
 		if (!source) continue;
 		const turnId = randomUUID();
-		const origin = claimOrigin(pi, view.origin, turnId);
+		const origin = await claimOrigin(pi, view.origin, turnId);
 		// Refresh belongs to the invoking branch, never to an inherited or switched sibling journal.
 		const record: CursorUsageRecord = {
 			version: 1, id: randomUUID(), turnId, timestamp: new Date().toISOString(), origin,
 			kind: "refresh", agentId: agent.agentId, sourceOrigin: source.origin, observation: billingRevision(await fetchAgent(agent.agentId), latestAgentSnapshot(readOrigin(pi, origin), agent.agentId)),
 		};
 		persist(pi, record);
-		if (currentMatches(pi, origin)) { try { pi.appendEntry(CUSTOM_TYPE, record); } catch { /* Unique claim retains ownership. */ } }
+		if (currentMatches(pi, origin)) { try { await pi.appendEntry(CUSTOM_TYPE, record); } catch { /* Unique claim retains ownership. */ } }
 	}
 	return readCursorUsageView(pi, ctx);
 }

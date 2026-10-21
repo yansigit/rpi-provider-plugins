@@ -97,10 +97,10 @@ export async function sendCursorProviderTurn(sendParams: SendCursorProviderTurnP
 		const sendOptions: SendOptions = {
 			mode: meta.agentMode,
 			model: meta.modelSelection,
-			onDelta: (args) => {
+			onDelta: async (args) => {
 				if (args.update.type === "turn-ended") {
 					try {
-						prepared.usage.observeRawTurn(args.update.usage);
+						await prepared.usage.observeRawTurn(args.update.usage);
 					} catch (error) {
 						params.usageRecorder.notePersistenceFailure(error);
 					}
@@ -118,9 +118,10 @@ export async function sendCursorProviderTurn(sendParams: SendCursorProviderTurnP
 			sendOptions.local = { force: true };
 		}
 		const runPromise = agent.send(payload, sendOptions);
+		void runPromise.catch(() => {});
 		// Record at send initiation (promise created), including later reject/cancel paths.
 		if (prepared.runtimeTarget === "local" && prepared.execution === "conversation") {
-			recordCursorSessionAgentLineage(agent.agentId, params.scope.scopeKey);
+			await recordCursorSessionAgentLineage(agent.agentId, params.scope.scopeKey);
 		}
 		const run = await runPromise;
 		sdkRun = run;
@@ -130,7 +131,7 @@ export async function sendCursorProviderTurn(sendParams: SendCursorProviderTurnP
 		} catch (error) {
 			params.usageRecorder.notePersistenceFailure(error);
 		}
-		if (prepared.runtimeTarget === "cloud" && !params.recordCloudLifecycle({ agentId: run.agentId, runId: run.id }, resolvedApiKey)) {
+		if (prepared.runtimeTarget === "cloud" && !await params.recordCloudLifecycle({ agentId: run.agentId, runId: run.id }, resolvedApiKey)) {
 			const cancellationConfirmed = await requestBoundedCloudRunCancellation(run);
 			throw createCursorCloudLifecyclePersistenceError(run.agentId, "run", cancellationConfirmed, resolvedApiKey);
 		}

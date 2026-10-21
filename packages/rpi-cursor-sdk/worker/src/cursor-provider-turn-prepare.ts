@@ -175,7 +175,7 @@ async function prepareCursorCloudProviderTurn(
 			})),
 		);
 		cloudAgentForCleanup = agent;
-		if (!params.recordCloudLifecycle({ agentId: agent.agentId }, resolvedApiKey)) {
+		if (!await params.recordCloudLifecycle({ agentId: agent.agentId }, resolvedApiKey)) {
 			throw createCursorCloudLifecyclePersistenceError(agent.agentId, "intent", undefined, resolvedApiKey);
 		}
 		sdkEventDebug?.recordProviderMeta({ runtime: "cloud", cloudAgentId: agent.agentId, phase: "agent_created" });

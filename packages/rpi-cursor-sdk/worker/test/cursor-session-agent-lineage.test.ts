@@ -73,8 +73,8 @@ describe("cursor-session-agent-lineage", () => {
 			},
 		});
 
-		recordCursorSessionAgentLineage("agent-1");
-		recordCursorSessionAgentLineage("agent-1");
+		await recordCursorSessionAgentLineage("agent-1");
+		await recordCursorSessionAgentLineage("agent-1");
 
 		expect(pi.appendEntry).toHaveBeenCalledTimes(1);
 		expect(pi.appendEntry).toHaveBeenCalledWith(CURSOR_SESSION_AGENT_LINEAGE_ENTRY_TYPE, {
@@ -104,8 +104,8 @@ describe("cursor-session-agent-lineage", () => {
 			},
 		});
 
-		recordCursorSessionAgentLineage("agent-own");
-		recordCursorSessionAgentLineage("agent-1");
+		await recordCursorSessionAgentLineage("agent-own");
+		await recordCursorSessionAgentLineage("agent-1");
 
 		expect(pi.appendEntry).toHaveBeenCalledTimes(1);
 		expect(pi.appendEntry).toHaveBeenCalledWith(
@@ -130,7 +130,7 @@ describe("cursor-session-agent-lineage", () => {
 				getEntries: vi.fn(() => [...entries]),
 			},
 		});
-		recordCursorSessionAgentLineage("agent-1");
+		await recordCursorSessionAgentLineage("agent-1");
 		expect(entries).toHaveLength(1);
 
 		await pi.runSessionShutdown();
@@ -147,8 +147,8 @@ describe("cursor-session-agent-lineage", () => {
 				getEntries: vi.fn(() => [...entries]),
 			},
 		});
-		recordCursorSessionAgentLineage("agent-1");
-		recordCursorSessionAgentLineage("agent-2");
+		await recordCursorSessionAgentLineage("agent-1");
+		await recordCursorSessionAgentLineage("agent-2");
 		expect(pi2.appendEntry).toHaveBeenCalledTimes(1);
 		expect(pi2.appendEntry).toHaveBeenCalledWith(
 			CURSOR_SESSION_AGENT_LINEAGE_ENTRY_TYPE,
@@ -171,8 +171,33 @@ describe("cursor-session-agent-lineage", () => {
 		pi.appendEntry.mockImplementationOnce(() => {
 			throw new Error("append failed");
 		});
-		expect(() => recordCursorSessionAgentLineage("agent-1")).not.toThrow();
-		recordCursorSessionAgentLineage("agent-2");
+		await expect(recordCursorSessionAgentLineage("agent-1")).resolves.toBeUndefined();
+		await recordCursorSessionAgentLineage("agent-2");
 		expect(pi.appendEntry).toHaveBeenCalledTimes(2);
+	});
+
+	it("awaits one concurrent lineage write and never credits a newly selected session", async () => {
+		const pi = createPiHarness();
+		registerCursorSessionScope(pi);
+		registerCursorSessionAgentLineage(pi);
+		const context = (id: string) => ({ cwd: "/tmp/project", sessionManager: {
+			getSessionId: () => id, getSessionFile: () => `/tmp/${id}.jsonl`, getEntries: () => [],
+		} });
+		await pi.runSessionStart(context("original"));
+		let acknowledge!: () => void;
+		pi.appendEntry.mockImplementationOnce(() => new Promise<void>(resolve => { acknowledge = resolve; }));
+		const first = recordCursorSessionAgentLineage("agent-1");
+		const second = recordCursorSessionAgentLineage("agent-1");
+		let completed = false;
+		void second.then(() => { completed = true; });
+		await Promise.resolve();
+		expect(completed).toBe(false);
+		expect(pi.appendEntry).toHaveBeenCalledTimes(1);
+		await pi.runSessionStart(context("next"));
+		acknowledge();
+		await Promise.all([first, second]);
+		await recordCursorSessionAgentLineage("agent-1");
+		expect(pi.appendEntry).toHaveBeenCalledTimes(2);
+		expect(pi.appendEntry.mock.calls[1]?.[1]).toMatchObject({ sessionId: "next" });
 	});
 });

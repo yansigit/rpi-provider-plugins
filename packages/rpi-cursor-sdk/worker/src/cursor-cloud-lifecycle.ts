@@ -249,12 +249,12 @@ function appendDurableCloudLifecycleEntry(data: CursorCloudLifecycleEntryData, a
 	}
 }
 
-function appendCloudLifecycleEntry(pi: CloudLifecycleApi, data: CursorCloudLifecycleEntryData | undefined, session: CloudLifecycleSessionState): boolean {
+async function appendCloudLifecycleEntry(pi: CloudLifecycleApi, data: CursorCloudLifecycleEntryData | undefined, session: CloudLifecycleSessionState): Promise<boolean> {
 	if (!data || (!durableWriterForTests && (!session.sessionFile || !session.sessionId))) return false;
 	let anchorEntryId: string | undefined;
 	try {
 		const previousEntryId = durableWriterForTests ? undefined : session.getBranch?.().at(-1)?.id;
-		pi.appendEntry<CursorCloudLifecycleEntryData>(CLOUD_LIFECYCLE_ENTRY_TYPE, data);
+		await pi.appendEntry<CursorCloudLifecycleEntryData>(CLOUD_LIFECYCLE_ENTRY_TYPE, data);
 		const anchor = session.getBranch?.().at(-1);
 		anchorEntryId = durableWriterForTests
 			? "test-cloud-lifecycle-entry"
@@ -271,15 +271,15 @@ function appendCloudLifecycleEntry(pi: CloudLifecycleApi, data: CursorCloudLifec
 		appendDurableCloudLifecycleEntry(data, anchorEntryId, session);
 }
 
-function appendCloudLifecycleMutationEntry(
+async function appendCloudLifecycleMutationEntry(
 	pi: CloudLifecycleApi | undefined,
 	data: CursorCloudLifecycleEntryData | undefined,
 	session: CloudLifecycleSessionState,
 	anchorEntryId: string | undefined,
-): boolean {
+): Promise<boolean> {
 	if (!data || !anchorEntryId || !fsyncCloudLifecycleSessionFile(session) || !appendDurableCloudLifecycleEntry(data, anchorEntryId, session)) return false;
 	try {
-		pi?.appendEntry<CursorCloudLifecycleEntryData>(CLOUD_LIFECYCLE_ENTRY_TYPE, data);
+		await pi?.appendEntry<CursorCloudLifecycleEntryData>(CLOUD_LIFECYCLE_ENTRY_TYPE, data);
 	} catch {
 		// The fsynced mutation journal is authoritative.
 	}
@@ -300,10 +300,10 @@ export function registerCursorCloudLifecycleLedger(pi: CloudLifecycleApi): void 
 	pi.on("session_shutdown", () => { cloudBindings.delete(pi); });
 }
 
-export function recordCursorCloudLifecycleRun(
+export async function recordCursorCloudLifecycleRun(
 	report: Omit<CursorCloudRunReport, "runId"> & { runId?: string },
 	options: { apiKey?: string; binding?: { api: CloudLifecycleApi; session: CloudLifecycleSessionState } } = {},
-): boolean {
+): Promise<boolean> {
 	const api = options.binding?.api ?? cloudLifecycleApi;
 	if (!api) return false;
 	const baseEntry = buildBaseEntry(report.agentId, "record");
@@ -312,7 +312,7 @@ export function recordCursorCloudLifecycleRun(
 	const runId = typeof report.runId === "string"
 		? sanitizeLedgerString(report.runId, MAX_LEDGER_RUN_ID_LENGTH, options.apiKey)
 		: "";
-	return appendCloudLifecycleEntry(api, {
+	return await appendCloudLifecycleEntry(api, {
 		...baseEntry,
 		...(runId ? { runId } : {}),
 		...(branches ? { branches } : {}),
@@ -322,16 +322,16 @@ export function recordCursorCloudLifecycleRun(
 export type CursorCloudLifecycleRecorder = (
 	report: { agentId: string; runId?: string; branches?: CursorCloudRunReport["branches"] },
 	apiKey: string | undefined,
-) => boolean;
+) => boolean | Promise<boolean>;
 
 export function captureCursorCloudLifecycleRecorder(owner?: object): CursorCloudLifecycleRecorder {
 	const current = owner ? cloudBindings.get(owner) : undefined;
 	const api = current?.api ?? (owner ? undefined : cloudLifecycleApi);
 	const session = { ...(current?.session ?? (owner ? {} : cloudLifecycleSession)) };
-	return (report, apiKey) => {
+	return async (report, apiKey) => {
 		if (!api) return false;
 		try {
-			return recordCursorCloudLifecycleRun({ ...report, branches: report.branches ?? [] }, { apiKey, binding: { api, session } });
+			return await recordCursorCloudLifecycleRun({ ...report, branches: report.branches ?? [] }, { apiKey, binding: { api, session } });
 		} catch {
 			return false;
 		}
@@ -489,7 +489,7 @@ function cloudLifecycleEntryKey(data: CursorCloudLifecycleEntryData): string {
 	return JSON.stringify([data.action, data.agentId, data.runId, data.timestamp, data.branches]);
 }
 
-function reconcileDurableCloudLifecycleOrphans(pi: CloudLifecycleApi, session: CloudLifecycleSessionState): boolean {
+async function reconcileDurableCloudLifecycleOrphans(pi: CloudLifecycleApi, session: CloudLifecycleSessionState): Promise<boolean> {
 	const { sessionFile } = session;
 	if (!sessionFile || !existsSync(sessionFile)) return true;
 	const journal = readDurableCloudLifecycleJournal(session);
@@ -516,13 +516,13 @@ function reconcileDurableCloudLifecycleOrphans(pi: CloudLifecycleApi, session: C
 			if (!fsyncCloudLifecycleSessionFile(session) || !appendDurableCloudLifecycleEntry(orphan.data, matchingEntry.id, session)) return false;
 			continue;
 		}
-		if (orphan.sessionFile !== sessionFile && !appendCloudLifecycleEntry(pi, orphan.data, session)) return false;
+		if (orphan.sessionFile !== sessionFile && !await appendCloudLifecycleEntry(pi, orphan.data, session)) return false;
 	}
 	return true;
 }
 
-function reconcileDurableCloudLifecycleOrphansForCommand(pi: CloudLifecycleApi, ctx: CloudLifecycleCommandContext, session: CloudLifecycleSessionState): boolean {
-	if (reconcileDurableCloudLifecycleOrphans(pi, session)) return true;
+async function reconcileDurableCloudLifecycleOrphansForCommand(pi: CloudLifecycleApi, ctx: CloudLifecycleCommandContext, session: CloudLifecycleSessionState): Promise<boolean> {
+	if (await reconcileDurableCloudLifecycleOrphans(pi, session)) return true;
 	ctx.ui.notify("Unable to reconcile the durable Cursor cloud lifecycle journal with this session branch.", "error");
 	return false;
 }
@@ -642,7 +642,7 @@ async function mutateRecordedCloudAgent(params: {
 	};
 	const apiKey = await resolveCloudLifecycleMutationApiKey({ modelRegistry, ui, sessionManager: manager });
 	if (!apiKey || !checkAuthority()) return;
-	if (!reconcileDurableCloudLifecycleOrphansForCommand(params.pi, { modelRegistry, ui, sessionManager: manager }, params.session)) return;
+	if (!await reconcileDurableCloudLifecycleOrphansForCommand(params.pi, { modelRegistry, ui, sessionManager: manager }, params.session)) return;
 	// Reconciliation may append only the unchanged, captured orphan authority.
 	anchorEntryId = manager.getBranch().at(-1)?.id;
 	authority = readAuthority();
@@ -659,7 +659,7 @@ async function mutateRecordedCloudAgent(params: {
 		return;
 	}
 	if (!checkAuthority()) return;
-	if (!appendCloudLifecycleMutationEntry(
+	if (!await appendCloudLifecycleMutationEntry(
 		params.pi,
 		buildBaseEntry(params.agentId, params.action === "archive" ? "archive_intent" : "delete_intent"),
 		params.session,
@@ -680,7 +680,7 @@ async function mutateRecordedCloudAgent(params: {
 		);
 		return;
 	}
-	if (!appendCloudLifecycleMutationEntry(isOriginCurrent() ? params.pi : undefined, buildBaseEntry(params.agentId, params.action), params.session, anchorEntryId)) {
+	if (!await appendCloudLifecycleMutationEntry(isOriginCurrent() ? params.pi : undefined, buildBaseEntry(params.agentId, params.action), params.session, anchorEntryId)) {
 		ui.notify(
 			`Cursor cloud agent ${params.agentId} ${params.action === "archive" ? "archived" : "deleted"}, but its durable result could not be recorded. Inspect it in the Cursor Cloud dashboard before retrying.`,
 			"error",
@@ -700,7 +700,7 @@ export async function runCursorCloudLifecycleCommand(pi: CloudLifecycleApi, args
 			ctx.ui.notify(`Invalid Cursor cloud arguments. ${usage}`, "error");
 			return;
 		}
-		if (!reconcileDurableCloudLifecycleOrphansForCommand(pi, ctx, session)) return;
+		if (!await reconcileDurableCloudLifecycleOrphansForCommand(pi, ctx, session)) return;
 		ctx.ui.notify(formatCloudLifecycleRecords(readRecordedCloudAgents(session)), "info");
 		return;
 	}

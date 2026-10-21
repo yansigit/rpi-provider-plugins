@@ -44,10 +44,14 @@ export function registerCursorProviderBinding(
 			reportSdkNotice: (kind, message) => {
 				if (!binding.active || binding.closed) return false;
 				if (notices.has(kind)) return;
-				pi.appendEntry("pi-cursor-sdk:capability-notice", { kind, message });
-				if (ctx.hasUI) ctx.ui.notify(message, "warning");
-				else console.warn(message);
 				notices.add(kind);
+				return (async () => {
+					try {
+						await pi.appendEntry("pi-cursor-sdk:capability-notice", { kind, message });
+						if (ctx.hasUI) ctx.ui.notify(message, "warning");
+						else console.warn(message);
+					} catch (error) { notices.delete(kind); throw error; }
+				})();
 			},
 		});
 	});

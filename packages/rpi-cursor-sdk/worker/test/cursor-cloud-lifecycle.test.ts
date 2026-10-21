@@ -79,11 +79,11 @@ describe("Cursor cloud lifecycle ledger", () => {
 		vi.clearAllMocks();
 	});
 
-	it("records successful cloud run lifecycle metadata in session custom entries", () => {
+	it("records successful cloud run lifecycle metadata in session custom entries", async () => {
 		const pi = createPiHarness();
 		registerCloudLifecycle(pi);
 
-		expect(recordCursorCloudLifecycleRun({
+		expect(await recordCursorCloudLifecycleRun({
 			agentId: cloudAgentId(),
 			runId: "run-1",
 			branches: [{ repoUrl: "github.com/acme/repo", branch: "cursor/work", prUrl: "https://github.com/acme/repo/pull/7" }],
@@ -103,7 +103,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 		expect(pi.appendEntry.mock.calls[0]?.[1]).not.toHaveProperty("sessionName");
 	});
 
-	it("fsyncs a Pi anchor before the durable journal and fails closed when fsync fails", () => {
+	it("fsyncs a Pi anchor before the durable journal and fails closed when fsync fails", async () => {
 		const order: string[] = [];
 		const pi = createPiHarness();
 		pi.appendEntry.mockImplementation(() => { order.push("pi-entry"); });
@@ -111,16 +111,37 @@ describe("Cursor cloud lifecycle ledger", () => {
 		cloudLifecycleTestUtils.setDurableWriter(() => { order.push("journal-fsync"); return true; });
 		registerCloudLifecycle(pi);
 
-		expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+		expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
 		expect(order).toEqual(["pi-entry", "session-fsync", "journal-fsync"]);
 
 		order.length = 0;
 		cloudLifecycleTestUtils.setSessionFsync(() => { order.push("session-fsync"); return false; });
-		expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(2), branches: [] })).toBe(false);
+		expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(2), branches: [] })).toBe(false);
 		expect(order).toEqual(["pi-entry", "session-fsync"]);
 	});
 
-	it("tracks Pi's installed custom-entry persistence boundary", () => {
+	it("waits for authoritative append before either durability step and catches async failure", async () => {
+		const pi = createPiHarness();
+		registerCloudLifecycle(pi);
+		const sync = vi.fn(() => true);
+		const journal = vi.fn(() => true);
+		cloudLifecycleTestUtils.setSessionFsync(sync);
+		cloudLifecycleTestUtils.setDurableWriter(journal);
+		let acknowledge!: () => void;
+		pi.appendEntry.mockImplementationOnce(() => new Promise<void>(resolve => { acknowledge = resolve; }));
+		const pending = recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] });
+		await Promise.resolve();
+		expect(sync).not.toHaveBeenCalled();
+		expect(journal).not.toHaveBeenCalled();
+		acknowledge();
+		expect(await pending).toBe(true);
+		pi.appendEntry.mockImplementationOnce(async () => { throw new Error("write failed"); });
+		expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(2), branches: [] })).toBe(false);
+		expect(sync).toHaveBeenCalledTimes(1);
+		expect(journal).toHaveBeenCalledTimes(1);
+	});
+
+	it("tracks Pi's installed custom-entry persistence boundary", async () => {
 		const tempDir = mkdtempSync(join(tmpdir(), "cursor-cloud-pi-session-"));
 		try {
 			const manager = SessionManager.create(tempDir, tempDir, { id: "cloud-lifecycle-contract" });
@@ -149,7 +170,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			};
 			const a = makeOwner("command-A");
 			await a.pi.runSessionStart({ sessionManager: a.sessionManager });
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
 			const authEntered = Promise.withResolvers<void>();
 			const auth = Promise.withResolvers<string>();
 			cloudLifecycleTestUtils.setRuntimeApiKeyResolver(() => { authEntered.resolve(); return auth.promise; });
@@ -178,12 +199,12 @@ describe("Cursor cloud lifecycle ledger", () => {
 		}
 	});
 
-	it("rejects lifecycle recording without a durable session", () => {
+	it("rejects lifecycle recording without a durable session", async () => {
 		resetCloudLifecycleTestState();
 		const pi = createPiHarness();
 		registerCloudLifecycle(pi);
 
-		expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(false);
+		expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(false);
 		expect(pi.appendEntry).not.toHaveBeenCalled();
 	});
 
@@ -203,7 +224,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			pi.appendEntry.mockImplementation((type, data) => { manager.appendCustomEntry(type, data); });
 			registerCloudLifecycle(pi);
 			await pi.runSessionStart({ sessionManager });
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
 			const path = cloudLifecycleTestUtils.durableLedgerPath(manager.getSessionFile()!, manager.getSessionId());
 			const before = readFileSync(path, "utf8");
 			const sdk = await import("@cursor/sdk");
@@ -270,7 +291,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			const notify = vi.fn();
 			await pi.runCommand("cursor-cloud", "list", { cwd: tempDir, sessionManager, ui: { notify } });
 			expect(notify.mock.calls.at(-1)?.[0]).not.toContain(forgedAgent);
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(3), branches: [] })).toBe(false);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(3), branches: [] })).toBe(false);
 			await pi.runCommand("cursor-cloud", `archive ${recordedAgent}`, { cwd: tempDir, sessionManager });
 
 			expect(archive).not.toHaveBeenCalled();
@@ -304,7 +325,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			const ledgerPath = cloudLifecycleTestUtils.durableLedgerPath(firstSessionFile, sessionId);
 			writeFileSync(ledgerPath, '{"partial":');
 
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
 			const ledgerLines = readFileSync(ledgerPath, "utf8").trim().split(/\r?\n/);
 			expect(existsSync(firstSessionFile)).toBe(false);
 			if (process.platform !== "win32") expect(statSync(ledgerPath).mode & 0o777).toBe(0o600);
@@ -368,7 +389,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			const ledgerPath = cloudLifecycleTestUtils.durableLedgerPath(sessionFile, sessionId);
 			writeFileSync(ledgerPath, '{"partial":');
 
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
 			const ledgerLines = readFileSync(ledgerPath, "utf8").trim().split(/\r?\n/);
 			if (process.platform !== "win32") expect(statSync(ledgerPath).mode & 0o777).toBe(0o600);
 			expect(ledgerLines[0]).toBe('{"partial":');
@@ -418,9 +439,9 @@ describe("Cursor cloud lifecycle ledger", () => {
 			pi.appendEntry.mockImplementation((customType, data) => manager.appendCustomEntry(customType, data));
 			registerCloudLifecycle(pi);
 			await pi.runSessionStart({ cwd: tempDir, sessionManager });
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), runId: "run-first-turn", branches: [] })).toBe(true);
-			expect(recordCursorCloudLifecycleRun({
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), runId: "run-first-turn", branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({
 				agentId: cloudAgentId(),
 				runId: "run-first-turn",
 				branches: [{ repoUrl: "github.com/acme/repo", branch: "cursor/final", prUrl: "https://github.com/acme/repo/pull/1" }],
@@ -504,7 +525,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			registerCloudLifecycle(pi);
 			await pi.runSessionStart({ cwd: tempDir, sessionManager });
 
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
 			const branchARecordId = manager.getLeafId()!;
 			manager.branch(sharedParentId);
 			manager.appendMessage({ role: "user", content: "branch B", timestamp: 4 });
@@ -538,14 +559,14 @@ describe("Cursor cloud lifecycle ledger", () => {
 			pi.appendEntry.mockImplementation((customType, data) => manager.appendCustomEntry(customType, data));
 			registerCloudLifecycle(pi);
 			await pi.runSessionStart({ cwd: tempDir, sessionManager });
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(1), branches: [] })).toBe(true);
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(2), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(1), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(2), branches: [] })).toBe(true);
 
 			const archive = vi.fn().mockResolvedValue(undefined);
 			const deleteAgent = vi.fn().mockResolvedValue(undefined);
 			cloudLifecycleTestUtils.setSdkOperations({ archive, delete: deleteAgent });
 			cloudLifecycleTestUtils.setDurableWriter(() => false);
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(3), branches: [] })).toBe(false);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(3), branches: [] })).toBe(false);
 			cloudLifecycleTestUtils.setDurableWriter(undefined);
 			await pi.runCommand("cursor-cloud", `archive ${cloudAgentId(3)}`, { cwd: tempDir, sessionManager });
 			await pi.runCommand("cursor-cloud", `archive ${cloudAgentId(3)}`, { cwd: tempDir, sessionManager });
@@ -579,7 +600,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			pi.appendEntry.mockImplementation((customType, data) => manager.appendCustomEntry(customType, data));
 			registerCloudLifecycle(pi);
 			await pi.runSessionStart({ cwd: tempDir, sessionManager });
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
 			pi.appendEntry.mockImplementation(() => { throw new Error("Pi mirror unavailable"); });
 			const archive = vi.fn().mockResolvedValue(undefined);
 			cloudLifecycleTestUtils.setSdkOperations({ archive, delete: vi.fn() });
@@ -599,7 +620,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 		}
 	});
 
-	it("keeps a newer terminal mutation result ahead of a stale mirrored intent", () => {
+	it("keeps a newer terminal mutation result ahead of a stale mirrored intent", async () => {
 		const report = formatCursorCloudLifecycleList([
 			recordEntry(),
 			lifecycleEntry("archive-result", {
@@ -620,7 +641,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 		expect(report).not.toContain("pending");
 	});
 
-	it("bounds recorded cloud lifecycle branches and ignores artifacts", () => {
+	it("bounds recorded cloud lifecycle branches and ignores artifacts", async () => {
 		const pi = createPiHarness();
 		registerCloudLifecycle(pi);
 		const branches = Array.from({ length: MAX_CLOUD_REPORT_BRANCHES + 2 }, (_, index) => ({
@@ -633,7 +654,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			updatedAt: "2026-07-07T00:00:00Z",
 		}));
 
-		recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), runId: "run-1", branches, artifacts });
+		await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), runId: "run-1", branches, artifacts });
 
 		expect(pi.appendEntry).toHaveBeenCalledWith(CLOUD_LIFECYCLE_ENTRY_TYPE, expect.objectContaining({
 			branches: branches.slice(0, MAX_CLOUD_REPORT_BRANCHES).map((branch) => ({ branch: branch.branch })),
@@ -641,7 +662,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 		expect(pi.appendEntry.mock.calls[0]?.[1]).not.toHaveProperty("artifacts");
 	});
 
-	it("sanitizes and caps remote run, branch, and PR strings in ledger and list output", () => {
+	it("sanitizes and caps remote run, branch, and PR strings in ledger and list output", async () => {
 		const pi = createPiHarness();
 		registerCloudLifecycle(pi);
 		const apiKey = "secret-cursor-key";
@@ -649,7 +670,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 		const hugeBranch = `cursor\0\u0085/${apiKey}/${"b".repeat(1000)}`;
 		const hugePrUrl = `https://github.com/acme/repo/pull/${apiKey}/\u2029${"7".repeat(1000)}`;
 
-		recordCursorCloudLifecycleRun({
+		await recordCursorCloudLifecycleRun({
 			agentId: cloudAgentId(),
 			runId: hugeRun,
 			branches: [{ repoUrl: "github.com/acme/repo", branch: hugeBranch, prUrl: hugePrUrl }],
@@ -688,7 +709,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 		];
 
 		for (const agentId of malformedIds) {
-			expect(recordCursorCloudLifecycleRun({ agentId, runId: "run-1", branches: [] }), agentId).toBe(false);
+			expect(await recordCursorCloudLifecycleRun({ agentId, runId: "run-1", branches: [] }), agentId).toBe(false);
 		}
 		await pi.runCommand("cursor-cloud", `archive ${hostileAgentId}`, {
 			sessionManager: { getBranch: vi.fn(() => [recordEntry(hostileAgentId), recordEntry()]) },
@@ -713,7 +734,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 			pi.appendEntry.mockImplementation((customType, data) => original.appendCustomEntry(customType, data));
 			registerCloudLifecycle(pi);
 			await pi.runSessionStart({ cwd: tempDir, sessionManager: originalSessionManager });
-			expect(recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
+			expect(await recordCursorCloudLifecycleRun({ agentId: cloudAgentId(), branches: [] })).toBe(true);
 			const journalPath = cloudLifecycleTestUtils.durableLedgerPath(original.getSessionFile()!, original.getSessionId());
 			const journalBefore = readFileSync(journalPath, "utf8");
 
@@ -735,7 +756,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 		}
 	});
 
-	it("caps list output for many recorded agents", () => {
+	it("caps list output for many recorded agents", async () => {
 		const entries = Array.from({ length: 30 }, (_, index) => recordEntry(cloudAgentId(index)));
 		const report = formatCursorCloudLifecycleList(entries);
 
@@ -745,7 +766,7 @@ describe("Cursor cloud lifecycle ledger", () => {
 		expect(report.length).toBeLessThan(3000);
 	});
 
-	it("lists recorded non-deleted agents, ignores malformed entries, and hides deleted tombstones", () => {
+	it("lists recorded non-deleted agents, ignores malformed entries, and hides deleted tombstones", async () => {
 		const report = formatCursorCloudLifecycleList([
 			lifecycleEntry("malformed", {
 				action: "record",

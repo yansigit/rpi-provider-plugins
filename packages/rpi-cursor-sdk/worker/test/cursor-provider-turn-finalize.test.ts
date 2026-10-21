@@ -122,7 +122,7 @@ describe("awaitFinalizeCursorRunOutcome", () => {
 		const listArtifacts = vi.fn();
 		const fetchSpy = vi.spyOn(globalThis, "fetch");
 		const sdkEventDebug = { recordProviderEvent: vi.fn() } as unknown as CursorSdkEventDebugSink;
-		recordCursorCloudLifecycleRun({ agentId: CLOUD_AGENT_ID, runId: "run-throw", branches: [] });
+		await recordCursorCloudLifecycleRun({ agentId: CLOUD_AGENT_ID, runId: "run-throw", branches: [] });
 		const wait = vi.fn(async () => {
 			expect(pi.appendEntry).toHaveBeenCalledTimes(1);
 			throw new Error("wait failed");

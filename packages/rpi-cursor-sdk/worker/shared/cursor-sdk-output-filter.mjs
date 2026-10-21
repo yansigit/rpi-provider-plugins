@@ -66,8 +66,22 @@ export function suppressCursorSdkOutput(operation) {
 }
 
 /** Attribution follows the request's async work, including overlapping native sessions. */
-export function withCursorSdkOutputNoticeHandler(handler, operation) {
-	return noticeOwner.run(handler, operation);
+export async function withCursorSdkOutputNoticeHandler(handler, operation) {
+	const pending = new Set();
+	const owned = handler && ((kind, message) => {
+		const result = handler(kind, message);
+		if (result && typeof result.then === "function") {
+			const task = Promise.resolve(result);
+			pending.add(task);
+			void task.finally(() => pending.delete(task)).catch(() => {});
+			return task;
+		}
+		return result;
+	});
+	return noticeOwner.run(owned, async () => {
+		try { return await operation(); }
+		finally { while (pending.size) await Promise.allSettled([...pending]); }
+	});
 }
 
 function hookEventNotice(line, partial = false) {
@@ -131,7 +145,14 @@ function createFilteredProcessWrite(write, stream) {
 		if (kind && kind !== "noise" && handler) {
 			// A failed native notice must not turn a capability warning into silence.
 			try {
-				handled = cursorSdkOutputSuppression.run(false, () => handler(kind, CURSOR_SDK_CAPABILITY_NOTICES[kind])) !== false;
+				const result = cursorSdkOutputSuppression.run(false, () => handler(kind, CURSOR_SDK_CAPABILITY_NOTICES[kind]));
+				handled = result !== false;
+				if (result && typeof result.then === "function") {
+					void Promise.resolve(result).then(
+						accepted => { if (accepted === false) write.call(stream, original); },
+						() => { write.call(stream, original); },
+					).catch(() => {});
+				}
 			} catch { handled = false; }
 		}
 		if (!handled && (kind || !wasSuppressed)) output.push(original);

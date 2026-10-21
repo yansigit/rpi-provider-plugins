@@ -274,12 +274,12 @@ function restoreMapValue(map: Map<string, boolean>, key: string, previous: boole
 	}
 }
 
-function persistFastPreference(
+async function persistFastPreference(
 	pi: Pick<ExtensionAPI, "appendEntry">,
 	modelId: string,
 	fast: boolean,
 	scopeKey: string | undefined,
-): unknown | undefined {
+): Promise<unknown | undefined> {
 	const sessionFastPreferences = getCursorSessionSettings(scopeKey).fast;
 	const previousSession = sessionFastPreferences.get(modelId);
 	const previousGlobal = globalFastPreferences.get(modelId);
@@ -293,7 +293,7 @@ function persistFastPreference(
 		throw error;
 	}
 	try {
-		pi.appendEntry<CursorFastEntryData>(FAST_ENTRY_TYPE, { modelId, fast });
+		await pi.appendEntry<CursorFastEntryData>(FAST_ENTRY_TYPE, { modelId, fast });
 		authoritativeGlobalFastPreferenceIds.delete(modelId);
 		return undefined;
 	} catch (error) {
@@ -302,23 +302,23 @@ function persistFastPreference(
 	}
 }
 
-function persistCursorModePreference(pi: Pick<ExtensionAPI, "appendEntry">, mode: AgentModeOption, scopeKey: string | undefined): void {
+async function persistCursorModePreference(pi: Pick<ExtensionAPI, "appendEntry">, mode: AgentModeOption, scopeKey: string | undefined): Promise<void> {
 	const state = getCursorSessionSettings(scopeKey);
 	const previousMode = state.mode;
 	state.mode = mode;
 	try {
-		pi.appendEntry<CursorModeEntryData>(MODE_ENTRY_TYPE, { mode });
+		await pi.appendEntry<CursorModeEntryData>(MODE_ENTRY_TYPE, { mode });
 	} catch (error) {
 		state.mode = previousMode;
 		throw error;
 	}
 }
 
-function persistCursorHttp1Preference(
+async function persistCursorHttp1Preference(
 	pi: Pick<ExtensionAPI, "appendEntry">,
 	enabled: boolean,
 	scopeKey: string | undefined,
-): unknown | undefined {
+): Promise<unknown | undefined> {
 	const previousSession = getStoredCursorHttp1Enabled(scopeKey);
 	setStoredCursorHttp1Enabled(enabled, scopeKey);
 	try {
@@ -328,7 +328,7 @@ function persistCursorHttp1Preference(
 		throw error;
 	}
 	try {
-		pi.appendEntry<CursorHttp1EntryData>(CURSOR_HTTP1_ENTRY_TYPE, { enabled });
+		await pi.appendEntry<CursorHttp1EntryData>(CURSOR_HTTP1_ENTRY_TYPE, { enabled });
 		setCursorHttp1GlobalPreferenceAuthoritative(false);
 		return undefined;
 	} catch (error) {
@@ -481,7 +481,7 @@ export function registerCursorRuntimeControls(pi: CursorRuntimeControlsExtension
 			const next = !current;
 			let appendError: unknown;
 			try {
-				appendError = persistFastPreference(pi, preferenceModelId, next, cursorSettingsScopeForContext(ctx));
+				appendError = await persistFastPreference(pi, preferenceModelId, next, cursorSettingsScopeForContext(ctx));
 			} catch (error) {
 				updateCursorStatus(ctx);
 				ctx.ui.notify(`Failed to save Cursor fast preference: ${error instanceof Error ? error.message : String(error)}`, "error");
@@ -540,7 +540,7 @@ export function registerCursorRuntimeControls(pi: CursorRuntimeControlsExtension
 			}
 			let appendError: unknown;
 			try {
-				appendError = persistCursorHttp1Preference(pi, next, cursorSettingsScopeForContext(ctx));
+				appendError = await persistCursorHttp1Preference(pi, next, cursorSettingsScopeForContext(ctx));
 			} catch (error) {
 				updateCursorStatus(ctx);
 				ctx.ui.notify(
@@ -620,7 +620,7 @@ export function registerCursorRuntimeControls(pi: CursorRuntimeControlsExtension
 			}
 			const clearedInvalidCliMode = cliCursorModeState.kind === "invalid";
 			try {
-				persistCursorModePreference(pi, mode, cursorSettingsScopeForContext(ctx));
+				await persistCursorModePreference(pi, mode, cursorSettingsScopeForContext(ctx));
 				if (clearedInvalidCliMode) cli.mode = { kind: "unset" };
 			} catch (error) {
 				updateCursorStatus(ctx);

@@ -26,9 +26,29 @@ function setup() {
 }
 function agent(getUsage: SDKAgent["getUsage"] = async () => bill()): SDKAgent { return { agentId: "agent-test", getUsage } as SDKAgent; }
 describe("origin usage recorder and supported view", () => {
+	it("awaits the origin claim and does not create usage facts after rejected admission", async () => {
+		const s = setup();
+		const original = s.harness.appendEntry.getMockImplementation()!;
+		let acknowledge!: () => void;
+		s.harness.appendEntry.mockImplementationOnce(async (kind, data) => {
+			await new Promise<void>(resolve => { acknowledge = resolve; });
+			original(kind, data);
+		});
+		let admitted = false;
+		const pending = s.start(agent()).then(turn => { admitted = true; return turn; });
+		await Promise.resolve();
+		expect(admitted).toBe(false);
+		expect(readdirSync(s.root).some(name => name.endsWith(".journal"))).toBe(false);
+		acknowledge();
+		await pending;
+		expect(readCursorUsageView(s.pi, s.ctx()).records.map(record => record.kind)).toEqual(["start"]);
+		s.harness.appendEntry.mockImplementationOnce(async () => { throw new Error("claim rejected"); });
+		await expect(s.start(agent())).rejects.toThrow("claim rejected");
+		expect(readCursorUsageView(s.pi, s.ctx()).records.map(record => record.kind)).toEqual(["start"]);
+	});
 	it("keeps raw cache correction, reported snapshots, repeated/revised aggregate bills and restart separate", async () => {
 		const s = setup(); const snapshots = vi.fn().mockResolvedValue(bill()); const turn = await s.start(agent(snapshots));
-		turn.observeRawTurn({ inputTokens: 4232, outputTokens: 3, cacheReadTokens: 4096, cacheWriteTokens: 0 });
+		await turn.observeRawTurn({ inputTokens: 4232, outputTokens: 3, cacheReadTokens: 4096, cacheWriteTokens: 0 });
 		await turn.recordRun({ runId: "run-client", requestId: "request-client" });
 		await turn.recordTerminal({ status: "success", waitUsage: { ...cached, inputTokens: 4232, totalTokens: 8331 }, handleUsage: { ...cached, inputTokens: 4232, totalTokens: 8331 } });
 		await turn.recordSnapshot();
@@ -69,7 +89,7 @@ describe("origin usage recorder and supported view", () => {
 		expect(readCursorUsageView(s.pi, s.ctx()).agents[0]?.wholeAgent?.usage.totalTokens).toBe(4235);
 		s.manager.branch(oldLeaf); s.manager.appendMessage({ role: "user", content: "sibling", timestamp: 2 });
 		await s.harness.invokeEventWithContext("session_tree", { type: "session_tree", oldLeafId: oldLeaf, newLeafId: s.manager.getLeafId()! }, s.ctx());
-		const before = s.harness.appendEntry.mock.calls.length; turn.observeRawTurn({ inputTokens: 1, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0 });
+		const before = s.harness.appendEntry.mock.calls.length; await turn.observeRawTurn({ inputTokens: 1, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0 });
 		expect(s.harness.appendEntry).toHaveBeenCalledTimes(before); expect(readCursorUsageView(s.pi, s.ctx()).agents).toEqual([]);
 	});
 	it("failed persistence never advances recognized facts and exposes a guarded warning", async () => {
@@ -171,8 +191,8 @@ describe("origin usage recorder and supported view", () => {
 		expect(readCursorUsageView(s.pi, s.ctx()).agents[0]?.wholeAgent?.cost?.chargedCents).toBe(0.05);
 	});
 	it("preserves unqualified Cloud and invalid LOCAL numeric telemetry without inventing normalization", async () => {
-		const s = setup(); const cloud = await s.start(agent(), { runtime: "cloud" }); cloud.observeRawTurn(cached);
-		const local = await s.start(agent()); local.observeRawTurn(cached);
+		const s = setup(); const cloud = await s.start(agent(), { runtime: "cloud" }); await cloud.observeRawTurn(cached);
+		const local = await s.start(agent()); await local.observeRawTurn(cached);
 		const raw = readCursorUsageView(s.pi, s.ctx()).records.filter(record => record.kind === "raw");
 		expect(raw.map(record => record.normalization)).toEqual(["cloud-unqualified", "invalid-local-partition"]);
 		expect(raw.every(record => record.corrected === undefined)).toBe(true); expect(raw.map(record => record.reported)).toEqual([cached, cached]);
@@ -253,7 +273,7 @@ describe("origin usage recorder and supported view", () => {
 	});
 	it("fileless one-shot sessions explicitly remain ephemeral without requiring a journal", async () => {
 		const s = setup(); s.replace(SessionManager.inMemory(s.root));
-		const turn = await s.start(agent()); turn.observeRawTurn({ inputTokens: 2, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0 });
+		const turn = await s.start(agent()); await turn.observeRawTurn({ inputTokens: 2, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0 });
 		await turn.recordTerminal({ status: "success", waitUsage: { invalid: "not stored" } });
 		const view = readCursorUsageView(s.pi, s.ctx()); expect(view.durability).toBe("ephemeral"); expect(view.correctedRawTotal.totalTokens).toBe(3);
 		expect(view.records.find(record => record.kind === "terminal")).toMatchObject({ invalidReportedUsage: true });

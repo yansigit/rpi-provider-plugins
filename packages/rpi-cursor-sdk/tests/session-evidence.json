@@ -1,0 +1,72 @@
+{
+  "status": "partial native session boundary and awaited adapter writes; not complete runtime or package parity",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "sdk": "1.0.37 (external)",
+  "node": "24.22.0",
+  "hostCommits": [
+    "42fa384",
+    "289442a"
+  ],
+  "checks": {
+    "retainedUnitSuite": {
+      "passed": 1652,
+      "failed": 0,
+      "skipped": 2
+    },
+    "retainedPiNativeLoaderPassed": 53,
+    "typechecks": "source, tests and replay compile passed",
+    "build": "passed",
+    "npmPackDryRun": {
+      "files": 2762,
+      "cursorSdkDependencyFiles": 0,
+      "compiledNativeSessionModule": true
+    },
+    "installedSdkDeltaContract": "actual pinned accumulator waits and propagates callback rejection"
+  },
+  "review": {
+    "kind": "manual exact-diff integration and maintainability review",
+    "scope": "all modified source, callers, tests, new session decoder and installed-SDK contract, docs, build and package contents",
+    "corrected": [
+      "Concurrent lineage appends share one pending write and retain original session ownership",
+      "Late resume acknowledgements cannot activate a newly selected branch",
+      "SDK send rejection is observed while lineage persistence is pending",
+      "Duplicate capability notices do not allocate unbounded persistence promises",
+      "Native decoder narrows external values without double type assertions"
+    ],
+    "remainingInChunk": []
+  },
+  "pending": [
+    "Native provider registration and runtime dispatch",
+    "Cloud and usage journal ports and native cleanup durability",
+    "SQLite persistent identity and background origin leases",
+    "Installed assets, commands, tools and all retained feature groups",
+    "Isolated imports, composition, platform execution and live acceptance"
+  ],
+  "liveCalls": 0,
+  "logs": [
+    {
+      "path": "/tmp/rpi-cursor-awaited-all-final.log",
+      "sha256": "2bb0d2cbd2311cd7c38f16220126d57181775643203d2a7d19b8853f88c2c14f"
+    },
+    {
+      "path": "/tmp/rpi-cursor-session-typecheck.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-session-focused.log",
+      "sha256": "dea4bb34697bc4b1c50909472c13ec582fc8d1a4fd53b10da3b7de0042ae70f0"
+    },
+    {
+      "path": "/tmp/rpi-cursor-session-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    {
+      "path": "/tmp/rpi-cursor-session-native.log",
+      "sha256": "9f0e42863fdd979ebf19c3cc235a8ceac00e74c231f1e6cc19281be36c7b6863"
+    },
+    {
+      "path": "/tmp/rpi-cursor-session-pack.json",
+      "sha256": "59fd8377f519ffee681a02926718476da6b8ba72dc11eda20dcd8b5c31f05195"
+    }
+  ]
+}

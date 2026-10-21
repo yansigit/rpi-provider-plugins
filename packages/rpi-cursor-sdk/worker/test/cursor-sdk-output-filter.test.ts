@@ -11,6 +11,25 @@ import { collectOutput } from "./helpers/process-output.js";
 // Dependency execution owns signature drift/confinement; sink replay owns byte
 // framing/restoration, not the timing of real Agent/backend emissions.
 describe("Cursor SDK presentation boundary", () => {
+	it.each([false, true])("drains asynchronous notice persistence and preserves a failed warning: %s", async (fails) => {
+		const output = collectOutput(), restore = installCursorSdkOutputFilter();
+		try {
+			const warning = "shell-parser: tree-sitter natives are unavailable in this artifact; shell command analysis degrades to parsingFailed\n";
+			let acknowledge!: () => void;
+			let finished = false;
+			const pending = withCursorSdkOutputNoticeHandler(async () => {
+				await new Promise<void>(resolve => { acknowledge = resolve; });
+				if (fails) throw new Error("append rejected");
+			}, () => { process.stderr.write(warning); }).then(() => { finished = true; });
+			await Promise.resolve();
+			expect(finished).toBe(false);
+			expect(Buffer.concat(output.stderr).length).toBe(0);
+			acknowledge();
+			await pending;
+			expect(Buffer.concat(output.stderr).toString()).toBe(fails ? warning : "");
+		} finally { restore(); output.restore(); }
+	});
+
 	let installedBootstrapEmitters: Awaited<ReturnType<typeof prepareInstalledBootstrapEmitters>>;
 	beforeAll(async () => { installedBootstrapEmitters = await prepareInstalledBootstrapEmitters(); }, 30_000);
 

@@ -238,19 +238,19 @@ function cleanupEntriesMatch(left: CursorSessionAgentCleanupEntryData, right: Cu
 	return cleanupEntryVerificationKey(left) === cleanupEntryVerificationKey(right);
 }
 
-function appendCleanupEntry(pi: LocalResumeCleanupApi, data: CursorSessionAgentCleanupEntryData): void {
-	pi.appendEntry<CursorSessionAgentCleanupEntryData>(CURSOR_SESSION_AGENT_CLEANUP_ENTRY_TYPE, data);
+async function appendCleanupEntry(pi: LocalResumeCleanupApi, data: CursorSessionAgentCleanupEntryData): Promise<void> {
+	await pi.appendEntry<CursorSessionAgentCleanupEntryData>(CURSOR_SESSION_AGENT_CLEANUP_ENTRY_TYPE, data);
 }
 
-function appendDurableCleanupEntry(
+async function appendDurableCleanupEntry(
 	pi: LocalResumeCleanupApi,
 	ctx: LocalResumeCleanupCommandContext,
 	data: CursorSessionAgentCleanupEntryData,
-): boolean {
+): Promise<boolean> {
 	const sessionFile = ctx.sessionManager.getSessionFile();
 	const previousEntryId = ctx.sessionManager.getBranch().at(-1)?.id;
 	try {
-		appendCleanupEntry(pi, data);
+		await appendCleanupEntry(pi, data);
 	} catch {
 		return false;
 	}
@@ -286,13 +286,13 @@ export async function runCursorSessionAgentCleanupCommand(pi: LocalResumeCleanup
 		...(plan.protectedAgentIds.length ? { protectedAgentIds: plan.protectedAgentIds } : {}),
 	};
 	if (dryRun) {
-		appendCleanupEntry(pi, { action: "dry-run", ...baseEntry });
+		await appendCleanupEntry(pi, { action: "dry-run", ...baseEntry });
 		ctx.ui.notify(formatCleanupPlan(plan), "info");
 		return;
 	}
 	if (plan.candidateAgentIds.length === 0) {
 		try {
-			appendCleanupEntry(pi, { action: "delete", phase: "result", ...baseEntry, deletedAgentIds: [] });
+			await appendCleanupEntry(pi, { action: "delete", phase: "result", ...baseEntry, deletedAgentIds: [] });
 			ctx.ui.notify("No recorded superseded local Cursor SDK agents to delete.", "info");
 		} catch {
 			ctx.ui.notify("No agents were deleted, but the no-op cleanup result could not be recorded.", "error");
@@ -300,7 +300,7 @@ export async function runCursorSessionAgentCleanupCommand(pi: LocalResumeCleanup
 		return;
 	}
 
-	if (!scope.sessionFile || !appendDurableCleanupEntry(pi, ctx, { action: "delete", phase: "intent", ...baseEntry })) {
+	if (!scope.sessionFile || !await appendDurableCleanupEntry(pi, ctx, { action: "delete", phase: "intent", ...baseEntry })) {
 		ctx.ui.notify("Cleanup intent could not be durably recorded. No agents were deleted.", "error");
 		return;
 	}
@@ -345,7 +345,7 @@ export async function runCursorSessionAgentCleanupCommand(pi: LocalResumeCleanup
 	} finally {
 		await Promise.all([...openedStores.values()].map((store) => store.dispose().catch(() => undefined)));
 	}
-	if (!appendDurableCleanupEntry(pi, ctx, {
+	if (!await appendDurableCleanupEntry(pi, ctx, {
 		action: "delete",
 		phase: "result",
 		...baseEntry,
