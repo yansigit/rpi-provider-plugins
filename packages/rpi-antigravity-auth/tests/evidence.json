@@ -640,5 +640,80 @@
       "macOS and Windows execution",
       "live acceptance"
     ]
+  },
+  "vaultNativeAdmission": {
+    "status": "loaded-startup-and-auth-tested-full-vault-acceptance-pending",
+    "hostReference": "Pi 1.3.0",
+    "nativeHost": "fb95b27",
+    "upstream": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+    "fixtures": [
+      {
+        "fixture": "vault-path.json",
+        "sha256": "a29e701fd647300eaf87babe3ce466152555d56642bd2711a125e559e50498c6"
+      },
+      {
+        "fixture": "vault-discovery.json",
+        "sha256": "f3b4fbb5a483dadbb0f79f13d52115ba421b209213f2e035bb7448845e7dd7a5"
+      },
+      {
+        "fixture": "vault-host-auth.json",
+        "sha256": "33a2969b920b3a3dcff89ac8a66fa43d4545bc92da31b290593a4eb1cad48ce5"
+      }
+    ],
+    "counts": {
+      "routeSelections": 81,
+      "accountLists": 1247,
+      "emptyRosterGuidance": 3,
+      "connectionDiscovery": 68,
+      "userConnectionTokens": 21,
+      "referenceAuthResolutions": 60,
+      "loadedStartupConfigurations": 144,
+      "loadedExplicitMarkerRefusals": 96,
+      "loadedPersistentSessionAuthCases": 40
+    },
+    "loadedLinux": [
+      {
+        "script": "native-acceptance.py",
+        "log": "/tmp/rpi-vault-native-basic.log",
+        "sha256": "612503037a111ab14697af41c2ff2699038b697f5bda9740a7a4a89707a4557e",
+        "status": "passed"
+      },
+      {
+        "script": "native-vault-startup.py",
+        "log": "/tmp/rpi-native-vault-startup.log",
+        "sha256": "bb9f37abae5e0b1098f5152727881eb9495fc9726135f5332195f5ee5b953cd9",
+        "status": "passed"
+      },
+      {
+        "script": "native-vault-auth.py",
+        "log": "/tmp/rpi-native-vault-auth.log",
+        "sha256": "9375676024cf89d3e2be6ee5004a01d23bd3900f8d02d2484e7963179cec3969",
+        "status": "passed"
+      }
+    ],
+    "linuxRegression": {
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "log": "/tmp/rpi-vault-native-regression.log",
+      "sha256": "406d6fa740ec8ee2c657e52c388a16cffb66460f7f17267bf2f207b79a36626e",
+      "passed": 63,
+      "failed": 0
+    },
+    "windowsCrossCheck": {
+      "target": "x86_64-pc-windows-gnu",
+      "log": "/tmp/rpi-vault-native-windows.log",
+      "sha256": "9fcc2748dc3f3fe14ef6d5f249a73cb775329f292b29c46afdabb582c5adcd58",
+      "execution": "not tested"
+    },
+    "qualification": "Native library registration and real host credential locks. Exact committed credential/backup bytes (only destination path digest is normalized), auth method availability, original source refusals with an explicit marker, and per-request admission after credentials change in a running RPC session. Pi 1.3 permits inherited API-key login in custody/refusal mode; stored OAuth remains unavailable. Both CLIs ignore an empty --api-key argument; request-level empty-key behavior has a separate host test. RPC auth tests compare refusal phase and credential preservation, not unrelated host envelope presentation or generic auth-error text. Discovery and account-list fixtures compare exact values. No live account or producer was used.",
+    "pending": [
+      "successful loaded vault send and exact HTTP/stream traces",
+      "complete enrollment setup, approval watcher and menus",
+      "full concurrent lifecycle and storage-fault acceptance",
+      "dynamic provider display names and auth-status presentation",
+      "production TLS trust and platform-specific connection/locale diagnostics",
+      "macOS and Windows execution",
+      "live acceptance"
+    ]
   }
 }

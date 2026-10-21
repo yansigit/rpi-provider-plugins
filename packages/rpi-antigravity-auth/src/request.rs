@@ -5,6 +5,7 @@ use crate::{
 };
 use serde_json::{json, Value};
 
+#[derive(Clone)]
 pub struct PreparedRequest {
     pub wire_model: String,
     pub request_id: String,

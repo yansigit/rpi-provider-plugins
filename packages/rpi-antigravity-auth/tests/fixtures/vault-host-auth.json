@@ -1,0 +1,1459 @@
+{
+  "host": "Pi 1.3.0",
+  "cases": [
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": null,
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ],
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "changed-native-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ],
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "changed-access"
+          },
+          "source": "OAuth"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "local",
+      "methods": [
+        "apiKey",
+        "oauth"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": null,
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "changed-native-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ],
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {},
+      "result": {
+        "value": null
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "custody",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": null,
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": null,
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "antigravity-vault-custody"
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "changed-native-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "changed-native-key"
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {},
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ],
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {},
+      "result": {
+        "value": null
+      },
+      "calls": [
+        [
+          "read",
+          "google"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": "explicit-key"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "explicit-key"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": ""
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "ambient-key"
+          },
+          "source": "GEMINI_API_KEY"
+        }
+      },
+      "calls": [
+        [
+          "env",
+          "GEMINI_API_KEY"
+        ]
+      ]
+    },
+    {
+      "mode": "refusing",
+      "methods": [
+        "apiKey"
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "changed-access",
+        "refresh": "changed-refresh",
+        "expires": 4102444800000
+      },
+      "override": {
+        "apiKey": "antigravity-vault-custody"
+      },
+      "result": {
+        "value": {
+          "auth": {
+            "apiKey": "antigravity-vault-custody"
+          },
+          "source": "stored credential"
+        }
+      },
+      "calls": []
+    }
+  ]
+}

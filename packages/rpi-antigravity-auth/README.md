@@ -244,3 +244,21 @@ retries once only when the same credential/account has a different record versio
 The tests preserve kept-receipt handling, retry-body cancellation, final-attempt
 failure reporting and cancellation ordering. These component tests do not yet
 qualify the loaded provider's custody path or live inference.
+
+Native startup now synchronizes the Google slot through the host's credential-file
+lock, and session startup repeats that transition. Inherited child handlers keep
+the parent's slot unchanged. Per-attempt auth preserves Pi 1.3's explicit/stored
+API-key precedence and disables OAuth resolution in custody/refusal mode. Pi 1.3
+still offers its inherited Gemini API-key login there; the vault stream rejects
+any key other than its marker. The source checks fresh enrollment authority before
+local OAuth operations and every custody request.
+
+The loaded Linux tests cover 144 original startup configurations and 96 refusal
+streams with an explicit marker, plus 40 persistent-session auth cases after the
+stored credential changes. Discovery matches 68 original filesystem cases and
+21 user tokens; account presentation matches 1,247 original lists and 81 request
+selections. These tests use private temporary files and fake credentials. They do
+not yet establish successful loaded vault inference, enrollment UI, or live access.
+The new host capabilities are documented at `pi-rust@fb95b27`; the package probes
+`auth.providerPolicy`, `context.inspect`, initialization, and locked slot transitions
+before registration. Existing ABI offsets and package versions are unchanged.

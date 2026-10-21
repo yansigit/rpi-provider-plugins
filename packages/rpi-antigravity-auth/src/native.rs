@@ -1,4 +1,5 @@
 //! C ABI ownership boundary. No request credentials live in global state.
+mod vault;
 use crate::{
     auth::{self, network::Network, Admission},
     catalog, driver,
@@ -18,29 +19,36 @@ use tokio_util::sync::CancellationToken;
 
 struct Runtime {
     context: ProviderContext,
-    shared: Shared,
+    shared: Arc<Shared>,
+    vault: Arc<vault::State>,
+    client: Client,
     stopping: CancellationToken,
 }
-impl Default for Runtime {
-    fn default() -> Self {
+impl Runtime {
+    fn new(client: Client) -> Self {
         Self {
             context: ProviderContext::new(),
-            shared: Shared::default(),
+            shared: Arc::new(Shared::default()),
+            vault: Arc::new(vault::State::default()),
+            client,
             stopping: CancellationToken::new(),
         }
     }
 }
-struct Gate(CancellationToken);
+struct Gate {
+    signal: CancellationToken,
+    vault: Arc<vault::State>,
+}
 impl Admission for Gate {
     async fn check(&self) -> Result<(), String> {
-        if self.0.is_cancelled() {
+        if self.signal.is_cancelled() {
             Err("This operation was aborted".into())
         } else {
-            Ok(())
+            self.vault.assert_local().await
         }
     }
     fn cancelled(&self) -> bool {
-        self.0.is_cancelled()
+        self.signal.is_cancelled()
     }
 }
 fn methods() -> Value {
@@ -75,6 +83,9 @@ pub fn register(api: &PluginApi) -> i32 {
         let runtime = api
             .register_provider_runtime
             .ok_or("rpi-antigravity-auth requires provider preflight; upgrade rpi")?;
+        let events = api
+            .register_event_result_handler
+            .ok_or("rpi-antigravity-auth requires awaited lifecycle events; upgrade rpi")?;
         let client = Client::new(api)?.scoped()?;
         // A loader may run inside a host runtime; never nest Tokio block_on on that thread.
         std::thread::scope(|scope| {
@@ -89,6 +100,12 @@ pub fn register(api: &PluginApi) -> i32 {
                                 "assistant.durationMs",
                                 "json.exactNumbers",
                                 "auth.publicErrors",
+                                "auth.providerRequest",
+                                "auth.providerPolicy",
+                                "auth.dynamicMethods",
+                                "auth.credentialStoreLock",
+                                "providers.initialize",
+                                "context.inspect",
                             ],
                             signal.clone(),
                         ),
@@ -99,7 +116,7 @@ pub fn register(api: &PluginApi) -> i32 {
                 .join()
         })
         .map_err(|_| "Antigravity capability worker stopped".to_owned())???;
-        let state = Box::into_raw(Box::new(Runtime::default()));
+        let state = Box::into_raw(Box::new(Runtime::new(client)));
         let rc = lifecycle(begin_shutdown, finish_shutdown, state.cast());
         if rc != 0 {
             unsafe {
@@ -108,8 +125,9 @@ pub fn register(api: &PluginApi) -> i32 {
             return Err("Antigravity lifecycle registration failed".into());
         }
         for rc in [
+            events(sdk::EventTag::SessionStart,session_start,free_string,state.cast()),
             declare(StbStringRef::from_str(&json!({"providers":[{"id":catalog::PROVIDER,"replaceCatalog":true,"models":models(),"apiKeyEnv":"GEMINI_API_KEY","requiresAuth":true}]}).to_string())),
-            runtime(StbStringRef::from_str(&json!({"version":1,"id":catalog::PROVIDER,"actions":["preflight","authMethods"]}).to_string()),runtime_request,free_string,state.cast()),
+            runtime(StbStringRef::from_str(&json!({"version":1,"id":catalog::PROVIDER,"actions":["preflight","authMethods","initialize","credentialStore","requestAuth"]}).to_string()),runtime_request,free_string,state.cast()),
             auth(StbStringRef::from_str(&json!({"version":1,"id":catalog::PROVIDER,"displayName":"Google Antigravity (CortexKit)","apiKey":true,"oauth":true,"methods":methods()}).to_string()),auth_request,free_string,state.cast()),
             stream(StbStringRef::from_str(catalog::PROVIDER),StbStringRef::from_str(catalog::BASE_URL),StbStringRef::from_str(catalog::API),stream_request,free_string,state.cast()),
         ] {
@@ -129,13 +147,15 @@ extern "C" fn begin_shutdown(context: *mut c_void) {
     sdk::guard_or((), || {
         let state = unsafe { &*context.cast::<Runtime>() };
         state.stopping.cancel();
-        state.context.begin_shutdown();
     });
 }
 extern "C" fn finish_shutdown(context: *mut c_void) -> i32 {
     sdk::guard_or(1, || {
         let state = unsafe { Box::from_raw(context.cast::<Runtime>()) };
         state.stopping.cancel();
+        let _ = state
+            .context
+            .run(&CancellationToken::new(), state.vault.close());
         state.context.finish_shutdown();
         0
     })
@@ -149,29 +169,140 @@ fn output(out: *mut StbString, value: Value) -> i32 {
     }
     0
 }
+fn execute<T: Send + 'static>(
+    state: &Runtime,
+    signal: &CancellationToken,
+    cancelled: impl Fn() -> bool,
+    work: impl Future<Output = Result<T, String>> + Send + 'static,
+) -> Result<T, String> {
+    if cancelled() {
+        signal.cancel();
+    }
+    state.context.run(signal, async {
+        let task = tokio::spawn(work);
+        poll_cancel(signal, cancelled, task)
+            .await
+            .map_err(|_| "Antigravity operation stopped".to_owned())?
+    })?
+}
 extern "C" fn runtime_request(
     input: StbStringRef,
-    _: *const AuthRequestControl,
+    control: *const AuthRequestControl,
     out: *mut StbString,
-    _: *mut c_void,
+    context: *mut c_void,
 ) -> i32 {
     sdk::guard_or(1, || {
+        if out.is_null() || context.is_null() {
+            return 2;
+        }
+        let state = unsafe { &*context.cast::<Runtime>() };
         let result = (|| {
             let value: Value = serde_json::from_str(unsafe { input.as_str() })
-                .map_err(|_| "Invalid Antigravity runtime request")?;
-            match value["action"].as_str() {
-                Some("preflight") => {
-                    let id = value["input"]["modelId"]
-                        .as_str()
-                        .ok_or("Invalid Antigravity model ID")?;
-                    if catalog::is_retired(id) {
-                        return Err(catalog::RETIRED_MESSAGE);
+                .map_err(|_| "Invalid Antigravity runtime request".to_owned())?;
+            if !control.is_null()
+                && unsafe { control.cast::<u32>().read() }
+                    < std::mem::size_of::<AuthRequestControl>() as u32
+            {
+                return Err("Short Antigravity cancellation control".into());
+            }
+            // This callback is already admitted under the host's lock, including during shutdown.
+            if value["action"] == "credentialStore" {
+                return state.vault.transaction(&value["input"]);
+            }
+            let vault = state.vault.clone();
+            let client = state.client.scoped()?;
+            let signal = state.stopping.child_token();
+            let work_signal = signal.clone();
+            execute(
+                state,
+                &signal,
+                || unsafe { control.as_ref() }.is_some_and(|v| (v.is_cancelled)(v.user_data) != 0),
+                async move {
+                    if work_signal.is_cancelled() {
+                        return Err("This operation was aborted".into());
+                    }
+                    match value["action"].as_str() {
+                        Some("preflight") => {
+                            let id = value["input"]["modelId"]
+                                .as_str()
+                                .ok_or("Invalid Antigravity model ID")?;
+                            if catalog::is_retired(id) {
+                                return Err(catalog::RETIRED_MESSAGE.into());
+                            }
+                            Ok(Value::Null)
+                        }
+                        Some("initialize") => {
+                            vault.initialize(std::path::Path::new(
+                                value["input"]["agentDir"]
+                                    .as_str()
+                                    .ok_or("Missing native agent directory")?,
+                            ))?;
+                            let _ = vault.synchronize(&client, work_signal).await;
+                            Ok(Value::Null)
+                        }
+                        Some("authMethods") => Ok(if matches!(vault.mode(), vault::Mode::Local) {
+                            methods()
+                        } else {
+                            json!([methods()[0].clone()])
+                        }),
+                        Some("requestAuth") => Ok(if matches!(vault.mode(), vault::Mode::Local) {
+                            Value::Null
+                        } else {
+                            json!({"resolve":{"apiKey":true,"oauth":false,"fallbackApiKey":crate::vault::source::MARKER}})
+                        }),
+                        _ => Err("Unknown Antigravity runtime operation".into()),
+                    }
+                },
+            )
+        })();
+        output(
+            out,
+            match result {
+                Ok(result) => json!({"version":1,"result":result}),
+                Err(error) => json!({"version":1,"error":error}),
+            },
+        )
+    })
+}
+extern "C" fn session_start(
+    _: StbStringRef,
+    control: *const AuthRequestControl,
+    out: *mut StbString,
+    context: *mut c_void,
+) -> i32 {
+    sdk::guard_or(1, || {
+        if out.is_null() || context.is_null() {
+            return 2;
+        }
+        let state = unsafe { &*context.cast::<Runtime>() };
+        let result = (|| {
+            if !control.is_null()
+                && unsafe { control.cast::<u32>().read() }
+                    < std::mem::size_of::<AuthRequestControl>() as u32
+            {
+                return Err("Short Antigravity cancellation control".into());
+            }
+            let client = state.client.scoped()?;
+            let vault = state.vault.clone();
+            let signal = state.stopping.child_token();
+            let work_signal = signal.clone();
+            execute(
+                state,
+                &signal,
+                || unsafe { control.as_ref() }.is_some_and(|v| (v.is_cancelled)(v.user_data) != 0),
+                async move {
+                    let context = client
+                        .request(
+                            json!({"port":"context","action":"inspect"}),
+                            work_signal.clone(),
+                        )
+                        .await?;
+                    if context["owner"]["child"] != true {
+                        vault.synchronize(&client, work_signal).await?;
                     }
                     Ok(Value::Null)
-                }
-                Some("authMethods") => Ok(methods()),
-                _ => Err("Unknown Antigravity runtime operation"),
-            }
+                },
+            )
         })();
         output(
             out,
@@ -207,17 +338,12 @@ extern "C" fn auth_request(
             unsafe { control.as_ref() }
                 .is_some_and(|control| (control.is_cancelled)(control.user_data) != 0)
         };
-        let result = state
-            .context
-            .run(
-                &signal,
-                poll_cancel(
-                    &signal,
-                    cancelled,
-                    handle_auth(state, &value, signal.clone()),
-                ),
-            )
-            .and_then(|result| result);
+        let shared = state.shared.clone();
+        let vault = state.vault.clone();
+        let work_signal = signal.clone();
+        let result = execute(state, &signal, cancelled, async move {
+            handle_auth(shared, vault, &value, work_signal).await
+        });
         output(
             out,
             match result {
@@ -228,13 +354,25 @@ extern "C" fn auth_request(
     })
 }
 async fn handle_auth(
-    state: &Runtime,
+    shared: Arc<Shared>,
+    vault: Arc<vault::State>,
     request: &Value,
     signal: CancellationToken,
 ) -> Result<Value, String> {
     let input = &request["input"];
-    let gate = Gate(signal.clone());
-    gate.check().await?;
+    let gate = Gate {
+        signal: signal.clone(),
+        vault,
+    };
+    if signal.is_cancelled() {
+        return Err("This operation was aborted".into());
+    }
+    if request["action"] == "refresh"
+        || (request["action"] == "login" && input["methodId"] == "oauth")
+        || (request["action"] == "continue" && input["continuation"]["method"] == "oauth")
+    {
+        gate.check().await?;
+    }
     let (kind, payload) = match request["action"].as_str() {
         Some("login") if input["methodId"] == "api_key" => (
             "interaction",
@@ -286,12 +424,7 @@ async fn handle_auth(
                 .as_str()
                 .ok_or("Invalid Antigravity access credential")?;
             let refresh = input["credential"]["refresh"].as_str().unwrap_or_default();
-            state
-                .shared
-                .credentials
-                .lock()
-                .unwrap()
-                .remember(access, refresh);
+            shared.credentials.lock().unwrap().remember(access, refresh);
             ("auth", json!({"apiKey":access}))
         }
         Some("resolveApiKey") => {
@@ -374,7 +507,15 @@ extern "C" fn stream_request(
             unsafe { control.as_ref() }
                 .is_some_and(|control| (control.is_cancelled)(control.user_data, 0) != 0)
         };
-        let work = async {
+        let shared = state.shared.clone();
+        let vault = state.vault.clone();
+        let stopping = state.stopping.clone();
+        let work_signal = signal.clone();
+        let value_for_work = value.clone();
+        let data = data as usize;
+        let work = async move {
+            let value = value_for_work;
+            let signal = work_signal;
             let options = &value["options"];
             let mut environment: HashMap<String, String> = if options["authMode"] == "replace" {
                 HashMap::new()
@@ -388,19 +529,23 @@ extern "C" fn stream_request(
                     }
                 }
             }
-            let port = Arc::new(Network::new(environment, state.stopping.clone())?);
-            let gate = Gate(signal.clone());
-            let source = Local {
-                shared: &state.shared,
-                port,
-                admission: &gate,
-            };
+            let port = Arc::new(Network::new(environment, stopping)?);
             let mut sink = Sink {
                 emit,
-                context: data as usize,
+                context: data,
                 signal: signal.clone(),
             };
-            Ok::<_, String>(
+            let mode = vault.mode();
+            let message = if matches!(mode, vault::Mode::Local) {
+                let gate = Gate {
+                    signal: signal.clone(),
+                    vault,
+                };
+                let source = Local {
+                    shared: &shared,
+                    port,
+                    admission: &gate,
+                };
                 driver::run(
                     &source,
                     &value["model"],
@@ -410,13 +555,33 @@ extern "C" fn stream_request(
                     options["responseMetadata"] == true,
                     &mut sink,
                 )
-                .await,
-            )
+                .await
+            } else {
+                let instance = vault.vault()?;
+                let refusal = match &mode {
+                    vault::Mode::Refusing(reason) => Some(reason.as_str()),
+                    _ => None,
+                };
+                let source = crate::vault::stream::Stream {
+                    shared: &shared,
+                    port,
+                    vault: &instance,
+                    refusal,
+                };
+                driver::run(
+                    &source,
+                    &value["model"],
+                    &value["context"],
+                    options,
+                    signal.clone(),
+                    options["responseMetadata"] == true,
+                    &mut sink,
+                )
+                .await
+            };
+            Ok::<_, String>(message)
         };
-        let result = state
-            .context
-            .run(&signal, poll_cancel(&signal, cancelled, work))
-            .and_then(|result| result);
+        let result = execute(state, &signal, cancelled, work);
         let message = result.unwrap_or_else(|error| {
             let mut message = State::new(&value["model"], 0).output;
             message["stopReason"] = if signal.is_cancelled() {
