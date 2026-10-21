@@ -25,6 +25,24 @@
         "RUSTFLAGS": "-D warnings",
         "CARGO_BUILD_JOBS": "2"
       }
+    },
+    {
+      "command": "bun test scripts/conversion-reference.test.ts",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-conversion-reference-3.log",
+      "sha256": "72800a8e0fa691f05b7dfda05b656a47465c7e4cc7d8f961d0d908fae59a7a3a"
+    },
+    {
+      "command": "cargo test -p rpi-antigravity-auth --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-conversion-final.log",
+      "sha256": "cbdc6e9fe772d6ce4cf64c5962bf469f7822b0a6b8f2a1e0dc1db697ee4ff744"
+    },
+    {
+      "command": "cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-conversion-msrv.log",
+      "sha256": "98657b78c363ad70ae923eebdbfe4edb019cc3dd663dcf10885b007517caf839"
     }
   ],
   "notTested": [
@@ -36,6 +54,17 @@
   ],
   "fixtures": {
     "tests/fixtures/catalog.json": "2fd5a6f891926542c73296669141d8568d587f30f0d65f5b23da9f0285ca9440",
-    "src/catalog.json": "aa02606c92be76224ffb2714c76c581187ddb127e87af65636b5c2151580f7df"
+    "src/catalog.json": "aa02606c92be76224ffb2714c76c581187ddb127e87af65636b5c2151580f7df",
+    "tests/fixtures/conversion.json": "379f97d262c866206e794af6f045e34425dcb2637daa829833abc9eefbbaf428"
+  },
+  "conversion": {
+    "referenceHost": "1.3.0",
+    "instrumentedReferenceTests": 162,
+    "schemaTraces": 803,
+    "requestTraces": 52,
+    "compared": [
+      "values",
+      "fieldOrder"
+    ]
   }
 }
