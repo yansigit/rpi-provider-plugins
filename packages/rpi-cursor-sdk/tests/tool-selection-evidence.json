@@ -1,0 +1,67 @@
+{
+  "status": "Authoritative selection state and ordered replay choices verified",
+  "hostMinimumCommit": "c105655c62fe2ee26ad4465b9f39d29b2f72d3eb",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "node": "24.22.0",
+  "checks": {
+    "retainedSuite": {
+      "log": "/tmp/rpi-cursor-tool-selection-suite-final.log",
+      "sha256": "4b53d4f1f69be890626bb8344c9f4a525ba0dc72922fea715d80604d5c4197bf",
+      "passed": 1710,
+      "skipped": 2
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-tool-selection-types-final.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-tool-selection-build-final.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    "stage": {
+      "log": "/tmp/rpi-cursor-tool-selection-stage-final.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    "pack": {
+      "log": "/tmp/rpi-cursor-tool-selection-pack-final.log",
+      "sha256": "0dc107c1d3037331e9bf5d6f273735a20ad68687a1b1cea7224bc2bd8663f6f6"
+    },
+    "nativeBoundary": {
+      "log": "/tmp/rpi-cursor-tool-selection-native-complete.log",
+      "sha256": "ba6e3dee1b7008445ddc259f53271fd06e2bf308e9e1c35456de846e3f8483c4",
+      "passed": 8
+    },
+    "dllBuild": {
+      "log": "/tmp/rpi-cursor-tool-selection-dll-build.log",
+      "sha256": "10b16cd6a965c0e8ff4b0f24d39daf55f8f61707828df95057ddceefd5267352"
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-tool-selection-dll-host.log",
+      "sha256": "c201a572557099459ed86011ee32c60679e691339750a60621284df6a2373379",
+      "passed": 3
+    },
+    "rust": {
+      "log": "/tmp/rpi-cursor-tool-selection-rust.log",
+      "sha256": "5a34453a5402b2312a27cfa66bbd985f7ab164ed3791209eda25a6b18f989a28",
+      "passed": 34
+    }
+  },
+  "review": {
+    "kind": "Manual deep maintainability review of exact staged diff, including host selection contract, validation, source callers, fixtures, SDK pin, lock and documentation",
+    "resolved": [
+      "Replace shared mutable replay-selection guesses with atomic host state",
+      "Recover committed choices before acknowledgement and across out-of-order snapshots",
+      "Preserve interleaved executable/replay order",
+      "Reject malformed or mismatched acknowledgements without overwriting newer selections",
+      "Never enable a host executable solely from presentation state",
+      "Clear external same-name selections and ignore prior runtime state after reload"
+    ]
+  },
+  "notTested": [
+    "Per-request restricted tool projection",
+    "Optional builtin bridge when builtins omitted",
+    "Full fake-SDK/host bridge/replay execution counts",
+    "Live Cursor inference or cloud mutations",
+    "macOS and Windows native loading"
+  ]
+}

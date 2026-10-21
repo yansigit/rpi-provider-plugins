@@ -1,10 +1,10 @@
 import { expect, it, vi } from "vitest";
-import { contextSnapshot, NativeEffects, nativeContext, type HostRequest } from "../../src/rpi/context.js";
+import { contextSnapshot, toolSelection, NativeEffects, nativeContext, type HostRequest } from "../../src/rpi/context.js";
 import type { NativeSessionManager } from "../../src/rpi/session.js";
 import { __testUtils as scopeTests, registerCursorSessionScope, getCursorSessionProjectTrusted } from "../../src/cursor-session-scope.js";
 import { createEventHarness, createExtensionTestContext } from "../helpers/pi-harness.js";
 
-const snapshot = () => contextSnapshot({ cwd: "/fixture", mode: "rpc", hasUI: true, projectTrusted: false, projectTrustResolved: false, toolRegistration: { disabled: false, allow: null, deny: [] },
+const snapshot = () => contextSnapshot({ cwd: "/fixture", mode: "rpc", hasUI: true, projectTrusted: false, projectTrustResolved: false, toolRegistration: { disabled: false, allow: null, deny: [] }, toolSelection: { revision: "0", state: null },
 	isIdle: true, hasPendingMessages: false, systemPrompt: "actual prompt", sessionId: "session", tools: [], identity: null,
 	model: { id: "fixture", api: "cursor-sdk", provider: "cursor", name: "Fixture", reasoning: false, input: ["text"],
 		cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 100, maxTokens: 20 },
@@ -65,4 +65,10 @@ it("maps dialog controls and outcomes without inventing a choice or forwarding a
 	});
 	request.mockResolvedValueOnce({ apiKey: 42 });
 	await expect(context.modelRegistry.getProviderAuth("cursor")).rejects.toThrow("authentication text");
+});
+
+it("validates exact unsigned selection revisions and required state", () => {
+	for (const revision of [undefined, 0, "-1", "01", "1.5", "18446744073709551616"]) expect(() => toolSelection({ revision, state: null })).toThrow();
+	expect(() => toolSelection({ revision: "0" })).toThrow();
+	expect(toolSelection({ revision: "18446744073709551615", state: null }).revision).toBe("18446744073709551615");
 });

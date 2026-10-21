@@ -35,6 +35,7 @@ for (const mode of ["print", "tui"]) test(`packaged ${mode} dispatcher runs reta
 	const session = { metadata: { id: "fixture-session", createdAt: 1000 }, revision: 0, name: null, labels: {}, entries: [], branches: [{ lane: "main", revision: 0, leafId: null }] };
 	const origins = new Set(), trace = [], failures = [];
 	let originNumber = 0, revision = 0, operation = null, appendGate = Promise.resolve();
+	let toolSelection = { revision: "0", state: null };
 	const view = () => ({ snapshot: structuredClone(session), leafId: session.branches[0].leafId, branchRevision: 0,
 		projection: { model: null, thinkingLevel: "off", entries: session.entries.map(entry => ({ sourceEntry: entry, messages: [] })) } });
 	async function host(method, input) {
@@ -48,12 +49,13 @@ for (const mode of ["print", "tui"]) test(`packaged ${mode} dispatcher runs reta
 			case "context":
 				if (input.action === "flags") return { "cursor-no-fast": true };
 				assert.equal(input.action, "snapshot");
-				return { cwd, mode, hasUI: mode === "tui", projectTrusted: false, projectTrustResolved: false, toolRegistration: { disabled: false, allow: null, deny: [] }, isIdle: operation === null, hasPendingMessages: false,
+				return { cwd, mode, hasUI: mode === "tui", projectTrusted: false, projectTrustResolved: false, toolRegistration: { disabled: false, allow: null, deny: [] }, toolSelection: structuredClone(toolSelection), isIdle: operation === null, hasPendingMessages: false,
 					systemPrompt: "native prompt", sessionId: session.metadata.id, model: publicModel, tools: [...active], identity: operation };
 			case "tools":
 				if (input.action === "setActive") {
 					assert(input.tools.every(name => hostTools.some(tool => tool.name === name)), "presentation-only tools must never enter the executable host registry");
-					active = [...input.tools]; return null;
+					active = [...input.tools]; toolSelection = { revision: String(BigInt(toolSelection.revision) + 1n), state: structuredClone(input.state) };
+					return { tools: [...active], selection: structuredClone(toolSelection) };
 				}
 				assert.equal(input.action, "inspect"); return hostTools;
 			case "auth": assert.equal(input.action, "resolve"); return null;

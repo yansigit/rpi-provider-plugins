@@ -62,8 +62,9 @@ export class NativeCursorRuntime {
 			appendEntry: async (kind, data) => { await this.manager.origin().append(kind, data); },
 			getActiveTools: () => [...frame().active],
 			setActiveTools: names => {
-				const current = frame(); const hostTools = this.toolSurface.activate(current, names);
-				current.effects.add(() => current.request("native", { port: "tools", action: "setActive", tools: hostTools }));
+				const current = frame(); const change = this.toolSurface.activate(current, names);
+				current.effects.add(async () => this.toolSurface.acknowledge(current, change,
+					await current.request("native", { port: "tools", action: "setActive", tools: change.tools, state: change.state })));
 			},
 			getAllTools: () => this.toolSurface.all(frame()),
 			toolsChanged: tools => { this.toolSurface.registered = tools; },
@@ -124,7 +125,7 @@ export class NativeCursorRuntime {
 			if (call.signal.aborted) abort();
 			const request: HostRequest = (method, input) => this.standing.host("scoped", { scope: origin.origin, method, input }, call.signal);
 			const effects = new NativeEffects();
-			const frame: Frame = { origin, request, effects, ...this.toolSurface.capture(tools as NativeTools, snapshot.tools, snapshot.toolRegistration),
+			const frame: Frame = { origin, request, effects, ...this.toolSurface.capture(tools as NativeTools, snapshot.tools, snapshot.toolSelection, snapshot.toolRegistration),
 				context: nativeContext(snapshot, this.manager, controller?.signal, request, effects, () => this.extension.provider().getModels()) };
 			const previous = this.selected;
 			this.manager.select(origin); this.selected = frame;

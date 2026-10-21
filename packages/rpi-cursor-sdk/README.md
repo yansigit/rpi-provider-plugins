@@ -178,3 +178,9 @@ An explicitly empty host selection disables executable bridge tools, and retaine
 hooks preserve that selection. Local replay declarations honor the host's captured
 allowlist, exclusions and `--no-tools` setting. Startup and reload supply the same
 policy used to filter real registrations; missing or malformed policy is rejected.
+
+`tools.selectionState` commits local replay choices with the host selection and
+returns its exact revision. Each worker tags its presentation state with a fresh
+runtime ID, so snapshots recover their own selection even before an acknowledgement
+arrives. Repeated external selections clear that state, and a fresh worker ignores
+the previous worker's choices. Late acknowledgements cannot replace newer choices.

@@ -6,16 +6,25 @@ import { bindNativeSessionCallback, trackNativeSessionWork } from "./session-wor
 
 export type HostRequest = (method: string, input: Record<string, unknown>) => Promise<unknown>;
 export type NativeToolPolicy = { disabled: boolean; allow: string[] | null; deny: string[] };
+export type NativeToolSelection = { revision: string; state: unknown };
+export function toolSelection(value: unknown): NativeToolSelection {
+	if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid native tool selection");
+	const selection = value as Partial<NativeToolSelection>;
+	if (typeof selection.revision !== "string" || !/^(0|[1-9][0-9]{0,19})$/.test(selection.revision) ||
+		BigInt(selection.revision) > 18446744073709551615n || !("state" in selection)) throw new Error("Invalid native tool selection");
+	return selection as NativeToolSelection;
+}
 export type NativeContextSnapshot = {
 	cwd: string; mode: ExtensionContext["mode"]; hasUI: boolean; projectTrusted: boolean;
 	projectTrustResolved: boolean;
 	isIdle: boolean; hasPendingMessages: boolean; systemPrompt: string; sessionId: string;
 	model: Omit<Model<Api>, "baseUrl" | "headers">; thinkingLevel?: ExtensionContext["thinkingLevel"];
-	tools: string[]; toolRegistration: NativeToolPolicy; identity: { operationId: string; purpose: string } | null;
+	tools: string[]; toolRegistration: NativeToolPolicy; toolSelection: NativeToolSelection; identity: { operationId: string; purpose: string } | null;
 };
 export function contextSnapshot(value: unknown): NativeContextSnapshot {
 	if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid native context snapshot");
 	const input = value as Record<string, unknown>;
+	toolSelection(input.toolSelection);
 	for (const key of ["cwd", "systemPrompt", "sessionId"]) if (typeof input[key] !== "string") throw new Error("Invalid native context text");
 	for (const key of ["hasUI", "projectTrusted", "projectTrustResolved", "isIdle", "hasPendingMessages"]) if (typeof input[key] !== "boolean") throw new Error("Invalid native context state");
 	if (!["tui", "rpc", "json", "print"].includes(String(input.mode)) || !Array.isArray(input.tools) || input.tools.some(name => typeof name !== "string")) {
