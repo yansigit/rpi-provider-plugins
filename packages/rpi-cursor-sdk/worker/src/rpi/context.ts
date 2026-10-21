@@ -21,6 +21,13 @@ export type NativeContextSnapshot = {
 	model: Omit<Model<Api>, "baseUrl" | "headers">; thinkingLevel?: ExtensionContext["thinkingLevel"];
 	tools: string[]; toolRegistration: NativeToolPolicy; toolSelection: NativeToolSelection; identity: { operationId: string; purpose: string } | null;
 };
+export function nativeModel(value: unknown, models: readonly Model<Api>[]): Model<Api> {
+	if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid native context model");
+	const model = value as Record<string, unknown>;
+	if (typeof model.id !== "string" || typeof model.provider !== "string" || typeof model.api !== "string" || "headers" in model || "baseUrl" in model) throw new Error("Invalid public native context model");
+	return models.find(owned => owned.id === model.id && owned.provider === model.provider)
+		?? { ...value as NativeContextSnapshot["model"], baseUrl: "" };
+}
 export function contextSnapshot(value: unknown): NativeContextSnapshot {
 	if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid native context snapshot");
 	const input = value as Record<string, unknown>;
@@ -34,9 +41,7 @@ export function contextSnapshot(value: unknown): NativeContextSnapshot {
 	const names = (value: unknown): value is string[] => Array.isArray(value) && value.every(name => typeof name === "string");
 	if (!policy || typeof policy !== "object" || typeof policy.disabled !== "boolean" ||
 		(policy.allow !== null && !names(policy.allow)) || !names(policy.deny) || (policy.ceiling !== undefined && !names(policy.ceiling))) throw new Error("Invalid native tool registration policy");
-	if (!input.model || typeof input.model !== "object" || Array.isArray(input.model)) throw new Error("Invalid native context model");
-	const model = input.model as Record<string, unknown>;
-	if (typeof model.id !== "string" || typeof model.provider !== "string" || typeof model.api !== "string" || "headers" in model || "baseUrl" in model) throw new Error("Invalid public native context model");
+	nativeModel(input.model, []);
 	if (input.identity !== null) {
 		if (!input.identity || typeof input.identity !== "object" || !("operationId" in input.identity) ||
 			typeof input.identity.operationId !== "string" || !("purpose" in input.identity) || typeof input.identity.purpose !== "string") throw new Error("Invalid native operation identity");
@@ -125,8 +130,7 @@ export function nativeContext(snapshot: NativeContextSnapshot, manager: NativeSe
 	};
 	const context: ExtensionContext = {
 		cwd: snapshot.cwd, mode: snapshot.mode, hasUI: snapshot.hasUI, sessionManager: manager,
-		model: models().find(model => model.id === snapshot.model.id && model.provider === snapshot.model.provider)
-			?? { ...snapshot.model, baseUrl: "" },
+		model: nativeModel(snapshot.model, models()),
 		thinkingLevel: snapshot.thinkingLevel, signal,
 		isIdle: () => snapshot.isIdle, isProjectTrusted: () => snapshot.projectTrusted,
 		hasPendingMessages: () => snapshot.hasPendingMessages, getSystemPrompt: () => snapshot.systemPrompt,

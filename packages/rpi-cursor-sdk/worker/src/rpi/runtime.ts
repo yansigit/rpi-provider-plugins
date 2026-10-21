@@ -4,7 +4,7 @@ import type { Api, Context, Model } from "@earendil-works/pi-ai";
 import { NativeCursorExtension } from "./extension.js";
 import { cursorNativeAuth, nativeRequestAuth } from "./auth.js";
 import { NativeCursorCatalog } from "./catalog.js";
-import { contextSnapshot, nativeContext, NativeEffects, type HostRequest, type NativeTools } from "./context.js";
+import { contextSnapshot, nativeContext, nativeModel, NativeEffects, type HostRequest, type NativeTools } from "./context.js";
 import { NativeSessionManager, NativeSessionOrigin } from "./session.js";
 import { NativeSessionWork } from "./session-work.js";
 import type { WorkerCall } from "./peer.js";
@@ -182,6 +182,11 @@ export class NativeCursorRuntime {
 				const event: unknown = { ...raw };
 				const fields = object(event);
 				if (fields.type === "before_provider_headers") throw new Error("Cursor header receipts are private to each stream");
+				if (fields.type === "model_select") {
+					const models = this.extension.provider().getModels();
+					fields.model = nativeModel(fields.model, models);
+					if (fields.previousModel !== undefined) fields.previousModel = nativeModel(fields.previousModel, models);
+				}
 				if (fields.type === "session_before_compact" || fields.type === "session_before_tree") fields.signal = frame.context.signal ?? call.signal;
 				if (fields.type === "session_start") this.started = true;
 				const result = await this.extension.event(event as ExtensionEvent);

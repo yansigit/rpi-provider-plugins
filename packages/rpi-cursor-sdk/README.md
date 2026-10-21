@@ -217,3 +217,11 @@ test runs 70 consecutive cancelled compactions, exceeding the worker's 64 live
 operation limit, and verifies shutdown and reaping. The host records the Pi 1.3.0
 lifecycle projection and remaining compaction gaps in
 `docs/provider-parity/host-compaction-results.json`.
+
+`events.selectionDetails` supplies committed name changes and explicit
+set/cycle/restore model selections. Public event models exclude host credential
+headers and endpoints; the worker restores its own catalog descriptors before
+calling the retained handlers. Cursor's original provider-or-API identity check
+also keeps wrappers using `cursor-sdk` active. The packaged TUI test checks
+switching away and back, while the installed-library test exercises the host
+selection path. See `tests/selection-evidence.json`.

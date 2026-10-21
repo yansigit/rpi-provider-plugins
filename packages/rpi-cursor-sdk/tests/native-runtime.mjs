@@ -113,6 +113,11 @@ for (const mode of ["print", "tui"]) test(`packaged ${mode} dispatcher runs reta
 	assert(revision > 0, "catalog refresh must reenter the worker while session_start awaits its host call");
 	assert.equal(trace.filter(item => item.input.port === "tools" && item.input.action === "publish").length, mode === "tui" ? 8 : 0);
 	if (mode === "tui") assert(hostTools.some(tool => tool.binding?.kind === "recorded"));
+	for (const selected of [{ ...publicModel, provider: "fixture-alias" }, { ...publicModel, provider: "fixture-other", api: "fixture" }, publicModel]) {
+		operation = { operationId: `selection-${selected.provider}`, purpose: "model_select" };
+		await begin("extension.event", { event: { type: "model_select", model: selected, previousModel: publicModel, source: "set" } }).result();
+		if (mode === "tui") assert.equal(active.includes("cursor"), selected.provider === "cursor" || selected.api === "cursor-sdk");
+	}
 	for (let index = 0; index < 70; index++) {
 		operation = { operationId: `info-${index}`, purpose: "session_info_changed" };
 		await begin("extension.event", { event: { type: "session_info_changed", name: `name-${index}` } }).result();

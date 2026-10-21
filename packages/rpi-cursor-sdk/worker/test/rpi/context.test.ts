@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest";
-import { contextSnapshot, toolSelection, NativeEffects, nativeContext, type HostRequest } from "../../src/rpi/context.js";
+import { contextSnapshot, toolSelection, NativeEffects, nativeContext, nativeModel, type HostRequest } from "../../src/rpi/context.js";
 import type { NativeSessionManager } from "../../src/rpi/session.js";
 import { __testUtils as scopeTests, registerCursorSessionScope, getCursorSessionProjectTrusted } from "../../src/cursor-session-scope.js";
 import { createEventHarness, createExtensionTestContext } from "../helpers/pi-harness.js";
@@ -14,6 +14,15 @@ it("rejects private model bindings and missing authoritative mode/trust/identity
 	for (const change of [ { mode: "unknown" }, { toolRegistration: undefined }, { toolRegistration: { disabled: false, allow: [1], deny: [] } }, { projectTrusted: undefined }, { projectTrustResolved: undefined }, { identity: { purpose: "prompt" } },
 		{ model: { ...snapshot().model, headers: { Authorization: "fixture" } } }, { model: { ...snapshot().model, baseUrl: "private" } } ]) {
 		expect(() => contextSnapshot({ ...snapshot(), ...change })).toThrow();
+	}
+});
+
+it("restores only the worker-owned catalog descriptor for selection events and context", () => {
+	const publicModel = snapshot().model, owned = { ...publicModel, baseUrl: "https://cursor.com", headers: { "X-Fixture": "owned" } };
+	expect(nativeModel(publicModel, [owned])).toBe(owned);
+	expect(nativeModel({ ...publicModel, provider: "other" }, [owned])).toEqual({ ...publicModel, provider: "other", baseUrl: "" });
+	for (const privateField of [{ baseUrl: "https://private.invalid" }, { headers: {} }]) {
+		expect(() => nativeModel({ ...publicModel, ...privateField }, [owned])).toThrow("public native context model");
 	}
 });
 

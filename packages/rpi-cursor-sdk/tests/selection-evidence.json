@@ -1,0 +1,53 @@
+{
+  "host": "ccc6f8ddf23747ebd0384e489527dfc0bf8da318",
+  "status": "Native name/model lifecycle boundary verified on Linux",
+  "compiler": "Rust 1.78.0, warnings denied; Node 24.22.0",
+  "checks": {
+    "typecheck": {
+      "log": "/tmp/rpi-cursor-selection-typecheck.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    "focused": {
+      "log": "/tmp/rpi-cursor-selection-focused.log",
+      "sha256": "131a805a42a841ae87a8adfd6dcf0a43f1789b32ef9d33a1a006376136205cfb",
+      "passed": 17
+    },
+    "retainedSuite": {
+      "log": "/tmp/rpi-cursor-selection-full.log",
+      "sha256": "7f3ca32653f23b3f82f610094247d988fd199d002d559279a39f8818a589fc05",
+      "passed": 1715,
+      "upstreamSkipped": 2
+    },
+    "packagedRuntime": {
+      "log": "/tmp/rpi-cursor-selection-native.log",
+      "sha256": "608e2f168405dc1eb310f7716deb0a15ee4a5a4f07c46bcc8c339f2dbfc62b4e",
+      "passed": 2
+    },
+    "pack": {
+      "log": "/tmp/rpi-cursor-selection-pack.log",
+      "sha256": "51fd149518a4da950b67627b4c8ebd2a2815280ed6f3174044b484c431388743"
+    },
+    "rust": {
+      "log": "/tmp/rpi-cursor-selection-rust.log",
+      "sha256": "fb6a6d418857aff4996f18b8d6988f1b0e5db8d72c88cc422188ad86800b9cf6",
+      "passed": 34
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-selection-pinned-dll.log",
+      "sha256": "bf2c184f4d4d1bad66e647606c6be360701061d21504d4dc82802fc796ecd46f",
+      "passed": 4
+    }
+  },
+  "assertions": [
+    "Selection events restore only worker-owned catalog descriptors; host private credential fields are refused",
+    "Packaged print/TUI runtime preserves the pinned provider-or-cursor-sdk identity rule and toggles recorded activity on actual provider changes",
+    "Installed native library receives committed name updates and model selections from the harness, updates activation before returning and reaps its worker",
+    "Existing provider packages and workspace versions are unchanged"
+  ],
+  "review": "Manual deep review of the exact adapter, validation, fixtures, capability, dependency/lock and README diff completed before commit. Checked event model ownership, private field rejection, unchanged same-selection behavior, alias identity, awaited tool receipts and child/parent isolation. No material findings.",
+  "notTested": [
+    "Tree navigation and fresh runtime ownership on session replacement",
+    "Full live Cursor acceptance",
+    "macOS and Windows native execution"
+  ]
+}
