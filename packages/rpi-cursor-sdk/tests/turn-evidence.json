@@ -1,0 +1,37 @@
+{
+  "host": "9c96c86e843a9676b2760330f9089e73964e21fe",
+  "status": "Required turn capabilities verified with installed Linux native library and packaged worker",
+  "compiler": "Rust 1.78.0, warnings denied; Node 24.22.0",
+  "checks": {
+    "build": {
+      "log": "/tmp/rpi-cursor-turn-build.log",
+      "sha256": "c430daeee410b9bab583834f35022eddcdad0ed939e42cedb1ba1dd869ea4c1a"
+    },
+    "rust": {
+      "log": "/tmp/rpi-cursor-turn-rust.log",
+      "sha256": "ea696c05880c008bb202b574120e8cb0cee79d52170af5da20e035d0a70b7852",
+      "passed": 34
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-turn-dll.log",
+      "sha256": "4191e17bb6581cf89a3bec9920e9420f62adfa1356a9de0a4f7447715abfcf9d",
+      "passed": 4
+    }
+  },
+  "retainedEvidence": {
+    "worker": "selection-evidence.json (unchanged worker sources and assets)",
+    "host": "pi-rust/docs/provider-parity/host-turn-results.json"
+  },
+  "assertions": [
+    "Missing turn-index or live-binding capabilities reject startup",
+    "Installed library loads against the exact SDK pin, exercises hooks and streaming, reloads and reaps its workers",
+    "Only Cursor SDK source pins changed; existing provider packages and workspace versions are unchanged"
+  ],
+  "review": "Manual deep review of the exact capability, SDK pin, lockfile and documentation diff completed before commit. No dependency version changes, no worker source changes, and no material findings.",
+  "notTested": [
+    "Committed turn-end entry IDs and boundary drafts",
+    "Tree navigation and fresh runtime ownership on session replacement",
+    "Full live Cursor acceptance",
+    "macOS and Windows native execution"
+  ]
+}

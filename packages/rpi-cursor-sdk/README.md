@@ -225,3 +225,9 @@ calling the retained handlers. Cursor's original provider-or-API identity check
 also keeps wrappers using `cursor-sdk` active. The packaged TUI test checks
 switching away and back, while the installed-library test exercises the host
 selection path. See `tests/selection-evidence.json`.
+
+`events.turnIndex` and `requests.liveBinding` are required for turn indices and
+for active tools, model and thinking changes made by awaited turn hooks to reach
+the next provider request and tool execution. The Pi 1.3.0 field projections and
+host execution counts are recorded in `tests/turn-evidence.json`; committed
+turn-end entry IDs and boundary drafts remain separate parity work.

@@ -73,6 +73,8 @@ impl Runtime {
                             "events.lifecycleReasons",
                             "events.compactionDetails",
                             "events.selectionDetails",
+                            "events.turnIndex",
+                            "requests.liveBinding",
                             "events.promptContext",
                             "tools.provenance",
                             "tools.metadata",
