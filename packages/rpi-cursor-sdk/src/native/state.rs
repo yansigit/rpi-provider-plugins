@@ -19,6 +19,7 @@ use tokio_util::sync::CancellationToken;
 struct Scoped {
     owner: Arc<Owner>,
     router: Arc<Router>,
+    started: OnceCell<Result<(), String>>,
 }
 type Children = Arc<Mutex<HashMap<String, Arc<OnceCell<Result<Arc<Scoped>, String>>>>>>;
 
@@ -61,6 +62,8 @@ impl Runtime {
                             "auth.configuredValues",
                             "providers.awaitedPublication",
                             "providers.refreshIsolation",
+                            "providers.scopedCallbacks",
+                            "providers.childCatalogs",
                             "context.bootstrap",
                             "context.snapshot",
                             "context.flags",
@@ -114,6 +117,7 @@ impl Runtime {
                     Arc::new(Scoped {
                         owner: Owner::new(session, stopping.child_token()),
                         router,
+                        started: OnceCell::new(),
                     }),
                 ))
             })
@@ -166,6 +170,8 @@ impl Runtime {
         &self,
         client: &Client,
         signal: &CancellationToken,
+        method: &str,
+        cancelled: &impl Fn() -> bool,
     ) -> Result<Arc<Scoped>, String> {
         self.reap(false).await;
         if self.stopping.is_cancelled() {
@@ -202,27 +208,8 @@ impl Runtime {
                 let scoped = Arc::new(Scoped {
                     owner: Owner::new(session, self.stopping.child_token()),
                     router,
+                    started: OnceCell::new(),
                 });
-                let started = async {
-                    let invocation = scoped.owner.enter()?;
-                    let host = scoped.router.handler(client.clone())?;
-                    let call = invocation
-                        .session()
-                        .call(
-                            "extension.event",
-                            json!({"event":{"type":"session_start","reason":"startup"}}),
-                            host,
-                            &invocation.signal,
-                            &|| false,
-                        )
-                        .await?;
-                    drive(call, &invocation.signal, &|| false, |_| Ok(())).await
-                }
-                .await;
-                if let Err(error) = started {
-                    let _ = scoped.owner.close().await;
-                    return Err(error);
-                }
                 let owner = scoped.owner.clone();
                 let children = self.children.clone();
                 let id = id.clone();
@@ -257,7 +244,40 @@ impl Runtime {
                 children.remove(&id);
             }
         }
-        result
+        let scoped = result?;
+        // Startup can reenter auth/catalog callbacks before its session event finishes.
+        if !matches!(method, "provider.auth" | "provider.catalog") {
+            scoped
+                .started
+                .get_or_init(|| async {
+                    let started = async {
+                        let invocation = scoped.owner.enter()?;
+                        let host = scoped.router.handler(client.clone())?;
+                        let call = invocation
+                            .session()
+                            .call(
+                                "extension.event",
+                                json!({"event":{"type":"session_start","reason":"startup"}}),
+                                host,
+                                &invocation.signal,
+                                cancelled,
+                            )
+                            .await?;
+                        drive(call, &invocation.signal, cancelled, |_| Ok(()))
+                            .await
+                            .map(|_| ())
+                    }
+                    .await;
+                    if let Err(error) = started {
+                        let _ = scoped.owner.close().await;
+                        return Err(error);
+                    }
+                    Ok(())
+                })
+                .await
+                .clone()?;
+        }
+        Ok(scoped)
     }
     pub fn invoke(
         &self,
@@ -277,7 +297,7 @@ impl Runtime {
         }
         let _admission = Admission(self);
         self.context.run(&signal, async {
-            let scoped = self.scoped(&client, &signal).await?;
+            let scoped = self.scoped(&client, &signal, method, cancelled).await?;
             let invocation = scoped.owner.enter()?;
             let host = scoped.router.handler(client)?;
             let call = invocation

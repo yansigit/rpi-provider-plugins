@@ -43,7 +43,7 @@ Manual integration review and regression checks cover ordering, admission releas
 Provider auth and awaited catalog publication boundaries are covered by
 `tests/provider-ports-evidence.json`. They preserve the retained API-key login
 and host-selected account environment, and delay private catalog/cache updates
-until host acceptance. Native startup refresh is wired; scoped child catalogs,
+until host acceptance. Native startup and child refresh are wired; complete catalog acceptance,
 configuration recomposition and full availability acceptance remain required.
 `tests/catalog-evidence.json` covers concurrent discovery: only publication waits
 for earlier acknowledgements, so a slow superseded fetch cannot block a newer
@@ -141,7 +141,7 @@ startup catalog reentry, committed command entries, a question-tool error throug
 the harness, a separate child worker reaped without stopping its parent, and both
 stream entries with replacement credentials that cannot restore an ambient key.
 This does not test Cursor inference. Lifecycle payload parity, full tool metadata,
-child catalog publication, fake-SDK feature acceptance, imports, distribution,
+fake-SDK feature acceptance, imports, distribution,
 macOS/Windows loading and bounded live local/cloud acceptance remain required.
 
 Native loading requires `events.lifecycleReasons` (host commit `014d492` or later).
@@ -200,3 +200,11 @@ Worker cleanup errors are reported as failed native shutdowns. The worker is sti
 reaped; the host retains the library and callback data for the process lifetime
 when shutdown cannot be confirmed successful. A killed-worker acceptance test
 checks that this failure reaches the production loader's diagnostics.
+
+The native runtime requires `providers.scopedCallbacks` and
+`providers.childCatalogs`. Child startup publishes only to its own catalog and
+resolves authentication with its captured execution context. The worker becomes
+available for reentrant auth/catalog calls before its startup event completes;
+ordinary child operations await startup. This prevents startup refresh from
+waiting on its own initialization. Child close retains its independent drain and
+worker reaping path. Evidence is recorded in `tests/child-catalog-evidence.json`.

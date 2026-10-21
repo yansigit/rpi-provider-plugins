@@ -1,0 +1,38 @@
+{
+  "status": "Child startup allows catalog/auth reentry before ordinary operations",
+  "hostMinimumCommit": "1aff6a72dfd676e7a811f131d600c22f0163f54d",
+  "platform": "Linux",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "checks": {
+    "build": {
+      "log": "/tmp/rpi-cursor-child-catalog-pinned-build.log",
+      "sha256": "d30dd6d71eb19c282363aec880aa4e2f7f828ecfde7f0df659649305e3089959"
+    },
+    "rust": {
+      "log": "/tmp/rpi-cursor-child-catalog-pinned-rust.log",
+      "sha256": "8431fe573d71cfd0e24f6d76d189bc323aa5234cd30ba3e809d810dd49fee252",
+      "passed": 34
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-child-catalog-pinned-dll.log",
+      "sha256": "14dc9ecf5071fa5f37e96bc6a6f00588c93d23fb48a8736c6db7de16dca07df7",
+      "passed": 4
+    }
+  },
+  "retainedNodeEvidence": "options-evidence.json (Node source and runtime assets unchanged)",
+  "assertions": [
+    "Native preflight requires scoped callbacks and child catalog isolation",
+    "Startup session event can reenter its own child worker for catalog and auth callbacks",
+    "Ordinary child work waits for the single startup result",
+    "Startup receives caller cancellation rather than an always-false cancellation function",
+    "Actual installed library commits child catalog revision without changing parent",
+    "Child shutdown releases its worker while parent commands remain usable",
+    "Reload and failed/successful shutdown remain verified"
+  ],
+  "review": "Manual deep maintainability review of exact state/manifest/lock/docs diff and connected Runtime, Owner, Session, native callback and host scope code. Reviewed OnceCell reentry, startup failure, watcher publication, cancellation, admission/drain, capability refusal and process reaping. No remaining material findings for this chunk. Cargo lock changes only the intended host Git revision; no versions changed.",
+  "notTested": [
+    "macOS and Windows native loading",
+    "Full SDK/bridge/replay execution counts and lifecycle parity",
+    "Live Cursor inference and cloud resources"
+  ]
+}
