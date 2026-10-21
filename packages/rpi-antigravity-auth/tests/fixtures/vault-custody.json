@@ -1,0 +1,4910 @@
+{
+  "runtime": "v24.22.0",
+  "cases": [
+    {
+      "name": "fresh-per-send",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "authorize",
+          "id": "second"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "report-once-per-receipt",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reportTogether",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "report",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "providerStatus": 401,
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "debug",
+          "scoped 401 reported",
+          {
+            "credentialId": "id",
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          }
+        ]
+      ],
+      "timers": []
+    },
+    {
+      "name": "report-provenance",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first",
+          "forged": true
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Claustrum failure report requires an original dispatch receipt",
+            "kind": "no-receipt"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "ignore-report-200",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first",
+          "status": 200,
+          "forged": true
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "ignore-report-400",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first",
+          "status": 400,
+          "forged": true
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "ignore-report-402",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first",
+          "status": 402,
+          "forged": true
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "ignore-report-403",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first",
+          "status": 403,
+          "forged": true
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "ignore-report-429",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first",
+          "status": 429,
+          "forged": true
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "ignore-report-500",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first",
+          "status": 500,
+          "forged": true
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "report-failure-retried",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "report",
+          "response": {
+            "error": {
+              "code": "not_found",
+              "class": "permanent",
+              "action": "gone"
+            }
+          }
+        },
+        {
+          "op": "report",
+          "id": "first"
+        },
+        {
+          "op": "report",
+          "id": "first"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumCredentialError",
+            "message": "Claustrum credential request failed: not_found",
+            "code": "not_found",
+            "class": "permanent",
+            "action": "gone"
+          }
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "report",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "providerStatus": 401,
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          },
+          "at": 1000
+        },
+        {
+          "op": "report",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "providerStatus": 401,
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "debug",
+          "scoped 401 reported",
+          {
+            "credentialId": "id",
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          }
+        ]
+      ],
+      "timers": []
+    },
+    {
+      "name": "failed-get-transport_error",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "second"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": true,
+            "since": 1000
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "failed-get-not_found",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "error": {
+              "code": "not_found"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "second"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumCredentialError",
+            "message": "Claustrum credential request failed: not_found",
+            "code": "not_found",
+            "class": "transient",
+            "action": "retry"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "failed-get-unknown-new-code",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "error": {
+              "code": "unknown-new-code"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "second"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumCredentialError",
+            "message": "Claustrum credential request failed: unknown-new-code",
+            "code": "unknown-new-code",
+            "class": "transient",
+            "action": "retry"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "outage-without-kept",
+      "steps": [
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumCredentialError",
+            "message": "Claustrum credential request failed: transport_error",
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "kept-401-never-reported",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "report",
+          "id": "kept"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "debug",
+          "scoped 401 not reported",
+          {
+            "routeId": "route",
+            "reason": "kept-receipt"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "kept-expiry-840999",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "time",
+          "value": 840999
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": true,
+            "since": 840999
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 840999
+        },
+        {
+          "op": "token",
+          "at": 840999
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 840999
+        },
+        {
+          "op": "close",
+          "at": 840999
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "kept-expiry-841000",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "time",
+          "value": 841000
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumUnreachableError",
+            "message": "Claustrum scoped operation unavailable",
+            "kind": "unavailable"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 841000
+        },
+        {
+          "op": "token",
+          "at": 841000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 841000
+        },
+        {
+          "op": "close",
+          "at": 841000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "kept-expiry-841001",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "time",
+          "value": 841001
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumUnreachableError",
+            "message": "Claustrum scoped operation unavailable",
+            "kind": "unavailable"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 841001
+        },
+        {
+          "op": "token",
+          "at": 841001
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 841001
+        },
+        {
+          "op": "close",
+          "at": 841001
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "identity-changed-credentialType",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "other",
+          "identity": {
+            "credentialId": "id",
+            "credentialType": "other",
+            "accountIdentity": "account"
+          }
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "other",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "identity-changed-accountIdentity",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "other",
+          "identity": {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "accountIdentity": "other"
+          }
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Claustrum served credential identity changed",
+            "kind": "identity-changed"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "enrollment-20",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "token",
+          "value": {
+            "token": "bad",
+            "token_generation": 1
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "token",
+          "value": {
+            "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "token_generation": 1
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Invalid Claustrum enrollment token",
+            "kind": "invalid-token"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "enrollment-21",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "token",
+          "value": {
+            "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "token_generation": 0
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "token",
+          "value": {
+            "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "token_generation": 1
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Invalid Claustrum enrollment token",
+            "kind": "invalid-token"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "enrollment-22",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "token",
+          "value": {
+            "error": {
+              "type": "consumer",
+              "kind": "not-enrolled",
+              "message": "fixture enrollment missing"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "token",
+          "value": {
+            "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "token_generation": 1
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "fixture enrollment missing",
+            "kind": "not-enrolled"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "listing-transport_error",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "discover"
+        },
+        {
+          "op": "state"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumCredentialError",
+            "message": "Claustrum credential request failed: transport_error",
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "listing-not_found",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "not_found"
+            }
+          }
+        },
+        {
+          "op": "discover"
+        },
+        {
+          "op": "state"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumCredentialError",
+            "message": "Claustrum credential request failed: not_found",
+            "code": "not_found",
+            "class": "transient",
+            "action": "retry"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "retain-25",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "retain",
+          "identities": []
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "retain-26",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "retain",
+          "identities": [
+            {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "state": "active",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "retain-27",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "retain",
+          "identities": [
+            {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "state": "active",
+              "enabled": false
+            }
+          ]
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "retain-28",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "retain",
+          "identities": [
+            {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "state": "disabled",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "retain-29",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "retain",
+          "identities": [
+            {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "other",
+              "state": "active",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "reachable-clears-active-state",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "state"
+        },
+        {
+          "op": "reachable"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": true,
+            "since": 1000
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "idle-probe-backoff",
+      "steps": [
+        {
+          "op": "lost"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "timer"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "timer"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "timer"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "timer"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "timer"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "timer"
+        },
+        {
+          "op": "timer"
+        }
+      ],
+      "results": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 3000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 3000
+        },
+        {
+          "op": "token",
+          "at": 7000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 7000
+        },
+        {
+          "op": "token",
+          "at": 15000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 15000
+        },
+        {
+          "op": "token",
+          "at": 31000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 31000
+        },
+        {
+          "op": "token",
+          "at": 61000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 61000
+        },
+        {
+          "op": "token",
+          "at": 91000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 91000
+        },
+        {
+          "op": "token",
+          "at": 121000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 121000
+        },
+        {
+          "op": "close",
+          "at": 121000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "fire",
+          1
+        ],
+        [
+          "set",
+          2,
+          4000
+        ],
+        [
+          "fire",
+          2
+        ],
+        [
+          "set",
+          3,
+          8000
+        ],
+        [
+          "fire",
+          3
+        ],
+        [
+          "set",
+          4,
+          16000
+        ],
+        [
+          "fire",
+          4
+        ],
+        [
+          "set",
+          5,
+          30000
+        ],
+        [
+          "fire",
+          5
+        ],
+        [
+          "set",
+          6,
+          30000
+        ],
+        [
+          "fire",
+          6
+        ],
+        [
+          "set",
+          7,
+          30000
+        ],
+        [
+          "fire",
+          7
+        ]
+      ]
+    },
+    {
+      "name": "close-is-idempotent",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "close"
+        },
+        {
+          "op": "close"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        },
+        {
+          "op": "discover"
+        },
+        {
+          "op": "report",
+          "id": "first"
+        },
+        {
+          "op": "state"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Claustrum scoped custody is closed",
+            "kind": "closed"
+          }
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Claustrum scoped custody is closed",
+            "kind": "closed"
+          }
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Claustrum scoped custody is closed",
+            "kind": "closed"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "active": false,
+            "since": null
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "cancel-pending-get",
+      "steps": [
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "hold": "get"
+          }
+        },
+        {
+          "op": "start",
+          "id": "pending"
+        },
+        {
+          "op": "cancel",
+          "id": "pending"
+        },
+        {
+          "op": "wait",
+          "id": "pending"
+        },
+        {
+          "op": "release",
+          "id": "get"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "first"
+        }
+      ],
+      "results": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "AbortError",
+            "message": "This operation was aborted",
+            "code": 20
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "close-pending-get",
+      "steps": [
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "hold": "get"
+          }
+        },
+        {
+          "op": "start",
+          "id": "pending"
+        },
+        {
+          "op": "close"
+        },
+        {
+          "op": "release",
+          "id": "get"
+        },
+        {
+          "op": "wait",
+          "id": "pending"
+        }
+      ],
+      "results": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Claustrum scoped custody is closed",
+            "kind": "closed"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [],
+      "timers": []
+    },
+    {
+      "name": "old-report-retains-new-version",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "value": {
+              "credentialId": "id",
+              "accountId": "account",
+              "material": "fixture-access",
+              "recordVersion": 4,
+              "expiresAtMs": 901000,
+              "projectId": "project"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "new"
+        },
+        {
+          "op": "report",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 4,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 4,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "report",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "providerStatus": 401,
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "debug",
+          "scoped 401 reported",
+          {
+            "credentialId": "id",
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          }
+        ],
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "probe-single-flight",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "reply",
+          "method": "list",
+          "response": {
+            "hold": "list"
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "kept"
+        },
+        {
+          "op": "authorize",
+          "id": "kept-again"
+        },
+        {
+          "op": "release",
+          "id": "list",
+          "response": {
+            "error": {
+              "code": "transport_error"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "too-soon"
+        },
+        {
+          "op": "time",
+          "value": 2000
+        },
+        {
+          "op": "authorize",
+          "id": "ready"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000,
+              "fromKeptReceipt": true
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 2000
+        },
+        {
+          "op": "token",
+          "at": 2000
+        },
+        {
+          "op": "list",
+          "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "at": 2000
+        },
+        {
+          "op": "close",
+          "at": 2000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "unknown-error-is-redacted",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "error": {
+              "type": "other"
+            }
+          }
+        },
+        {
+          "op": "authorize",
+          "id": "second"
+        },
+        {
+          "op": "lost"
+        },
+        {
+          "op": "authorize",
+          "id": "after"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "error": {
+            "name": "ClaustrumConsumerError",
+            "message": "Claustrum scoped operation unavailable",
+            "kind": "unavailable"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "warn",
+          "serving kept vault receipt",
+          {
+            "reason": "unreachable"
+          }
+        ],
+        [
+          "info",
+          "vault receipt serving resumed",
+          {
+            "reason": "reachable"
+          }
+        ]
+      ],
+      "timers": [
+        [
+          "set",
+          1,
+          2000
+        ],
+        [
+          "clear",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "report-keeps-issuing-enrollment",
+      "steps": [
+        {
+          "op": "authorize",
+          "id": "first"
+        },
+        {
+          "op": "token",
+          "value": {
+            "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "token_generation": 2
+          }
+        },
+        {
+          "op": "report",
+          "id": "first"
+        },
+        {
+          "op": "authorize",
+          "id": "second"
+        }
+      ],
+      "results": [
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "report",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "providerStatus": 401,
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          },
+          "at": 1000
+        },
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "debug",
+          "scoped 401 reported",
+          {
+            "credentialId": "id",
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          }
+        ]
+      ],
+      "timers": []
+    },
+    {
+      "name": "pending-send-keeps-issuing-enrollment",
+      "steps": [
+        {
+          "op": "reply",
+          "method": "get",
+          "response": {
+            "hold": "get"
+          }
+        },
+        {
+          "op": "start",
+          "id": "pending"
+        },
+        {
+          "op": "token",
+          "value": {
+            "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "token_generation": 2
+          }
+        },
+        {
+          "op": "release",
+          "id": "get"
+        },
+        {
+          "op": "wait",
+          "id": "pending"
+        },
+        {
+          "op": "report",
+          "id": "pending"
+        }
+      ],
+      "results": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        },
+        {
+          "ok": true,
+          "value": {
+            "metadata": {
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "accountIdentitySource": "asserted",
+              "expectedAccountIdentity": "account",
+              "assertedCredentialId": "id",
+              "assertedAccountIdentity": "account",
+              "projectId": "project",
+              "recordVersion": 3,
+              "expiresAtMs": 901000
+            },
+            "accessToken": "fixture-access"
+          }
+        },
+        {
+          "ok": true
+        }
+      ],
+      "calls": [
+        {
+          "op": "token",
+          "at": 1000
+        },
+        {
+          "op": "get",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "minTtlMs": 300000
+          },
+          "at": 1000
+        },
+        {
+          "op": "report",
+          "input": {
+            "credentialId": "id",
+            "enrollmentToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "providerStatus": 401,
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          },
+          "at": 1000
+        },
+        {
+          "op": "close",
+          "at": 1000
+        }
+      ],
+      "logs": [
+        [
+          "debug",
+          "scoped 401 reported",
+          {
+            "credentialId": "id",
+            "recordVersion": 3,
+            "reporterSource": "direct"
+          }
+        ]
+      ],
+      "timers": []
+    }
+  ]
+}

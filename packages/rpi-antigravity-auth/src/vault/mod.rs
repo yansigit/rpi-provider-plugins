@@ -9,6 +9,7 @@ pub mod enrollment;
 
 pub mod ceremony;
 
+pub mod custody;
 pub mod file_lease;
 pub mod file_store;
 pub mod private;

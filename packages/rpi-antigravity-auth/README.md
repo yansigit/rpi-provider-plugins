@@ -206,3 +206,13 @@ messages. `vault-source-reference.ts` captures 286 settings/source scenarios;
 including enrollment changes after the slot write. Native source/slot logic matches
 these fixtures. Actual registration, recovery menus, dynamic auth availability,
 and custody requests are still pending; this is not loaded-provider vault acceptance.
+
+The scoped custody state machine matches 40 original traces, including issuance-bound
+failure reports, concurrent report coalescing, cancellation during credential acquisition,
+and idle/send-triggered outage probes. It requests a fresh receipt while the vault is
+reachable. During a classified outage, the pinned common-auth implementation permits
+an in-memory validated receipt with more than one minute remaining; refusals, enrollment
+failures and matching 401s discard it. There is no local credential fallback. The
+candidate preserves these rules, including the original two-to-thirty-second idle
+probe backoff. Roster watches, consumer persistence, send-level retries and production
+native ports remain pending; these results do not qualify complete vault requests.

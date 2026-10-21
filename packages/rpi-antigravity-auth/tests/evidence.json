@@ -475,5 +475,38 @@
       "macOS and Windows execution",
       "live acceptance"
     ]
+  },
+  "vaultCustody": {
+    "status": "state-machine-tested-native-wiring-pending",
+    "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+    "fixture": {
+      "fixture": "vault-custody.json",
+      "sha256": "431efe3258f28721b1d5c8f89fccb075cf8628168c97e914c14e650c8ed9cef5",
+      "scenarios": 40,
+      "runtime": "v24.22.0"
+    },
+    "linuxRegression": {
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "log": "/tmp/rpi-vault-custody-regression.log",
+      "sha256": "a2fe53107d0539474c163446a34016874a9d052048a62c1ce1d2cfbd738ad2c2",
+      "passed": 50,
+      "failed": 0
+    },
+    "windowsCrossCheck": {
+      "target": "x86_64-pc-windows-gnu",
+      "log": "/tmp/rpi-vault-custody-windows.log",
+      "sha256": "ef5239cd5a714cda5cc5b3c7e853563aadc63f57c24c85ce0ab891c6094d2461",
+      "execution": "not tested"
+    },
+    "qualification": "Exact original results, ordered client/token calls, logs and scheduled probe transitions. Covers fresh physical acquisition, enrollment re-reads, kept-receipt expiry and invalidation, receipt provenance, concurrent/deduplicated 401 reports, re-report after failure, original issuance-token retention, cancellation and shutdown during a held get, probe coalescing and 2s-to-30s idle backoff. Only Rust typed failure/opaque-receipt representation is mapped to the original public contract.",
+    "pending": [
+      "roster persistence and consumer integration",
+      "roster watches",
+      "physical-send 401 response policy",
+      "native production ports and recovery menus",
+      "macOS and Windows execution",
+      "live acceptance"
+    ]
   }
 }
