@@ -172,3 +172,9 @@ path. A host activation change invalidates stale local replay choices.
 `tests/tool-surface-evidence.json` records the metadata checks and a packaged TUI
 regression that failed before this translation and passes afterward. Complete
 SDK/bridge/replay execution-count acceptance remains separate.
+
+The worker also requires `tools.exactActivation` and `tools.registrationPolicy`.
+An explicitly empty host selection disables executable bridge tools, and retained
+hooks preserve that selection. Local replay declarations honor the host's captured
+allowlist, exclusions and `--no-tools` setting. Startup and reload supply the same
+policy used to filter real registrations; missing or malformed policy is rejected.

@@ -8,11 +8,11 @@ import { contextSnapshot, nativeContext, NativeEffects, type HostRequest, type N
 import { NativeSessionManager, NativeSessionOrigin } from "./session.js";
 import { NativeSessionWork } from "./session-work.js";
 import type { WorkerCall } from "./peer.js";
-import { NativeToolSurface, toolMetadata } from "./tool-surface.js";
+import { NativeToolSurface, toolMetadata, type ToolSnapshot } from "./tool-surface.js";
 import { isNativeCursorToolName } from "../cursor-native-tool-names.js";
 import { scrubSensitiveText } from "../cursor-sensitive-text.js";
 
-type Frame = { context: ExtensionContext; effects: NativeEffects; request: HostRequest; origin: NativeSessionOrigin; tools: NativeTools; active: string[] };
+type Frame = ToolSnapshot & { context: ExtensionContext; effects: NativeEffects; request: HostRequest; origin: NativeSessionOrigin };
 function object(value: unknown): Record<string, unknown> {
 	if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid native Cursor request");
 	return value as Record<string, unknown>;
@@ -124,7 +124,7 @@ export class NativeCursorRuntime {
 			if (call.signal.aborted) abort();
 			const request: HostRequest = (method, input) => this.standing.host("scoped", { scope: origin.origin, method, input }, call.signal);
 			const effects = new NativeEffects();
-			const frame: Frame = { origin, request, effects, ...this.toolSurface.capture(tools as NativeTools, snapshot.tools),
+			const frame: Frame = { origin, request, effects, ...this.toolSurface.capture(tools as NativeTools, snapshot.tools, snapshot.toolRegistration),
 				context: nativeContext(snapshot, this.manager, controller?.signal, request, effects, () => this.extension.provider().getModels()) };
 			const previous = this.selected;
 			this.manager.select(origin); this.selected = frame;

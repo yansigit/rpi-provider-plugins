@@ -4,14 +4,14 @@ import type { NativeSessionManager } from "../../src/rpi/session.js";
 import { __testUtils as scopeTests, registerCursorSessionScope, getCursorSessionProjectTrusted } from "../../src/cursor-session-scope.js";
 import { createEventHarness, createExtensionTestContext } from "../helpers/pi-harness.js";
 
-const snapshot = () => contextSnapshot({ cwd: "/fixture", mode: "rpc", hasUI: true, projectTrusted: false, projectTrustResolved: false,
+const snapshot = () => contextSnapshot({ cwd: "/fixture", mode: "rpc", hasUI: true, projectTrusted: false, projectTrustResolved: false, toolRegistration: { disabled: false, allow: null, deny: [] },
 	isIdle: true, hasPendingMessages: false, systemPrompt: "actual prompt", sessionId: "session", tools: [], identity: null,
 	model: { id: "fixture", api: "cursor-sdk", provider: "cursor", name: "Fixture", reasoning: false, input: ["text"],
 		cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 100, maxTokens: 20 },
 });
 
 it("rejects private model bindings and missing authoritative mode/trust/identity", () => {
-	for (const change of [ { mode: "unknown" }, { projectTrusted: undefined }, { projectTrustResolved: undefined }, { identity: { purpose: "prompt" } },
+	for (const change of [ { mode: "unknown" }, { toolRegistration: undefined }, { toolRegistration: { disabled: false, allow: [1], deny: [] } }, { projectTrusted: undefined }, { projectTrustResolved: undefined }, { identity: { purpose: "prompt" } },
 		{ model: { ...snapshot().model, headers: { Authorization: "fixture" } } }, { model: { ...snapshot().model, baseUrl: "private" } } ]) {
 		expect(() => contextSnapshot({ ...snapshot(), ...change })).toThrow();
 	}

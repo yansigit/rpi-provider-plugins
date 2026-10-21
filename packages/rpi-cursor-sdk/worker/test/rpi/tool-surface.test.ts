@@ -31,6 +31,21 @@ describe("native tool surface", () => {
 		expect(surface.activate(snapshot, ["cursor_activate_skill"])).toEqual([]);
 		expect(snapshot.active).toEqual([]);
 	});
+	it("applies registration allowlists, exclusions and disablement to local replay declarations", () => {
+		for (const policy of [
+			{ disabled: true, allow: null, deny: [] },
+			{ disabled: false, allow: ["read"], deny: [] },
+			{ disabled: false, allow: null, deny: [CURSOR_REPLAY_ACTIVITY_TOOL_NAME] },
+		]) {
+			const { surface, snapshot } = fixture();
+			surface.activate(snapshot, ["read", CURSOR_REPLAY_ACTIVITY_TOOL_NAME]);
+			const next = surface.capture([...host], ["read"], policy);
+			expect(surface.all(next).map(tool => tool.name)).not.toContain(CURSOR_REPLAY_ACTIVITY_TOOL_NAME);
+			expect(next.active).not.toContain(CURSOR_REPLAY_ACTIVITY_TOOL_NAME);
+			expect(surface.activate(next, ["read", CURSOR_REPLAY_ACTIVITY_TOOL_NAME])).toEqual(["read"]);
+			expect(surface.context(next, { messages: [], tools: [] } as Context).tools?.map(tool => tool.name)).not.toContain(CURSOR_REPLAY_ACTIVITY_TOOL_NAME);
+		}
+	});
 	it("retains replay choices across snapshots and honors authoritative external changes", () => {
 		const { surface, snapshot } = fixture();
 		surface.activate(snapshot, ["read", CURSOR_REPLAY_ACTIVITY_TOOL_NAME]);

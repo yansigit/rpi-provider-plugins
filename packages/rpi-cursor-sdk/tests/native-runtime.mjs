@@ -48,7 +48,7 @@ for (const mode of ["print", "tui"]) test(`packaged ${mode} dispatcher runs reta
 			case "context":
 				if (input.action === "flags") return { "cursor-no-fast": true };
 				assert.equal(input.action, "snapshot");
-				return { cwd, mode, hasUI: mode === "tui", projectTrusted: false, projectTrustResolved: false, isIdle: operation === null, hasPendingMessages: false,
+				return { cwd, mode, hasUI: mode === "tui", projectTrusted: false, projectTrustResolved: false, toolRegistration: { disabled: false, allow: null, deny: [] }, isIdle: operation === null, hasPendingMessages: false,
 					systemPrompt: "native prompt", sessionId: session.metadata.id, model: publicModel, tools: [...active], identity: operation };
 			case "tools":
 				if (input.action === "setActive") {

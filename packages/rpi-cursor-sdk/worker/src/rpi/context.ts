@@ -5,12 +5,13 @@ import { nativeRequestAuth } from "./auth.js";
 import { bindNativeSessionCallback, trackNativeSessionWork } from "./session-work.js";
 
 export type HostRequest = (method: string, input: Record<string, unknown>) => Promise<unknown>;
+export type NativeToolPolicy = { disabled: boolean; allow: string[] | null; deny: string[] };
 export type NativeContextSnapshot = {
 	cwd: string; mode: ExtensionContext["mode"]; hasUI: boolean; projectTrusted: boolean;
 	projectTrustResolved: boolean;
 	isIdle: boolean; hasPendingMessages: boolean; systemPrompt: string; sessionId: string;
 	model: Omit<Model<Api>, "baseUrl" | "headers">; thinkingLevel?: ExtensionContext["thinkingLevel"];
-	tools: string[]; identity: { operationId: string; purpose: string } | null;
+	tools: string[]; toolRegistration: NativeToolPolicy; identity: { operationId: string; purpose: string } | null;
 };
 export function contextSnapshot(value: unknown): NativeContextSnapshot {
 	if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid native context snapshot");
@@ -20,6 +21,10 @@ export function contextSnapshot(value: unknown): NativeContextSnapshot {
 	if (!["tui", "rpc", "json", "print"].includes(String(input.mode)) || !Array.isArray(input.tools) || input.tools.some(name => typeof name !== "string")) {
 		throw new Error("Invalid native context mode or tools");
 	}
+	const policy = input.toolRegistration as Partial<NativeToolPolicy> | undefined;
+	const names = (value: unknown): value is string[] => Array.isArray(value) && value.every(name => typeof name === "string");
+	if (!policy || typeof policy !== "object" || typeof policy.disabled !== "boolean" ||
+		(policy.allow !== null && !names(policy.allow)) || !names(policy.deny)) throw new Error("Invalid native tool registration policy");
 	if (!input.model || typeof input.model !== "object" || Array.isArray(input.model)) throw new Error("Invalid native context model");
 	const model = input.model as Record<string, unknown>;
 	if (typeof model.id !== "string" || typeof model.provider !== "string" || typeof model.api !== "string" || "headers" in model || "baseUrl" in model) throw new Error("Invalid public native context model");

@@ -1,0 +1,82 @@
+{
+  "status": "Exact empty selection and registration filters verified",
+  "hostMinimumCommit": "d7a93468cebbfd72cb94aa3805f960382300ab35",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "node": "24.22.0",
+  "checks": {
+    "retainedSuite": {
+      "log": "/tmp/rpi-cursor-tool-policy-suite-final.log",
+      "sha256": "3624f14d727391a875f9414640de9a671a96ea01bcff7a88d3aca78ecdf2b5bc",
+      "passed": 1707,
+      "skipped": 2
+    },
+    "targeted": {
+      "log": "/tmp/rpi-cursor-tool-policy-targeted.log",
+      "sha256": "567692388215ffd1cce7504ef48b78bb0fa0ffe62a6d752124a3785332990aad",
+      "passed": 65,
+      "skipped": 1
+    },
+    "referenceArtifacts": {
+      "log": "/tmp/rpi-cursor-tool-policy-reference-artifacts.log",
+      "sha256": "7954e669f069e487b33b9e89f13c4d872a4835f28c6625968c6d4e50016ac463",
+      "passed": 55,
+      "skipped": 1
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-tool-policy-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-tool-policy-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    "stage": {
+      "log": "/tmp/rpi-cursor-tool-policy-stage.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    "pack": {
+      "log": "/tmp/rpi-cursor-tool-policy-pack.log",
+      "sha256": "311a4f723fc8bfe9d8306eed7a672b5cb5cd29d6883dcc372ab1ce85841c5263"
+    },
+    "nativeBoundary": {
+      "log": "/tmp/rpi-cursor-tool-policy-native.log",
+      "sha256": "76d13c323d59687fa23b5800091c47888eb99983fd4dc8e12fbc15252210fdb3",
+      "passed": 8
+    },
+    "dllBuild": {
+      "log": "/tmp/rpi-cursor-tool-policy-dll-build.log",
+      "sha256": "1a91c31420d9d7a8a53c50f1a133d1ba37ea3515b0887aaa31d597e06a9948dd"
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-tool-policy-dll-host.log",
+      "sha256": "7dc035b873242938c60cd17de663bded0eff5aaa21df3e5337ef7767e8894650",
+      "passed": 3
+    },
+    "rust": {
+      "log": "/tmp/rpi-cursor-tool-policy-rust-final.log",
+      "sha256": "f6ec8eec3f9cecbe75a30529b804c3dfd78069ed5bde79a3e5ea5b380fafd4a1",
+      "passed": 34
+    },
+    "initialFailures": {
+      "log": "/tmp/rpi-cursor-tool-policy-suite.log",
+      "sha256": "c538458dd4ae6a91d0be65ad00b1ad616fbde7287e231bc7102f368454fa17c4",
+      "explanation": "Corrected own allowlist fixture expectation. Retained artifact race path assertion and 5-second race timeout failed under concurrent build load; original unchanged artifact suites and candidate targeted retry passed, then full candidate suite passed."
+    }
+  },
+  "review": {
+    "kind": "Manual deep maintainability review of exact policy translation, validation, required capabilities, runtime call sites, SDK pin, lock, fixtures and docs",
+    "resolved": [
+      "Require authoritative policy instead of guessing defaults at native boundary",
+      "Filter local replay declarations and activation without registering executable replay tools",
+      "Retain host inventory as authority for actual executables",
+      "Retain upstream artifact test failures in evidence"
+    ]
+  },
+  "notTested": [
+    "Selection revision across unchanged physical names",
+    "Optional builtin bridge when builtins omitted",
+    "Full fake-SDK/host bridge/replay execution-count acceptance",
+    "Live Cursor inference or cloud mutations",
+    "macOS and Windows native loading"
+  ]
+}
