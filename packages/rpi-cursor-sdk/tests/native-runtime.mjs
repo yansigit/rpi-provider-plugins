@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { start } from "../worker/test/rpi/peer-harness.mjs";
 
-test("packaged dispatcher runs retained hooks, auth, commands and both streams through acknowledged host ports", { timeout: 30_000 }, async t => {
+for (const mode of ["print", "tui"]) test(`packaged ${mode} dispatcher runs retained hooks, auth, commands and both streams through acknowledged host ports`, { timeout: 30_000 }, async t => {
 	const cwd = await mkdtemp(join(tmpdir(), "rpi-cursor-runtime-"));
 	t.after(() => rm(cwd, { recursive: true, force: true }));
 	const peer = await start(t, { entry: new URL("../runtime/main.mjs", import.meta.url), cwd });
@@ -28,6 +28,9 @@ test("packaged dispatcher runs retained hooks, auth, commands and both streams t
 	assert(manifest.flags.some(flag => flag.name === "cursor-no-fast"));
 	assert(manifest.events.includes("session_compact_failed"));
 	assert(manifest.tools.some(tool => tool.name === "cursor_activate_skill"));
+	assert.equal(manifest.tools.find(tool => tool.name === "cursor_activate_skill").label, "Cursor skill");
+	const hostTools = [...manifest.tools, ...["read", "bash", "edit", "write"].map(name => ({ name, description: name, parameters: {type: "object"}, sourceInfo: {source: "builtin", path: name, scope: "temporary", origin: "top-level"} }))];
+	let active = hostTools.map(tool => tool.name);
 	const model = manifest.provider.models[0], { baseUrl: _base, headers: _headers, ...publicModel } = model;
 	const session = { metadata: { id: "fixture-session", createdAt: 1000 }, revision: 0, name: null, labels: {}, entries: [], branches: [{ lane: "main", revision: 0, leafId: null }] };
 	const origins = new Set(), trace = [], failures = [];
@@ -45,11 +48,14 @@ test("packaged dispatcher runs retained hooks, auth, commands and both streams t
 			case "context":
 				if (input.action === "flags") return { "cursor-no-fast": true };
 				assert.equal(input.action, "snapshot");
-				return { cwd, mode: "print", hasUI: false, projectTrusted: false, projectTrustResolved: false, isIdle: operation === null, hasPendingMessages: false,
-					systemPrompt: "native prompt", sessionId: session.metadata.id, model: publicModel, tools: [], identity: operation };
+				return { cwd, mode, hasUI: mode === "tui", projectTrusted: false, projectTrustResolved: false, isIdle: operation === null, hasPendingMessages: false,
+					systemPrompt: "native prompt", sessionId: session.metadata.id, model: publicModel, tools: [...active], identity: operation };
 			case "tools":
-				if (input.action === "setActive") return null;
-				assert.equal(input.action, "inspect"); return [];
+				if (input.action === "setActive") {
+					assert(input.tools.every(name => hostTools.some(tool => tool.name === name)), "presentation-only tools must never enter the executable host registry");
+					active = [...input.tools]; return null;
+				}
+				assert.equal(input.action, "inspect"); return hostTools;
 			case "auth": assert.equal(input.action, "resolve"); return null;
 			case "ui": return { ok: true };
 			case "providers": {

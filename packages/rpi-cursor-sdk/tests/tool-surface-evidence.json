@@ -1,0 +1,71 @@
+{
+  "status": "Native tool metadata and worker replay surface verified",
+  "hostMinimumCommit": "520c8964244f5e77a477120366fa34eea69ce384",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "node": "24.22.0",
+  "checks": {
+    "retainedSuite": {
+      "log": "/tmp/rpi-cursor-tool-surface-suite-final.log",
+      "sha256": "5ff68bfd17f67ad12f1952cbe84b584c79c8319fe7cd70db7ac525a340d6e4f7",
+      "passed": 1706,
+      "skipped": 2
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-tool-surface-types-final.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-tool-surface-build-final.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    "stage": {
+      "log": "/tmp/rpi-cursor-tool-surface-stage-final.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    "pack": {
+      "log": "/tmp/rpi-cursor-tool-surface-pack-final.log",
+      "sha256": "ba04d00b951d4620ea2a2ee951703e31fffe69424379412f60464e8a5633722a"
+    },
+    "nativeBoundary": {
+      "log": "/tmp/rpi-cursor-tool-surface-native-final.log",
+      "sha256": "d8bc9d746b3a7a10f8343137e4f01c2d41983bf65c0688fa07e62e60aa18d215",
+      "passed": 8
+    },
+    "dllBuild": {
+      "log": "/tmp/rpi-cursor-tool-surface-dll-build-final.log",
+      "sha256": "1f5852af1ed7025b5728e842e3c3c2f5d2f720d25557d84c38f1ffda99719c59"
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-tool-surface-dll-host-final.log",
+      "sha256": "be504b72960b25ff7844a20d9a36e32f1df0a20f420b9b7b7b90aa8593b3ad4e",
+      "passed": 3
+    },
+    "rust": {
+      "log": "/tmp/rpi-cursor-tool-surface-rust.log",
+      "sha256": "b70a85ed2fbee014ae056c51954a53d3336e0c9c6ea36aece84ef4f4f6c67494",
+      "passed": 34
+    },
+    "reproducedFailure": {
+      "log": "/tmp/rpi-cursor-replay-activation-before.log",
+      "sha256": "dad0d0ae603dd45b8dc960b4621c34ea5901de561df7587585d53cac0a45b846"
+    }
+  },
+  "review": {
+    "kind": "Manual deep maintainability review of the exact native metadata registration, worker tool-surface translation, call sites, fixtures, SDK pin, lock and docs diff",
+    "resolved": [
+      "Preserve label, execution mode and prompt guidance through the manifest and declaration",
+      "Reject unsupported executable exposure instead of silently losing policy",
+      "Send executable host names separately from worker replay declarations",
+      "Keep replay source identities stable across snapshots and overlay matching schemas only in the worker request",
+      "Ignore unknown activation names as observed in installed Pi 1.3.0",
+      "Do not re-advertise executable tools omitted from the host inventory",
+      "Retain direct exposure and existing host-stamped provenance"
+    ]
+  },
+  "notTested": [
+    "Complete active-tool and dynamic replay allowlist parity",
+    "Full fake-SDK/host bridge/replay execution-count acceptance",
+    "Live Cursor inference or cloud mutations",
+    "macOS and Windows native loading"
+  ]
+}

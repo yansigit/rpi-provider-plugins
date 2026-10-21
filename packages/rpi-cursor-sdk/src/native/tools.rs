@@ -25,6 +25,9 @@ impl Definition {
         if !value["parameters"].is_object() || !value["description"].is_string() {
             return Err("Invalid Cursor tool schema".into());
         }
+        if value["exposure"] != "direct" {
+            return Err("Cursor native tools require direct exposure".into());
+        }
         Ok(Self {
             runtime: Arc::downgrade(runtime),
             name: value["name"]
@@ -40,7 +43,7 @@ impl Definition {
             description: StbString::from_string(value["description"].as_str().unwrap().into()),
             parameters: StbString::from_string(value["parameters"].to_string()),
         };
-        (api.register_owned_tool_with_wake.unwrap())(
+        let status = (api.register_owned_tool_with_wake.unwrap())(
             &schema,
             execute,
             poll,
@@ -49,7 +52,24 @@ impl Definition {
             free_string,
             set_waker,
             (self as *const Self).cast_mut().cast(),
-        )
+        );
+        if status != 0 {
+            return status;
+        }
+        let mut metadata = serde_json::Map::new();
+        for key in [
+            "label",
+            "executionMode",
+            "promptSnippet",
+            "promptGuidelines",
+        ] {
+            if let Some(value) = value.get(key) {
+                metadata.insert(key.into(), value.clone());
+            }
+        }
+        (api.declare.unwrap())(StbStringRef::from_str(
+            &json!({"toolMetadata": {&self.name: metadata}}).to_string(),
+        ))
     }
 }
 #[derive(Default)]

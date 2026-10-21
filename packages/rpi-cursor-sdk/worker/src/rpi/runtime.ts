@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import { createEventBus, type ExtensionCommandContext, type ExtensionContext, type ExtensionEvent, type ExtensionToolContext, type RegisteredTool } from "@earendil-works/pi-coding-agent";
+import { createEventBus, type ExtensionCommandContext, type ExtensionContext, type ExtensionEvent, type ExtensionToolContext } from "@earendil-works/pi-coding-agent";
 import type { Api, Context, Model, SimpleStreamOptions } from "@earendil-works/pi-ai";
 import { NativeCursorExtension } from "./extension.js";
 import { cursorNativeAuth, nativeRequestAuth } from "./auth.js";
@@ -8,6 +8,7 @@ import { contextSnapshot, nativeContext, NativeEffects, type HostRequest, type N
 import { NativeSessionManager, NativeSessionOrigin } from "./session.js";
 import { NativeSessionWork } from "./session-work.js";
 import type { WorkerCall } from "./peer.js";
+import { NativeToolSurface, toolMetadata } from "./tool-surface.js";
 import { isNativeCursorToolName } from "../cursor-native-tool-names.js";
 import { scrubSensitiveText } from "../cursor-sensitive-text.js";
 
@@ -38,13 +39,6 @@ function requestContext(value: unknown): Context {
 	}
 	return value as Context;
 }
-function toolMetadata({ definition, sourceInfo }: RegisteredTool): NativeTools[number] {
-	const metadata = { name: definition.name, description: definition.description, parameters: definition.parameters,
-		promptSnippet: definition.promptSnippet, promptGuidelines: definition.promptGuidelines, sourceInfo,
-		exposure: definition.exposure ?? "direct" };
-	return metadata;
-}
-
 /** One retained adapter and SDK owner per native session runtime. */
 export class NativeCursorRuntime {
 	readonly extension: NativeCursorExtension;
@@ -53,7 +47,7 @@ export class NativeCursorRuntime {
 	private frames = new AsyncLocalStorage<Frame>();
 	private selected?: Frame;
 	private flags = new Map<string, string | boolean>();
-	private registered: readonly RegisteredTool[] = [];
+	private toolSurface = new NativeToolSurface();
 	private background = new Set<Promise<void>>();
 	private failures: unknown[] = [];
 	private operations = new Map<string, AbortController>();
@@ -68,15 +62,11 @@ export class NativeCursorRuntime {
 			appendEntry: async (kind, data) => { await this.manager.origin().append(kind, data); },
 			getActiveTools: () => [...frame().active],
 			setActiveTools: names => {
-				const current = frame(); current.active = [...names];
-				current.effects.add(() => current.request("native", { port: "tools", action: "setActive", tools: names }));
+				const current = frame(); const hostTools = this.toolSurface.activate(current, names);
+				current.effects.add(() => current.request("native", { port: "tools", action: "setActive", tools: hostTools }));
 			},
-			getAllTools: () => {
-				const all = new Map(frame().tools.map(tool => [tool.name, tool]));
-				for (const tool of this.registered) all.set(tool.definition.name, toolMetadata(tool));
-				return [...all.values()];
-			},
-			toolsChanged: tools => { this.registered = tools; },
+			getAllTools: () => this.toolSurface.all(frame()),
+			toolsChanged: tools => { this.toolSurface.registered = tools; },
 			providerRegistered: provider => { this.catalog = new NativeCursorCatalog(provider); },
 			error: error => {
 				const current = frame();
@@ -95,7 +85,7 @@ export class NativeCursorRuntime {
 		return { provider: { id: "cursor", name: "Cursor", baseUrl: "https://cursor.com", models: this.extension.provider().getModels() },
 			commands: [...registration.commands.values()].map(({ name, description }) => ({ name, description })),
 			flags: [...registration.flags.values()], events: [...registration.handlers.keys()],
-			tools: this.registered.filter(tool => !isNativeCursorToolName(tool.definition.name)).map(toolMetadata) };
+			tools: this.toolSurface.registered.filter(tool => !isNativeCursorToolName(tool.definition.name)).map(toolMetadata) };
 	}
 	async configure(call: WorkerCall): Promise<void> {
 		const values = object(await call.host("native", { port: "context", action: "flags", names: [...this.extension.registration.flags.keys()] }));
@@ -134,7 +124,7 @@ export class NativeCursorRuntime {
 			if (call.signal.aborted) abort();
 			const request: HostRequest = (method, input) => this.standing.host("scoped", { scope: origin.origin, method, input }, call.signal);
 			const effects = new NativeEffects();
-			const frame: Frame = { origin, request, effects, active: [...snapshot.tools], tools: tools as NativeTools,
+			const frame: Frame = { origin, request, effects, ...this.toolSurface.capture(tools as NativeTools, snapshot.tools),
 				context: nativeContext(snapshot, this.manager, controller?.signal, request, effects, () => this.extension.provider().getModels()) };
 			const previous = this.selected;
 			this.manager.select(origin); this.selected = frame;
@@ -164,7 +154,7 @@ export class NativeCursorRuntime {
 				if (entry !== "stream" && entry !== "streamSimple") throw new Error("Invalid Cursor stream entry");
 				if (input.authMode !== "ambient" && input.authMode !== "replace") throw new Error("Invalid Cursor authentication mode");
 				const options = object(input.options);
-				const stream = await this.extension.stream(entry, requestModel(input.model), requestContext(input.context),
+				const stream = await this.extension.stream(entry, requestModel(input.model), this.toolSurface.context(frame, requestContext(input.context)),
 					{ ...options, headers: { ...object(options.headers ?? {}) }, signal: frame.context.signal ?? call.signal } as SimpleStreamOptions,
 					input.authMode, call.emit);
 				return stream.finished;

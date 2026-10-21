@@ -158,3 +158,17 @@ Only the native boundary adapts context-path XML escaping; original Pi rendering
 is unchanged. All custom messages retain listener order. `tests/prompt-evidence.json`
 records the retained suite, factory/dispatcher checks and actual Linux DLL prompt
 round trip. Complete trigger, lifecycle and tool parity remains required.
+
+Native tools require `tools.metadata` (host commit `520c896` or later). Skill/question labels, execution mode and
+prompt guidance reach the host's adapters; the question tool retains sequential
+execution. The current retained executable tools all use direct exposure, and a
+different exposure is rejected explicitly. Source provenance remains host-owned.
+
+`worker/src/rpi/tool-surface.ts` translates replay-only declarations and activation
+inside the worker. It sends only real host names to the host activation port and
+includes the retained replay schemas in the Cursor request snapshot. Builtin-name
+overlaps keep host execution ownership; recorded calls still use the inert result
+path. A host activation change invalidates stale local replay choices.
+`tests/tool-surface-evidence.json` records the metadata checks and a packaged TUI
+regression that failed before this translation and passes afterward. Complete
+SDK/bridge/replay execution-count acceptance remains separate.
