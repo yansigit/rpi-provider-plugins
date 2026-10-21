@@ -24,7 +24,7 @@ members = [
     "packages/rpi-providers",
     "tools/rpi-package-install",
 ]
-exclude = ["tools/rpi-package-smoke"]
+exclude = ["tools/rpi-package-smoke", "vendor/claustrum-client", "vendor/subc-client-rs", "vendor/subc-os"]
 resolver = "2"
 
 [workspace.package]
@@ -54,3 +54,6 @@ async-trait = "0.1"
 [profile.release]
 lto = "thin"
 strip = "symbols"
+
+[patch.crates-io]
+subc-os = { path = "vendor/subc-os" }

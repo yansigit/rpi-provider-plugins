@@ -1,0 +1,1269 @@
+{
+  "runtime": "v24.22.0",
+  "client": "0.22.5",
+  "normalization": "Random handshake nonces are authenticated, not compared. TCP ports are assigned by the OS. Frames are grouped by connection; per-connection order, IDs and payloads are retained.",
+  "cases": [
+    {
+      "spec": {
+        "name": "json",
+        "body": [
+          123,
+          34,
+          114,
+          101,
+          115,
+          117,
+          108,
+          116,
+          34,
+          58,
+          123,
+          34,
+          118,
+          105,
+          101,
+          119,
+          34,
+          58,
+          34,
+          118,
+          105,
+          101,
+          119,
+          34,
+          44,
+          34,
+          99,
+          114,
+          101,
+          100,
+          101,
+          110,
+          116,
+          105,
+          97,
+          108,
+          115,
+          34,
+          58,
+          91,
+          93,
+          125,
+          125
+        ]
+      },
+      "result": {
+        "value": {
+          "rows": [],
+          "view": "view"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "binary",
+        "body": [
+          123,
+          34,
+          114,
+          101,
+          115,
+          117,
+          108,
+          116,
+          34,
+          58,
+          123,
+          34,
+          118,
+          105,
+          101,
+          119,
+          34,
+          58,
+          34,
+          118,
+          105,
+          101,
+          119,
+          34,
+          44,
+          34,
+          99,
+          114,
+          101,
+          100,
+          101,
+          110,
+          116,
+          105,
+          97,
+          108,
+          115,
+          34,
+          58,
+          91,
+          93,
+          125,
+          125
+        ],
+        "binary": true
+      },
+      "result": {
+        "error": {
+          "code": "invalid_response",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: invalid_response"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "invalid JSON",
+        "body": [
+          123
+        ]
+      },
+      "result": {
+        "error": {
+          "code": "transport_error",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: transport_error"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "invalid UTF-8 in JSON string",
+        "body": [
+          123,
+          34,
+          114,
+          101,
+          115,
+          117,
+          108,
+          116,
+          34,
+          58,
+          123,
+          34,
+          118,
+          105,
+          101,
+          119,
+          34,
+          58,
+          34,
+          255,
+          34,
+          44,
+          34,
+          99,
+          114,
+          101,
+          100,
+          101,
+          110,
+          116,
+          105,
+          97,
+          108,
+          115,
+          34,
+          58,
+          91,
+          93,
+          125,
+          125
+        ]
+      },
+      "result": {
+        "value": {
+          "rows": [],
+          "view": "�"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "stream end",
+        "body": [],
+        "type": 4
+      },
+      "result": {
+        "error": {
+          "code": "transport_error",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: transport_error"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "route closes after send",
+        "body": [],
+        "type": 11
+      },
+      "result": {
+        "error": {
+          "code": "route_closed",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: route_closed"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "error:missing_identity",
+        "type": 5,
+        "body": [
+          123,
+          34,
+          99,
+          111,
+          100,
+          101,
+          34,
+          58,
+          34,
+          109,
+          105,
+          115,
+          115,
+          105,
+          110,
+          103,
+          95,
+          105,
+          100,
+          101,
+          110,
+          116,
+          105,
+          116,
+          121,
+          34,
+          44,
+          34,
+          109,
+          101,
+          115,
+          115,
+          97,
+          103,
+          101,
+          34,
+          58,
+          34,
+          112,
+          114,
+          105,
+          118,
+          97,
+          116,
+          101,
+          32,
+          100,
+          105,
+          97,
+          103,
+          110,
+          111,
+          115,
+          116,
+          105,
+          99,
+          34,
+          125
+        ]
+      },
+      "result": {
+        "error": {
+          "code": "missing_identity",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: missing_identity"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "error:invalid_control_body",
+        "type": 5,
+        "body": [
+          123,
+          34,
+          99,
+          111,
+          100,
+          101,
+          34,
+          58,
+          34,
+          105,
+          110,
+          118,
+          97,
+          108,
+          105,
+          100,
+          95,
+          99,
+          111,
+          110,
+          116,
+          114,
+          111,
+          108,
+          95,
+          98,
+          111,
+          100,
+          121,
+          34,
+          44,
+          34,
+          109,
+          101,
+          115,
+          115,
+          97,
+          103,
+          101,
+          34,
+          58,
+          34,
+          112,
+          114,
+          105,
+          118,
+          97,
+          116,
+          101,
+          32,
+          100,
+          105,
+          97,
+          103,
+          110,
+          111,
+          115,
+          116,
+          105,
+          99,
+          34,
+          125
+        ]
+      },
+      "result": {
+        "error": {
+          "code": "invalid_control_body",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: invalid_control_body"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "error:unknown_module",
+        "type": 5,
+        "body": [
+          123,
+          34,
+          99,
+          111,
+          100,
+          101,
+          34,
+          58,
+          34,
+          117,
+          110,
+          107,
+          110,
+          111,
+          119,
+          110,
+          95,
+          109,
+          111,
+          100,
+          117,
+          108,
+          101,
+          34,
+          44,
+          34,
+          109,
+          101,
+          115,
+          115,
+          97,
+          103,
+          101,
+          34,
+          58,
+          34,
+          112,
+          114,
+          105,
+          118,
+          97,
+          116,
+          101,
+          32,
+          100,
+          105,
+          97,
+          103,
+          110,
+          111,
+          115,
+          116,
+          105,
+          99,
+          34,
+          125
+        ]
+      },
+      "result": {
+        "error": {
+          "code": "unknown_module",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: unknown_module"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "error:module_warming",
+        "type": 5,
+        "body": [
+          123,
+          34,
+          99,
+          111,
+          100,
+          101,
+          34,
+          58,
+          34,
+          109,
+          111,
+          100,
+          117,
+          108,
+          101,
+          95,
+          119,
+          97,
+          114,
+          109,
+          105,
+          110,
+          103,
+          34,
+          44,
+          34,
+          109,
+          101,
+          115,
+          115,
+          97,
+          103,
+          101,
+          34,
+          58,
+          34,
+          112,
+          114,
+          105,
+          118,
+          97,
+          116,
+          101,
+          32,
+          100,
+          105,
+          97,
+          103,
+          110,
+          111,
+          115,
+          116,
+          105,
+          99,
+          34,
+          125
+        ]
+      },
+      "result": {
+        "error": {
+          "code": "module_warming",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: module_warming"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "error:module_reloading",
+        "type": 5,
+        "body": [
+          123,
+          34,
+          99,
+          111,
+          100,
+          101,
+          34,
+          58,
+          34,
+          109,
+          111,
+          100,
+          117,
+          108,
+          101,
+          95,
+          114,
+          101,
+          108,
+          111,
+          97,
+          100,
+          105,
+          110,
+          103,
+          34,
+          44,
+          34,
+          109,
+          101,
+          115,
+          115,
+          97,
+          103,
+          101,
+          34,
+          58,
+          34,
+          112,
+          114,
+          105,
+          118,
+          97,
+          116,
+          101,
+          32,
+          100,
+          105,
+          97,
+          103,
+          110,
+          111,
+          115,
+          116,
+          105,
+          99,
+          34,
+          125
+        ]
+      },
+      "result": {
+        "error": {
+          "code": "module_reloading",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: module_reloading"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "spec": {
+        "name": "error:unexpected_failure",
+        "type": 5,
+        "body": [
+          123,
+          34,
+          99,
+          111,
+          100,
+          101,
+          34,
+          58,
+          34,
+          117,
+          110,
+          101,
+          120,
+          112,
+          101,
+          99,
+          116,
+          101,
+          100,
+          95,
+          102,
+          97,
+          105,
+          108,
+          117,
+          114,
+          101,
+          34,
+          44,
+          34,
+          109,
+          101,
+          115,
+          115,
+          97,
+          103,
+          101,
+          34,
+          58,
+          34,
+          112,
+          114,
+          105,
+          118,
+          97,
+          116,
+          101,
+          32,
+          100,
+          105,
+          97,
+          103,
+          110,
+          111,
+          115,
+          116,
+          105,
+          99,
+          34,
+          125
+        ]
+      },
+      "result": {
+        "error": {
+          "code": "unexpected_failure",
+          "class": "transient",
+          "action": "retry",
+          "message": "Claustrum credential request failed: unexpected_failure"
+        }
+      },
+      "connections": [
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ],
+        [
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 0,
+            "epoch": 0,
+            "corr": "1",
+            "body": {
+              "op": "route.open",
+              "target": {
+                "kind": "management_surface",
+                "module_id": "claustrum"
+              },
+              "identity": {
+                "project_root": "/fixture/project",
+                "harness": "opencode",
+                "session": "store-fixture"
+              }
+            }
+          },
+          {
+            "type": 0,
+            "flags": 2,
+            "channel": 17,
+            "epoch": 3,
+            "corr": "2",
+            "body": {
+              "method": "credential.list_scoped",
+              "params": {
+                "enrollment_token": "fixture-token"
+              }
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

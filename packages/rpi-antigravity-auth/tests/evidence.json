@@ -181,6 +181,66 @@
       "status": "passed",
       "log": "/tmp/rpi-native-auth-cli-final.log",
       "sha256": "6eb58a1ae237e68cb02122f8d271056708276af8dbb437272fb5dcdb2bd765e3"
+    },
+    {
+      "command": "cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-vault-regression.log",
+      "sha256": "94da9d26cb8d8ae6f3128426d4576df1b0c4881ea0c366952a9677ac7113584e",
+      "passed": 37,
+      "ignored": 0,
+      "environment": {
+        "RUSTFLAGS": "-D warnings",
+        "CARGO_BUILD_JOBS": "2"
+      }
+    },
+    {
+      "command": "cargo +1.78.0 test -p rpi-antigravity-auth --test vault_connection --test vault_subc --test vault_ceremony --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-vault-final-targeted.log",
+      "sha256": "ec86287ef0cd5c337787a11c18f260e657bf33cb40ed161ed83ce6cba077a3a5",
+      "passed": 7,
+      "ignored": 0,
+      "environment": {
+        "RUSTFLAGS": "-D warnings",
+        "CARGO_BUILD_JOBS": "2"
+      }
+    },
+    {
+      "command": "cargo +1.78.0 test --manifest-path vendor/claustrum-client/Cargo.toml --no-default-features --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-vault-decoder-upstream-tests.log",
+      "sha256": "facba35f54f894e19bc08067b4d3633035dcfe1ec0c332bcd9dc64bb6f270662",
+      "passed": 41,
+      "ignored": 0,
+      "environment": {
+        "RUSTFLAGS": "-D warnings",
+        "CARGO_BUILD_JOBS": "2"
+      }
+    },
+    {
+      "command": "cargo +1.78.0 test --manifest-path vendor/subc-client-rs/Cargo.toml --lib --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-vault-subc-upstream-tests-6.log",
+      "sha256": "6b68f5862e6aa7af2ba4cb944885de502fa0f943e669477f40bed01f1a9a6b40",
+      "passed": 159,
+      "ignored": 0,
+      "environment": {
+        "RUSTFLAGS": "-D warnings",
+        "CARGO_BUILD_JOBS": "2"
+      }
+    },
+    {
+      "command": "cargo +1.78.0 test --manifest-path vendor/subc-os/Cargo.toml --lib launch_nonce --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-vault-pipe-upstream-tests-3.log",
+      "sha256": "bbabc1d951f45b3c4ee2ff467dd72293d0542372fd31e9a420af27ae003b411b",
+      "passed": 22,
+      "ignored": 1,
+      "environment": {
+        "RUSTFLAGS": "-D warnings",
+        "CARGO_BUILD_JOBS": "2"
+      }
     }
   ],
   "notTested": [
@@ -271,5 +331,48 @@
     "nativeChecks": 7,
     "loadedHostTests": 5,
     "stackRegression": "source future heap-pinned; actual debug library tested on default host thread stack"
+  },
+  "vaultBoundaries": {
+    "status": "partial-not-wired-to-native-custody",
+    "fixtures": {
+      "vault-ceremony.json": {
+        "sha256": "a59d67eb05b8756f0c5c1f7bde0cea1ac847d81561596edc577434394c86c340",
+        "cases": 168
+      },
+      "vault-connection.json": {
+        "sha256": "a94142941017c3a7040d2d786fbc3d9768331b72ae271ac30b39676829caac4b",
+        "cases": 75
+      },
+      "vault-enrollment.json": {
+        "sha256": "13964611858481314c3f7d8f1849c1b65de11c10a456921f2a63370ec6a8634f",
+        "cases": 732,
+        "failures": 36,
+        "names": 48
+      },
+      "vault-policy.json": {
+        "sha256": "31ec62a25e6f8f7989face7f303cd3e31803a988803090fee1626378d9e11887",
+        "cases": 166,
+        "failures": 284,
+        "rotations": 109
+      },
+      "vault-subc.json": {
+        "sha256": "6b84f0b52a08d3ed9e6f5e2d8c9fbb68e5c948abb119f8a18e00ee390e4df2c7",
+        "cases": 12
+      },
+      "vault-wire.json": {
+        "sha256": "b8099f1092d0aa28cae7eb62afa19110575d07046f7cdca2de2215ef11fc1dda",
+        "cases": 565
+      }
+    },
+    "pending": [
+      "Filesystem lease and durable enrollment backend",
+      "Full Subc route-opening refusal/timing and liveness qualification",
+      "Roster/watch and outage receipt runtime",
+      "Credential backup/marker and conditional restore",
+      "Per-send custody and single 401 retry",
+      "Commands and native UI integration",
+      "macOS and Windows native execution",
+      "Live enrolled producer acceptance"
+    ]
   }
 }

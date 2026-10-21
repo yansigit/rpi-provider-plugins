@@ -41,5 +41,10 @@ futures-util = { version = "0.3", default-features = false, features = ["std"] }
 hyper = { version = "1", features = ["http1"] }
 rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "63818ded388b09a7bdf4cd5fb59d20fa73f87cb1", default-features = false, features = ["provider"] }
 
+cortexkit-claustrum-client = { path = "../../vendor/claustrum-client", default-features = false }
+subc-protocol = "=0.32.8"
+subc-transport = "=0.13.0"
+subc-client-rs = { path = "../../vendor/subc-client-rs" }
+
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util"] }

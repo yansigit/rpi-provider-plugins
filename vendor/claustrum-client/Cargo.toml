@@ -1,0 +1,28 @@
+[package]
+name = "cortexkit-claustrum-client"
+version = "0.5.0"
+edition = "2021"
+license = "MIT"
+publish = false
+repository = "https://github.com/cortexkit/claustrum"
+description = "Pinned Claustrum client with Rust 1.78 compatibility"
+
+[features]
+default = ["transport"]
+transport = ["dep:subc-transport", "dep:subc-os", "dep:tokio"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+base64 = "0.22"
+serde_json = "1"
+sha2 = "0.10"
+subc-protocol = "=0.32.8"
+subc-transport = { version = "=0.13.0", optional = true }
+subc-os = { version = "=0.1.16", optional = true }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "sync", "time", "process"], optional = true }
+
+[dev-dependencies]
+ring = "0.17"
+
+[patch.crates-io]
+subc-os = { path = "../subc-os" }

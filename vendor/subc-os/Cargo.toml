@@ -1,0 +1,63 @@
+[package]
+name = "subc-os"
+version = "0.1.16"
+publish = false
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/cortexkit/subconscious"
+description = "Operating-system primitives for the subc daemon that need unsafe code, behind a safe API: per-process identity, signalling, memory and CPU usage, and the launch-nonce descriptor handoff."
+
+[dependencies]
+os_pipe = "=1.2.3"
+tokio = { version = "=1.53.1", optional = true, features = ["process"] }
+
+[[bin]]
+name = "subc-os-privacy-fixture"
+path = "tests/fixtures/privacy-trampoline.rs"
+required-features = ["test-support"]
+
+# Enables the test-support feature for this crate's own tests and fixture. It
+# carries no version on purpose: a path-only dev-dependency is dropped when the
+# crate is packaged, so publishing never looks for this version on crates.io.
+[dev-dependencies]
+tempfile = { version = "=3.27.0", default-features = false }
+subc-os = { path = ".", features = ["test-support"] }
+
+# The launch-nonce handoff (dup2 and fcntl between fork and exec) and its
+# reader (fstat, ioctl) are plain POSIX calls, so every Unix takes libc.
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+rustix = { version = "1", default-features = false, features = ["event", "param", "process", "std"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+rustix = { version = "1", default-features = false, features = ["process", "std"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_Security_Cryptography",
+    "Win32_Storage_FileSystem",
+    "Win32_System_IO",
+    "Win32_System_Pipes",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Threading",
+] }
+
+# Tests measure busy work on the thread's own CPU clock, a reading independent
+# of the process-usage API they check.
+[target.'cfg(any(target_os = "linux", target_os = "macos"))'.dev-dependencies]
+rustix = { version = "1", default-features = false, features = ["std", "time"] }
+
+[features]
+test-support = []
+tokio = ["dep:tokio"]
+
+[lints.rust]
+unsafe_code = "deny"
+
+[patch.crates-io]
+subc-os = { path = "." }

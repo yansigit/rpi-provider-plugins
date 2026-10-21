@@ -1,0 +1,32 @@
+{
+  "repository": "cortexkit/subconscious",
+  "revision": "668dfbde461d30aa63580dd032c91cf3f1b75f5f",
+  "crateVersion": "0.1.16",
+  "changes": [
+    "Replace Rust 1.87 std::io pipe types/functions with os_pipe 1.2.3, preserving private close-on-exec pipe ownership on Rust 1.78.",
+    "Disable publishing this integration copy.",
+    "Use tempfile for retained tests' scratch directories; upstream test-support uses post-1.78 File::lock. Test assertions and fixtures are unchanged.",
+    "Pin Tokio 1.53.1 and tokio-util 0.7.19 in standalone compatibility checks."
+  ],
+  "sourceHashes": {
+    "src/fork_exec_test.rs": "0a71dadfab010b27c5b00d796fb424219eb6d04af260d0c86b4dd7af1330e432",
+    "src/launch_nonce.rs": "f18ec1cf4999ac2c72c2c29eb6eb0c8da6b4c732359c289d4c7c388cfe1b866b",
+    "src/lib.rs": "411bb45cb01c32d5b143bc23d50a69520b40c5643ddb8004060d9cbadcd6ddca",
+    "src/linux.rs": "b594f847e2afcb517b298b24a23a1d8e1c7aba3237a54d788bde8065c7810343",
+    "src/macos.rs": "76bcc06359536cf1dafd37addc0344ec3b45db3cf78dc3b88b2c9cd10b7f7476",
+    "src/privacy_identity.rs": "6761bc8696b88b6c73bdd2766573dee4e74f52b2500824e7645796c9842dbef8",
+    "src/process_identity.rs": "37df79b5323fc1103b3ee8503034696208331f82641ea4340b63db2ca9985fdd",
+    "src/windows.rs": "4a0ad5595728c06c329c9e2da28e07bb6de51e88c0ea5450fe48c5d56828b604",
+    "src/windows_acl.rs": "5aa9469dec41d21228a437304d91529634ce5ce288759c40acbad3806552deeb",
+    "src/windows_acl_noop.rs": "84b194d29a9aa4a64917ec2a5ccb96d00ea4f92866376fd3fce0d73365fae23a",
+    "src/windows_tests.rs": "0da295c6621094990d3403599bb4198c4da84565248fed1e55629a50d5305763",
+    "src/launch_nonce/tests.rs": "57fd4b818bc2a261a969df75cc0a5b4d5b8073e55be7f099c4565b3c2696ee5e",
+    "src/launch_nonce/windows.rs": "c78d8b3fb8f0c1489b2b3dbb2c25d0dc2fe1788c74aeaca4d76f98d3c6cc25a3",
+    "src/privacy_identity/command.rs": "f241949711e9ed09d89d58b680f9baed552755544fae9f5bcea96fa4eb8bb70a",
+    "src/windows_acl/process_restriction_tests.rs": "fb64fe7faf75cb83f9ed9b602921ae5836ab8ca7c7403072e9314d7daf49bc2b",
+    "src/windows_acl/test_support.rs": "6464867cff7236ece56a019e60b5d025cbc760573f9f9aa9e0be8808f9fae1d7",
+    "src/windows_acl/tests.rs": "4fbfb0d0fba25cfde05392fee916a97298ed94fac4e4647f14b5da82ddb60634",
+    "src/windows_acl/process_restriction_tests/descriptor.rs": "f88aae95154fdc3a21e4e0288d47a0f877b8f9fb1c738a5af78b22b25a1d79e6",
+    "src/windows_acl/process_restriction_tests/privileges.rs": "ca4f96071d1f439157dbad79aa0f2867e082b4b4e5abbd368ed3d1fcecef3a03"
+  }
+}

@@ -143,3 +143,28 @@ vault behavior, commands, cross-platform support or full package distribution.
 The lock selects Rust 1.78-compatible UUID, async-compression, Clap, time,
 hyper-rustls and optional Quinn versions. Brotli and Zstandard decoding is private
 to this package; global reqwest decompression features remain disabled.
+
+The native enrolled-vault boundary now includes scoped calls, enrollment
+proposal/poll/rotation and failure reports, plus connection replacement with
+coalesced reconnects and the original 60-second backoff. `vault-*-reference.ts`
+executes the pinned clients and common-auth code. Fixtures cover wire decoding,
+authenticated TCP frames, custody validation, enrollment authority and ceremony
+write ordering. Candidate ceremony tests currently use a storage port; they do
+not establish filesystem durability or a completed native vault enrollment.
+The filesystem lease backend, roster/watch runtime, credential-slot custody,
+physical-send retry and menus remain required before vault integration is usable.
+
+Generate these fixtures using Node 24 with `RPI_REFERENCE_DIR` pointing to the
+locked Antigravity checkout and `RPI_REFERENCE_OUTPUT` naming the corresponding
+`tests/fixtures/vault-*.json`. The wire generator also needs
+`RPI_VAULT_PRODUCER_FIXTURE=../../vendor/claustrum-client/tests/fixtures/enrollment_wire_contract.json`.
+`RPI_PRIVATE_TMP` can name a private scratch directory for filesystem fixtures;
+these scripts never read a user's enrollment or credentials. Run candidate tests
+with `cargo +1.78.0 test -p rpi-antigravity-auth --locked`.
+
+Reviewed Rust components and their unchanged license notices are in `vendor/`.
+Each `UPSTREAM.json` pins the original revision and source hashes and lists local
+compatibility changes. The Rust Subc client preserves response representation
+flags and can suppress inherited supervisor identity without changing process
+environment. Its enrolled-call options preserve the pinned TypeScript response
+timeout and module-reloading retry policy; other callers retain existing defaults.

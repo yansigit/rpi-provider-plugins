@@ -17,3 +17,5 @@ pub mod schema;
 
 mod native;
 rpi_plugin_sdk::export_plugin!(native::register);
+
+pub mod vault;

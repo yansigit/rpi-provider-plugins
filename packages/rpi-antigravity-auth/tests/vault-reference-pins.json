@@ -1,0 +1,46 @@
+{
+  "repository": "cortexkit/antigravity-auth",
+  "revision": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "sourceSha256": {
+    "packages/core/src/common-auth-embedded/claustrum/enrollment.js": "eeac604495c093503007478ab803c05b6e0bce8bf281f8bf9bbfee44c8ff85f1",
+    "packages/core/src/common-auth-embedded/claustrum/custody.js": "5d2ead857d6e6384980dace94d308f1f47afe831c82e2b644ab434ffb0bcf151",
+    "packages/core/src/common-auth-embedded/claustrum/availability.js": "4bfb03de131ed7d036631a6d6455cc6f465ab7a9ea61575a7378d2f447c7cf67",
+    "packages/core/src/common-auth-embedded/claustrum/errors.js": "1d8a016bd08789154776174c1251f3a3c9b8b392b883040591c530564afd2ace",
+    "packages/core/node_modules/@cortexkit/claustrum-client/dist/wire.js": "03fbf9f7f06a37b4b1d5495002d2de50c2bd8fd505ebf136e3308b6f1213184c",
+    "packages/core/node_modules/@cortexkit/claustrum-client/dist/errors.js": "a760a54b317c35bb9edac8acb73093b5ea4f2784d81a2ad91d80feb02987b464",
+    "packages/core/node_modules/@cortexkit/subc-client/dist/client.js": "131ad25c50971d80039a66129178f441c95e014b022c5702d6f6f1a37de799b4",
+    "packages/core/node_modules/@cortexkit/subc-client/dist/auth.js": "8e0a5a572129fd7c6b321360c5665eab72f0da0a6cbc26d302316ae87c7c6c9b",
+    "packages/core/node_modules/@cortexkit/subc-client/dist/envelope.js": "e6ce8ebe8981fac91cf86ad16370c0d01e2ee6585d16a51956943ff5d2f13fbb",
+    "packages/core/node_modules/@cortexkit/subc-client/dist/socket.js": "6c1057f4332065f25cbf397b5cbb6f29ab053edb397cb9bf5501af7eaabc05d1"
+  },
+  "fixtures": {
+    "vault-ceremony.json": {
+      "sha256": "a59d67eb05b8756f0c5c1f7bde0cea1ac847d81561596edc577434394c86c340",
+      "cases": 168
+    },
+    "vault-connection.json": {
+      "sha256": "a94142941017c3a7040d2d786fbc3d9768331b72ae271ac30b39676829caac4b",
+      "cases": 75
+    },
+    "vault-enrollment.json": {
+      "sha256": "13964611858481314c3f7d8f1849c1b65de11c10a456921f2a63370ec6a8634f",
+      "cases": 732,
+      "failures": 36,
+      "names": 48
+    },
+    "vault-policy.json": {
+      "sha256": "31ec62a25e6f8f7989face7f303cd3e31803a988803090fee1626378d9e11887",
+      "cases": 166,
+      "failures": 284,
+      "rotations": 109
+    },
+    "vault-subc.json": {
+      "sha256": "6b84f0b52a08d3ed9e6f5e2d8c9fbb68e5c948abb119f8a18e00ee390e4df2c7",
+      "cases": 12
+    },
+    "vault-wire.json": {
+      "sha256": "b8099f1092d0aa28cae7eb62afa19110575d07046f7cdca2de2215ef11fc1dda",
+      "cases": 565
+    }
+  }
+}

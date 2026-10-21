@@ -1,0 +1,29 @@
+{
+  "repository": "cortexkit/subconscious",
+  "revision": "3f9b1083257a0a0e27f6ff47e5c624bda190fbfe",
+  "crateVersion": "0.30.5",
+  "changes": [
+    "Use equivalent Rust 1.78 map_or and remainder operations.",
+    "Add default-true ConsumerOptions.inherit_env_identity; enrolled connections set false to match explicit null consumerIdentity without mutating process environment.",
+    "Use pinned published dependencies and subc-os 0.1.16 required by reviewed Claustrum; disable publishing this integration copy.",
+    "Relocate unchanged catalog producer fixture; adjust its unit-test path.",
+    "Use tempfile for retained tests' scratch directories; upstream test-support uses post-1.78 File::lock. Test assertions and fixtures are unchanged.",
+    "Pin Tokio 1.53.1 and tokio-util 0.7.19 in standalone compatibility checks.",
+    "Add call_reply retaining response flags; legacy call/call_cancellable still return identical body bytes. Enrolled JSON consumers must reject BINARY replies even if their bytes resemble JSON.",
+    "Add opt-in response_timeout_only and opt-out retry_module_reloading for the pinned TypeScript consumer semantics; legacy call defaults remain unchanged. Preserve response flags in the cancellation fixture."
+  ],
+  "sourceHashes": {
+    "crates/subc-client-rs/src/activity.rs": "05853368fe10d49e1313464e2b01fb77536b9a7bf3fe2fc8385b43e9fcde6130",
+    "crates/subc-client-rs/src/activity_consumer_tests.rs": "e32f2a4217e4f97d41dc4597492bc7d9e2a2d426be8bb6760d03493881926a7d",
+    "crates/subc-client-rs/src/activity_tests.rs": "054fcc2173cf2fd152dc8745dbe07ac5e72c56cff0d5c1915592d58745bea71d",
+    "crates/subc-client-rs/src/call_mode_tests.rs": "5e683891addf701e737c422afc953dd1f197743ebd463fe653649d55b127f41d",
+    "crates/subc-client-rs/src/consumer.rs": "50c17579b3ff6432df10a86ead69f99daff124996f196f92392b1e6352703ea4",
+    "crates/subc-client-rs/src/lib.rs": "08565d581cd7505008fecb820bb79b5c60dd8af5bdec54a04f6ad1857975b0a5",
+    "crates/subc-client-rs/src/operator_confirm_tests.rs": "3a20508bce41f75ed27b6bdd26f33947ad4657971da3c74bddb1cff885aec7b1",
+    "crates/subc-client-rs/src/policy_cache.rs": "42fcb43445696c9a83685fb4754a83dda77cf18fbde30a65aee98a23ea05dc18",
+    "crates/subc-client-rs/src/scope_served_by.rs": "52b1e995da08d289b830534b8cf58d87c6f0dc894bdfa87ccfd205b99cdfd38c",
+    "crates/subc-client-rs/src/stand_in.rs": "fd9b76fee2b2aebfae57f02fe3a1f4c15dee32fc8b2ba64cc3f82641675efb01",
+    "crates/subc-client-rs/src/test_support.rs": "c7e5b7c52ee815f69735e8fb32221aa3df4f0866a1ebe1a58caef89148d9eff1",
+    "crates/subc-client-rs/src/consumer/cancellation.rs": "40718b80c7eca6c4cdfb3741b6e5ea8f1351bdf4c73baf05af74fe8408b6276b"
+  }
+}

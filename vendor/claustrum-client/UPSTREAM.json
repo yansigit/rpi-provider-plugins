@@ -1,0 +1,17 @@
+{
+  "repository": "cortexkit/claustrum",
+  "revision": "64fe590ab5f81c43c801d70421111107ff8f1cf5",
+  "crateVersion": "0.5.0",
+  "changes": [
+    "Replace Option::is_none_or with equivalent map_or(true, ...) for Rust 1.78.",
+    "Use standalone pinned dependency declarations; disable publishing this integration copy.",
+    "Relocate unchanged producer fixture; adjust its two test paths."
+  ],
+  "sourceHashes": {
+    "crates/claustrum-client/src/contract_tests.rs": "63742a9b3a6388a52b8784568f49f98a7106f61650a0fed18c60c8d3f569db5f",
+    "crates/claustrum-client/src/lib.rs": "a02a54af49fc3e49e42220842f93aafabf52881e57fc2d5402773a71f5b0fde6",
+    "crates/claustrum-client/src/watch.rs": "efdd324a86a0711b8d83a892bfccecef1a7a63b63fb58f18317d5c37db59ae80",
+    "crates/claustrum-client/src/watch/tests.rs": "f5ea99aee8ee06d2be10ff4471f7166c93b0882b18c0902b98ebe6ef9ad62bc4"
+  },
+  "fixtureSha256": "39cfa6866e84ea4b632d4f61eb5311b1bd127d7cf2dc275fc7f25bf2dfe27df2"
+}

@@ -1,0 +1,5654 @@
+{
+  "runtime": "v24.22.0",
+  "sourceSha256": "03fbf9f7f06a37b4b1d5495002d2de50c2bd8fd505ebf136e3308b6f1213184c",
+  "cases": [
+    {
+      "name": "terminal:undefined",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": ""
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:missing_identity",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "missing_identity"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "missing_identity",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: missing_identity"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:invalid_control_body",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "invalid_control_body"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "invalid_control_body",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: invalid_control_body"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:unknown_module",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "unknown_module"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_module",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_module"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:module_warming",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "module_warming"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:route_closed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "route_closed"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:unknown_channel",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "unknown_channel"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:connection_dropped",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "connection_dropped"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:deadline_exceeded_no_drop_observed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "deadline_exceeded_no_drop_observed"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal:other",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "other"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:undefined",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": ""
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:missing_identity",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "missing_identity"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "missing_identity",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: missing_identity"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:invalid_control_body",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "invalid_control_body"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "invalid_control_body",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: invalid_control_body"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:unknown_module",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "unknown_module"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_module",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_module"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:module_warming",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "module_warming"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "module_warming",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: module_warming"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:route_closed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "route_closed"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "route_closed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: route_closed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:unknown_channel",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "unknown_channel"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_channel",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_channel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:connection_dropped",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "connection_dropped"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "connection_dropped",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: connection_dropped"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:deadline_exceeded_no_drop_observed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "deadline_exceeded_no_drop_observed"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "deadline_exceeded_no_drop_observed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: deadline_exceeded_no_drop_observed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "not_sent:other",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "other"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "other",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: other"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:undefined",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": ""
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:missing_identity",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "missing_identity"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "missing_identity",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: missing_identity"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:invalid_control_body",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "invalid_control_body"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "invalid_control_body",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: invalid_control_body"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:unknown_module",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "unknown_module"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_module",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_module"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:module_warming",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "module_warming"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "module_warming",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: module_warming"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:route_closed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "route_closed"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "route_closed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: route_closed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:unknown_channel",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "unknown_channel"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_channel",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_channel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:connection_dropped",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "connection_dropped"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "connection_dropped",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: connection_dropped"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:deadline_exceeded_no_drop_observed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "deadline_exceeded_no_drop_observed"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "deadline_exceeded_no_drop_observed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: deadline_exceeded_no_drop_observed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "outcome_unknown:other",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "other"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "other",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: other"
+          }
+        }
+      ]
+    },
+    {
+      "name": "other",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "other"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "credential",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "credential"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "fixture_code",
+            "class": "permanent",
+            "action": "gone",
+            "message": "Claustrum credential request failed: fixture_code"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:undefined",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": ""
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:missing_identity",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "missing_identity"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "missing_identity",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: missing_identity"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:invalid_control_body",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "invalid_control_body"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "invalid_control_body",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: invalid_control_body"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:unknown_module",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "unknown_module"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_module",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_module"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:module_warming",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "module_warming"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "module_warming",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: module_warming"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:route_closed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "route_closed"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "route_closed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: route_closed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:unknown_channel",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "unknown_channel"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_channel",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_channel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:connection_dropped",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "connection_dropped"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "connection_dropped",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: connection_dropped"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:deadline_exceeded_no_drop_observed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "deadline_exceeded_no_drop_observed"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "deadline_exceeded_no_drop_observed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: deadline_exceeded_no_drop_observed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:terminal:other",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "other"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "other",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: other"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:undefined",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": ""
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:missing_identity",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "missing_identity"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "missing_identity",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: missing_identity"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:invalid_control_body",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "invalid_control_body"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "invalid_control_body",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: invalid_control_body"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:unknown_module",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "unknown_module"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_module",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_module"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:module_warming",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "module_warming"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "module_warming",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: module_warming"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:route_closed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "route_closed"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "route_closed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: route_closed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:unknown_channel",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "unknown_channel"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_channel",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_channel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:connection_dropped",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "connection_dropped"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "connection_dropped",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: connection_dropped"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:deadline_exceeded_no_drop_observed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "deadline_exceeded_no_drop_observed"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "deadline_exceeded_no_drop_observed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: deadline_exceeded_no_drop_observed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:not_sent:other",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "not_sent",
+              "code": "other"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "other",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: other"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:undefined",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": ""
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:missing_identity",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "missing_identity"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "missing_identity",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: missing_identity"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:invalid_control_body",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "invalid_control_body"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "invalid_control_body",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: invalid_control_body"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:unknown_module",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "unknown_module"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_module",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_module"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:module_warming",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "module_warming"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "module_warming",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: module_warming"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:route_closed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "route_closed"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "route_closed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: route_closed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:unknown_channel",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "unknown_channel"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "unknown_channel",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: unknown_channel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:connection_dropped",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "connection_dropped"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "connection_dropped",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: connection_dropped"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:deadline_exceeded_no_drop_observed",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "deadline_exceeded_no_drop_observed"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "deadline_exceeded_no_drop_observed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: deadline_exceeded_no_drop_observed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "retry:outcome_unknown:other",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "outcome_unknown",
+              "code": "other"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          1
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "other",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: other"
+          }
+        }
+      ]
+    },
+    {
+      "name": "connect:other",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ]
+      ],
+      "connections": [
+        {
+          "error": {
+            "type": "other",
+            "kind": "terminal",
+            "code": "connect_failed"
+          }
+        }
+      ],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "connect:credential",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ]
+      ],
+      "connections": [
+        {
+          "error": {
+            "type": "credential",
+            "kind": "terminal",
+            "code": "connect_failed"
+          }
+        }
+      ],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "fixture_code",
+            "class": "permanent",
+            "action": "gone",
+            "message": "Claustrum credential request failed: fixture_code"
+          }
+        }
+      ]
+    },
+    {
+      "name": "connect:subc",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ]
+      ],
+      "connections": [
+        {
+          "error": {
+            "type": "subc",
+            "kind": "terminal",
+            "code": "connect_failed"
+          }
+        }
+      ],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "connect_failed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: connect_failed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "success",
+      "responses": [
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "invalid reply is not retried",
+      "responses": [
+        [
+          {
+            "result": {}
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "invalid_response",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: invalid_response"
+          }
+        }
+      ]
+    },
+    {
+      "name": "backoff boundary",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          },
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          },
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal"
+            }
+          }
+        ],
+        [
+          {
+            "result": {
+              "view": "view",
+              "credentials": []
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "call",
+        159999,
+        "call",
+        160000,
+        "call"
+      ],
+      "trace": [
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "call",
+          1,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "connect",
+          {
+            "connectionFile": "/fixture/connection",
+            "handshakeTimeoutMs": 10000
+          }
+        ],
+        [
+          "close",
+          1
+        ],
+        [
+          "call",
+          2,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          2
+        ]
+      ],
+      "results": [
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        },
+        {
+          "error": {
+            "code": "transport_error",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: transport_error"
+          }
+        },
+        {
+          "value": {
+            "rows": [],
+            "view": "view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "closed suppresses reconnect",
+      "responses": [
+        [
+          {
+            "error": {
+              "type": "subc",
+              "kind": "terminal",
+              "code": "closed"
+            }
+          }
+        ]
+      ],
+      "connections": [],
+      "steps": [
+        "close",
+        "call"
+      ],
+      "trace": [
+        [
+          "close",
+          0
+        ],
+        [
+          "call",
+          0,
+          "claustrum",
+          "credential.list_scoped",
+          {
+            "enrollment_token": "fixture-token"
+          },
+          {
+            "identity": {
+              "project_root": "/fixture/project",
+              "harness": "opencode",
+              "session": "store-fixture"
+            },
+            "consumerIdentity": null
+          }
+        ],
+        [
+          "close",
+          0
+        ]
+      ],
+      "results": [
+        {
+          "error": {
+            "code": "closed",
+            "class": "transient",
+            "action": "retry",
+            "message": "Claustrum credential request failed: closed"
+          }
+        }
+      ]
+    }
+  ]
+}
