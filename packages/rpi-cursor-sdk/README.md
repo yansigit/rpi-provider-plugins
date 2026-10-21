@@ -39,3 +39,9 @@ RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-cursor-sdk --locked -- --include-
 The Rust process tests are explicitly ignored in the ordinary Cargo run because they require the built Node assets; the command above enables them. Set `RPI_CURSOR_NODE` if Node 24 is not the default. The journal differential also requires the built pinned reference at `../../../provider-references/cursor`, or an explicit `RPI_CURSOR_REFERENCE` path. The tests launch the fixture worker from a different working directory and do not call Cursor. The retained adapter's original suite uses the established baseline environment: Node 24.22.0, `TERM=xterm-256color`, `CURSOR_API_KEY=offline-fixture`, and a private `TMPDIR` outside any Git repository. Its original lockfile remains unchanged.
 
 Manual integration review and regression checks cover ordering, admission release, malformed frames, nested host calls, slow consumers, cancellation, crashes and draining admitted host work. A retained artifact-race test observed safe fixture bytes under its temporary rename path in one full run; unchanged original/fork targeted checks and a subsequent full run passed. This timing limitation remains recorded. The original 53 Pi loader checks do not establish native rpi loading.
+
+Provider auth and awaited catalog publication boundaries are covered by
+`tests/provider-ports-evidence.json`. They preserve the retained API-key login
+and host-selected account environment, and delay private catalog/cache updates
+until host acceptance. Complete ModelRuntime refresh orchestration, configuration
+recomposition, availability and native dispatcher wiring remain required.

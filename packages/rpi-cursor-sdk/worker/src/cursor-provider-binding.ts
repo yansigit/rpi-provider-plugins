@@ -1,3 +1,4 @@
+import { publishCursorCatalog } from "./rpi/catalog.js";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import type { Model, Provider } from "@earendil-works/pi-ai";
 import { cursorApiKeyAuth, normalizeCursorApiKey, resolveCursorCredentialApiKey } from "./cursor-api-key.js";
@@ -107,15 +108,13 @@ export function registerCursorProviderBinding(
 				await discoverModels({
 					apiKey, allowNetwork: context.allowNetwork, forceRefresh: context.force, signal: context.signal,
 					onFallback: (next) => { issue = next; },
-					publish: (definitions, update) => context.publish({
-						update: () => {
-							if (binding.closed) return;
-							update();
-							current = toNative(definitions);
-							// Do not infer logout before native composed auth is reachable.
-							if (registry && !apiKey) clearModelListCache();
-							onCatalog(issue);
-						},
+					publish: (definitions, update) => publishCursorCatalog(context, toNative(definitions), () => {
+						if (binding.closed) return;
+						update();
+						current = toNative(definitions);
+						// Do not infer logout before native composed auth is reachable.
+						if (registry && !apiKey) clearModelListCache();
+						onCatalog(issue);
 					}),
 				});
 			},
