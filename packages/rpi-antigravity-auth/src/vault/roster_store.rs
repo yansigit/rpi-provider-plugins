@@ -1,7 +1,7 @@
 //! Serialized roster mutations and discovery leases, with a final publication fence.
 use super::{
     ceremony::{Failure as StorageError, Lease},
-    custody::{Custody, Failure, Port},
+    custody::Failure,
     file_lease::{FileLease, Options},
     policy::ConsumerError,
     private,
@@ -189,9 +189,12 @@ impl RosterStore {
         )
         .await
     }
-    pub async fn refresh<P: Port, F: Future<Output = Result<bool, Failure>> + Send>(
+    pub async fn refresh<
+        D: Future<Output = Result<Value, Failure>> + Send,
+        F: Future<Output = Result<bool, Failure>> + Send,
+    >(
         &self,
-        custody: &Arc<Custody<P>>,
+        discover: impl FnOnce(CancellationToken) -> D + Send,
         signal: CancellationToken,
         active: impl Fn() -> F + Send + 'static,
         projection: impl Fn() -> Projection + Send + 'static,
@@ -223,7 +226,7 @@ impl RosterStore {
         };
         let lease = Arc::new(lease);
         let result = async {
-            let inventory = custody.discover(&signal).await?;
+            let inventory = discover(signal.clone()).await?;
             check(&signal)?;
             let fence = lease.clone();
             self.mutate(

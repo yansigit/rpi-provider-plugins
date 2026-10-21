@@ -11,6 +11,7 @@ pub mod enrollment;
 
 pub mod ceremony;
 
+pub mod consumer;
 pub mod custody;
 pub mod file_lease;
 pub mod file_store;

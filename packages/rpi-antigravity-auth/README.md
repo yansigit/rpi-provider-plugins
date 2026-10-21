@@ -162,7 +162,7 @@ Windows retains both pinned native private-files policies: common-auth 0.2.1 and
 Claustrum store 0.1.0. Only their N-API completion boundary is replaced by a Rust
 C ABI; Antigravity needs no Node runtime. The package and tests cross-check on
 Rust 1.78 for Windows GNU, and both retained C security suites compile. Windows
-and macOS execution, the full fault matrix, watch/consumer runtime, native credential-slot
+and macOS execution, the full fault matrix, consumer runtime, native credential-slot
 custody, physical-send retry and menus remain required before vault integration
 is usable. None of these checks establishes a live enrollment.
 
@@ -214,8 +214,8 @@ reachable. During a classified outage, the pinned common-auth implementation per
 an in-memory validated receipt with more than one minute remaining; refusals, enrollment
 failures and matching 401s discard it. There is no local credential fallback. The
 candidate preserves these rules, including the original two-to-thirty-second idle
-probe backoff. Roster watches, consumer persistence, send-level retries and production
-native ports remain pending; these results do not qualify complete vault requests.
+probe backoff. Consumer persistence, send-level retries and production
+native ports remained pending at that checkpoint; these results do not qualify complete vault requests.
 
 Roster projection and persistence now match the pinned identity/alias, incomplete
 inventory, acceptance and decline rules. Differential fixtures cover 1,247
@@ -225,4 +225,15 @@ concurrent mutations also verify that the second reads the first committed view.
 Locale-sensitive ordering uses the pinned Node runtime's ICU 78.3 / CLDR 48 data;
 all Unicode scalars are checked for ordering and canonical decomposition. See
 `data/README.md` for reproducible generation and licenses. The runtime remains
-native Rust with Rust 1.78 support. Consumer/watch integration is still pending.
+native Rust with Rust 1.78 support. Native consumer integration is still pending.
+
+The Pi-reachable consumer now matches 41 original traces over private temporary
+files. They check coalesced connection/discovery work, fresh per-attempt receipts,
+peer roster changes, account decline/accept, grant visibility, token rotation,
+reporting and cancellation during connection, discovery and credential reads.
+Cancelled metadata waiters leave admitted shared work alive; late connections are
+closed after shutdown. These are component tests, not loaded vault acceptance.
+
+Pi never calls the embedded consumer's background `start` method. Consequently
+its roster watch, periodic discovery and Insula paths are outside this Pi port's
+runtime behavior. Enrollment approval watching in Pi's setup remains required.

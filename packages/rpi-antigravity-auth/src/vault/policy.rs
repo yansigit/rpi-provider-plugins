@@ -117,7 +117,21 @@ pub fn inventory(listed: &Value) -> Value {
     }
     let mut result = json!({"view":listed["view"],"credentials":credentials,"skipped":skipped});
     if listed.get("grants").is_some() && listed.get("grantTuples").is_some() {
-        result["grantReach"] = json!({"grants":listed["grants"],"tuples":listed["grantTuples"]});
+        let tuples: Vec<Value> = listed["grantTuples"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|tuple| {
+                let mut result = json!({});
+                for key in ["selectorKind", "selector", "operation"] {
+                    if let Some(value) = tuple.get(key) {
+                        result[key] = value.clone();
+                    }
+                }
+                result
+            })
+            .collect();
+        result["grantReach"] = json!({"grants":listed["grants"],"tuples":tuples});
     }
     result
 }

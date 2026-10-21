@@ -564,5 +564,46 @@
       "macOS and Windows execution",
       "live acceptance"
     ]
+  },
+  "vaultConsumer": {
+    "status": "pi-reachable-consumer-tested-native-wiring-pending",
+    "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+    "fixture": {
+      "fixture": "vault-consumer.json",
+      "sha256": "5c65ae76256afa0c52ce48d61f91e21054bbd5586de457ce74600587c2d2e070",
+      "scenarios": 41,
+      "runtime": "Node 24.22.0",
+      "reproduction": "Two independent original runs produced identical fixture bytes."
+    },
+    "linuxRegression": {
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "log": "/tmp/rpi-vault-consumer-regression.log",
+      "sha256": "624d06ffb47fbb935de82e701addaf12b06ebc5a42da9316028b3b4ef1edf181",
+      "passed": 59,
+      "failed": 0
+    },
+    "windowsCrossCheck": {
+      "target": "x86_64-pc-windows-gnu",
+      "log": "/tmp/rpi-vault-consumer-windows.log",
+      "sha256": "35934ba368cd6d9915786f540e8d60b316c4f9240652f7f35fe3efecf8dfa625",
+      "execution": "not tested"
+    },
+    "qualification": "Exact public results, ordered client/active/roster/log calls, committed file bytes and state at settled or explicitly held operation boundaries. Covers shared initial discovery, concurrent sends, peer replacement/decline/removal, per-attempt reads, token rotation, grant visibility, reporting, interrupted discovery and late connections. Preserves distinct consumer/custody shutdown errors.",
+    "reachability": {
+      "excluded": [
+        "ClaustrumConsumer.start / background roster watches",
+        "Insula quota integration",
+        "ClaustrumConsumer.send (Antigravity account source supplies the reachable send policy)"
+      ],
+      "source": "PiVaultAccountSource excludes start; createPiVaultRuntime never starts background discovery. Pi enrollment approval watching is separate and remains required."
+    },
+    "pending": [
+      "physical-send receipt admission and 401 retry",
+      "native production ports and recovery menus",
+      "Pi enrollment approval watcher",
+      "macOS and Windows execution",
+      "live acceptance"
+    ]
   }
 }

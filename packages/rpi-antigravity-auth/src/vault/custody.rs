@@ -159,7 +159,7 @@ impl<P: Port> Custody<P> {
         let pending = tokio::spawn(async move { port.call(operation, input).await });
         let result = tokio::select! {
             biased;
-            _ = signal.cancelled() => return Err(Failure::Cancelled),
+            _ = signal.cancelled() => Err(Failure::Cancelled),
             result = pending => result.unwrap_or(Err(Failure::Other)),
         };
         self.check(signal)?;

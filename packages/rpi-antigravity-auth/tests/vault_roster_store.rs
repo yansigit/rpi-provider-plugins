@@ -209,7 +209,10 @@ async fn roster_commits_and_lease_losses_match_original_storage_traces() {
             let count = Arc::new(AtomicUsize::new(0));
             let result = store
                 .refresh(
-                    &custody,
+                    |signal| {
+                        let custody = custody.clone();
+                        async move { custody.discover(&signal).await }
+                    },
                     signal,
                     move || {
                         active_trace.lock().unwrap().push(json!(["active"]));
