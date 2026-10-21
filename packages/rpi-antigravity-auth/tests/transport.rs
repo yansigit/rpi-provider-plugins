@@ -3,6 +3,68 @@ use serde_json::{json, Value};
 use url::Url;
 
 #[test]
+fn body_framing_and_incremental_gzip_match_original() {
+    use transport::body::{Framer, GzipDecoder};
+    let fixture: Value = serde_json::from_str(include_str!("fixtures/transport.json")).unwrap();
+    for case in fixture["responses"].as_array().unwrap() {
+        let head = transport::parse_response_head(case["head"].as_str().unwrap()).unwrap();
+        let wire: Vec<u8> = serde_json::from_value(case["wireBody"].clone()).unwrap();
+        for width in [1, 7, wire.len().max(1)] {
+            let mut framed = Vec::new();
+            let mut framer = Framer::new(&head);
+            for bytes in wire.chunks(width) {
+                framer.push(bytes);
+                while let Some(bytes) = framer.next(false).unwrap() {
+                    framed.push(bytes);
+                }
+            }
+            while let Some(bytes) = framer.next(true).unwrap() {
+                framed.push(bytes);
+            }
+            assert!(framer.is_complete());
+            let mut decoded = Vec::new();
+            if head.gzip {
+                let mut decoder = GzipDecoder::default();
+                for bytes in &framed {
+                    let mut position = 0;
+                    while position < bytes.len() {
+                        let (consumed, output) = decoder.push(&bytes[position..]).unwrap();
+                        assert!(consumed > 0 || !output.is_empty());
+                        assert!(output.len() <= 16384);
+                        position += consumed;
+                        decoded.extend(output);
+                    }
+                    loop {
+                        let (done, output) = decoder.drain(false).unwrap();
+                        assert!(output.len() <= 16384);
+                        decoded.extend(output);
+                        if done {
+                            break;
+                        }
+                    }
+                }
+                loop {
+                    let (done, output) = decoder.drain(true).unwrap();
+                    assert!(output.len() <= 16384);
+                    decoded.extend(output);
+                    if done {
+                        break;
+                    }
+                }
+            } else {
+                decoded = framed.concat();
+            }
+            assert_eq!(
+                decoded,
+                case["body"].as_str().unwrap().as_bytes(),
+                "head: {} width: {width}",
+                case["head"]
+            );
+        }
+    }
+}
+
+#[test]
 fn headers_and_serialized_requests_match_original_transport() {
     let fixture: Value = serde_json::from_str(include_str!("fixtures/transport.json")).unwrap();
     for case in fixture["agents"].as_array().unwrap() {

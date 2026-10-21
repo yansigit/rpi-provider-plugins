@@ -1,0 +1,4569 @@
+{
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "runtime": "v24.22.0",
+  "initialClock": 1784285195116,
+  "sourceHashes": {
+    "packages/core/src/project.ts": "8f5eeaf9ee28e28d5c4185d5d0acb549e5d8f24a5f7657e4fdc1a62505808b56"
+  },
+  "cases": [
+    {
+      "name": "no access",
+      "responses": [],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh",
+            "access": "",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh",
+              "access": "",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": ""
+          }
+        }
+      ],
+      "trace": [],
+      "clock": 1784285195116
+    },
+    {
+      "name": "packed managed project",
+      "responses": [],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested|stored",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|stored",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "stored"
+          }
+        }
+      ],
+      "trace": [],
+      "clock": 1784285195116
+    },
+    {
+      "name": "discovered project and captured tiers",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "project shape \"managed\"",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed"
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "project shape {\"id\":\"object-project\"}",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": {
+              "id": "object-project"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|object-project",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "object-project"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "second endpoint",
+      "responses": [
+        {
+          "status": 403
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "read failure fallback",
+      "responses": [
+        {
+          "status": 200,
+          "readError": "broken JSON"
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "network failure fallback",
+      "responses": [
+        {
+          "error": "load failed"
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "cache across packed project changes",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|different|managed",
+            "access": "new-access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "concurrent requests share the first auth",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "parallel",
+          "auths": [
+            {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            {
+              "type": "oauth",
+              "refresh": "refresh|changed",
+              "access": "new-access",
+              "expires": 1784288795116
+            }
+          ]
+        }
+      ],
+      "results": [
+        {
+          "value": [
+            {
+              "auth": {
+                "type": "oauth",
+                "refresh": "refresh|requested|managed",
+                "access": "access",
+                "expires": 1784288795116
+              },
+              "effectiveProjectId": "managed",
+              "capturedTier": {
+                "id": "pro",
+                "paidId": "paid",
+                "capturedAt": 1784285195116
+              }
+            },
+            {
+              "auth": {
+                "type": "oauth",
+                "refresh": "refresh|requested|managed",
+                "access": "access",
+                "expires": 1784288795116
+              },
+              "effectiveProjectId": "managed",
+              "capturedTier": {
+                "id": "pro",
+                "paidId": "paid",
+                "capturedAt": 1784285195116
+              }
+            }
+          ]
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "expiry boundary",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "advance",
+          "milliseconds": 1799999
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "advance",
+          "milliseconds": 1
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784286995116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784286995116
+    },
+    {
+      "name": "invalidate stable refresh key",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "invalidate",
+          "refresh": " refresh|another|managed "
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "invalidate no key does nothing",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "invalidate",
+          "refresh": "   "
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "invalidate globally",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "invalidate"
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "no cache without refresh",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "||managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "||managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "onboard tier undefined",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "currentTier": {
+              "id": "free"
+            },
+            "paidTier": "paid"
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created",
+            "capturedTier": {
+              "id": "free",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "onboard tier []",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "allowedTiers": [],
+            "currentTier": {
+              "id": "free"
+            },
+            "paidTier": "paid"
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created",
+            "capturedTier": {
+              "id": "free",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "onboard tier [{\"id\":\"first\"},{\"id\":\"second\",\"isDefault\":true}]",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "allowedTiers": [
+              {
+                "id": "first"
+              },
+              {
+                "id": "second",
+                "isDefault": true
+              }
+            ],
+            "currentTier": {
+              "id": "free"
+            },
+            "paidTier": "paid"
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created",
+            "capturedTier": {
+              "id": "free",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"second\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "onboard tier [{\"id\":\"first\"},{\"id\":\"second\"}]",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "allowedTiers": [
+              {
+                "id": "first"
+              },
+              {
+                "id": "second"
+              }
+            ],
+            "currentTier": {
+              "id": "free"
+            },
+            "paidTier": "paid"
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created",
+            "capturedTier": {
+              "id": "free",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"first\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "onboard tier [{\"isDefault\":true}]",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "allowedTiers": [
+              {
+                "isDefault": true
+              }
+            ],
+            "currentTier": {
+              "id": "free"
+            },
+            "paidTier": "paid"
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created",
+            "capturedTier": {
+              "id": "free",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "onboard tier [{\"id\":\"\",\"isDefault\":true}]",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "allowedTiers": [
+              {
+                "id": "",
+                "isDefault": true
+              }
+            ],
+            "currentTier": {
+              "id": "free"
+            },
+            "paidTier": "paid"
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created",
+            "capturedTier": {
+              "id": "free",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "onboard next endpoint",
+      "responses": [
+        {
+          "status": 200,
+          "json": {}
+        },
+        {
+          "status": 403
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "onboard pending then success",
+      "responses": [
+        {
+          "status": 200,
+          "json": {}
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285200116
+    },
+    {
+      "name": "onboard completed requested fallback",
+      "responses": [
+        {
+          "status": 200,
+          "json": {}
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "failed provisioning falls back and suppresses later probes",
+      "responses": [
+        {
+          "status": 403
+        },
+        {
+          "status": 503
+        },
+        {
+          "status": 403
+        },
+        {
+          "status": 503
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "advance",
+          "milliseconds": 1800000
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        }
+      ],
+      "clock": 1784286995116
+    },
+    {
+      "name": "failed provisioning hardcoded fallback",
+      "responses": [
+        {
+          "status": 403
+        },
+        {
+          "status": 503
+        },
+        {
+          "status": 403
+        },
+        {
+          "status": 503
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "rising-fact-p41fc"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "clear failed provisioning after expiry",
+      "responses": [
+        {
+          "status": 403
+        },
+        {
+          "status": 503
+        },
+        {
+          "status": 403
+        },
+        {
+          "status": 503
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "advance",
+          "milliseconds": 1800000
+        },
+        {
+          "op": "clearFailures"
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784286995116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784286995116
+    },
+    {
+      "name": "invalidate failed provisioning",
+      "responses": [
+        {
+          "status": 403
+        },
+        {
+          "status": 503
+        },
+        {
+          "status": 403
+        },
+        {
+          "status": 503
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed",
+            "currentTier": {
+              "id": "pro"
+            },
+            "paidTier": {
+              "id": "paid"
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "invalidate",
+          "refresh": "refresh|different"
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed",
+            "capturedTier": {
+              "id": "pro",
+              "paidId": "paid",
+              "capturedAt": 1784285195116
+            }
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "exhaust onboarding attempts",
+      "responses": [
+        {
+          "status": 200,
+          "json": {}
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 5000
+        }
+      ],
+      "clock": 1784285295116
+    },
+    {
+      "name": "onboard custom retry settings",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": false
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "onboard",
+          "access": "access",
+          "tier": "custom",
+          "attempts": 2,
+          "delay": 7
+        }
+      ],
+      "results": [
+        {
+          "value": "created"
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"custom\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 7
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"custom\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "wait",
+          "milliseconds": 7
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"custom\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195130
+    }
+  ]
+}

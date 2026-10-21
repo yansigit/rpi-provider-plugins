@@ -3,7 +3,7 @@
 Work in progress: the native provider is not installable or parity complete.
 The implemented catalog/routing module matches the pinned Pi integration, including
 its `google` identity, six chat models, displayed zero prices, tier defaults and
-retired model classification. Authentication, live transport, vault custody and commands
+retired model classification. Loaded-provider authentication, vault custody and commands
 are still being implemented; see [PARITY.md](PARITY.md).
 
 Request conversion also matches the original text, image, signed thinking/tool
@@ -82,7 +82,37 @@ RPI_REFERENCE_OUTPUT="$PWD/tests/fixtures/transport.json" \
 
 The native serializer matches 66 raw requests, including header order, chunked
 bodies, empty-body behavior and proxy precedence; 64 user-agent variants and
-eight response-header cases are retained too. It preserves the upstream rule
+16 response/body cases and 15 response-error cases are retained too. It preserves the upstream rule
 that `Content-Length` is removed only if `Content-Encoding: gzip` appeared first.
-These are framing tests, not working native TLS or live transport acceptance.
+The native TLS driver also runs those responses through loopback TLS and authenticated
+CONNECT tunnels. Gzip output and queued delivery are bounded to 16 KiB chunks;
+multiple gzip members, trailing zero padding, checksum failures and truncated
+responses retain the captured Node behavior. TLS tests use the public test key and
+certificate under `tests/fixtures/tls`, never production credentials.
 The URL dependency's IDNA adapter is locked to 1.2.0 with ICU 1.5 for Rust 1.78.
+The lock retains tokio-util 0.7.19 and zeroize 1.8.2 for the same compiler baseline.
+
+`network-reference.ts` probes the original transport on real loopback sockets.
+It confirms stage-specific timeout messages, but also an upstream limitation:
+body reads remain pending after idle timeout or cancellation. The candidate
+currently closes the connection and returns a terminal error. This is a proposed
+parity exception awaiting user agreement, not a passing parity assertion.
+Production TLS trust settings, OS-specific socket diagnostics and the provider's
+600-second pre-response/one-second trailing-usage driver remain pending.
+
+`auth-reference.ts` uses the original core and packed extension with Pi 1.3.0.
+It captures 56 exchange/refresh cases and four complete callback/code login
+sequences, plus PKCE, packed refresh, expiry and access-token cache cases. The
+native tests compare full request forms, ordered headers, body reads, admission
+checks, cancellation checkpoints, results and unconsumed requests. Run it with
+Node 24's `--experimental-test-module-mocks` and the three reference environment
+variables used above. Its network and UI boundaries are scripted; the loaded
+native auth callbacks and malformed-JSON diagnostics
+are still pending. No existing credentials or enrollments are changed by these tests.
+
+`project-reference.ts` captures 30 managed-project scenarios against the original
+core. The native store preserves endpoint order, tier selection, onboarding
+delays, default-project fallback, refresh-key cache identity, 30-minute expiry,
+concurrent request coalescing and failed-provisioning suppression. Resolution
+continues when one waiter cancels; it remains owned by the provider runtime.
+Loaded-provider integration and real project acquisition are not tested yet.

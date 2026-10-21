@@ -83,10 +83,36 @@ test('raw ordered request bytes and proxy selection', {timeout:10000}, async () 
       ['HTTP/1.1 200\r\nX-Header:  value  ',Buffer.from('ok')],
       ['HTTP/1.1 200 OK\r\nContent-Length: invalid',Buffer.from('ok')],
       ['HTTP/1.1 200 OK\r\nContent-Length: 2\r\nContent-Length: -1',Buffer.from('okextra')],
+      ['HTTP/1.1 200 OK\r\nContent-Length: 10',Buffer.from('ok')],
+      ['HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked',Buffer.from('2;extension=yes\r\nok\r\n0\r\n\r\nignored')],
+      ['HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked',Buffer.from('2junk\r\nok\r\n0\r\n\r\n')],
+      ['HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked',Buffer.from('2\r\nok\r\n9\r\nshort')],
+      ['HTTP/1.1 200 OK\r\nContent-Encoding: gzip',Buffer.concat([compressed,gzipSync(' more')])],
+      ['HTTP/1.1 200 OK\r\nContent-Encoding: gzip',Buffer.concat([compressed,Buffer.from([0,0,0])])],
+      ['HTTP/1.1 200 OK\r\nContent-Encoding: gzip',Buffer.concat([compressed,Buffer.from([0,1,2,3])])],
+      ['HTTP/1.1 200 OK\r\nContent-Encoding: gzip',gzipSync('bounded-output-😀'.repeat(32768))],
     ] as const) {
       reply = Buffer.concat([Buffer.from(head+'\r\n\r\n'),body]);
       const response = await transport.fetchWithAgyCliTransport('https://service.example.test/json',{body:'x'},{timeoutMs:500,idleTimeoutMs:500});
       responses.push({head,wireBody:Array.from(body),status:response.status,statusText:response.statusText,headers:Array.from(response.headers),body:await response.text()});
+    }
+    const responseErrors: any[] = [];
+    const badCrc = Buffer.from(compressed); badCrc[badCrc.length - 8] ^= 1;
+    const badLength = Buffer.from(compressed); badLength[badLength.length - 4] ^= 1;
+    const badDeflate = Buffer.from(compressed); badDeflate[10] = 7;
+    for (const [head, body] of [
+      ...[100, 199, 204, 205, 304, 600].map(status => [`HTTP/1.1 ${status} status`, Buffer.alloc(0)] as const),
+      ...[Buffer.alloc(0), compressed.subarray(0, 5), compressed.subarray(0, compressed.length-3), badCrc, badLength, badDeflate, Buffer.from('not gzip'), Buffer.concat([compressed, Buffer.from('garbage')])].map(body => ['HTTP/1.1 200 OK\r\nContent-Encoding: gzip', body] as const),
+      ['HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked', Buffer.from('xyz\r\nhello\r\n')],
+    ] as const) {
+      reply = Buffer.concat([Buffer.from(head+'\r\n\r\n'),body]);
+      let phase = 'headers';
+      try {
+        const response = await transport.fetchWithAgyCliTransport('https://service.example.test/json',{body:'x'},{timeoutMs:500,idleTimeoutMs:500});
+        phase = 'body';
+        await response.text();
+        assert.fail('expected original transport failure');
+      } catch (error:any) { responseErrors.push({head,wireBody:Array.from(body),phase,error:error.message,errorName:error.name,errorCode:error.code,errorString:String(error)}); }
     }
     const headerInputs: any[] = [];
     for (const headers of [[['bad name','x']],[['x','a\0b']],[['Authorization','\n Bearer a \r\n']],[['x','Ā']],[['Ā','x']],[['bad name','x'],['x','😀']],[['x','a\nb']],[['x','\u000b x \u000b']],[['x','\u00a0 x \u00a0']]]) {
@@ -95,7 +121,7 @@ test('raw ordered request bytes and proxy selection', {timeout:10000}, async () 
     }
     const sourceHashes = {} as Record<string,string>;
     for (const file of ['packages/core/src/agy-transport.ts','packages/core/src/fingerprint.ts','packages/core/dist/agy-transport.js','packages/core/dist/fingerprint.js']) sourceHashes[file] = createHash('sha256').update(await readFile(join(root,file))).digest('hex');
-    await writeFile(output,JSON.stringify({reference:pin,runtime:process.version,platform:process.platform,arch:process.arch,sourceHashes,cases,agents,responses,headerInputs},null,2)+'\n');
+    await writeFile(output,JSON.stringify({reference:pin,runtime:process.version,platform:process.platform,arch:process.arch,sourceHashes,cases,agents,responses,responseErrors,headerInputs},null,2)+'\n');
     console.log(JSON.stringify({cases:cases.length,agents:agents.length,responses:responses.length}));
   } finally {
     for (const key of keys) { if (original[key] === undefined) delete process.env[key]; else process.env[key] = original[key]; }

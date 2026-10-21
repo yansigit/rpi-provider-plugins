@@ -6,6 +6,9 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 use url::Url;
 
+pub mod body;
+pub mod network;
+
 pub const RESPONSE_HEADER_TIMEOUT_MS: u64 = 180_000;
 pub const IDLE_TIMEOUT_MS: u64 = 180_000;
 
@@ -194,7 +197,7 @@ pub struct ResponseHead {
     pub gzip: bool,
     pub content_length: Option<f64>,
 }
-fn integer_prefix(input: &str, radix: u32) -> Option<f64> {
+pub(super) fn integer_prefix(input: &str, radix: u32) -> Option<f64> {
     let mut input = trim(input);
     let negative = input.starts_with('-');
     if input.starts_with(['+', '-']) {

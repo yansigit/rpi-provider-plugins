@@ -1,0 +1,77 @@
+{
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "runtime": "v24.22.0",
+  "sourceHashes": {
+    "packages/core/src/agy-transport.ts": "ca6d74b8703d8d3f25dc5d2e9fcfb7129039c2b6ecaa407daea218227698e1bb",
+    "packages/core/dist/agy-transport.js": "64ea3f6e1082848f15fe7a66c6c4ead53daaa57ae66d8a74d6a7dd7851859c24"
+  },
+  "cases": [
+    {
+      "scenario": "direct-timeout",
+      "outcome": "rejected",
+      "message": "Antigravity request timed out connecting after 100ms",
+      "debug": [
+        "agy transport connecting to localhost with header timeout 100ms",
+        "agy transport TLS connect timeout after 100ms"
+      ]
+    },
+    {
+      "scenario": "proxy-head-timeout",
+      "outcome": "rejected",
+      "message": "Antigravity request timed out waiting for response headers after 100ms",
+      "debug": [
+        "agy transport connecting to localhost with header timeout 100ms",
+        "agy transport proxy CONNECT response timeout after 100ms"
+      ]
+    },
+    {
+      "scenario": "proxy-handshake-timeout",
+      "outcome": "rejected",
+      "message": "Antigravity request timed out during proxy TLS handshake after 100ms",
+      "debug": [
+        "agy transport connecting to localhost with header timeout 100ms",
+        "agy transport proxy TLS handshake timeout after 100ms"
+      ]
+    },
+    {
+      "scenario": "header-timeout",
+      "outcome": "rejected",
+      "message": "Antigravity request timed out waiting for response headers after 100ms",
+      "debug": [
+        "agy transport connecting to localhost with header timeout 100ms",
+        "agy transport request dispatched (234 bytes)",
+        "agy transport response header timeout after 100ms"
+      ]
+    },
+    {
+      "scenario": "body-idle",
+      "outcome": "unsettled",
+      "debug": [
+        "agy transport connecting to localhost with header timeout 100ms",
+        "agy transport request dispatched (234 bytes)",
+        "agy transport response headers received: 200 OK",
+        "agy transport idle timeout after 100ms with no body data"
+      ]
+    },
+    {
+      "scenario": "body-cancel",
+      "outcome": "unsettled",
+      "debug": [
+        "agy transport connecting to localhost with header timeout 100ms",
+        "agy transport request dispatched (234 bytes)",
+        "agy transport response headers received: 200 OK",
+        "agy transport idle timeout after 100ms with no body data"
+      ]
+    },
+    {
+      "scenario": "body-drop",
+      "outcome": "cancelled-reader",
+      "debug": [
+        "agy transport connecting to localhost with header timeout 100ms",
+        "agy transport request dispatched (234 bytes)",
+        "agy transport response headers received: 200 OK"
+      ],
+      "peerClosed": true
+    }
+  ]
+}
