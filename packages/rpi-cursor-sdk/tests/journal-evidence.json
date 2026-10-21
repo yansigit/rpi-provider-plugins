@@ -1,0 +1,107 @@
+{
+  "status": "partial C04/C06/C07 native persistence boundary; complete provider/runtime integration remains pending",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "sdk": "1.0.37 (external)",
+  "node": "24.22.0",
+  "rust": "1.78.0",
+  "checks": {
+    "rustWarningsDenied": {
+      "unitPassed": 10,
+      "includesInternalProcessHelper": true,
+      "workerIntegrationPassed": 9,
+      "referenceTestsPassed": 1,
+      "nodeReferenceByteComparisons": 16,
+      "separateWriterProcesses": 4,
+      "crossProcessFrames": 64,
+      "ignoredTestsExplicitlyEnabled": true
+    },
+    "retainedUnitSuite": {
+      "passed": 1663,
+      "failed": 0,
+      "skipped": 2
+    },
+    "retainedPiNativeLoaderPassed": 53,
+    "typechecks": "source, tests and replay compile passed",
+    "build": "passed",
+    "npmPackDryRun": {
+      "files": 2764,
+      "cursorSdkDependencyFiles": 0
+    },
+    "windowsGnu": "Rust package and tests cross-compiled with warnings denied; not executed",
+    "referenceComparison": "16 cases execute the unchanged pinned Node writers and the candidate Node journal client through Rust IPC; compare outcomes and exact bytes. Cloud uses the original converted record to isolate the IO boundary."
+  },
+  "review": {
+    "kind": "manual exact-diff integration and maintainability review",
+    "scope": "Rust IO/port, Node journal/session boundaries, all affected adapter callers, tests, docs, dependency lock changes and package contents",
+    "corrected": [
+      "Release abandoned read locks before draining host writers on shutdown",
+      "Bound journal hashing to the observed file size and refuse concurrent external changes",
+      "Include session ID in native persistent SDK ownership for shared SQLite files",
+      "Use committed entry receipts and host durability instead of Node fsync on SQLite",
+      "Keep late cleanup/cloud results on their originating branch and refuse branch-changed cloud mutation admission",
+      "Check authority after asynchronous reads",
+      "Keep new modules compatible with the retained Node strip-only source-loading tests",
+      "Preserve existing providers dependency selections in the workspace lock"
+    ],
+    "remainingInChunk": []
+  },
+  "initialFullRun": {
+    "passed": 1661,
+    "failed": 2,
+    "skipped": 2,
+    "failures": [
+      {
+        "test": "cursor-session-store-migration",
+        "cause": "New constructor parameter properties were incompatible with the original Node strip-only source loader",
+        "resolution": "Replaced with explicit fields; unchanged migration test and final full suite pass"
+      },
+      {
+        "test": "platform-artifact-boundaries",
+        "cause": "Previously recorded upstream race observed safe fixture bytes under nested.safe/deep/safe.txt instead of its expected temporary/quarantine path",
+        "resolution": "Original test unchanged; final full suite passes"
+      }
+    ]
+  },
+  "pending": [
+    "Native DLL and full worker dispatcher/installed assets",
+    "History-authorized reads of inherited usage journals",
+    "Background origin leases, lifetime integration and shutdown wiring",
+    "Remaining provider/auth/tool/UI ports and all adapter feature groups",
+    "Isolated imports, combined packages, platform execution and controlled live acceptance"
+  ],
+  "liveCalls": 0,
+  "logs": [
+    {
+      "path": "/tmp/rpi-cursor-journals-rust-all.log",
+      "sha256": "a89ee615a741eed1136dab4dac9e047adc376501de85a702d92a015ba188b144"
+    },
+    {
+      "path": "/tmp/rpi-cursor-journal-windows-final.log",
+      "sha256": "0e73f3a668cf5d39e46bc8a428f354f62e34fb35f29f9352070ef563e2ed303b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-journals-types-final.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-journals-all-final.log",
+      "sha256": "34de7fcab8d8fd847595c98984999072bc7a629ec095f69b0f4f44eebfa735ba"
+    },
+    {
+      "path": "/tmp/rpi-cursor-journals-build-final.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    {
+      "path": "/tmp/rpi-cursor-journals-native-final.log",
+      "sha256": "a731dd842d01cf872df3e46879f58bdd18ca5f36a632e83b0c7a4eb03ad30884"
+    },
+    {
+      "path": "/tmp/rpi-cursor-journals-pack-final.json",
+      "sha256": "d5b7f38b9486addea06c999adae9fddf803d675b5a3c25694fac3437b6dfecc8"
+    },
+    {
+      "path": "/tmp/rpi-cursor-native-journal-tests.log",
+      "sha256": "baeee0a247299f38d60b04340367666b11ef8ad0cef7f8543ea0eecb9a47dd02"
+    }
+  ]
+}

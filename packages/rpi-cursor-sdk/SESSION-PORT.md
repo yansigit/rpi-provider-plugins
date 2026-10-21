@@ -30,13 +30,41 @@ Concurrent lineage calls share one append; late lineage and resume acknowledgeme
 cannot update newly selected session state.
 
 The original file-journal implementations still run in the retained Pi baseline.
-Native cleanup/session synchronization, cloud/usage file-journal ports, SQLite
-persistent-scope identity, background operation leases and installed-worker wiring
-must be connected before native inference is qualified. This chunk does not
-reinterpret SQLite file synchronization as transaction durability or activate
-imported Cursor management authority.
+Native cleanup uses committed host receipts, including transaction durability for
+SQLite. Results arriving after navigation append to their original branch. Native
+persistent SDK scope keys include both storage location and session ID, keeping
+sessions in the same SQLite database separate.
+
+`src/journal.rs` and `src/journal/port.rs` implement the Rust journal port;
+`worker/src/rpi/journal.ts` implements its awaited worker calls. The native caller
+resolves a captured session's path and ID before constructing the port. Worker
+requests cannot supply filesystem paths. File handles are checked for regular-file
+identity and links; writes use private files, process-safe locks and file sync.
+Unix acknowledgements also sync the directory, including recovery after a prior
+directory-sync failure. A failed sync retains uncertain bytes and returns an error.
+
+Reads use locked snapshots with at most 16 open readers and 1 MiB IPC chunks. The
+worker verifies the complete byte length and SHA-256 digest before using a snapshot.
+Cloud preserves its original newline repair and tolerant record parsing. Usage
+preserves complete-history validation, its 16 MiB limit and refusal to append to a
+torn tail. Conditional appends revalidate if a competing writer changed a usage
+journal. No interrupted send or deletion is replayed. Shutdown must close journal
+readers before draining admitted writes, so an abandoned snapshot cannot hold up a
+writer forever.
+
+Cloud and usage adapter paths now await this port for native sessions. Cloud
+mutations require a durable intent and check branch ownership again after awaiting
+persistence; uncertain outcomes remain unresolved. Usage claims use the actual
+committed entry ID before spend, and late facts remain in the captured journal.
+Native reads of inherited sessions' usage journals still need the runtime's
+history-authorized origin resolver; currently they produce the existing explicit
+incomplete-lineage result instead of reading arbitrary history-selected paths.
+Background operation leases and installed-worker/provider wiring also remain in
+progress. Imported Cursor management authority is not activated by these changes.
 
 The original source and tests remain pinned by `upstream.json`; host-boundary
-patches are visible in the integration fork. The lockfile and SDK version are
-unchanged. Focused tests cover delayed/rejected writes, receipt verification,
-origin changes, malformed views and actual installed-SDK callback behavior.
+patches are visible in the integration fork. The worker lockfile and SDK version
+are unchanged. Tests include delayed/rejected writes, receipt verification, origin
+changes, malformed views, the installed SDK's callback behavior, actual Rust/Node
+journal IPC, competing writers, sync failures, and 16 byte comparisons against the
+unchanged pinned Node journal writers. Platform compilation is not platform execution.

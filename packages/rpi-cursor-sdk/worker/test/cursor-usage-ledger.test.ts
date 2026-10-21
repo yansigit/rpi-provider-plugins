@@ -41,10 +41,10 @@ describe("origin usage recorder and supported view", () => {
 		expect(readdirSync(s.root).some(name => name.endsWith(".journal"))).toBe(false);
 		acknowledge();
 		await pending;
-		expect(readCursorUsageView(s.pi, s.ctx()).records.map(record => record.kind)).toEqual(["start"]);
+		expect((await readCursorUsageView(s.pi, s.ctx())).records.map(record => record.kind)).toEqual(["start"]);
 		s.harness.appendEntry.mockImplementationOnce(async () => { throw new Error("claim rejected"); });
 		await expect(s.start(agent())).rejects.toThrow("claim rejected");
-		expect(readCursorUsageView(s.pi, s.ctx()).records.map(record => record.kind)).toEqual(["start"]);
+		expect((await readCursorUsageView(s.pi, s.ctx())).records.map(record => record.kind)).toEqual(["start"]);
 	});
 	it("keeps raw cache correction, reported snapshots, repeated/revised aggregate bills and restart separate", async () => {
 		const s = setup(); const snapshots = vi.fn().mockResolvedValue(bill()); const turn = await s.start(agent(snapshots));
@@ -52,30 +52,30 @@ describe("origin usage recorder and supported view", () => {
 		await turn.recordRun({ runId: "run-client", requestId: "request-client" });
 		await turn.recordTerminal({ status: "success", waitUsage: { ...cached, inputTokens: 4232, totalTokens: 8331 }, handleUsage: { ...cached, inputTokens: 4232, totalTokens: 8331 } });
 		await turn.recordSnapshot();
-		let view = readCursorUsageView(s.pi, s.ctx());
+		let view = (await readCursorUsageView(s.pi, s.ctx()));
 		expect(view.correctedRawTotal).toEqual(cached); expect(view.agents[0]?.wholeAgent?.usage).toEqual(cached);
 		expect(view.records.find(record => record.kind === "terminal")).toMatchObject({ waitUsage: { totalTokens: 8331 } });
 		const larger = { ...cached, outputTokens: 500003, totalTokens: 504235 };
 		snapshots.mockResolvedValue({ usage: larger, cost: { rawCostCents: 0.1, chargedCents: 0.05 }, runs: [{ runId: "uuid-a", usage: cached, cost: { rawCostCents: 0.1, chargedCents: 0.05 } }] });
-		await turn.recordSnapshot(); view = readCursorUsageView(s.pi, s.ctx());
+		await turn.recordSnapshot(); view = (await readCursorUsageView(s.pi, s.ctx()));
 		expect(view.agents[0]?.wholeAgent?.cost?.chargedCents).toBe(0.05); expect(view.agents[0]?.aggregateOnly?.outputTokens).toBe(500000);
 		const reopened = SessionManager.open(s.manager.getSessionFile()!); s.replace(reopened);
 		const next = await s.start(agent(snapshots), { resumed: true, newlyCreated: false }); await next.recordSnapshot();
-		view = readCursorUsageView(s.pi, s.ctx()); expect(view.correctedRawTotal.totalTokens).toBe(4235); expect(view.agents[0]?.wholeAgent?.usage.totalTokens).toBe(504235); expect(view.agents[0]?.unknownHistory).toBe(false);
+		view = (await readCursorUsageView(s.pi, s.ctx())); expect(view.correctedRawTotal.totalTokens).toBe(4235); expect(view.agents[0]?.wholeAgent?.usage.totalTokens).toBe(504235); expect(view.agents[0]?.unknownHistory).toBe(false);
 		expect(JSON.stringify(view)).not.toContain("not exported");
 	});
 	it("retains unknown inherited history, unavailable then late terminal/billing facts without fiction", async () => {
 		const s = setup(); const fetch = vi.fn().mockRejectedValue(new Error("private credential")); const turn = await s.start(agent(fetch), { resumed: true, newlyCreated: false });
-		expect(renderCursorUsageView(readCursorUsageView(s.pi, s.ctx()))).toContain("Latest known billed tokens: pending; SDK charged cents: pending; aggregate-only tokens: pending");
-		await turn.recordTerminal({ status: "abandon" }); await turn.recordSnapshot(); let view = readCursorUsageView(s.pi, s.ctx());
+		expect(renderCursorUsageView((await readCursorUsageView(s.pi, s.ctx())))).toContain("Latest known billed tokens: pending; SDK charged cents: pending; aggregate-only tokens: pending");
+		await turn.recordTerminal({ status: "abandon" }); await turn.recordSnapshot(); let view = (await readCursorUsageView(s.pi, s.ctx()));
 		expect(view.agents[0]).toMatchObject({ billingStatus: "unavailable", unknownHistory: true }); expect(JSON.stringify(view)).not.toContain("private credential");
 		expect(renderCursorUsageView(view)).toContain("Latest known billed tokens: unavailable; SDK charged cents: unavailable; aggregate-only tokens: unavailable");
 		expect(renderCursorUsageView(view)).toContain("latest known billed tokens unavailable; charged cents unavailable");
 		fetch.mockResolvedValue(bill()); await turn.recordTerminal({ status: "abort", waitUsage: cached });
-		view = readCursorUsageView(s.pi, s.ctx()); expect(view.records.filter(record => record.kind === "terminal").map(record => record.status)).toEqual(["abandon", "abort"]);
+		view = (await readCursorUsageView(s.pi, s.ctx())); expect(view.records.filter(record => record.kind === "terminal").map(record => record.status)).toEqual(["abandon", "abort"]);
 		expect(renderCursorUsageView(view)).toContain("unknown historical baseline"); expect(renderCursorUsageView(view)).toContain("observed-pending-settlement");
 		fetch.mockResolvedValue({ usage: cached, runs: [{ runId: "uuid-a", usage: cached }] }); await turn.recordSnapshot();
-		expect(renderCursorUsageView(readCursorUsageView(s.pi, s.ctx()))).toContain("Latest known billed tokens: 4235; SDK charged cents: not reported; aggregate-only tokens: 0");
+		expect(renderCursorUsageView((await readCursorUsageView(s.pi, s.ctx())))).toContain("Latest known billed tokens: 4235; SDK charged cents: not reported; aggregate-only tokens: 0");
 	});
 	it("late completion persists to its original journal without writing a switched session or sibling branch", async () => {
 		const s = setup(); const oldLeaf = s.manager.getLeafId()!; let resolveBill!: (value: AgentUsage) => void; const turn = await s.start(agent(() => new Promise(resolve => { resolveBill = resolve; })));
@@ -84,20 +84,20 @@ describe("origin usage recorder and supported view", () => {
 		const next = SessionManager.create(s.root, s.root); next.appendMessage(makeAssistantMessage()); s.replace(next);
 		await s.harness.invokeEventWithContext("session_start", { type: "session_start", reason: "resume" }, s.ctx());
 		const writes = s.harness.appendEntry.mock.calls.length; resolveBill(bill()); await pending;
-		expect(s.harness.appendEntry).toHaveBeenCalledTimes(writes); expect(readCursorUsageView(s.pi, s.ctx()).agents).toEqual([]);
+		expect(s.harness.appendEntry).toHaveBeenCalledTimes(writes); expect((await readCursorUsageView(s.pi, s.ctx())).agents).toEqual([]);
 		s.replace(SessionManager.open(oldFile)); await s.harness.invokeEventWithContext("session_start", { type: "session_start", reason: "resume" }, s.ctx());
-		expect(readCursorUsageView(s.pi, s.ctx()).agents[0]?.wholeAgent?.usage.totalTokens).toBe(4235);
+		expect((await readCursorUsageView(s.pi, s.ctx())).agents[0]?.wholeAgent?.usage.totalTokens).toBe(4235);
 		s.manager.branch(oldLeaf); s.manager.appendMessage({ role: "user", content: "sibling", timestamp: 2 });
 		await s.harness.invokeEventWithContext("session_tree", { type: "session_tree", oldLeafId: oldLeaf, newLeafId: s.manager.getLeafId()! }, s.ctx());
 		const before = s.harness.appendEntry.mock.calls.length; await turn.observeRawTurn({ inputTokens: 1, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0 });
-		expect(s.harness.appendEntry).toHaveBeenCalledTimes(before); expect(readCursorUsageView(s.pi, s.ctx()).agents).toEqual([]);
+		expect(s.harness.appendEntry).toHaveBeenCalledTimes(before); expect((await readCursorUsageView(s.pi, s.ctx())).agents).toEqual([]);
 	});
 	it("failed persistence never advances recognized facts and exposes a guarded warning", async () => {
 		const s = setup(); const turn = await s.start(agent()); const path = join(s.root, readdirSync(s.root).find(name => name.endsWith(".journal"))!); const original = readFileSync(path, "utf8");
 		writeFileSync(path, `${original}{\"version\":1`);
 		await expect(turn.recordSnapshot()).rejects.toThrow("incomplete journal frame"); turn.notePersistenceFailure(new Error("secret")); turn.notePersistenceFailure(new Error("secret"));
 		expect(s.notify).toHaveBeenCalledTimes(1); expect(s.notify.mock.calls[0]?.[0]).not.toContain("secret");
-		const view = readCursorUsageView(s.pi, s.ctx()); expect(view.agents[0]?.wholeAgent).toBeUndefined(); expect(view.persistenceStatus).toBe("incomplete"); expect(view.records.filter(record => record.kind === "billing")).toHaveLength(0);
+		const view = (await readCursorUsageView(s.pi, s.ctx())); expect(view.agents[0]?.wholeAgent).toBeUndefined(); expect(view.persistenceStatus).toBe("incomplete"); expect(view.records.filter(record => record.kind === "billing")).toHaveLength(0);
 		expect(view.incompleteJournals).toEqual([s.manager.getSessionId()]);
 		const bytes = readFileSync(path);
 		const command = s.harness._commands.get("cursor-usage")!;
@@ -108,7 +108,7 @@ describe("origin usage recorder and supported view", () => {
 		await expect(s.start(agent())).rejects.toThrow("incomplete journal frame");
 		s.replace(SessionManager.forkFrom(s.manager.getSessionFile()!, s.root, s.root));
 		const recovered = await s.start(agent()); await recovered.recordSnapshot();
-		const recoveryView = readCursorUsageView(s.pi, s.ctx());
+		const recoveryView = (await readCursorUsageView(s.pi, s.ctx()));
 		expect(recoveryView.agents[0]?.wholeAgent?.usage).toEqual(cached);
 		expect(recoveryView.incompleteJournals).toHaveLength(1);
 		expect(readFileSync(path)).toEqual(bytes);
@@ -118,7 +118,7 @@ describe("origin usage recorder and supported view", () => {
 		expect(await turn.recordTerminal({ status: "abandon" })).toBeUndefined();
 		expect(fetch).not.toHaveBeenCalled();
 		s.replace(SessionManager.open(s.manager.getSessionFile()!));
-		expect(readCursorUsageView(s.pi, s.ctx()).records.filter(record => record.kind === "terminal")).toMatchObject([{ status: "abandon" }]);
+		expect((await readCursorUsageView(s.pi, s.ctx())).records.filter(record => record.kind === "terminal")).toMatchObject([{ status: "abandon" }]);
 		await turn.recordTerminal({ status: "abort" });
 		expect(fetch).toHaveBeenCalledTimes(1);
 	});
@@ -136,13 +136,13 @@ describe("origin usage recorder and supported view", () => {
 		}
 		expect(readFileSync(path).length).toBeLessThan(halfJournal * 2.4);
 		expect(readFileSync(s.manager.getSessionFile()!).length).toBeLessThan(halfSession * 2.4);
-		expect(readCursorUsageView(s.pi, s.ctx()).agents[0]?.wholeAgent?.runs).toHaveLength(32);
+		expect((await readCursorUsageView(s.pi, s.ctx())).agents[0]?.wholeAgent?.runs).toHaveLength(32);
 		const revised = { usage: tokens, cost: { rawCostCents: 0.01, chargedCents: 0 }, runs: [{ runId: "uuid-1", usage: tokens, cost: { rawCostCents: 0.01, chargedCents: 0 } }] };
 		fetch.mockResolvedValue(revised); await turn.recordSnapshot();
 		s.replace(SessionManager.open(s.manager.getSessionFile()!));
-		expect(readCursorUsageView(s.pi, s.ctx()).agents[0]?.wholeAgent).toEqual(revised);
+		expect((await readCursorUsageView(s.pi, s.ctx())).agents[0]?.wholeAgent).toEqual(revised);
 		fetch.mockRejectedValue(new Error("unavailable")); await turn.recordSnapshot();
-		const view = readCursorUsageView(s.pi, s.ctx());
+		const view = (await readCursorUsageView(s.pi, s.ctx()));
 		expect(view.agents[0]).toMatchObject({ billingStatus: "unavailable", wholeAgent: revised });
 		expect(renderCursorUsageView(view)).toContain("Latest known billed tokens: 2");
 		expect(view.records.filter(record => record.kind === "billing")).toHaveLength(34);
@@ -152,7 +152,7 @@ describe("origin usage recorder and supported view", () => {
 		if (kind === "directory") { rmSync(path); mkdirSync(path); }
 		else if (kind === "symlink") { const target = join(s.root, "target"); writeFileSync(target, "untouched"); rmSync(path); symlinkSync(target, path); }
 		else writeFileSync(path, `${readFileSync(path, "utf8")}{}\n{"torn":`);
-		expect(() => readCursorUsageView(s.pi, s.ctx())).toThrow();
+		await expect(readCursorUsageView(s.pi, s.ctx())).rejects.toThrow();
 		if (kind === "symlink") expect(readFileSync(join(s.root, "target"), "utf8")).toBe("untouched");
 	});
 	it("forks preserve source lineage and whole-agent facts without attributing shared spend to the new branch", async () => {
@@ -160,7 +160,7 @@ describe("origin usage recorder and supported view", () => {
 		const sourceFile = s.manager.getSessionFile()!;
 		s.replace(SessionManager.forkFrom(sourceFile, s.root, s.root));
 		const inherited = await s.start(agent(), { resumed: true, newlyCreated: false }); await inherited.recordSnapshot();
-		const view = readCursorUsageView(s.pi, s.ctx()); expect(view.agents[0]).toMatchObject({ sharedAcrossBranches: true, unknownHistory: false, billingStatus: "ambiguous-shared-lineage" });
+		const view = (await readCursorUsageView(s.pi, s.ctx())); expect(view.agents[0]).toMatchObject({ sharedAcrossBranches: true, unknownHistory: false, billingStatus: "ambiguous-shared-lineage" });
 		expect(view.agents[0]?.wholeAgent).toBeUndefined(); expect(view.agents[0]?.observationsByOrigin).toHaveLength(2);
 		expect(view.agents[0]?.latestAggregate).toBeUndefined();
 		expect(view.agents[0]?.observationsByOrigin.map(observation => observation.latestAggregate?.usage)).toEqual([cached, cached]);
@@ -177,9 +177,9 @@ describe("origin usage recorder and supported view", () => {
 		const turn = await s.start(agent()); await turn.recordSnapshot();
 		s.manager.appendMessage(makeAssistantMessage()); s.manager.appendMessage({ role: "user", content: "later", timestamp: 2 });
 		s.replace(SessionManager.open(s.manager.getSessionFile()!));
-		expect(readCursorUsageView(s.pi, s.ctx()).agents[0]?.wholeAgent?.usage).toEqual(cached);
+		expect((await readCursorUsageView(s.pi, s.ctx())).agents[0]?.wholeAgent?.usage).toEqual(cached);
 		s.manager.branch(ancestor); s.manager.appendMessage({ role: "user", content: "sibling", timestamp: 3 });
-		const sibling = readCursorUsageView(s.pi, s.ctx()); expect(sibling.agents).toEqual([]); expect(sibling.otherBranchRecords).toHaveLength(2); expect(sibling.unclaimedRecords).toEqual([]);
+		const sibling = (await readCursorUsageView(s.pi, s.ctx())); expect(sibling.agents).toEqual([]); expect(sibling.otherBranchRecords).toHaveLength(2); expect(sibling.unclaimedRecords).toEqual([]);
 	});
 	it("uses append chronology for backward and equal wall-clock snapshot revisions", async () => {
 		const s = setup(); const fetch = vi.fn().mockResolvedValue(bill()); const turn = await s.start(agent(fetch));
@@ -188,19 +188,19 @@ describe("origin usage recorder and supported view", () => {
 		const frames = readFileSync(path, "utf8").trim().split("\n").map(line => JSON.parse(line));
 		frames[1].timestamp = "2030-01-01T00:00:00Z"; frames[2].timestamp = frames[3].timestamp = "1990-01-01T00:00:00Z";
 		writeFileSync(path, frames.map(frame => JSON.stringify(frame)).join("\n") + "\n");
-		expect(readCursorUsageView(s.pi, s.ctx()).agents[0]?.wholeAgent?.cost?.chargedCents).toBe(0.05);
+		expect((await readCursorUsageView(s.pi, s.ctx())).agents[0]?.wholeAgent?.cost?.chargedCents).toBe(0.05);
 	});
 	it("preserves unqualified Cloud and invalid LOCAL numeric telemetry without inventing normalization", async () => {
 		const s = setup(); const cloud = await s.start(agent(), { runtime: "cloud" }); await cloud.observeRawTurn(cached);
 		const local = await s.start(agent()); await local.observeRawTurn(cached);
-		const raw = readCursorUsageView(s.pi, s.ctx()).records.filter(record => record.kind === "raw");
+		const raw = (await readCursorUsageView(s.pi, s.ctx())).records.filter(record => record.kind === "raw");
 		expect(raw.map(record => record.normalization)).toEqual(["cloud-unqualified", "invalid-local-partition"]);
 		expect(raw.every(record => record.corrected === undefined)).toBe(true); expect(raw.map(record => record.reported)).toEqual([cached, cached]);
 	});
 	it("preserves configured pricing tiers immutably and rejects unknown secret-bearing metadata", async () => {
 		const s = setup(); const model = makeModel(); const tier = { ...model.cost, inputTokensAbove: 100, input: 7 }; model.cost = { ...model.cost, tiers: [tier] };
 		await s.start(agent(), { model }); tier.input = 99;
-		const start = readCursorUsageView(s.pi, s.ctx()).records.find(record => record.kind === "start");
+		const start = (await readCursorUsageView(s.pi, s.ctx())).records.find(record => record.kind === "start");
 		expect(start?.kind === "start" && start.data.model.cost.tiers?.[0]?.input).toBe(7);
 		await expect(s.start(agent(), { modelSelection: { id: "model", secret: "not allowed" } })).rejects.toThrow("invalid Cursor model selection");
 		await expect(s.start(agent(), { resumed: true, newlyCreated: true })).rejects.toThrow("both resumed and newly created");
@@ -209,9 +209,9 @@ describe("origin usage recorder and supported view", () => {
 		const s = setup(); const turn = await s.start(agent()); await turn.recordSnapshot(); const source = s.manager.getSessionFile()!;
 		const target = mkdtempSync(join(tmpdir(), "cursor-usage-fork-")); roots.push(target);
 		s.replace(SessionManager.forkFrom(source, target, target));
-		let view = readCursorUsageView(s.pi, s.ctx()); expect(view.agents[0]?.wholeAgent?.usage).toEqual(cached);
+		let view = (await readCursorUsageView(s.pi, s.ctx())); expect(view.agents[0]?.wholeAgent?.usage).toEqual(cached);
 		rmSync(join(s.root, readdirSync(s.root).find(name => name.endsWith(".journal"))!));
-		view = readCursorUsageView(s.pi, s.ctx()); expect(view.agents[0]?.latestAggregate).toEqual({ usage: cached, cost: bill().cost }); expect(view.lineageGaps).toHaveLength(1); expect(view.persistenceStatus).toBe("incomplete");
+		view = (await readCursorUsageView(s.pi, s.ctx())); expect(view.agents[0]?.latestAggregate).toEqual({ usage: cached, cost: bill().cost }); expect(view.lineageGaps).toHaveLength(1); expect(view.persistenceStatus).toBe("incomplete");
 		expect(view.agents[0]?.wholeAgent).toBeUndefined();
 		expect(view.agents[0]?.observationsByOrigin[0]?.wholeAgent).toBeUndefined();
 		expect(view.agents[0]?.observationsByOrigin[0]?.incompleteHistory).toBe(true);
@@ -227,7 +227,7 @@ describe("origin usage recorder and supported view", () => {
 		s.harness.appendEntry.mockImplementation(append); await turn.recordSnapshot();
 		fetch.mockRejectedValue(new Error("unavailable")); await turn.recordSnapshot();
 		rmSync(join(s.root, readdirSync(s.root).find(name => name.endsWith(".journal"))!));
-		const view = readCursorUsageView(s.pi, s.ctx());
+		const view = (await readCursorUsageView(s.pi, s.ctx()));
 		expect(view.persistenceStatus).toBe("incomplete");
 		expect(view.agents[0]?.wholeAgent).toBeUndefined();
 		expect(view.agents[0]?.lastAttempt).toMatchObject({ status: "unavailable" });
@@ -253,7 +253,7 @@ describe("origin usage recorder and supported view", () => {
 		s.manager.branch(ancestor); s.manager.appendMessage({ role: "user", content: "fork from sibling", timestamp: 2 });
 		await s.start({ ...agent(), agentId: "agent-sibling" } as SDKAgent);
 		s.replace(SessionManager.forkFrom(s.manager.getSessionFile()!, s.root, s.root));
-		const view = readCursorUsageView(s.pi, s.ctx());
+		const view = (await readCursorUsageView(s.pi, s.ctx()));
 		expect(view.unclaimedRecords).toEqual([]);
 		expect(view.otherBranchRecords).toHaveLength(2);
 		expect(view.records).toHaveLength(1);
@@ -262,10 +262,10 @@ describe("origin usage recorder and supported view", () => {
 	it("retains first-turn orphan intent as unclaimed facts when its native claim is lost", async () => {
 		const s = setup(); const beforeClaim = readFileSync(s.manager.getSessionFile()!, "utf8"); const turn = await s.start(agent()); await turn.recordSnapshot();
 		const recoveredFile = join(s.root, "recovered-same-native-id.jsonl"); writeFileSync(recoveredFile, beforeClaim); s.replace(SessionManager.open(recoveredFile));
-		const view = readCursorUsageView(s.pi, s.ctx()); expect(view.records).toEqual([]); expect(view.agents).toEqual([]); expect(view.unclaimedRecords).toHaveLength(2);
+		const view = (await readCursorUsageView(s.pi, s.ctx())); expect(view.records).toEqual([]); expect(view.agents).toEqual([]); expect(view.unclaimedRecords).toHaveLength(2);
 		await s.start({ ...agent(), agentId: "agent-sibling" } as SDKAgent);
 		s.replace(SessionManager.forkFrom(s.manager.getSessionFile()!, s.root, s.root));
-		const inherited = readCursorUsageView(s.pi, s.ctx());
+		const inherited = (await readCursorUsageView(s.pi, s.ctx()));
 		expect(inherited.records).toHaveLength(1);
 		expect(inherited.unclaimedRecords).toEqual([]);
 		expect(inherited.otherBranchRecords).toEqual([]);
@@ -275,7 +275,7 @@ describe("origin usage recorder and supported view", () => {
 		const s = setup(); s.replace(SessionManager.inMemory(s.root));
 		const turn = await s.start(agent()); await turn.observeRawTurn({ inputTokens: 2, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0 });
 		await turn.recordTerminal({ status: "success", waitUsage: { invalid: "not stored" } });
-		const view = readCursorUsageView(s.pi, s.ctx()); expect(view.durability).toBe("ephemeral"); expect(view.correctedRawTotal.totalTokens).toBe(3);
+		const view = (await readCursorUsageView(s.pi, s.ctx())); expect(view.durability).toBe("ephemeral"); expect(view.correctedRawTotal.totalTokens).toBe(3);
 		expect(view.records.find(record => record.kind === "terminal")).toMatchObject({ invalidReportedUsage: true });
 	});
 	it("help and missing export arguments are useful in non-UI mode without changing stdout", async () => {

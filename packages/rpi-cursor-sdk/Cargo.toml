@@ -18,3 +18,12 @@ serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"
 tokio = { workspace = true, features = ["net", "io-util", "process", "macros"] }
 tokio-util = { version = "0.7", features = ["rt"] }
 getrandom = "0.2"
+fs2 = "0.4"
+sha2 = "0.10"
+base64 = "0.22"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }

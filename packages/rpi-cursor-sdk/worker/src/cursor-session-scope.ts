@@ -1,3 +1,4 @@
+import { NativeSessionManager } from "./rpi/session.js";
 import { resolve } from "node:path";
 import { parseArgs } from "@earendil-works/pi-coding-agent";
 import type { ExtensionHandler, ProjectTrustHandler, SessionInfoChangedEvent, SessionStartEvent, SessionShutdownEvent } from "@earendil-works/pi-coding-agent";
@@ -36,6 +37,7 @@ const state = {
 	projectTrusted: false,
 	sessionGeneration: 0,
 	runtimeOwner: undefined as number | undefined,
+	persistentIdentity: undefined as string | undefined,
 };
 type ScopeRecord = typeof state;
 const scopes = new Map<object, ScopeRecord>();
@@ -46,8 +48,8 @@ let nextSessionGeneration = 1;
 let nextRuntimeOwner = 1;
 let runtimeOwners = new WeakMap<object, number>();
 
-function persistentScopeKeyFor(record: Pick<ScopeRecord, "sessionFile" | "sessionId">): string {
-	return record.sessionFile ?? (record.sessionId ? `${EPHEMERAL_SESSION_SCOPE_PREFIX}${record.sessionId}` : ANONYMOUS_SESSION_SCOPE_KEY);
+function persistentScopeKeyFor(record: Pick<ScopeRecord, "sessionFile" | "sessionId"> & { persistentIdentity?: string }): string {
+	return record.persistentIdentity ?? record.sessionFile ?? (record.sessionId ? `${EPHEMERAL_SESSION_SCOPE_PREFIX}${record.sessionId}` : ANONYMOUS_SESSION_SCOPE_KEY);
 }
 
 function scopeKeyFor(record: ScopeRecord): string {
@@ -59,6 +61,7 @@ export function cursorSessionScopeKeyForManager(manager: {
 	getSessionFile?(): string | undefined | null;
 	getSessionId?(): string | undefined;
 }): string {
+	if (manager instanceof NativeSessionManager) return manager.getPersistentScopeKey();
 	return persistentScopeKeyFor({
 		sessionFile: manager.getSessionFile?.() ?? undefined, sessionId: manager.getSessionId?.(),
 	});
@@ -119,6 +122,7 @@ function setCursorSessionScope(
 	projectTrusted = false,
 	sessionName?: string,
 	runtimeOwner?: number,
+	persistentIdentity?: string,
 ): void {
 	state.sessionCwd = cwd;
 	state.sessionFile = sessionFile;
@@ -127,6 +131,7 @@ function setCursorSessionScope(
 	state.projectTrusted = projectTrusted;
 	state.sessionGeneration = nextSessionGeneration++;
 	state.runtimeOwner = runtimeOwner;
+	state.persistentIdentity = persistentIdentity;
 	scopeGenerations.set(scopeKeyFor(state), state.sessionGeneration);
 }
 
@@ -142,7 +147,7 @@ function resetCursorSessionScope(): void {
 	Object.assign(state, {
 		sessionCwd: process.cwd(), sessionFile: undefined, sessionId: undefined,
 		sessionName: undefined, projectTrusted: false, sessionGeneration: 0,
-		runtimeOwner: undefined,
+		runtimeOwner: undefined, persistentIdentity: undefined,
 	});
 	nextSessionGeneration = 1;
 	scopeGenerations.clear();
@@ -163,7 +168,7 @@ export function registerCursorSessionScope(pi: CursorSessionScopeExtensionApi): 
 	const record: ScopeRecord = {
 		sessionCwd: process.cwd(), sessionFile: undefined, sessionId: undefined,
 		sessionName: undefined, projectTrusted: false, sessionGeneration: 0,
-		runtimeOwner: undefined,
+		runtimeOwner: undefined, persistentIdentity: undefined,
 	};
 	scopes.set(pi, record);
 	const trustedCwds = new Set<string>();
@@ -183,6 +188,7 @@ export function registerCursorSessionScope(pi: CursorSessionScopeExtensionApi): 
 				&& (trustedCwds.has(resolve(ctx.cwd)) || projectTrustResolutionCwds.has(resolve(ctx.cwd)) || isCliProjectTrustApproved()),
 			ctx.sessionManager?.getSessionName?.() ?? undefined,
 			runtimeOwners.get(ctx.sessionManager),
+			ctx.sessionManager instanceof NativeSessionManager ? ctx.sessionManager.getPersistentScopeKey() : undefined,
 		);
 		Object.assign(record, state);
 		scopes.set(pi, record);

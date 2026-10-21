@@ -1,3 +1,4 @@
+import { nativeSessionOrigin, type NativeSessionOrigin } from "./rpi/session.js";
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
@@ -258,15 +259,23 @@ function validateHistory(values: unknown[], origin: CursorUsageOrigin): CursorUs
 	}
 	return records;
 }
-function readOrigin(pi: CursorUsageApi, origin: CursorUsageOrigin): CursorUsageRecord[] {
+async function readPrefix(origin: CursorUsageOrigin, native?: NativeSessionOrigin): Promise<{ frames: unknown[]; incompleteTail: boolean } | undefined> {
+	if (native && origin.sessionFile) {
+		if (native.path !== origin.sessionFile || native.view().id !== origin.sessionId) throw new Error("Inherited native usage journal is unavailable");
+		return native.journals().readUsage();
+	}
 	const path = journalPath(origin);
-	return validateHistory(path ? readDurableFramePrefix(path).frames : ephemeral.get(pi)?.get(origin.sessionId) ?? [], origin);
+	return path ? readDurableFramePrefix(path) : undefined;
 }
-function persist(pi: CursorUsageApi, record: CursorUsageRecord): void {
+async function readOrigin(pi: CursorUsageApi, origin: CursorUsageOrigin, native?: NativeSessionOrigin): Promise<CursorUsageRecord[]> {
+	return validateHistory((await readPrefix(origin, native))?.frames ?? ephemeral.get(pi)?.get(origin.sessionId) ?? [], origin);
+}
+async function persist(pi: CursorUsageApi, record: CursorUsageRecord, native?: NativeSessionOrigin): Promise<void> {
 	const path = journalPath(record.origin);
 	if (path) {
-		// ponytail: bounded 16MiB journals are revalidated per append; migrate to indexed framed storage when this explicit ceiling is reached.
-		appendDurableFrame(path, record, values => { validateHistory(values, record.origin); });
+		const validate = (values: unknown[]) => { validateHistory(values, record.origin); };
+		if (native) await native.journals().appendUsage(record, validate);
+		else appendDurableFrame(path, record, validate);
 	} else {
 		let sessions = ephemeral.get(pi);
 		if (!sessions) { sessions = new Map(); ephemeral.set(pi, sessions); }
@@ -282,8 +291,13 @@ function currentMatches(pi: CursorUsageApi, origin: CursorUsageOrigin): boolean 
 	const current = originOf(ctx);
 	return ownerKey(current) === ownerKey(origin) && (origin.anchorId ? ctx.sessionManager.getBranch().some(entry => entry.id === origin.anchorId) : current.anchorId === null);
 }
-async function claimOrigin(pi: CursorUsageApi, captured: CursorUsageOrigin, turnId: string): Promise<CursorUsageOrigin> {
+async function claimOrigin(pi: CursorUsageApi, captured: CursorUsageOrigin, turnId: string, native?: NativeSessionOrigin): Promise<CursorUsageOrigin> {
 	if (!currentMatches(pi, captured)) throw new Error("Cursor usage origin changed before operation");
+	if (native) {
+		const receipt = await native.append(CLAIM_TYPE, { version: 1, turnId, origin: captured });
+		if (captured.sessionFile && receipt.durability !== "durable") throw new Error("Cursor usage origin claim was not durable");
+		return { ...captured, anchorId: receipt.entry.id };
+	}
 	await pi.appendEntry(CLAIM_TYPE, { version: 1, turnId, origin: captured });
 	const current = bindings.get(pi)!;
 	const entry = current.sessionManager.getLeafEntry();
@@ -294,7 +308,7 @@ async function claimOrigin(pi: CursorUsageApi, captured: CursorUsageOrigin, turn
 	return origin;
 }
 export function captureCursorUsageRecorder(pi: CursorUsageApi, ctx: ExtensionContext): CursorUsageRecorder {
-	const captured = originOf(ctx);
+	const captured = originOf(ctx), native = nativeSessionOrigin(ctx.sessionManager);
 	bindings.set(pi, ctx);
 	const notePersistenceFailure = (_error: unknown) => {
 		let owners = failures.get(pi);
@@ -314,18 +328,21 @@ export function captureCursorUsageRecorder(pi: CursorUsageApi, ctx: ExtensionCon
 		};
 		if (input.resumed && input.newlyCreated) throw new Error("Cursor usage lineage cannot be both resumed and newly created");
 		// Unique public branch claim before spend; ordinary optional mirrors cannot establish ownership.
-		const origin = await claimOrigin(pi, captured, turnId);
+		const origin = await claimOrigin(pi, captured, turnId, native);
 		const write = async (event: Event) => {
 			const record: CursorUsageRecord = { ...event, version: 1, id: randomUUID(), turnId, timestamp: new Date().toISOString(), origin: structuredClone(origin) };
-			persist(pi, record);
+			await persist(pi, record, native);
 			if (currentMatches(pi, origin)) {
-				try { await pi.appendEntry(CUSTOM_TYPE, record); } catch { /* Fsynced journal and unique native claim are authoritative. */ }
+				try {
+					if (native) await native.append(CUSTOM_TYPE, record);
+					else await pi.appendEntry(CUSTOM_TYPE, record);
+				} catch { /* Fsynced journal and unique native claim are authoritative. */ }
 			}
 		};
 		await write({ kind: "start", data });
 		const recordSnapshot = async () => {
 			const observation = await fetchCursorSdkAgentUsage(input.agent);
-			await write({ kind: "billing", observation: billingRevision(observation, latestAgentSnapshot(readOrigin(pi, origin), input.agent.agentId)) });
+			await write({ kind: "billing", observation: billingRevision(observation, latestAgentSnapshot(await readOrigin(pi, origin, native), input.agent.agentId)) });
 			return observation;
 		};
 		return {
@@ -354,8 +371,8 @@ export function captureCursorUsageRecorder(pi: CursorUsageApi, ctx: ExtensionCon
 }
 
 /** Append chronology owns revisions. Wall clocks are display metadata, never reconciliation authority. */
-export function readCursorUsageView(pi: CursorUsageApi, ctx: ExtensionContext): CursorUsageView {
-	const origin = originOf(ctx);
+export async function readCursorUsageView(pi: CursorUsageApi, ctx: ExtensionContext): Promise<CursorUsageView> {
+	const origin = originOf(ctx), native = nativeSessionOrigin(ctx.sessionManager);
 	const branch = ctx.sessionManager.getBranch();
 	const mirrors = branch.flatMap(entry => entry.type === "custom" && entry.customType === CUSTOM_TYPE ? [validateRecord(entry.data)] : []);
 	const readClaims = (entries: typeof branch) => entries.flatMap(entry => {
@@ -375,9 +392,8 @@ export function readCursorUsageView(pi: CursorUsageApi, ctx: ExtensionContext): 
 	for (const [key, owner] of origins) {
 		let records: CursorUsageRecord[];
 		try {
-			const path = journalPath(owner);
-			const prefix = path ? readDurableFramePrefix(path) : undefined;
-			records = prefix ? validateHistory(prefix.frames, owner) : readOrigin(pi, owner);
+			const prefix = await readPrefix(owner, native);
+			records = prefix ? validateHistory(prefix.frames, owner) : await readOrigin(pi, owner, native);
 			if (prefix?.incompleteTail) incompleteJournals.push(owner.sessionId);
 			if (!records.length && (mirrors.some(record => storageKey(record.origin) === key) || claims.some(claim => storageKey(claim.origin) === key))) {
 				records = mirrors.filter(record => storageKey(record.origin) === key);
@@ -472,20 +488,26 @@ export function readCursorUsageView(pi: CursorUsageApi, ctx: ExtensionContext): 
 	};
 }
 export async function refreshCursorUsageView(pi: CursorUsageApi, ctx: ExtensionContext, fetchAgent: (agentId: string) => Promise<CursorBillingObservation>): Promise<CursorUsageView> {
-	const view = readCursorUsageView(pi, ctx);
+	const native = nativeSessionOrigin(ctx.sessionManager);
+	const view = await readCursorUsageView(pi, ctx);
 	bindings.set(pi, ctx);
 	for (const agent of view.agents.slice(0, 32)) {
 		const source = view.records.find(record => (record.kind === "start" && record.data.agentId === agent.agentId) || (record.kind === "refresh" && record.agentId === agent.agentId));
 		if (!source) continue;
 		const turnId = randomUUID();
-		const origin = await claimOrigin(pi, view.origin, turnId);
+		const origin = await claimOrigin(pi, view.origin, turnId, native);
 		// Refresh belongs to the invoking branch, never to an inherited or switched sibling journal.
 		const record: CursorUsageRecord = {
 			version: 1, id: randomUUID(), turnId, timestamp: new Date().toISOString(), origin,
-			kind: "refresh", agentId: agent.agentId, sourceOrigin: source.origin, observation: billingRevision(await fetchAgent(agent.agentId), latestAgentSnapshot(readOrigin(pi, origin), agent.agentId)),
+			kind: "refresh", agentId: agent.agentId, sourceOrigin: source.origin, observation: billingRevision(await fetchAgent(agent.agentId), latestAgentSnapshot(await readOrigin(pi, origin, native), agent.agentId)),
 		};
-		persist(pi, record);
-		if (currentMatches(pi, origin)) { try { await pi.appendEntry(CUSTOM_TYPE, record); } catch { /* Unique claim retains ownership. */ } }
+		await persist(pi, record, native);
+		if (currentMatches(pi, origin)) {
+			try {
+				if (native) await native.append(CUSTOM_TYPE, record);
+				else await pi.appendEntry(CUSTOM_TYPE, record);
+			} catch { /* Unique claim retains ownership. */ }
+		}
 	}
 	return readCursorUsageView(pi, ctx);
 }

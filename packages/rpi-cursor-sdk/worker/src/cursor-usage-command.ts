@@ -54,7 +54,7 @@ export function registerCursorUsageCommand(pi: Pick<ExtensionAPI, "appendEntry" 
 				const argument = args.trim();
 				if (["help", "-h", "--help"].includes(argument)) { show(HELP); return; }
 				if (argument && argument !== "refresh" && !argument.startsWith("export ")) { show(HELP, true); return; }
-				let view = readCursorUsageView(pi, ctx);
+				let view = await readCursorUsageView(pi, ctx);
 				if (argument === "refresh") {
 					const { Agent } = await loadCursorSdk();
 					const apiKey = resolveCursorApiKey(await ctx.modelRegistry.getApiKeyForProvider("cursor"));

@@ -1,3 +1,4 @@
+import { NativeSessionManager, nativeSessionOrigin, type NativeSessionOrigin } from "./rpi/session.js";
 import { createHash } from "node:crypto";
 import { closeSync, constants, existsSync, fchmodSync, fstatSync, fsyncSync, openSync, readFileSync, readSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -78,6 +79,7 @@ interface ParsedDurableCloudLifecycleEntry {
 }
 
 interface CloudLifecycleSessionState {
+	native?: NativeSessionOrigin;
 	sessionFile?: string;
 	sessionId?: string;
 	getBranch?: () => SessionEntry[];
@@ -181,10 +183,13 @@ function buildBaseEntry(agentId: string, action: CloudLifecycleAction): CursorCl
 
 function captureCloudLifecycleSession(ctx: CloudLifecycleSessionContext): CloudLifecycleSessionState {
 	const manager = ctx.sessionManager;
+	const native = nativeSessionOrigin(manager);
 	return {
+		native,
 		sessionFile: manager.getSessionFile() ?? undefined,
 		sessionId: manager.getSessionId(),
-		getBranch: () => manager.getBranch(),
+		getBranch: native && manager instanceof NativeSessionManager
+			? () => manager.run(native, () => manager.getBranch()) : () => manager.getBranch(),
 	};
 }
 
@@ -193,14 +198,17 @@ function durableLedgerPath(sessionFile: string, sessionId: string): string {
 	return join(dirname(sessionFile), `${DURABLE_LEDGER_PREFIX}-${sessionHash}.journal`);
 }
 
-function fsyncCloudLifecycleSessionFile(session: CloudLifecycleSessionState): boolean {
+async function fsyncCloudLifecycleSessionFile(session: CloudLifecycleSessionState): Promise<boolean> {
+	if (session.native) {
+		try { return await session.native.sync() === "durable"; } catch { return false; }
+	}
 	if (sessionFsyncForTests) return sessionFsyncForTests();
 	const sessionFile = session.sessionFile;
 	if (!sessionFile || !existsSync(sessionFile)) return true;
 	return fsyncExistingRegularFile(sessionFile);
 }
 
-function appendDurableCloudLifecycleEntry(data: CursorCloudLifecycleEntryData, anchorEntryId: string, session: CloudLifecycleSessionState): boolean {
+async function appendDurableCloudLifecycleEntry(data: CursorCloudLifecycleEntryData, anchorEntryId: string, session: CloudLifecycleSessionState): Promise<boolean> {
 	if (durableWriterForTests) return durableWriterForTests(data);
 	const { sessionFile, sessionId } = session;
 	if (!sessionFile || !sessionId) return false;
@@ -209,8 +217,11 @@ function appendDurableCloudLifecycleEntry(data: CursorCloudLifecycleEntryData, a
 		version: DURABLE_LEDGER_VERSION,
 		sessionId,
 		sessionFile,
-		anchorEntryId: existsSync(sessionFile) ? anchorEntryId : null,
+		anchorEntryId: session.native || existsSync(sessionFile) ? anchorEntryId : null,
 	};
+	if (session.native) {
+		try { await session.native.journals().appendCloud(entry); return true; } catch { return false; }
+	}
 	const path = durableLedgerPath(sessionFile, sessionId);
 	let created = false;
 	let fd: number | undefined;
@@ -253,6 +264,11 @@ async function appendCloudLifecycleEntry(pi: CloudLifecycleApi, data: CursorClou
 	if (!data || (!durableWriterForTests && (!session.sessionFile || !session.sessionId))) return false;
 	let anchorEntryId: string | undefined;
 	try {
+		if (session.native) {
+			const receipt = await session.native.append(CLOUD_LIFECYCLE_ENTRY_TYPE, data, true);
+			if (receipt.durability !== "durable") return false;
+			return await appendDurableCloudLifecycleEntry(data, receipt.entry.id, session);
+		}
 		const previousEntryId = durableWriterForTests ? undefined : session.getBranch?.().at(-1)?.id;
 		await pi.appendEntry<CursorCloudLifecycleEntryData>(CLOUD_LIFECYCLE_ENTRY_TYPE, data);
 		const anchor = session.getBranch?.().at(-1);
@@ -267,8 +283,8 @@ async function appendCloudLifecycleEntry(pi: CloudLifecycleApi, data: CursorClou
 		return false;
 	}
 	return anchorEntryId !== undefined &&
-		fsyncCloudLifecycleSessionFile(session) &&
-		appendDurableCloudLifecycleEntry(data, anchorEntryId, session);
+		(await fsyncCloudLifecycleSessionFile(session)) &&
+		(await appendDurableCloudLifecycleEntry(data, anchorEntryId, session));
 }
 
 async function appendCloudLifecycleMutationEntry(
@@ -277,9 +293,10 @@ async function appendCloudLifecycleMutationEntry(
 	session: CloudLifecycleSessionState,
 	anchorEntryId: string | undefined,
 ): Promise<boolean> {
-	if (!data || !anchorEntryId || !fsyncCloudLifecycleSessionFile(session) || !appendDurableCloudLifecycleEntry(data, anchorEntryId, session)) return false;
+	if (!data || !anchorEntryId || !(await fsyncCloudLifecycleSessionFile(session)) || !(await appendDurableCloudLifecycleEntry(data, anchorEntryId, session))) return false;
 	try {
-		await pi?.appendEntry<CursorCloudLifecycleEntryData>(CLOUD_LIFECYCLE_ENTRY_TYPE, data);
+		if (session.native) await session.native.append(CLOUD_LIFECYCLE_ENTRY_TYPE, data, true);
+		else await pi?.appendEntry<CursorCloudLifecycleEntryData>(CLOUD_LIFECYCLE_ENTRY_TYPE, data);
 	} catch {
 		// The fsynced mutation journal is authoritative.
 	}
@@ -440,14 +457,17 @@ export function readCursorCloudLifecycleAgents(entries: readonly SessionEntry[])
 	return reduceCloudLifecycleEntries(readCursorCloudLifecycleEntries(entries));
 }
 
-function readDurableCloudLifecycleJournal(session: CloudLifecycleSessionState): ParsedDurableCloudLifecycleEntry[] {
+async function readDurableCloudLifecycleJournal(session: CloudLifecycleSessionState): Promise<ParsedDurableCloudLifecycleEntry[]> {
 	const { sessionFile, sessionId } = session;
 	if (!sessionFile || !sessionId) return [];
 	let fd: number | undefined;
 	let lines: string[];
 	try {
-		fd = openExistingRegularFileNoFollow(durableLedgerPath(sessionFile, sessionId), constants.O_RDONLY);
-		lines = readFileSync(fd, "utf8").split(/\r?\n/);
+		if (session.native) lines = (await session.native.journals().readCloud()).split(/\r?\n/);
+		else {
+			fd = openExistingRegularFileNoFollow(durableLedgerPath(sessionFile, sessionId), constants.O_RDONLY);
+			lines = readFileSync(fd, "utf8").split(/\r?\n/);
+		}
 	} catch {
 		return [];
 	} finally {
@@ -473,12 +493,12 @@ function readDurableCloudLifecycleJournal(session: CloudLifecycleSessionState): 
 	return entries;
 }
 
-function readDurableCloudLifecycleEntries(session: CloudLifecycleSessionState): CursorCloudLifecycleEntryData[] {
+async function readDurableCloudLifecycleEntries(session: CloudLifecycleSessionState): Promise<CursorCloudLifecycleEntryData[]> {
 	const { sessionFile } = session;
 	if (!sessionFile) return [];
-	const fileless = !existsSync(sessionFile);
+	const fileless = !session.native && !existsSync(sessionFile);
 	const branchIds = new Set((session.getBranch?.() ?? []).map((entry) => entry.id));
-	return readDurableCloudLifecycleJournal(session).flatMap((entry) => {
+	return (await readDurableCloudLifecycleJournal(session)).flatMap((entry) => {
 		if (entry.data.action !== "record") return [entry.data];
 		if (fileless) return entry.anchorEntryId === null ? [entry.data] : [];
 		return entry.anchorEntryId !== null && branchIds.has(entry.anchorEntryId) ? [entry.data] : [];
@@ -491,8 +511,8 @@ function cloudLifecycleEntryKey(data: CursorCloudLifecycleEntryData): string {
 
 async function reconcileDurableCloudLifecycleOrphans(pi: CloudLifecycleApi, session: CloudLifecycleSessionState): Promise<boolean> {
 	const { sessionFile } = session;
-	if (!sessionFile || !existsSync(sessionFile)) return true;
-	const journal = readDurableCloudLifecycleJournal(session);
+	if (!sessionFile || (!session.native && !existsSync(sessionFile))) return true;
+	const journal = await readDurableCloudLifecycleJournal(session);
 	const claimedAgentIds = new Set(journal.flatMap((entry) =>
 		entry.data.action === "record" && entry.anchorEntryId !== null ? [entry.data.agentId] : []));
 	const latestOrphanByAgent = new Map<string, ParsedDurableCloudLifecycleEntry>();
@@ -513,7 +533,7 @@ async function reconcileDurableCloudLifecycleOrphans(pi: CloudLifecycleApi, sess
 			}
 		}
 		if (matchingEntry) {
-			if (!fsyncCloudLifecycleSessionFile(session) || !appendDurableCloudLifecycleEntry(orphan.data, matchingEntry.id, session)) return false;
+			if (!(await fsyncCloudLifecycleSessionFile(session)) || !(await appendDurableCloudLifecycleEntry(orphan.data, matchingEntry.id, session))) return false;
 			continue;
 		}
 		if (orphan.sessionFile !== sessionFile && !await appendCloudLifecycleEntry(pi, orphan.data, session)) return false;
@@ -527,8 +547,8 @@ async function reconcileDurableCloudLifecycleOrphansForCommand(pi: CloudLifecycl
 	return false;
 }
 
-function readRecordedCloudAgents(session: CloudLifecycleSessionState): CursorCloudLifecycleAgentRecord[] {
-	const durableEntries = readDurableCloudLifecycleEntries(session);
+async function readRecordedCloudAgents(session: CloudLifecycleSessionState): Promise<CursorCloudLifecycleAgentRecord[]> {
+	const durableEntries = await readDurableCloudLifecycleEntries(session);
 	const durableKeys = new Set(durableEntries.map(cloudLifecycleEntryKey));
 	const branchOnlyEntries = readCursorCloudLifecycleEntries(session.getBranch?.() ?? [])
 		.filter((entry) => !durableKeys.has(cloudLifecycleEntryKey(entry)));
@@ -622,8 +642,8 @@ async function mutateRecordedCloudAgent(params: {
 	let anchorEntryId = manager.getBranch().at(-1)?.id;
 	// Include recoverable fileless records before auth, without writing anything
 	// until credentials are available. General provider recording stays live.
-	const readAuthority = () => JSON.stringify([readRecordedCloudAgents(params.session), readDurableCloudLifecycleJournal(params.session)]);
-	let authority = readAuthority();
+	const readAuthority = async () => JSON.stringify([await readRecordedCloudAgents(params.session), await readDurableCloudLifecycleJournal(params.session)]);
+	let authority = await readAuthority();
 	const isOriginCurrent = (): boolean => {
 		try {
 			return cloudBindings.get(params.pi) === binding &&
@@ -635,18 +655,20 @@ async function mutateRecordedCloudAgent(params: {
 			return false; // Pi invalidates the command context on owning reload.
 		}
 	};
-	const checkAuthority = (): boolean => {
-		if (isOriginCurrent() && readAuthority() === authority) return true;
+	const checkAuthority = async (): Promise<boolean> => {
+		const observed = await readAuthority();
+		const current = !params.session.native || await params.session.native.isCurrent();
+		if (current && isOriginCurrent() && observed === authority) return true;
 		ui.notify(`Cursor cloud ${params.action} was not started because its originating session branch or authority changed. Retry from the intended branch.`, "error");
 		return false;
 	};
 	const apiKey = await resolveCloudLifecycleMutationApiKey({ modelRegistry, ui, sessionManager: manager });
-	if (!apiKey || !checkAuthority()) return;
+	if (!apiKey || !(await checkAuthority())) return;
 	if (!await reconcileDurableCloudLifecycleOrphansForCommand(params.pi, { modelRegistry, ui, sessionManager: manager }, params.session)) return;
 	// Reconciliation may append only the unchanged, captured orphan authority.
 	anchorEntryId = manager.getBranch().at(-1)?.id;
-	authority = readAuthority();
-	const validationError = validateRecordedCloudAgentId(params.agentId, readRecordedCloudAgents(params.session), params.action);
+	authority = await readAuthority();
+	const validationError = validateRecordedCloudAgentId(params.agentId, await readRecordedCloudAgents(params.session), params.action);
 	if (validationError) {
 		ui.notify(validationError, "error");
 		return;
@@ -658,7 +680,7 @@ async function mutateRecordedCloudAgent(params: {
 		ui.notify(`Failed to prepare Cursor cloud ${params.action}: ${formatCloudLifecycleError(error, apiKey)}`, "error");
 		return;
 	}
-	if (!checkAuthority()) return;
+	if (!(await checkAuthority())) return;
 	if (!await appendCloudLifecycleMutationEntry(
 		params.pi,
 		buildBaseEntry(params.agentId, params.action === "archive" ? "archive_intent" : "delete_intent"),
@@ -666,6 +688,10 @@ async function mutateRecordedCloudAgent(params: {
 		anchorEntryId,
 	)) {
 		ui.notify(`Cursor cloud ${params.action} was not started because its durable intent could not be recorded.`, "error");
+		return;
+	}
+	if (params.session.native && !await params.session.native.isCurrent()) {
+		ui.notify(`Cursor cloud ${params.action} was not started because its originating session branch changed. Its durable intent remains unresolved; inspect the journal before retrying.`, "error");
 		return;
 	}
 	// After SDK start the actual result belongs to this journal and post-intent
@@ -701,7 +727,7 @@ export async function runCursorCloudLifecycleCommand(pi: CloudLifecycleApi, args
 			return;
 		}
 		if (!await reconcileDurableCloudLifecycleOrphansForCommand(pi, ctx, session)) return;
-		ctx.ui.notify(formatCloudLifecycleRecords(readRecordedCloudAgents(session)), "info");
+		ctx.ui.notify(formatCloudLifecycleRecords(await readRecordedCloudAgents(session)), "info");
 		return;
 	}
 	if (subcommand === "archive") {

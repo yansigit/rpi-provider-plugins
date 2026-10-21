@@ -88,7 +88,7 @@ describe("streamCursor usage accounting", () => {
 			expect(done.message.usage.input).toBeLessThan(model.contextWindow);
 			expect(done.message.usage.totalTokens).toBeLessThan(model.contextWindow);
 			const reopened = SessionManager.open(manager.getSessionFile()!);
-			const view = readCursorUsageView(pi, { ...ctx, sessionManager: reopened });
+			const view = await readCursorUsageView(pi, { ...ctx, sessionManager: reopened });
 			const start = view.records.find(record => record.kind === "start")!;
 			const terminals = view.records.filter(record => record.kind === "terminal");
 			expect(terminals).toHaveLength(1);

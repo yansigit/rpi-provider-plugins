@@ -262,3 +262,78 @@ async fn call_capacity_is_explicit_and_a_rejected_large_request_does_not_poison_
     }
     worker.shutdown().await.unwrap();
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "requires Node 24+ and npm run build in worker/"]
+async fn native_journals_round_trip_through_worker_ipc_with_competing_writes() {
+    use rpi_cursor_sdk::journal::port::JournalPort;
+    use sha2::{Digest, Sha256};
+    let mut random = [0; 16];
+    getrandom::getrandom(&mut random).unwrap();
+    let directory = std::env::temp_dir().join(format!(
+        "rpi-cursor-ipc-journal-{:x}",
+        u128::from_ne_bytes(random)
+    ));
+    std::fs::create_dir(&directory).unwrap();
+    let port =
+        Arc::new(JournalPort::for_session(&directory.join("sessions.sqlite"), "fixture").unwrap());
+    let host: HostHandler = {
+        let port = Arc::clone(&port);
+        Arc::new(move |call| {
+            let port = Arc::clone(&port);
+            Box::pin(async move {
+                assert_eq!(call.method, "fixture.journal");
+                tokio::task::spawn_blocking(move || port.request(call.input))
+                    .await
+                    .unwrap()
+            })
+        })
+    };
+    let worker = Arc::new(worker(host).await);
+    let mut callers = vec![];
+    for i in 0..8 {
+        let worker = Arc::clone(&worker);
+        callers.push(tokio::spawn(async move {
+            worker.call("journal", json!({"kind":"usage","record":{"id":i,"text":if i == 0 { "é".repeat(700_000) } else { "ok".into() }}})).await.unwrap().result().await.unwrap();
+        }));
+    }
+    for caller in callers {
+        bounded(caller).await.unwrap();
+    }
+    let result = bounded(
+        worker
+            .call("journal", json!({"kind":"usage"}))
+            .await
+            .unwrap()
+            .result(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(result["frames"].as_array().unwrap().len(), 8);
+    assert_eq!(result["incompleteTail"], false);
+    let hash = format!("{:x}", Sha256::digest(b"fixture"));
+    let path = directory.join(format!(".cursor-cloud-lifecycle-{}.journal", &hash[..32]));
+    std::fs::write(&path, b"{\"torn\":").unwrap();
+    let result = bounded(
+        worker
+            .call("journal", json!({"kind":"cloud","record":{"id":"cloud"}}))
+            .await
+            .unwrap()
+            .result(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(result, "{\"torn\":\n{\"id\":\"cloud\"}\n");
+    assert_eq!(
+        std::fs::read(&path).unwrap(),
+        result.as_str().unwrap().as_bytes()
+    );
+    port.close();
+    Arc::try_unwrap(worker)
+        .ok()
+        .unwrap()
+        .shutdown()
+        .await
+        .unwrap();
+    std::fs::remove_dir_all(directory).unwrap();
+}

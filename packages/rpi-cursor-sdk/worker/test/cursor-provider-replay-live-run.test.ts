@@ -329,7 +329,7 @@ describe("streamCursor native replay live run", () => {
 			});
 			expect(getDoneEvent(await collectEvents(streamOwnedCursor(model, replayContext, { apiKey: "test-key" }, ownership))).reason).toBe("stop");
 			const reopened = SessionManager.open(manager.getSessionFile()!);
-			const view = readCursorUsageView(pi, { ...ctx, sessionManager: reopened });
+			const view = await readCursorUsageView(pi, { ...ctx, sessionManager: reopened });
 			const start = view.records.find(record => record.kind === "start")!;
 			const raw = view.records.filter(record => record.kind === "raw");
 			expect(start).toMatchObject({ data: { agentId: "agent-1" } });

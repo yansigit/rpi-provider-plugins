@@ -1,4 +1,6 @@
+import { NativeJournals, type JournalRequest } from "./journal.js";
 import { AsyncLocalStorage } from "node:async_hooks";
+import { createHash } from "node:crypto";
 import { dirname } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 import type { AgentMessage } from "@earendil-works/pi-agent-core";
@@ -114,9 +116,19 @@ function readView(value: unknown): View {
 /** One captured host origin. Every mutation waits for a committed receipt before reading a new view. */
 export class NativeSessionOrigin {
 	private closed = false;
-	private constructor(readonly origin: string, readonly cwd: string, readonly sessionDir: string,
-		readonly path: string | undefined, private request: SessionRequest, private value: View) {}
-	static async capture(request: SessionRequest, cwd: string, sessionDir: string): Promise<NativeSessionOrigin> {
+	readonly origin: string;
+	readonly cwd: string;
+	readonly sessionDir: string;
+	readonly path: string | undefined;
+	private request: SessionRequest;
+	private value: View;
+	private journalPort?: NativeJournals;
+	private constructor(origin: string, cwd: string, sessionDir: string, path: string | undefined,
+		request: SessionRequest, value: View, journalPort?: NativeJournals) {
+		this.origin = origin; this.cwd = cwd; this.sessionDir = sessionDir; this.path = path;
+		this.request = request; this.value = value; this.journalPort = journalPort;
+	}
+	static async capture(request: SessionRequest, cwd: string, sessionDir: string, journalRequest?: JournalRequest): Promise<NativeSessionOrigin> {
 		const captured = object(await request({ action: "capture" }));
 		const origin = string(captured.origin);
 		try {
@@ -124,11 +136,17 @@ export class NativeSessionOrigin {
 			const path = location.path === null ? undefined : string(location.path);
 			const view = readView(await request({ action: "view", origin }));
 			if (view.id !== object(object(captured.snapshot).metadata).id) throw new Error("Native session identity changed during capture");
-			return new NativeSessionOrigin(origin, cwd, sessionDir, path, request, view);
+			return new NativeSessionOrigin(origin, cwd, sessionDir, path, request, view,
+				journalRequest && path ? new NativeJournals(input => journalRequest({ ...input, origin })) : undefined);
 		} catch (error) {
 			await request({ action: "release", origin }).catch(() => {});
 			throw error;
 		}
+	}
+	journals(): NativeJournals {
+		this.view();
+		if (!this.journalPort) throw new Error("Native durable journal capability is unavailable");
+		return this.journalPort;
 	}
 	view(): View {
 		if (this.closed) throw new Error("Native session origin is closed");
@@ -142,6 +160,13 @@ export class NativeSessionOrigin {
 		}
 		// Concurrent refreshes cannot regress a view already acknowledged by this origin.
 		if (next.revision >= this.value.revision) this.value = next;
+	}
+	async isCurrent(): Promise<boolean> {
+		const previous = this.view();
+		const snapshot = object(await this.request({ action: "snapshot", origin: this.origin }));
+		if (string(object(snapshot.metadata).id) !== previous.id) throw new Error("Native session identity changed");
+		const branch = array(snapshot.branches).map(object).find(branch => branch.lane === "main");
+		return !!branch && integer(branch.revision) === previous.branchRevision && nullableId(branch.leafId) === previous.leafId;
 	}
 	async append(customType: string, data: unknown, journal = false): Promise<{ entry: SessionEntry; durability: "durable" | "ephemeral" }> {
 		const before = this.view();
@@ -184,6 +209,11 @@ export class NativeSessionManager implements ReadonlySessionManager {
 		origin.view();
 		return origin;
 	}
+	getPersistentScopeKey(): string {
+		const origin = this.origin();
+		// A SQLite file contains many sessions; their persistent SDK stores must never share ownership.
+		return `rpi:${createHash("sha256").update(JSON.stringify([origin.path, origin.view().id])).digest("hex")}`;
+	}
 	getCwd(): string { return this.origin().cwd; }
 	getSessionDir(): string { return this.getSessionFile() ? dirname(this.getSessionFile()!) : this.origin().sessionDir; }
 	getSessionId(): string { return this.origin().view().id; }
@@ -220,4 +250,8 @@ export class NativeSessionManager implements ReadonlySessionManager {
 		}
 		return roots;
 	}
+}
+
+export function nativeSessionOrigin(manager: object): NativeSessionOrigin | undefined {
+	return manager instanceof NativeSessionManager ? manager.origin() : undefined;
 }

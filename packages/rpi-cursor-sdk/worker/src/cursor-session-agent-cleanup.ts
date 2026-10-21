@@ -1,3 +1,4 @@
+import { nativeSessionOrigin, type NativeSessionOrigin } from "./rpi/session.js";
 import type { LocalAgentStore } from "@cursor/sdk";
 import type { ExtensionAPI, ExtensionCommandContext, SessionEntry } from "@earendil-works/pi-coding-agent";
 import { asRecord, getString } from "./cursor-record-utils.js";
@@ -238,7 +239,8 @@ function cleanupEntriesMatch(left: CursorSessionAgentCleanupEntryData, right: Cu
 	return cleanupEntryVerificationKey(left) === cleanupEntryVerificationKey(right);
 }
 
-async function appendCleanupEntry(pi: LocalResumeCleanupApi, data: CursorSessionAgentCleanupEntryData): Promise<void> {
+async function appendCleanupEntry(pi: LocalResumeCleanupApi, data: CursorSessionAgentCleanupEntryData, origin?: NativeSessionOrigin): Promise<void> {
+	if (origin) { await origin.append(CURSOR_SESSION_AGENT_CLEANUP_ENTRY_TYPE, data, data.phase === "result"); return; }
 	await pi.appendEntry<CursorSessionAgentCleanupEntryData>(CURSOR_SESSION_AGENT_CLEANUP_ENTRY_TYPE, data);
 }
 
@@ -246,7 +248,14 @@ async function appendDurableCleanupEntry(
 	pi: LocalResumeCleanupApi,
 	ctx: LocalResumeCleanupCommandContext,
 	data: CursorSessionAgentCleanupEntryData,
+	origin?: NativeSessionOrigin,
 ): Promise<boolean> {
+	if (origin) {
+		try {
+			const receipt = await origin.append(CURSOR_SESSION_AGENT_CLEANUP_ENTRY_TYPE, data, data.phase === "result");
+			return receipt.durability === "durable";
+		} catch { return false; }
+	}
 	const sessionFile = ctx.sessionManager.getSessionFile();
 	const previousEntryId = ctx.sessionManager.getBranch().at(-1)?.id;
 	try {
@@ -275,6 +284,7 @@ export async function runCursorSessionAgentCleanupCommand(pi: LocalResumeCleanup
 		return;
 	}
 
+	const origin = nativeSessionOrigin(ctx.sessionManager);
 	const entries = ctx.sessionManager.getEntries();
 	const branch = ctx.sessionManager.getBranch();
 	const scope = getCurrentCleanupScope(ctx);
@@ -286,13 +296,13 @@ export async function runCursorSessionAgentCleanupCommand(pi: LocalResumeCleanup
 		...(plan.protectedAgentIds.length ? { protectedAgentIds: plan.protectedAgentIds } : {}),
 	};
 	if (dryRun) {
-		await appendCleanupEntry(pi, { action: "dry-run", ...baseEntry });
+		await appendCleanupEntry(pi, { action: "dry-run", ...baseEntry }, origin);
 		ctx.ui.notify(formatCleanupPlan(plan), "info");
 		return;
 	}
 	if (plan.candidateAgentIds.length === 0) {
 		try {
-			await appendCleanupEntry(pi, { action: "delete", phase: "result", ...baseEntry, deletedAgentIds: [] });
+			await appendCleanupEntry(pi, { action: "delete", phase: "result", ...baseEntry, deletedAgentIds: [] }, origin);
 			ctx.ui.notify("No recorded superseded local Cursor SDK agents to delete.", "info");
 		} catch {
 			ctx.ui.notify("No agents were deleted, but the no-op cleanup result could not be recorded.", "error");
@@ -300,7 +310,7 @@ export async function runCursorSessionAgentCleanupCommand(pi: LocalResumeCleanup
 		return;
 	}
 
-	if (!scope.sessionFile || !await appendDurableCleanupEntry(pi, ctx, { action: "delete", phase: "intent", ...baseEntry })) {
+	if (!scope.sessionFile || !await appendDurableCleanupEntry(pi, ctx, { action: "delete", phase: "intent", ...baseEntry }, origin)) {
 		ctx.ui.notify("Cleanup intent could not be durably recorded. No agents were deleted.", "error");
 		return;
 	}
@@ -351,7 +361,7 @@ export async function runCursorSessionAgentCleanupCommand(pi: LocalResumeCleanup
 		...baseEntry,
 		deletedAgentIds,
 		...(failedAgentIds.length ? { failedAgentIds } : {}),
-	})) {
+	}, origin)) {
 		for (const agentId of plan.candidateAgentIds) nondurableCleanupResultAgentIds.add(agentId);
 		ctx.ui.notify(
 			`Deleted ${deletedAgentIds.length} recorded local Cursor SDK agent(s). The cleanup ledger is partial because its result could not be durably recorded; the durable intent blocks automatic retries.`,
