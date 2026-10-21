@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { createEventBus, type ExtensionCommandContext, type ExtensionContext, type ExtensionEvent, type ExtensionToolContext } from "@earendil-works/pi-coding-agent";
-import type { Api, Context, Model, SimpleStreamOptions } from "@earendil-works/pi-ai";
+import type { Api, Context, Model } from "@earendil-works/pi-ai";
 import { NativeCursorExtension } from "./extension.js";
 import { cursorNativeAuth, nativeRequestAuth } from "./auth.js";
 import { NativeCursorCatalog } from "./catalog.js";
@@ -11,6 +11,7 @@ import type { WorkerCall } from "./peer.js";
 import { NativeToolSurface, toolMetadata, type ToolSnapshot } from "./tool-surface.js";
 import { isNativeCursorToolName } from "../cursor-native-tool-names.js";
 import { scrubSensitiveText } from "../cursor-sensitive-text.js";
+import { nativeStreamOptions } from "./options.js";
 
 type Frame = ToolSnapshot & { context: ExtensionContext; effects: NativeEffects; request: HostRequest; origin: NativeSessionOrigin };
 function object(value: unknown): Record<string, unknown> {
@@ -154,10 +155,9 @@ export class NativeCursorRuntime {
 				const entry = input.entry;
 				if (entry !== "stream" && entry !== "streamSimple") throw new Error("Invalid Cursor stream entry");
 				if (input.authMode !== "ambient" && input.authMode !== "replace") throw new Error("Invalid Cursor authentication mode");
-				const options = object(input.options);
+				const options = nativeStreamOptions(object(input.options), frame.context.signal ?? call.signal);
 				const stream = await this.extension.stream(entry, requestModel(input.model), this.toolSurface.context(frame, requestContext(input.context)),
-					{ ...options, headers: { ...object(options.headers ?? {}) }, signal: frame.context.signal ?? call.signal } as SimpleStreamOptions,
-					input.authMode, call.emit);
+					options, input.authMode, call.emit);
 				return stream.finished;
 			});
 			case "extension.command": return this.withContext(call, async frame => {

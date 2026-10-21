@@ -9,6 +9,7 @@ import { NativeMessageStream } from "../runtime/dist/rpi/stream.js";
 import { withRecordedNativeStream } from "../runtime/dist/rpi/replay.js";
 import { createCursorMessageStream } from "../runtime/dist/rpi/stream.js";
 import { cursorCredentialEnvironment } from "../runtime/dist/rpi/environment.js";
+import { nativeStreamOptions } from "../runtime/dist/rpi/options.js";
 const { SessionManager, createEventBus } = await import("../runtime/node_modules/@earendil-works/pi-coding-agent/dist/index.js");
 const directory = await mkdtemp(join(tmpdir(), "rpi-native-cursor-extension-"));
 initializeNativePaths(join(directory, "rpi"));
@@ -213,4 +214,35 @@ test("native hook dispatch keeps Pi ordering, result chaining and tool-call erro
 		f.extension.api.on("tool_call", () => { throw new Error("must not run"); });
 		await assert.rejects(f.extension.event({ type: "tool_call", toolCallId: "call", toolName: "test", input: {} }), /deny execution/);
 	} finally { f.extension.invalidate(); }
+});
+
+test("both native stream entries preserve translated options and request ownership", async () => {
+	const f = fixture(), observed = [], receiptHeaders = [];
+	try {
+		await f.extension.load(); f.ctx.model = f.extension.provider().getModels()[0];
+		await f.extension.event({ type: "session_start", reason: "startup" });
+		const invoke = (model, _context, options) => {
+			observed.push(options);
+			const stream = createCursorMessageStream();
+			stream.end({ role: "assistant", content: [], api: model.api, provider: model.provider, model: model.id,
+				usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0,
+					cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } }, stopReason: "stop", timestamp: 1 });
+			return stream;
+		};
+		f.extension.api.registerProvider({ ...f.extension.provider(), stream: invoke, streamSimple: invoke });
+		f.extension.api.on("before_provider_headers", event => { receiptHeaders.push(event.headers); });
+		for (const entry of ["stream", "streamSimple"]) {
+			const controller = new AbortController();
+			const options = nativeStreamOptions({ reasoning: "High", cacheRetention: "Long", headers: { "x-fixture": "value" },
+				env: {}, timeoutMs: null, maxRetries: 0, temperature: 0, custom: { keep: null } }, controller.signal);
+			const stream = await f.extension.stream(entry, f.ctx.model, { messages: [] }, options, "replace", () => {});
+			await stream.finished;
+			const received = observed.at(-1);
+			assert.equal(received.reasoning, "high"); assert.equal(received.cacheRetention, "long");
+			assert.equal(received.maxRetries, 0); assert.equal(received.temperature, 0);
+			assert.deepEqual(received.custom, { keep: null }); assert.equal(Object.hasOwn(received, "timeoutMs"), false);
+			assert.equal(received.headers, options.headers); assert.equal(receiptHeaders.at(-1), options.headers);
+			assert.equal(received.signal, controller.signal); controller.abort(); assert.equal(received.signal.aborted, true);
+		}
+	} finally { await f.extension.event({ type: "session_shutdown" }); f.extension.invalidate(); }
 });

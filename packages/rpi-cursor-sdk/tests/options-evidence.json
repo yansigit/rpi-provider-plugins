@@ -1,0 +1,59 @@
+{
+  "status": "Native request-option translation verified",
+  "hostMinimumCommit": "c105655c62fe2ee26ad4465b9f39d29b2f72d3eb",
+  "node": "24.22.0",
+  "checks": {
+    "retainedSuite": {
+      "log": "/tmp/rpi-cursor-options-suite-final.log",
+      "sha256": "1b15632b89572f3cbe59dab0d5fdc0165f2fc4a863fd6f39a1475c2750733f4b",
+      "passed": 1713,
+      "skipped": 2
+    },
+    "targeted": {
+      "log": "/tmp/rpi-cursor-options-targeted-final.log",
+      "sha256": "889fdabce2d1e6190b97767762cf57edd80f590fea4dd6b3a1e5607fc72d84d6",
+      "passed": 30,
+      "skipped": 1
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-options-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-options-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    "stage": {
+      "log": "/tmp/rpi-cursor-options-stage.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    "pack": {
+      "log": "/tmp/rpi-cursor-options-pack.log",
+      "sha256": "59e4bfff7908e3dee4c7a2a8794c2edda38d1b62acbdb8f4e6b95234f2a02aae"
+    },
+    "nativeBoundary": {
+      "log": "/tmp/rpi-cursor-options-native.log",
+      "sha256": "4527acce20766f471eaf198cf408ac245a13719bb0a43d9f7daafb42b8fa3a7e",
+      "passed": 9
+    },
+    "initialRetainedFailure": {
+      "log": "/tmp/rpi-cursor-options-suite.log",
+      "sha256": "a59bbbaf2a0192a69b36cafb51960fa1c802c62c54c15fb0ab4c86357e2ee23b",
+      "explanation": "Unchanged platform-artifact race assertion observed safe renamed path evidence/nested.safe/deep/safe.txt; no secret bytes were reported. Targeted and full reruns passed; same retained fixture behavior was recorded in tool-policy-evidence.json."
+    }
+  },
+  "assertions": [
+    "All native reasoning enums match retained model-selection behavior for both fast settings",
+    "Cache retention enums converted; Off/absent thinking remains off",
+    "Explicit zero, empty string, per-request environment and unknown provider options preserved",
+    "Known absent native fields omitted without deleting provider-specific null values",
+    "Both stream entries retain header identity through private receipts and the reconstructed cancellation signal",
+    "Malformed enum and header errors omit private input"
+  ],
+  "review": "Manual deep maintainability review of exact diff, native encoder and pinned Pi option contracts, retained selection call sites, both stream boundaries, fixtures and documentation. Legacy serialization and the retained adapter policy are unchanged.",
+  "notTested": [
+    "Real Cursor SDK inference and cloud acceptance",
+    "Complete per-request tool projection and fake-SDK execution counts",
+    "macOS and Windows native loading"
+  ]
+}

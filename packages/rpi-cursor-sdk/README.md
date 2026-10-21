@@ -184,3 +184,9 @@ returns its exact revision. Each worker tags its presentation state with a fresh
 runtime ID, so snapshots recover their own selection even before an acknowledgement
 arrives. Repeated external selections clear that state, and a fresh worker ignores
 the previous worker's choices. Late acknowledgements cannot replace newer choices.
+
+The native request boundary translates Rust reasoning/cache-retention enum spelling
+and absent optional values into Pi's request shape. It preserves explicit zeroes,
+empty values and provider-specific options. Each request keeps the same reconstructed
+headers and cancellation signal through receipt generation and either stream entry.
+Legacy host provider serialization is unchanged.
