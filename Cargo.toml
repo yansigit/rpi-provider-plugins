@@ -2,6 +2,7 @@
 members = [
     "packages/rpi-antigravity-auth",
     "packages/rpi-cursor-sdk",
+    "packages/rpi-multiprovider",
     "packages/rpi-run-stats",
     "packages/rpi-mcp-adapter",
     "packages/rpi-subagents",

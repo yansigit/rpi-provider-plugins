@@ -1,0 +1,89 @@
+{
+  "status": "Standalone scheduler and session-pin parsing/replay verified; native extension integration pending",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "piReference": "1.3.0",
+  "checks": {
+    "rustToolchain": "1.78.0",
+    "warnings": "denied",
+    "rustTestsPassed": 5,
+    "unchangedUpstreamSuitePassed": 107,
+    "upstreamFiles": 11,
+    "differentialScenarios": 84,
+    "differentialOperations": 1279,
+    "journalInputs": 6,
+    "inheritedEnvironmentInputs": 7,
+    "asynchronousRegistrationScenario": 1,
+    "workspaceRust178": "failed: existing zeroize_derive 1.5.0 uses edition2024",
+    "workspaceRust195": "failed: existing rpi-server transport dead-code warnings",
+    "ledgerRegressionTestsPassed": 6
+  },
+  "coverage": {
+    "M03": [
+      "first-account bias and pool-order spillover",
+      "even rotation and smooth weighted shares at ten initial offsets",
+      "least-inflight and priority policies",
+      "explicit and implicit affinity, disabled/stale pins and exclusions",
+      "idempotent release, cancellation and retained registrations",
+      "random-range error identity and state after errors"
+    ],
+    "M04": [
+      "HTTP/message classifier precedence and JavaScript regex character semantics",
+      "account-wide and exact-model cooldowns",
+      "transient exponential backoff and configured caps",
+      "successful and cancelled releases",
+      "health reset, inventory removal and provider removal",
+      "millisecond boundary and invalid Date errors"
+    ],
+    "M05": [
+      "latest recorded decision in first-seen order",
+      "foreign/malformed entry refusal",
+      "inherited pins without parent keys",
+      "unknown-pool deferral and ordered error/applied callbacks",
+      "stale and disabled targets do not block subsequent decisions"
+    ]
+  },
+  "review": {
+    "kind": "Manual deep source/diff review against pinned service.ts, errors.ts and session-pins.ts",
+    "findingsResolved": [
+      "Per-provider registration identity survives outstanding leases",
+      "Inventory callbacks and classifiers run outside scheduler locks",
+      "Snapshots follow live Map iteration across asynchronous inventory, including removal and reinsertion",
+      "Public snapshots omit credential references",
+      "Upstream retains account-wide health/preferences on unregister; model health is pruned separately",
+      "JavaScript trim, regex, numeric errors and extended ISO dates retain their source behavior"
+    ],
+    "remainingInImplementedBoundaries": []
+  },
+  "limitations": [
+    "This is not an installable native extension yet.",
+    "Native credential store, delegated stream wrapper, virtual providers, commands and services remain required.",
+    "Host journal commit, child-session lifecycle and service announcement integration remain required.",
+    "Managed-provider custom classifiers are a separate pending implementation.",
+    "Actual native loading and Linux/macOS/Windows combined acceptance remain required.",
+    "Whole-workspace warning-denied checks are not passing; existing compiler/dead-code failures are recorded above."
+  ],
+  "fixtureSha256": "2d6d7c916535d526fc56f9d6dc4edc2370a6e46befd0ac0b4db14a6e2c1e95a7",
+  "logs": [
+    {
+      "path": "/tmp/rpi-multiprovider-final.log",
+      "sha256": "a9715de183a2ad6bec73eba74a9dcb3b7fc48c1ecceb7e1e88846b1da7c4e754"
+    },
+    {
+      "path": "/tmp/rpi-multiprovider-baseline.log",
+      "sha256": "70b97ef36635608cc1ca8d1b3e1cb51d68e1ea69c55acf1ebfcb66bd74d1e538"
+    },
+    {
+      "path": "/tmp/rpi-multiprovider-workspace.log",
+      "sha256": "6a37ec4052d9d23db469e6f05d3303789a5c6ad75d0988579ae538a5e5925655"
+    },
+    {
+      "path": "/tmp/rpi-multiprovider-workspace-current.log",
+      "sha256": "5f81ad51575c6445e89ae21777471cdacbe4205e932a6c08c3b9bb85beed8800"
+    },
+    {
+      "path": "/tmp/rpi-multiprovider-ledger.log",
+      "sha256": "ba7eb35dcc4a515929e758eb6023d184cae32c72a61af6917fd209ec4a895d47"
+    }
+  ]
+}

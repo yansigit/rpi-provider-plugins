@@ -1,0 +1,24 @@
+[package]
+name = "rpi-multiprovider"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Native multi-account routing and virtual providers for rpi"
+publish = false
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
+indexmap = "=2.11.4"
+regex = "1"
+getrandom = "0.2"
+uuid = { version = "=1.20.0", features = ["v4"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros"] }

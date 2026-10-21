@@ -2725,6 +2725,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpi-multiprovider"
+version = "0.1.6"
+dependencies = [
+ "getrandom 0.2.17",
+ "indexmap 2.11.4",
+ "regex",
+ "serde",
+ "serde_json",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "rpi-orchestrator"
 version = "0.1.6"
 dependencies = [
