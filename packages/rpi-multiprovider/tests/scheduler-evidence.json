@@ -16,7 +16,16 @@
     "asynchronousRegistrationScenario": 1,
     "workspaceRust178": "failed: existing zeroize_derive 1.5.0 uses edition2024",
     "workspaceRust195": "failed: existing rpi-server transport dead-code warnings",
-    "ledgerRegressionTestsPassed": 6
+    "ledgerRegressionTestsPassed": 6,
+    "threeNativePackageSuites": {
+      "passed": 85,
+      "failed": 0,
+      "ignored": 15,
+      "binariesAndDoctests": 46,
+      "toolchain": "1.78.0",
+      "warnings": "denied",
+      "nodeWorkerFixtures": "26.10.0"
+    }
   },
   "coverage": {
     "M03": [
@@ -84,6 +93,10 @@
     {
       "path": "/tmp/rpi-multiprovider-ledger.log",
       "sha256": "ba7eb35dcc4a515929e758eb6023d184cae32c72a61af6917fd209ec4a895d47"
+    },
+    {
+      "path": "/tmp/rpi-native-provider-package-tests.log",
+      "sha256": "e14ac39d1af3582fb8f3e157e07a46a74888b63107e7d3dae81a1c2580945783"
     }
   ]
 }
