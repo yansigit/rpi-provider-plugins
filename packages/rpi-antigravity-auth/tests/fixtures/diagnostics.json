@@ -1,0 +1,6387 @@
+{
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "host": "1.3.0",
+  "sourceHashes": {
+    "packages/pi/src/stream.ts": "41f22771dd1dfdb3b6f72ee02f5a57317193b0a2b210be706042bf26d4af2cf6",
+    "packages/core/src/credential-redaction.ts": "9856f179cdcf4882b2bceb0179f24d28fd24c2e0065640e5b2c49c0eed7e8d97"
+  },
+  "cases": [
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [],
+      "projects": [],
+      "result": "opaque-selected-token [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "opaque-selected-token [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "opaque-selected-token [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "[credential] [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "[credential]-selected-token [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential]-selected-token [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential]-selected-token [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "opaque-[credential]-token [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "opaque-[credential]-token [credential] [credential]"
+    },
+    {
+      "text": "opaque-selected-token Bearer other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "opaque-[credential]-token [credential] [credential]"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [],
+      "projects": [],
+      "result": "project-0 and proj"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "proj****ct-0 and ****"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project-0 and proj"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "project-0 and proj"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "proj****ct-0 and ****"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project-0 and proj"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "project-0 and proj"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "proj****ct-0 and ****"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project-0 and proj"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "project-0 and proj"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "proj****ct-0 and ****"
+    },
+    {
+      "text": "project-0 and proj",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project-0 and proj"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [],
+      "projects": [],
+      "result": "prefixproject=private-project-123456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "prefix****ect=private-****ect-123456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "prefixproject=priv****3456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "prefixproject=private-project-123456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "prefix****ect=private-****ect-123456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "prefixproject=priv****3456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "prefixproject=private-project-123456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "prefix****ect=private-****ect-123456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "prefixproject=priv****3456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "prefixproject=private-project-123456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "prefix****ect=private-****ect-123456"
+    },
+    {
+      "text": "prefixproject=private-project-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "prefixproject=priv****3456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [],
+      "projects": [],
+      "result": "éproject=priv****3456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "é****ect=private-****ect-123456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "éproject=priv****3456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "éproject=priv****3456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "é****ect=private-****ect-123456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "éproject=priv****3456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "éproject=priv****3456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "é****ect=private-****ect-123456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "éproject=priv****3456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "éproject=priv****3456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "é****ect=private-****ect-123456"
+    },
+    {
+      "text": "éproject=private-project-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "éproject=priv****3456"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [],
+      "projects": [],
+      "result": "Project: Unknown project=na project=****/a project=**** project=**** project=abc-****long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project: Unknown ****ect=na ****ect=n/a ****ect=**** ****ect=abc ****ect=abc-def-long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project: Unknown project=na project=****/a project=**** project=**** project=abc-****long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Project: Unknown project=na project=****/a project=**** project=**** project=abc-****long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project: Unknown ****ect=na ****ect=n/a ****ect=**** ****ect=abc ****ect=abc-def-long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project: Unknown project=na project=****/a project=**** project=**** project=abc-****long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Project: Unknown project=na project=****/a project=**** project=**** project=abc-****long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project: Unknown ****ect=na ****ect=n/a ****ect=**** ****ect=abc ****ect=abc-def-long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project: Unknown project=na project=****/a project=**** project=**** project=abc-****long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Project: Unknown project=na project=****/a project=**** project=**** project=abc-****long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project: Unknown ****ect=na ****ect=n/a ****ect=**** ****ect=abc ****ect=abc-def-long"
+    },
+    {
+      "text": "Project: Unknown project=na project=n/a project=**** project=abc project=abc-def-long",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project: Unknown project=na project=****/a project=**** project=**** project=abc-****long"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [],
+      "projects": [],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer Kelvin Bearer ſuffix",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Bearer Kelvin Bearer ſuffix"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [],
+      "projects": [],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Bearer [credential]== trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Bearer [credential]== trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Bearer [credential]== trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "Bearer opaque== trailing",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] trailing"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [],
+      "projects": [],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "eyJtest.part.last_ eyJtest.part.last-",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] [credential]-"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [],
+      "projects": [],
+      "result": "project = PRIV****3456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "****ect = PRIVATE-PROJECT-123456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project = PRIV****3456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "project = PRIV****3456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "****ect = PRIVATE-PROJECT-123456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project = PRIV****3456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "project = PRIV****3456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "****ect = PRIVATE-PROJECT-123456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project = PRIV****3456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "project = PRIV****3456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "****ect = PRIVATE-PROJECT-123456"
+    },
+    {
+      "text": "project = PRIVATE-PROJECT-123456",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project = PRIV****3456"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [],
+      "projects": [],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "[credential] [credential]-long [credential]"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "[credential] [credential]-long [credential]"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "[credential] [credential]-long [credential]"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "opaque opaque-long opaque",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "opaque opaque-long opaque"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [],
+      "projects": [],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "fixed costs: token count 12",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "fixed costs: token count 12"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 Bearer [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [],
+      "projects": [],
+      "result": "Project\tid\t:\tpriv****3456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project\tid\t:\tprivate-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project\tid\t:\tpriv****3456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Project\tid\t:\tpriv****3456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project\tid\t:\tprivate-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project\tid\t:\tpriv****3456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Project\tid\t:\tpriv****3456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project\tid\t:\tprivate-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project\tid\t:\tpriv****3456 [credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Project\tid\t:\tpriv****3456 Bearer\t[credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project\tid\t:\tprivate-****ect-123456 Bearer\t[credential]"
+    },
+    {
+      "text": "Project\tid\t:\tprivate-project-123456 Bearer\tselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project\tid\t:\tpriv****3456 Bearer\t[credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [],
+      "projects": [],
+      "result": "Project\r\nid\r\n:\r\npriv****3456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project\r\nid\r\n:\r\nprivate-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project\r\nid\r\n:\r\npriv****3456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Project\r\nid\r\n:\r\npriv****3456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project\r\nid\r\n:\r\nprivate-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project\r\nid\r\n:\r\npriv****3456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Project\r\nid\r\n:\r\npriv****3456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project\r\nid\r\n:\r\nprivate-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project\r\nid\r\n:\r\npriv****3456 [credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Project\r\nid\r\n:\r\npriv****3456 Bearer\r\n[credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project\r\nid\r\n:\r\nprivate-****ect-123456 Bearer\r\n[credential]"
+    },
+    {
+      "text": "Project\r\nid\r\n:\r\nprivate-project-123456 Bearer\r\nselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project\r\nid\r\n:\r\npriv****3456 Bearer\r\n[credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 Bearer [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [],
+      "projects": [],
+      "result": "Project﻿id﻿:﻿priv****3456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project﻿id﻿:﻿private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project﻿id﻿:﻿priv****3456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Project﻿id﻿:﻿priv****3456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project﻿id﻿:﻿private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project﻿id﻿:﻿priv****3456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Project﻿id﻿:﻿priv****3456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project﻿id﻿:﻿private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project﻿id﻿:﻿priv****3456 [credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Project﻿id﻿:﻿priv****3456 Bearer﻿[credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project﻿id﻿:﻿private-****ect-123456 Bearer﻿[credential]"
+    },
+    {
+      "text": "Project﻿id﻿:﻿private-project-123456 Bearer﻿selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project﻿id﻿:﻿priv****3456 Bearer﻿[credential]"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [],
+      "projects": [],
+      "result": "Projectid:private-project-123456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Projectid:private-****ect-123456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Projectid:priv****3456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Projectid:private-project-123456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Projectid:private-****ect-123456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Projectid:priv****3456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Projectid:private-project-123456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Projectid:private-****ect-123456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Projectid:priv****3456 Bearerselected"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Projectid:private-project-123456 Bearer[credential]"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Projectid:private-****ect-123456 Bearer[credential]"
+    },
+    {
+      "text": "Projectid:private-project-123456 Bearerselected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Projectid:priv****3456 Bearer[credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "opaque",
+        "opaque-long"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [],
+      "result": "Project id : priv****3456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "project-0",
+        "proj"
+      ],
+      "result": "Project id : private-****ect-123456 Bearer [credential]"
+    },
+    {
+      "text": "Project id : private-project-123456 Bearer selected",
+      "credentials": [
+        "selected"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Project id : priv****3456 Bearer [credential]"
+    }
+  ],
+  "frames": [
+    {
+      "text": "{\"error\":{\"message\":\"opaque-selected-token\"}}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"error\":{\"message\":\"[credential]\"}}"
+    },
+    {
+      "text": "{\"\\u0065rror\":{\"message\":\"\\u006fpaque-selected-token\"}}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"error\":{\"message\":\"[credential]\"}}"
+    },
+    {
+      "text": "{\"type\":\"error\",\"message\":\"Bearer selected\",\"project\":\"private-project-123456\"}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"type\":\"error\",\"message\":\"[credential]\",\"project\":\"priv****3456\"}"
+    },
+    {
+      "text": "{\"type\":\"\\u0065rror\",\"message\":\"Bearer selected\",\"project\":\"private-project-123456\"}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"type\":\"\\u0065rror\",\"message\":\"[credential]\",\"project\":\"priv****3456\"}"
+    },
+    {
+      "text": "{\"response\":{\"error\":\"opaque-selected-token\"}}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"response\":{\"error\":\"[credential]\"}}"
+    },
+    {
+      "text": "{\"response\":{\"\\u0065rror\":\"\\u006fpaque-selected-token\"}}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"response\":{\"error\":\"[credential]\"}}"
+    },
+    {
+      "text": "{\"response\":{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"error opaque-selected-token\"}]}}]}}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"response\":{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"error opaque-selected-token\"}]}}]}}"
+    },
+    {
+      "text": "{\"response\":{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"\\u0065rror \\u006fpaque-selected-token\"}]}}]}}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"response\":{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"\\u0065rror \\u006fpaque-selected-token\"}]}}]}}"
+    },
+    {
+      "text": "{\"error\":null,\"output\":\"opaque-selected-token\"}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"error\":null,\"output\":\"opaque-selected-token\"}"
+    },
+    {
+      "text": "{\"\\u0065rror\":null,\"output\":\"\\u006fpaque-selected-token\"}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"\\u0065rror\":null,\"output\":\"\\u006fpaque-selected-token\"}"
+    },
+    {
+      "text": "{\"type\":\"done\",\"error\":0,\"output\":\"opaque-selected-token\"}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"type\":\"done\",\"error\":0,\"output\":\"opaque-selected-token\"}"
+    },
+    {
+      "text": "{\"type\":\"done\",\"\\u0065rror\":0,\"output\":\"\\u006fpaque-selected-token\"}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "{\"type\":\"done\",\"\\u0065rror\":0,\"output\":\"\\u006fpaque-selected-token\"}"
+    }
+  ],
+  "sse": [
+    {
+      "chunks": [
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          114
+        ],
+        [
+          101
+        ],
+        [
+          115
+        ],
+        [
+          112
+        ],
+        [
+          111
+        ],
+        [
+          110
+        ],
+        [
+          115
+        ],
+        [
+          101
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          120
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          34
+        ],
+        [
+          240
+        ],
+        [
+          159
+        ],
+        [
+          152
+        ],
+        [
+          128
+        ],
+        [
+          195
+        ],
+        [
+          169
+        ],
+        [
+          34
+        ],
+        [
+          125
+        ],
+        [
+          125
+        ],
+        [
+          13
+        ],
+        [
+          10
+        ],
+        [
+          13
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          121
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          50
+        ],
+        [
+          125
+        ],
+        [
+          10
+        ],
+        [
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "😀é"
+          },
+          "read": 52,
+          "eof": false
+        },
+        {
+          "value": {
+            "y": 2
+          },
+          "read": 52,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97
+        ],
+        [
+          116,
+          97
+        ],
+        [
+          58,
+          32
+        ],
+        [
+          123,
+          34
+        ],
+        [
+          114,
+          101
+        ],
+        [
+          115,
+          112
+        ],
+        [
+          111,
+          110
+        ],
+        [
+          115,
+          101
+        ],
+        [
+          34,
+          58
+        ],
+        [
+          123,
+          34
+        ],
+        [
+          120,
+          34
+        ],
+        [
+          58,
+          34
+        ],
+        [
+          240,
+          159
+        ],
+        [
+          152,
+          128
+        ],
+        [
+          195,
+          169
+        ],
+        [
+          34,
+          125
+        ],
+        [
+          125,
+          13
+        ],
+        [
+          10,
+          13
+        ],
+        [
+          10,
+          100
+        ],
+        [
+          97,
+          116
+        ],
+        [
+          97,
+          58
+        ],
+        [
+          32,
+          123
+        ],
+        [
+          34,
+          121
+        ],
+        [
+          34,
+          58
+        ],
+        [
+          50,
+          125
+        ],
+        [
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "😀é"
+          },
+          "read": 26,
+          "eof": false
+        },
+        {
+          "value": {
+            "y": 2
+          },
+          "read": 26,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          123,
+          34,
+          114
+        ],
+        [
+          101,
+          115,
+          112
+        ],
+        [
+          111,
+          110,
+          115
+        ],
+        [
+          101,
+          34,
+          58
+        ],
+        [
+          123,
+          34,
+          120
+        ],
+        [
+          34,
+          58,
+          34
+        ],
+        [
+          240,
+          159,
+          152
+        ],
+        [
+          128,
+          195,
+          169
+        ],
+        [
+          34,
+          125,
+          125
+        ],
+        [
+          13,
+          10,
+          13
+        ],
+        [
+          10,
+          100,
+          97
+        ],
+        [
+          116,
+          97,
+          58
+        ],
+        [
+          32,
+          123,
+          34
+        ],
+        [
+          121,
+          34,
+          58
+        ],
+        [
+          50,
+          125,
+          10
+        ],
+        [
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "😀é"
+          },
+          "read": 18,
+          "eof": false
+        },
+        {
+          "value": {
+            "y": 2
+          },
+          "read": 18,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123
+        ],
+        [
+          34,
+          114,
+          101,
+          115,
+          112,
+          111,
+          110
+        ],
+        [
+          115,
+          101,
+          34,
+          58,
+          123,
+          34,
+          120
+        ],
+        [
+          34,
+          58,
+          34,
+          240,
+          159,
+          152,
+          128
+        ],
+        [
+          195,
+          169,
+          34,
+          125,
+          125,
+          13,
+          10
+        ],
+        [
+          13,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58
+        ],
+        [
+          32,
+          123,
+          34,
+          121,
+          34,
+          58,
+          50
+        ],
+        [
+          125,
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "😀é"
+          },
+          "read": 6,
+          "eof": false
+        },
+        {
+          "value": {
+            "y": 2
+          },
+          "read": 8,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          114,
+          101,
+          115,
+          112,
+          111,
+          110,
+          115,
+          101,
+          34,
+          58,
+          123,
+          34,
+          120,
+          34,
+          58,
+          34,
+          240,
+          159,
+          152,
+          128,
+          195,
+          169,
+          34,
+          125,
+          125,
+          13,
+          10,
+          13,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          121,
+          34,
+          58,
+          50,
+          125,
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "😀é"
+          },
+          "read": 1,
+          "eof": false
+        },
+        {
+          "value": {
+            "y": 2
+          },
+          "read": 1,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          101
+        ],
+        [
+          118
+        ],
+        [
+          101
+        ],
+        [
+          110
+        ],
+        [
+          116
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          120
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          105
+        ],
+        [
+          110
+        ],
+        [
+          118
+        ],
+        [
+          97
+        ],
+        [
+          108
+        ],
+        [
+          105
+        ],
+        [
+          100
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          91
+        ],
+        [
+          68
+        ],
+        [
+          79
+        ],
+        [
+          78
+        ],
+        [
+          69
+        ],
+        [
+          93
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          97
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          49
+        ],
+        [
+          125
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          98
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          50
+        ],
+        [
+          125
+        ],
+        [
+          10
+        ],
+        [
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "a": 1
+          },
+          "read": 72,
+          "eof": false
+        },
+        {
+          "value": {
+            "b": 2
+          },
+          "read": 72,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          101,
+          118
+        ],
+        [
+          101,
+          110
+        ],
+        [
+          116,
+          58
+        ],
+        [
+          32,
+          120
+        ],
+        [
+          10,
+          100
+        ],
+        [
+          97,
+          116
+        ],
+        [
+          97,
+          58
+        ],
+        [
+          32,
+          105
+        ],
+        [
+          110,
+          118
+        ],
+        [
+          97,
+          108
+        ],
+        [
+          105,
+          100
+        ],
+        [
+          10,
+          100
+        ],
+        [
+          97,
+          116
+        ],
+        [
+          97,
+          58
+        ],
+        [
+          32,
+          91
+        ],
+        [
+          68,
+          79
+        ],
+        [
+          78,
+          69
+        ],
+        [
+          93,
+          10
+        ],
+        [
+          100,
+          97
+        ],
+        [
+          116,
+          97
+        ],
+        [
+          58,
+          32
+        ],
+        [
+          10,
+          100
+        ],
+        [
+          97,
+          116
+        ],
+        [
+          97,
+          58
+        ],
+        [
+          32,
+          123
+        ],
+        [
+          34,
+          97
+        ],
+        [
+          34,
+          58
+        ],
+        [
+          49,
+          125
+        ],
+        [
+          10,
+          100
+        ],
+        [
+          97,
+          116
+        ],
+        [
+          97,
+          58
+        ],
+        [
+          32,
+          123
+        ],
+        [
+          34,
+          98
+        ],
+        [
+          34,
+          58
+        ],
+        [
+          50,
+          125
+        ],
+        [
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "a": 1
+          },
+          "read": 36,
+          "eof": false
+        },
+        {
+          "value": {
+            "b": 2
+          },
+          "read": 36,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          101,
+          118,
+          101
+        ],
+        [
+          110,
+          116,
+          58
+        ],
+        [
+          32,
+          120,
+          10
+        ],
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          105,
+          110,
+          118
+        ],
+        [
+          97,
+          108,
+          105
+        ],
+        [
+          100,
+          10,
+          100
+        ],
+        [
+          97,
+          116,
+          97
+        ],
+        [
+          58,
+          32,
+          91
+        ],
+        [
+          68,
+          79,
+          78
+        ],
+        [
+          69,
+          93,
+          10
+        ],
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          10,
+          100,
+          97
+        ],
+        [
+          116,
+          97,
+          58
+        ],
+        [
+          32,
+          123,
+          34
+        ],
+        [
+          97,
+          34,
+          58
+        ],
+        [
+          49,
+          125,
+          10
+        ],
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          123,
+          34,
+          98
+        ],
+        [
+          34,
+          58,
+          50
+        ],
+        [
+          125,
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "a": 1
+          },
+          "read": 24,
+          "eof": false
+        },
+        {
+          "value": {
+            "b": 2
+          },
+          "read": 24,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          101,
+          118,
+          101,
+          110,
+          116,
+          58,
+          32
+        ],
+        [
+          120,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58
+        ],
+        [
+          32,
+          105,
+          110,
+          118,
+          97,
+          108,
+          105
+        ],
+        [
+          100,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58
+        ],
+        [
+          32,
+          91,
+          68,
+          79,
+          78,
+          69,
+          93
+        ],
+        [
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32
+        ],
+        [
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32
+        ],
+        [
+          123,
+          34,
+          97,
+          34,
+          58,
+          49,
+          125
+        ],
+        [
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32
+        ],
+        [
+          123,
+          34,
+          98,
+          34,
+          58,
+          50,
+          125
+        ],
+        [
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "a": 1
+          },
+          "read": 11,
+          "eof": false
+        },
+        {
+          "value": {
+            "b": 2
+          },
+          "read": 11,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          101,
+          118,
+          101,
+          110,
+          116,
+          58,
+          32,
+          120,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          105,
+          110,
+          118,
+          97,
+          108,
+          105,
+          100,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          91,
+          68,
+          79,
+          78,
+          69,
+          93,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          97,
+          34,
+          58,
+          49,
+          125,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          98,
+          34,
+          58,
+          50,
+          125,
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "a": 1
+          },
+          "read": 1,
+          "eof": false
+        },
+        {
+          "value": {
+            "b": 2
+          },
+          "read": 1,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          239
+        ],
+        [
+          187
+        ],
+        [
+          191
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          120
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          49
+        ],
+        [
+          125
+        ],
+        [
+          10
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          91
+        ],
+        [
+          49
+        ],
+        [
+          44
+        ],
+        [
+          50
+        ],
+        [
+          93
+        ],
+        [
+          10
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          110
+        ],
+        [
+          117
+        ],
+        [
+          108
+        ],
+        [
+          108
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": 1
+          },
+          "read": 18,
+          "eof": false
+        },
+        {
+          "value": [
+            1,
+            2
+          ],
+          "read": 31,
+          "eof": false
+        },
+        {
+          "value": null,
+          "read": 41,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          239,
+          187
+        ],
+        [
+          191,
+          100
+        ],
+        [
+          97,
+          116
+        ],
+        [
+          97,
+          58
+        ],
+        [
+          32,
+          123
+        ],
+        [
+          34,
+          120
+        ],
+        [
+          34,
+          58
+        ],
+        [
+          49,
+          125
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          100,
+          97
+        ],
+        [
+          116,
+          97
+        ],
+        [
+          58,
+          32
+        ],
+        [
+          91,
+          49
+        ],
+        [
+          44,
+          50
+        ],
+        [
+          93,
+          10
+        ],
+        [
+          10,
+          100
+        ],
+        [
+          97,
+          116
+        ],
+        [
+          97,
+          58
+        ],
+        [
+          32,
+          110
+        ],
+        [
+          117,
+          108
+        ],
+        [
+          108
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": 1
+          },
+          "read": 9,
+          "eof": false
+        },
+        {
+          "value": [
+            1,
+            2
+          ],
+          "read": 16,
+          "eof": false
+        },
+        {
+          "value": null,
+          "read": 21,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          239,
+          187,
+          191
+        ],
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          123,
+          34,
+          120
+        ],
+        [
+          34,
+          58,
+          49
+        ],
+        [
+          125,
+          10,
+          10
+        ],
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          91,
+          49,
+          44
+        ],
+        [
+          50,
+          93,
+          10
+        ],
+        [
+          10,
+          100,
+          97
+        ],
+        [
+          116,
+          97,
+          58
+        ],
+        [
+          32,
+          110,
+          117
+        ],
+        [
+          108,
+          108
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": 1
+          },
+          "read": 6,
+          "eof": false
+        },
+        {
+          "value": [
+            1,
+            2
+          ],
+          "read": 11,
+          "eof": false
+        },
+        {
+          "value": null,
+          "read": 14,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          239,
+          187,
+          191,
+          100,
+          97,
+          116,
+          97
+        ],
+        [
+          58,
+          32,
+          123,
+          34,
+          120,
+          34,
+          58
+        ],
+        [
+          49,
+          125,
+          10,
+          10,
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32,
+          91,
+          49,
+          44,
+          50
+        ],
+        [
+          93,
+          10,
+          10,
+          100,
+          97,
+          116,
+          97
+        ],
+        [
+          58,
+          32,
+          110,
+          117,
+          108,
+          108
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": 1
+          },
+          "read": 3,
+          "eof": false
+        },
+        {
+          "value": [
+            1,
+            2
+          ],
+          "read": 5,
+          "eof": false
+        },
+        {
+          "value": null,
+          "read": 6,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          239,
+          187,
+          191,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          120,
+          34,
+          58,
+          49,
+          125,
+          10,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          91,
+          49,
+          44,
+          50,
+          93,
+          10,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          110,
+          117,
+          108,
+          108
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": 1
+          },
+          "read": 1,
+          "eof": false
+        },
+        {
+          "value": [
+            1,
+            2
+          ],
+          "read": 1,
+          "eof": false
+        },
+        {
+          "value": null,
+          "read": 1,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          120
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          34
+        ],
+        [
+          255
+        ],
+        [
+          34
+        ],
+        [
+          125
+        ],
+        [
+          10
+        ],
+        [
+          10
+        ],
+        [
+          240
+        ],
+        [
+          159
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "�"
+          },
+          "read": 17,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97
+        ],
+        [
+          116,
+          97
+        ],
+        [
+          58,
+          32
+        ],
+        [
+          123,
+          34
+        ],
+        [
+          120,
+          34
+        ],
+        [
+          58,
+          34
+        ],
+        [
+          255,
+          34
+        ],
+        [
+          125,
+          10
+        ],
+        [
+          10,
+          240
+        ],
+        [
+          159
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "�"
+          },
+          "read": 9,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          123,
+          34,
+          120
+        ],
+        [
+          34,
+          58,
+          34
+        ],
+        [
+          255,
+          34,
+          125
+        ],
+        [
+          10,
+          10,
+          240
+        ],
+        [
+          159
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "�"
+          },
+          "read": 6,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123
+        ],
+        [
+          34,
+          120,
+          34,
+          58,
+          34,
+          255,
+          34
+        ],
+        [
+          125,
+          10,
+          10,
+          240,
+          159
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "�"
+          },
+          "read": 3,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          120,
+          34,
+          58,
+          34,
+          255,
+          34,
+          125,
+          10,
+          10,
+          240,
+          159
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "x": "�"
+          },
+          "read": 1,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          114
+        ],
+        [
+          101
+        ],
+        [
+          115
+        ],
+        [
+          112
+        ],
+        [
+          111
+        ],
+        [
+          110
+        ],
+        [
+          115
+        ],
+        [
+          101
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          110
+        ],
+        [
+          117
+        ],
+        [
+          108
+        ],
+        [
+          108
+        ],
+        [
+          125
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          114
+        ],
+        [
+          101
+        ],
+        [
+          115
+        ],
+        [
+          112
+        ],
+        [
+          111
+        ],
+        [
+          110
+        ],
+        [
+          115
+        ],
+        [
+          101
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          91
+        ],
+        [
+          93
+        ],
+        [
+          125
+        ],
+        [
+          10
+        ],
+        [
+          100
+        ],
+        [
+          97
+        ],
+        [
+          116
+        ],
+        [
+          97
+        ],
+        [
+          58
+        ],
+        [
+          32
+        ],
+        [
+          123
+        ],
+        [
+          34
+        ],
+        [
+          114
+        ],
+        [
+          101
+        ],
+        [
+          115
+        ],
+        [
+          112
+        ],
+        [
+          111
+        ],
+        [
+          110
+        ],
+        [
+          115
+        ],
+        [
+          101
+        ],
+        [
+          34
+        ],
+        [
+          58
+        ],
+        [
+          49
+        ],
+        [
+          125
+        ],
+        [
+          10
+        ],
+        [
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "response": null
+          },
+          "read": 68,
+          "eof": false
+        },
+        {
+          "value": [],
+          "read": 68,
+          "eof": false
+        },
+        {
+          "value": {
+            "response": 1
+          },
+          "read": 68,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97
+        ],
+        [
+          116,
+          97
+        ],
+        [
+          58,
+          32
+        ],
+        [
+          123,
+          34
+        ],
+        [
+          114,
+          101
+        ],
+        [
+          115,
+          112
+        ],
+        [
+          111,
+          110
+        ],
+        [
+          115,
+          101
+        ],
+        [
+          34,
+          58
+        ],
+        [
+          110,
+          117
+        ],
+        [
+          108,
+          108
+        ],
+        [
+          125,
+          10
+        ],
+        [
+          100,
+          97
+        ],
+        [
+          116,
+          97
+        ],
+        [
+          58,
+          32
+        ],
+        [
+          123,
+          34
+        ],
+        [
+          114,
+          101
+        ],
+        [
+          115,
+          112
+        ],
+        [
+          111,
+          110
+        ],
+        [
+          115,
+          101
+        ],
+        [
+          34,
+          58
+        ],
+        [
+          91,
+          93
+        ],
+        [
+          125,
+          10
+        ],
+        [
+          100,
+          97
+        ],
+        [
+          116,
+          97
+        ],
+        [
+          58,
+          32
+        ],
+        [
+          123,
+          34
+        ],
+        [
+          114,
+          101
+        ],
+        [
+          115,
+          112
+        ],
+        [
+          111,
+          110
+        ],
+        [
+          115,
+          101
+        ],
+        [
+          34,
+          58
+        ],
+        [
+          49,
+          125
+        ],
+        [
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "response": null
+          },
+          "read": 34,
+          "eof": false
+        },
+        {
+          "value": [],
+          "read": 34,
+          "eof": false
+        },
+        {
+          "value": {
+            "response": 1
+          },
+          "read": 34,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          123,
+          34,
+          114
+        ],
+        [
+          101,
+          115,
+          112
+        ],
+        [
+          111,
+          110,
+          115
+        ],
+        [
+          101,
+          34,
+          58
+        ],
+        [
+          110,
+          117,
+          108
+        ],
+        [
+          108,
+          125,
+          10
+        ],
+        [
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32
+        ],
+        [
+          123,
+          34,
+          114
+        ],
+        [
+          101,
+          115,
+          112
+        ],
+        [
+          111,
+          110,
+          115
+        ],
+        [
+          101,
+          34,
+          58
+        ],
+        [
+          91,
+          93,
+          125
+        ],
+        [
+          10,
+          100,
+          97
+        ],
+        [
+          116,
+          97,
+          58
+        ],
+        [
+          32,
+          123,
+          34
+        ],
+        [
+          114,
+          101,
+          115
+        ],
+        [
+          112,
+          111,
+          110
+        ],
+        [
+          115,
+          101,
+          34
+        ],
+        [
+          58,
+          49,
+          125
+        ],
+        [
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "response": null
+          },
+          "read": 23,
+          "eof": false
+        },
+        {
+          "value": [],
+          "read": 23,
+          "eof": false
+        },
+        {
+          "value": {
+            "response": 1
+          },
+          "read": 23,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123
+        ],
+        [
+          34,
+          114,
+          101,
+          115,
+          112,
+          111,
+          110
+        ],
+        [
+          115,
+          101,
+          34,
+          58,
+          110,
+          117,
+          108
+        ],
+        [
+          108,
+          125,
+          10,
+          100,
+          97,
+          116,
+          97
+        ],
+        [
+          58,
+          32,
+          123,
+          34,
+          114,
+          101,
+          115
+        ],
+        [
+          112,
+          111,
+          110,
+          115,
+          101,
+          34,
+          58
+        ],
+        [
+          91,
+          93,
+          125,
+          10,
+          100,
+          97,
+          116
+        ],
+        [
+          97,
+          58,
+          32,
+          123,
+          34,
+          114,
+          101
+        ],
+        [
+          115,
+          112,
+          111,
+          110,
+          115,
+          101,
+          34
+        ],
+        [
+          58,
+          49,
+          125,
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "response": null
+          },
+          "read": 10,
+          "eof": false
+        },
+        {
+          "value": [],
+          "read": 10,
+          "eof": false
+        },
+        {
+          "value": {
+            "response": 1
+          },
+          "read": 10,
+          "eof": false
+        }
+      ]
+    },
+    {
+      "chunks": [
+        [
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          114,
+          101,
+          115,
+          112,
+          111,
+          110,
+          115,
+          101,
+          34,
+          58,
+          110,
+          117,
+          108,
+          108,
+          125,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          114,
+          101,
+          115,
+          112,
+          111,
+          110,
+          115,
+          101,
+          34,
+          58,
+          91,
+          93,
+          125,
+          10,
+          100,
+          97,
+          116,
+          97,
+          58,
+          32,
+          123,
+          34,
+          114,
+          101,
+          115,
+          112,
+          111,
+          110,
+          115,
+          101,
+          34,
+          58,
+          49,
+          125,
+          10,
+          10
+        ]
+      ],
+      "events": [
+        {
+          "value": {
+            "response": null
+          },
+          "read": 1,
+          "eof": false
+        },
+        {
+          "value": [],
+          "read": 1,
+          "eof": false
+        },
+        {
+          "value": {
+            "response": 1
+          },
+          "read": 1,
+          "eof": false
+        }
+      ]
+    }
+  ],
+  "usage": [
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "result": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": null,
+      "result": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {},
+      "result": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "promptTokenCount": 48
+      },
+      "result": {
+        "usage": {
+          "input": 45,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 57,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 45,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 57,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "promptTokenCount": 49
+      },
+      "result": {
+        "usage": {
+          "input": 46,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 58,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 46,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 58,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "promptTokenCount": 99
+      },
+      "result": {
+        "usage": {
+          "input": 96,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 108,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 96,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 108,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "promptTokenCount": 100
+      },
+      "result": {
+        "usage": {
+          "input": 97,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 109,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 97,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 109,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "candidatesTokenCount": 8,
+        "thoughtsTokenCount": 2
+      },
+      "result": {
+        "usage": {
+          "input": 97,
+          "output": 10,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 112,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 97,
+          "output": 10,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 112,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "thoughtsTokenCount": 3
+      },
+      "result": {
+        "usage": {
+          "input": 97,
+          "output": 3,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 105,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 97,
+          "output": 3,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 105,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "cachedContentTokenCount": 200
+      },
+      "result": {
+        "usage": {
+          "input": 0,
+          "output": 3,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 205,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 0,
+          "output": 3,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 205,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "candidatesTokenCount": null
+      },
+      "result": {
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 202,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 202,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {
+        "totalTokenCount": 99999
+      },
+      "result": {
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 202,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "result": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": null,
+      "result": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "metadata": {},
+      "result": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0.000009999999999999999,
+            "output": 0.000035000000000000004,
+            "cacheRead": 0.000003,
+            "cacheWrite": 0.000007,
+            "total": 0.000055
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 5,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 17,
+          "cost": {
+            "input": 0.000009999999999999999,
+            "output": 0.000035000000000000004,
+            "cacheRead": 0.000003,
+            "cacheWrite": 0.000007,
+            "total": 0.000055
+          }
+        }
+      },
+      "metadata": {
+        "promptTokenCount": 48
+      },
+      "result": {
+        "usage": {
+          "input": 45,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 57,
+          "cost": {
+            "input": 0.00008999999999999999,
+            "output": 0.000035000000000000004,
+            "cacheRead": 0.000003,
+            "cacheWrite": 0.000007,
+            "total": 0.000135
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 45,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 57,
+          "cost": {
+            "input": 0.00008999999999999999,
+            "output": 0.000035000000000000004,
+            "cacheRead": 0.000003,
+            "cacheWrite": 0.000007,
+            "total": 0.000135
+          }
+        }
+      },
+      "metadata": {
+        "promptTokenCount": 49
+      },
+      "result": {
+        "usage": {
+          "input": 46,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 58,
+          "cost": {
+            "input": 0.000184,
+            "output": 0.000056,
+            "cacheRead": 0.000006,
+            "cacheWrite": 0.000014,
+            "total": 0.00026000000000000003
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 46,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 58,
+          "cost": {
+            "input": 0.000184,
+            "output": 0.000056,
+            "cacheRead": 0.000006,
+            "cacheWrite": 0.000014,
+            "total": 0.00026000000000000003
+          }
+        }
+      },
+      "metadata": {
+        "promptTokenCount": 99
+      },
+      "result": {
+        "usage": {
+          "input": 96,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 108,
+          "cost": {
+            "input": 0.000768,
+            "output": 0.000112,
+            "cacheRead": 0.000012,
+            "cacheWrite": 0.000028,
+            "total": 0.00092
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 96,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 108,
+          "cost": {
+            "input": 0.000768,
+            "output": 0.000112,
+            "cacheRead": 0.000012,
+            "cacheWrite": 0.000028,
+            "total": 0.00092
+          }
+        }
+      },
+      "metadata": {
+        "promptTokenCount": 100
+      },
+      "result": {
+        "usage": {
+          "input": 97,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 109,
+          "cost": {
+            "input": 0.000776,
+            "output": 0.000112,
+            "cacheRead": 0.000012,
+            "cacheWrite": 0.000028,
+            "total": 0.000928
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 97,
+          "output": 7,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 109,
+          "cost": {
+            "input": 0.000776,
+            "output": 0.000112,
+            "cacheRead": 0.000012,
+            "cacheWrite": 0.000028,
+            "total": 0.000928
+          }
+        }
+      },
+      "metadata": {
+        "candidatesTokenCount": 8,
+        "thoughtsTokenCount": 2
+      },
+      "result": {
+        "usage": {
+          "input": 97,
+          "output": 10,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 112,
+          "cost": {
+            "input": 0.000776,
+            "output": 0.00015999999999999999,
+            "cacheRead": 0.000012,
+            "cacheWrite": 0.000028,
+            "total": 0.000976
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 97,
+          "output": 10,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 112,
+          "cost": {
+            "input": 0.000776,
+            "output": 0.00015999999999999999,
+            "cacheRead": 0.000012,
+            "cacheWrite": 0.000028,
+            "total": 0.000976
+          }
+        }
+      },
+      "metadata": {
+        "thoughtsTokenCount": 3
+      },
+      "result": {
+        "usage": {
+          "input": 97,
+          "output": 3,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 105,
+          "cost": {
+            "input": 0.000776,
+            "output": 0.000048,
+            "cacheRead": 0.000012,
+            "cacheWrite": 0.000028,
+            "total": 0.000864
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 97,
+          "output": 3,
+          "cacheRead": 3,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 105,
+          "cost": {
+            "input": 0.000776,
+            "output": 0.000048,
+            "cacheRead": 0.000012,
+            "cacheWrite": 0.000028,
+            "total": 0.000864
+          }
+        }
+      },
+      "metadata": {
+        "cachedContentTokenCount": 200
+      },
+      "result": {
+        "usage": {
+          "input": 0,
+          "output": 3,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 205,
+          "cost": {
+            "input": 0,
+            "output": 0.000048,
+            "cacheRead": 0.0007999999999999999,
+            "cacheWrite": 0.000028,
+            "total": 0.0008759999999999999
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 0,
+          "output": 3,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 205,
+          "cost": {
+            "input": 0,
+            "output": 0.000048,
+            "cacheRead": 0.0007999999999999999,
+            "cacheWrite": 0.000028,
+            "total": 0.0008759999999999999
+          }
+        }
+      },
+      "metadata": {
+        "candidatesTokenCount": null
+      },
+      "result": {
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 202,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0.0007999999999999999,
+            "cacheWrite": 0.000028,
+            "total": 0.000828
+          }
+        }
+      }
+    },
+    {
+      "model": {
+        "cost": {
+          "input": 2,
+          "output": 5,
+          "cacheRead": 1,
+          "cacheWrite": 3,
+          "tiers": [
+            {
+              "inputTokensAbove": 50,
+              "input": 4,
+              "output": 8,
+              "cacheRead": 2,
+              "cacheWrite": 6
+            },
+            {
+              "inputTokensAbove": 100,
+              "input": 8,
+              "output": 16,
+              "cacheRead": 4,
+              "cacheWrite": 12
+            }
+          ]
+        }
+      },
+      "before": {
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 202,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0.0007999999999999999,
+            "cacheWrite": 0.000028,
+            "total": 0.000828
+          }
+        }
+      },
+      "metadata": {
+        "totalTokenCount": 99999
+      },
+      "result": {
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 200,
+          "cacheWrite": 2,
+          "cacheWrite1h": 1,
+          "totalTokens": 202,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0.0007999999999999999,
+            "cacheWrite": 0.000028,
+            "total": 0.000828
+          }
+        }
+      }
+    }
+  ]
+}

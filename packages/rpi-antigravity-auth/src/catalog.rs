@@ -18,12 +18,15 @@ struct Data {
 }
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct NativeModel {
+pub(crate) struct NativeModel {
+    pub model: String,
+    pub max_output_tokens: Option<u64>,
+    pub thinking_level: Option<u8>,
     thinking_budget: Option<i64>,
     #[serde(default)]
     supports_thinking: bool,
     #[serde(default)]
-    supports_adaptive_thinking: bool,
+    pub supports_adaptive_thinking: bool,
 }
 fn data() -> &'static Data {
     static DATA: OnceLock<Data> = OnceLock::new();
@@ -32,6 +35,9 @@ fn data() -> &'static Data {
 /// Registration replaces Google's catalog with these six models, in this order.
 pub fn models() -> &'static [Value] {
     &data().catalog
+}
+pub(crate) fn native(model: &str) -> Option<&'static NativeModel> {
+    data().native.get(&model.to_lowercase())
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -95,7 +101,7 @@ fn tier(value: &str) -> Option<&str> {
         .map(|(_, tier)| tier)
         .filter(|tier| matches!(*tier, "minimal" | "low" | "medium" | "high"))
 }
-fn argon(lower: &str) -> bool {
+pub(crate) fn argon(lower: &str) -> bool {
     let value = lower.strip_prefix("antigravity-").unwrap_or(lower);
     matches!(
         value,

@@ -14,6 +14,12 @@ crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 serde.workspace = true
-serde_json = { workspace = true, features = ["preserve_order"] }
+serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
 # Ordered transcript/schema maps must still build on Rust 1.78.
 indexmap = "=2.11.4"
+# Newer releases require edition 2024; retain the host's Rust 1.78 baseline.
+encoding_rs = "=0.8.35"
+regex = "1"
+
+[dev-dependencies]
+tokio.workspace = true
