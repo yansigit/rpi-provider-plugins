@@ -1,0 +1,854 @@
+{
+  "runtime": "v24.22.0",
+  "cases": [
+    {
+      "name": "fresh",
+      "mutation": false,
+      "start": null,
+      "before": null,
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ],
+        [
+          "discover"
+        ],
+        [
+          "active"
+        ]
+      ],
+      "result": {
+        "value": {
+          "version": 1,
+          "view": "new",
+          "complete": true,
+          "rows": [
+            {
+              "routeId": "vault:id~9af211329b",
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "state": "active",
+              "label": "id",
+              "enabled": true,
+              "addedAt": 1000
+            }
+          ],
+          "declined": []
+        }
+      },
+      "after": "{\n  \"version\": 1,\n  \"view\": \"new\",\n  \"complete\": true,\n  \"rows\": [\n    {\n      \"routeId\": \"vault:id~9af211329b\",\n      \"credentialId\": \"id\",\n      \"credentialType\": \"oauth\",\n      \"accountIdentity\": \"account\",\n      \"state\": \"active\",\n      \"label\": \"id\",\n      \"enabled\": true,\n      \"addedAt\": 1000\n    }\n  ],\n  \"declined\": []\n}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "same",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "new",
+        "complete": true,
+        "rows": [
+          {
+            "routeId": "vault:id~9af211329b",
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "accountIdentity": "account",
+            "state": "active",
+            "label": "id",
+            "enabled": true,
+            "addedAt": 1000
+          }
+        ],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"new\",\"complete\":true,\"rows\":[{\"routeId\":\"vault:id~9af211329b\",\"credentialId\":\"id\",\"credentialType\":\"oauth\",\"accountIdentity\":\"account\",\"state\":\"active\",\"label\":\"id\",\"enabled\":true,\"addedAt\":1000}],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ],
+        [
+          "discover"
+        ],
+        [
+          "active"
+        ]
+      ],
+      "result": {
+        "value": {
+          "version": 1,
+          "view": "new",
+          "complete": true,
+          "rows": [
+            {
+              "routeId": "vault:id~9af211329b",
+              "credentialId": "id",
+              "credentialType": "oauth",
+              "accountIdentity": "account",
+              "state": "active",
+              "label": "id",
+              "enabled": true,
+              "addedAt": 1000
+            }
+          ],
+          "declined": []
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"new\",\"complete\":true,\"rows\":[{\"routeId\":\"vault:id~9af211329b\",\"credentialId\":\"id\",\"credentialType\":\"oauth\",\"accountIdentity\":\"account\",\"state\":\"active\",\"label\":\"id\",\"enabled\":true,\"addedAt\":1000}],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "busy",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ]
+      ],
+      "result": {
+        "value": {
+          "version": 1,
+          "view": "old",
+          "complete": true,
+          "rows": [],
+          "declined": []
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json",
+        "roster.json.claustrum-roster.lock"
+      ]
+    },
+    {
+      "name": "busy-without-roster",
+      "mutation": false,
+      "start": null,
+      "before": null,
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "ClaustrumConsumerError",
+          "message": "Claustrum account discovery is already in progress",
+          "kind": "roster-busy"
+        }
+      },
+      "after": null,
+      "remaining": [
+        "roster.json.claustrum-roster.lock"
+      ]
+    },
+    {
+      "name": "busy-empty-view",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "ClaustrumConsumerError",
+          "message": "Claustrum account discovery is already in progress",
+          "kind": "roster-busy"
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json",
+        "roster.json.claustrum-roster.lock"
+      ]
+    },
+    {
+      "name": "inactive-before",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ]
+      ],
+      "result": {
+        "value": null
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "inactive-after",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ],
+        [
+          "discover"
+        ],
+        [
+          "active"
+        ]
+      ],
+      "result": {
+        "value": null
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "discovery-error",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ],
+        [
+          "discover"
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "ClaustrumConsumerError",
+          "message": "Claustrum scoped operation unavailable",
+          "kind": "unavailable"
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "cancel-before",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [],
+      "result": {
+        "error": {
+          "name": "AbortError",
+          "message": "This operation was aborted",
+          "code": 20
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "cancel-discovery",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ],
+        [
+          "discover"
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "AbortError",
+          "message": "This operation was aborted",
+          "code": 20
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "lost-discovery-lease",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ],
+        [
+          "discover"
+        ],
+        [
+          "active"
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "LockOwnershipError",
+          "message": "Lost claustrum-roster lock for <DIR>/roster.json"
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json",
+        "roster.json.claustrum-roster.lock"
+      ]
+    },
+    {
+      "name": "invalid-store",
+      "mutation": false,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "active"
+        ],
+        [
+          "discover"
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "ClaustrumConsumerError",
+          "message": "Claustrum roster file is not valid",
+          "kind": "invalid-state"
+        }
+      },
+      "after": "{",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "mutate",
+      "mutation": true,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "change",
+          {
+            "version": 1,
+            "view": "old",
+            "complete": true,
+            "rows": [],
+            "declined": []
+          }
+        ],
+        [
+          "before-publish"
+        ]
+      ],
+      "result": {
+        "value": "committed"
+      },
+      "after": "{\n  \"version\": 1,\n  \"view\": \"changed\",\n  \"complete\": true,\n  \"rows\": [],\n  \"declined\": [],\n  \"number\": 1e+21,\n  \"extra\": {\n    \"2\": 2,\n    \"10\": 10,\n    \"nested\": [\n      1,\n      \"line\\ntext\"\n    ]\n  }\n}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "no-change",
+      "mutation": true,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "change",
+          {
+            "version": 1,
+            "view": "old",
+            "complete": true,
+            "rows": [],
+            "declined": []
+          }
+        ]
+      ],
+      "result": {
+        "value": "committed"
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "change-error",
+      "mutation": true,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "change",
+          {
+            "version": 1,
+            "view": "old",
+            "complete": true,
+            "rows": [],
+            "declined": []
+          }
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "ClaustrumConsumerError",
+          "message": "fixture change failed",
+          "kind": "fixture"
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "fence-error",
+      "mutation": true,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "change",
+          {
+            "version": 1,
+            "view": "old",
+            "complete": true,
+            "rows": [],
+            "declined": []
+          }
+        ],
+        [
+          "before-publish"
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "ClaustrumConsumerError",
+          "message": "fixture fence failed",
+          "kind": "fixture"
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json"
+      ]
+    },
+    {
+      "name": "lost-write-lease-in-change",
+      "mutation": true,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "change",
+          {
+            "version": 1,
+            "view": "old",
+            "complete": true,
+            "rows": [],
+            "declined": []
+          }
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "LockOwnershipError",
+          "message": "Lost claustrum-roster-write lock for <DIR>/roster.json"
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json",
+        "roster.json.claustrum-roster-write.lock"
+      ]
+    },
+    {
+      "name": "lost-write-lease-at-rename",
+      "mutation": true,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [
+        [
+          "change",
+          {
+            "version": 1,
+            "view": "old",
+            "complete": true,
+            "rows": [],
+            "declined": []
+          }
+        ],
+        [
+          "before-publish"
+        ]
+      ],
+      "result": {
+        "error": {
+          "name": "LockOwnershipError",
+          "message": "Lost claustrum-roster-write lock for <DIR>/roster.json"
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json",
+        "roster.json.claustrum-roster-write.lock"
+      ]
+    },
+    {
+      "name": "write-lock-timeout",
+      "mutation": true,
+      "start": {
+        "version": 1,
+        "view": "old",
+        "complete": true,
+        "rows": [],
+        "declined": []
+      },
+      "before": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "inventory": {
+        "view": "new",
+        "credentials": [
+          {
+            "credentialId": "id",
+            "credentialType": "oauth",
+            "state": "active",
+            "accountIdentity": "account"
+          }
+        ],
+        "skipped": []
+      },
+      "trace": [],
+      "result": {
+        "error": {
+          "name": "LockContentionError",
+          "message": "Timed out acquiring claustrum-roster-write lock for <DIR>/roster.json"
+        }
+      },
+      "after": "{\"version\":1,\"view\":\"old\",\"complete\":true,\"rows\":[],\"declined\":[]}\n",
+      "remaining": [
+        "roster.json",
+        "roster.json.claustrum-roster-write.lock"
+      ]
+    }
+  ]
+}

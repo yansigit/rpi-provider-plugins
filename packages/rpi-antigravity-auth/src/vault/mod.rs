@@ -4,6 +4,8 @@ pub mod connection;
 pub mod errors;
 
 pub mod policy;
+pub mod roster;
+pub mod roster_store;
 
 pub mod enrollment;
 

@@ -17,6 +17,11 @@ pub enum Failure {
     Storage(String),
     Private(super::private::PrivateError),
     Io(super::private::IoError),
+    LockContention {
+        target: std::path::PathBuf,
+        name: String,
+        timeout_ms: u64,
+    },
     LockLost {
         target: std::path::PathBuf,
         name: String,
@@ -42,6 +47,11 @@ impl std::fmt::Display for Failure {
             Self::Storage(e) => f.write_str(e),
             Self::Private(e) => e.fmt(f),
             Self::Io(e) => f.write_str(&e.message),
+            Self::LockContention { target, name, .. } => write!(
+                f,
+                "Timed out acquiring {name} lock for {}",
+                target.display()
+            ),
             Self::LockLost { target, name, .. } => {
                 write!(f, "Lost {name} lock for {}", target.display())
             }

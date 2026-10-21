@@ -39,6 +39,11 @@ impl std::fmt::Display for Failure {
     }
 }
 impl std::error::Error for Failure {}
+impl From<super::ceremony::Failure> for Failure {
+    fn from(value: super::ceremony::Failure) -> Self {
+        Self::Enrollment(value)
+    }
+}
 impl Failure {
     fn unreachable(&self) -> bool {
         matches!(self, Self::Unreachable)

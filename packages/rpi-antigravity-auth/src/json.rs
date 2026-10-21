@@ -93,6 +93,43 @@ pub(crate) fn describe(value: &Value) -> String {
         _ => value.to_string(),
     }
 }
+/// JSON.stringify(value, null, 2), retaining JavaScript key and number rules.
+pub(crate) fn pretty(value: &Value) -> String {
+    fn format(value: &Value, depth: usize) -> String {
+        let (open, close, values) = match value {
+            Value::Array(values) if !values.is_empty() => (
+                "[",
+                "]",
+                values
+                    .iter()
+                    .map(|v| format(v, depth + 1))
+                    .collect::<Vec<_>>(),
+            ),
+            Value::Object(map) if !map.is_empty() => (
+                "{",
+                "}",
+                entries(value)
+                    .iter()
+                    .map(|(key, v)| {
+                        std::format!(
+                            "{}: {}",
+                            serde_json::to_string(key).unwrap(),
+                            format(v, depth + 1)
+                        )
+                    })
+                    .collect(),
+            ),
+            _ => return describe(value),
+        };
+        let indent = "  ".repeat(depth + 1);
+        std::format!(
+            "{open}\n{indent}{}\n{}{close}",
+            values.join(&std::format!(",\n{indent}")),
+            "  ".repeat(depth)
+        )
+    }
+    format(value, 0)
+}
 pub(crate) fn finite_number(value: f64) -> Value {
     if value.fract() == 0.0 && value.abs() <= 9007199254740991.0 {
         Value::from(value as i64)

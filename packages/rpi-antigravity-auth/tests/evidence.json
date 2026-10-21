@@ -508,5 +508,61 @@
       "macOS and Windows execution",
       "live acceptance"
     ]
+  },
+  "vaultRoster": {
+    "status": "projection-and-storage-tested-consumer-wiring-pending",
+    "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+    "fixtures": [
+      {
+        "fixture": "vault-roster.json",
+        "sha256": "4a2ca30fbacc87091a92605ab0a5a77a5ad5b88e5f7f47cdaf1cdb8f41eac68f",
+        "cases": {
+          "cases": 1247,
+          "decodes": 458,
+          "changes": 16,
+          "interlocks": 32,
+          "sorts": 9
+        }
+      },
+      {
+        "fixture": "vault-roster-store.json",
+        "sha256": "44753b980b46f2601abcf5a6ac81d90bc9bae9b0dbf9c45573f96c886640d69d",
+        "cases": {
+          "cases": 19
+        }
+      }
+    ],
+    "linuxRegression": {
+      "toolchain": "Rust 1.78.0",
+      "flags": "-Dwarnings",
+      "log": "/tmp/rpi-roster-package-regression.log",
+      "sha256": "05ab0f0f288a533bf25490cc06d1fd0e7273c89671bc897ae86b4f99b9315f0c",
+      "passed": 58,
+      "failed": 0
+    },
+    "windowsCrossCheck": {
+      "target": "x86_64-pc-windows-gnu",
+      "log": "/tmp/rpi-roster-windows-check.log",
+      "sha256": "02b2fc1b6c8c49519c682ae01d074677cb167fc515dca6e28ba57df77b1eaa3b",
+      "execution": "not tested"
+    },
+    "collation": {
+      "referenceRuntime": "Node 24.22.0 / ICU 78.3 / Unicode 17 / CLDR 48",
+      "artifact": "data/icu78-collation.postcard",
+      "sha256": "7cc7de342224f2abe4fbec382c3bae6c870a73a908bda512d796f10bb19684ff",
+      "reproduction": {
+        "log": "/tmp/rpi-roster-collation-reproduce.log",
+        "sha256": "8c613195da7fb8027c146702e63bea6926782c19b663cf5f62e52e44626a6751"
+      },
+      "qualification": "All 1,112,064 Unicode scalars: stable en-US sort order, canonical decomposition and combining-mark reordering; eight other locale fixtures."
+    },
+    "qualification": "Exact original projection, validation, account interlocks and committed JSON bytes. Nineteen filesystem/discovery traces include active/cancel checks, lost discovery/write leases, staging cleanup, timeout and unchanged-file preservation. Concurrent mutations read the prior committed view. Roster rename matches upstream and does not add fsync.",
+    "pending": [
+      "watch and consumer integration",
+      "physical-send retry and native production wiring",
+      "complete menus",
+      "macOS and Windows execution",
+      "live acceptance"
+    ]
   }
 }

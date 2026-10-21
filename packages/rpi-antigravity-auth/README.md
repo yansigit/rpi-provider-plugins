@@ -162,7 +162,7 @@ Windows retains both pinned native private-files policies: common-auth 0.2.1 and
 Claustrum store 0.1.0. Only their N-API completion boundary is replaced by a Rust
 C ABI; Antigravity needs no Node runtime. The package and tests cross-check on
 Rust 1.78 for Windows GNU, and both retained C security suites compile. Windows
-and macOS execution, the full fault matrix, roster/watch runtime, credential-slot
+and macOS execution, the full fault matrix, watch/consumer runtime, native credential-slot
 custody, physical-send retry and menus remain required before vault integration
 is usable. None of these checks establishes a live enrollment.
 
@@ -216,3 +216,13 @@ failures and matching 401s discard it. There is no local credential fallback. Th
 candidate preserves these rules, including the original two-to-thirty-second idle
 probe backoff. Roster watches, consumer persistence, send-level retries and production
 native ports remain pending; these results do not qualify complete vault requests.
+
+Roster projection and persistence now match the pinned identity/alias, incomplete
+inventory, acceptance and decline rules. Differential fixtures cover 1,247
+projections, 458 stored-state decodes, 16 mutations, 32 account interlocks and
+19 filesystem/discovery traces, including lost ownership and lock timeout. Two
+concurrent mutations also verify that the second reads the first committed view.
+Locale-sensitive ordering uses the pinned Node runtime's ICU 78.3 / CLDR 48 data;
+all Unicode scalars are checked for ordering and canonical decomposition. See
+`data/README.md` for reproducible generation and licenses. The runtime remains
+native Rust with Rust 1.78 support. Consumer/watch integration is still pending.
