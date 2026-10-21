@@ -1,20 +1,25 @@
 use super::{test_support::*, *};
-use tempfile::TempDir as ScratchDir;
 use std::{ffi::OsString, os::windows::ffi::OsStringExt, path::PathBuf};
+use tempfile::TempDir as ScratchDir;
 
 struct TempDir(ScratchDir);
 
 impl TempDir {
     fn new() -> Self {
-        Self(tempfile::Builder::new().prefix("subc-acl").tempdir().unwrap())
+        Self(
+            tempfile::Builder::new()
+                .prefix("subc-acl")
+                .tempdir()
+                .unwrap(),
+        )
     }
 }
 
 #[test]
 fn created_file_has_exact_protected_user_dacl_before_first_write() {
     let root = TempDir::new();
-    grant_everyone(&root.0);
-    let path = root.0.join("key.json");
+    grant_everyone(root.0.path());
+    let path = root.0.path().join("key.json");
     let file = create_private_file(&path).unwrap();
     assert_owner_only(&path, false, true);
     verify_owner_only(&file).unwrap();
@@ -27,8 +32,8 @@ fn created_file_has_exact_protected_user_dacl_before_first_write() {
 #[test]
 fn created_directories_have_exact_protected_user_dacls() {
     let root = TempDir::new();
-    grant_everyone(&root.0);
-    let parent = root.0.join("parent");
+    grant_everyone(root.0.path());
+    let parent = root.0.path().join("parent");
     let path = parent.join("run");
     create_private_dir(&path).unwrap();
     assert_owner_only(&parent, true, true);
@@ -43,8 +48,8 @@ fn created_directories_have_exact_protected_user_dacls() {
 #[test]
 fn existing_directory_narrows_unprotected_descendants() {
     let root = TempDir::new();
-    grant_everyone(&root.0);
-    let run = root.0.join("run");
+    grant_everyone(root.0.path());
+    let run = root.0.path().join("run");
     let nested = run.join("logs");
     std::fs::create_dir_all(&nested).unwrap();
     let child = nested.join("old.log");
@@ -57,7 +62,7 @@ fn existing_directory_narrows_unprotected_descendants() {
     assert_dacl_owner_only(&nested, true, false);
     assert_dacl_owner_only(&child, false, false);
     assert!(
-        verify_private_dir(&root.0).is_err(),
+        verify_private_dir(root.0.path()).is_err(),
         "existing parent stays broad"
     );
 }
@@ -65,7 +70,7 @@ fn existing_directory_narrows_unprotected_descendants() {
 #[test]
 fn validator_rejects_everyone_read_on_opened_file() {
     let root = TempDir::new();
-    let path = root.0.join("key.json");
+    let path = root.0.path().join("key.json");
     let file = create_private_file(&path).unwrap();
     grant_everyone_read(&path);
     assert_eq!(
@@ -77,7 +82,7 @@ fn validator_rejects_everyone_read_on_opened_file() {
 #[test]
 fn validator_rejects_null_dacl_on_opened_file() {
     let root = TempDir::new();
-    let path = root.0.join("key.json");
+    let path = root.0.path().join("key.json");
     let file = create_private_file(&path).unwrap();
     apply_sddl(&path, "D:NO_ACCESS_CONTROL", false).unwrap();
     assert_eq!(
@@ -89,7 +94,7 @@ fn validator_rejects_null_dacl_on_opened_file() {
 #[test]
 fn validator_allows_system_and_administrators() {
     let root = TempDir::new();
-    let path = root.0.join("key.json");
+    let path = root.0.path().join("key.json");
     let file = create_private_file(&path).unwrap();
     apply_sddl(&path, "D:P(A;;FA;;;SY)(A;;FA;;;BA)", false).unwrap();
     verify_owner_only(&file).unwrap();
@@ -100,7 +105,7 @@ fn validator_allows_system_and_administrators() {
 #[test]
 fn validator_accepts_administrators_owner_when_token_can_assign_one() {
     let root = TempDir::new();
-    let path = root.0.join("key.json");
+    let path = root.0.path().join("key.json");
     let file = create_private_file(&path).unwrap();
     match apply_sddl(&path, "O:BA", true) {
         Ok(()) => {}
@@ -118,7 +123,7 @@ fn validator_accepts_administrators_owner_when_token_can_assign_one() {
 #[test]
 fn validator_rejects_foreign_owner_when_token_can_assign_one() {
     let root = TempDir::new();
-    let path = root.0.join("key.json");
+    let path = root.0.path().join("key.json");
     let file = create_private_file(&path).unwrap();
     match apply_sddl(&path, "O:BU", true) {
         Ok(()) => {}
@@ -137,9 +142,9 @@ fn validator_rejects_foreign_owner_when_token_can_assign_one() {
 #[test]
 fn private_directory_refuses_junction_without_changing_target() {
     let root = TempDir::new();
-    let target = root.0.join("target");
+    let target = root.0.path().join("target");
     create_private_dir(&target).unwrap();
-    let link = root.0.join("junction");
+    let link = root.0.path().join("junction");
     let output = std::process::Command::new("cmd")
         .args(["/C", "mklink", "/J"])
         .arg(&link)
@@ -189,7 +194,7 @@ fn long_parent(root: &Path) -> PathBuf {
 #[test]
 fn private_file_beyond_max_path_has_owner_only_acl() {
     let root = TempDir::new();
-    let path = long_parent(&root.0).join("connection.json");
+    let path = long_parent(root.0.path()).join("connection.json");
     assert!(path.as_os_str().encode_wide().count() > 300);
     let file = create_private_file(&path).expect("create private file beyond MAX_PATH");
     assert_owner_only(&path, false, true);
@@ -199,7 +204,7 @@ fn private_file_beyond_max_path_has_owner_only_acl() {
 #[test]
 fn private_directory_beyond_max_path_has_owner_only_acl() {
     let root = TempDir::new();
-    let parent = long_parent(&root.0).join("private");
+    let parent = long_parent(root.0.path()).join("private");
     let path = parent.join("run");
     assert!(path.as_os_str().encode_wide().count() > 300);
     create_private_dir(&path).expect("create private directory beyond MAX_PATH");
@@ -213,7 +218,7 @@ fn private_directory_beyond_max_path_has_owner_only_acl() {
 #[test]
 fn forward_slashes_and_parent_components_resolve_before_verbatim_prefix() {
     let root = TempDir::new();
-    let base = ordinary_path(&root.0);
+    let base = ordinary_path(root.0.path());
     let supplied = PathBuf::from(format!(
         "{}/absent/../run",
         base.to_str().unwrap().replace('\\', "/")
@@ -279,8 +284,8 @@ fn wide_verbatim_paths_are_not_double_prefixed_or_normalized() {
         );
     }
     let root = TempDir::new();
-    let path = root.0.join("verbatim.json");
-    let verbatim = root.0.canonicalize().unwrap().join("verbatim.json");
+    let path = root.0.path().join("verbatim.json");
+    let verbatim = root.0.path().canonicalize().unwrap().join("verbatim.json");
     assert!(verbatim.to_str().unwrap().starts_with(r"\\?\"));
     let file = create_private_file(&verbatim).unwrap();
     assert_owner_only(&path, false, true);

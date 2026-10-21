@@ -362,10 +362,27 @@
       "vault-wire.json": {
         "sha256": "b8099f1092d0aa28cae7eb62afa19110575d07046f7cdca2de2215ef11fc1dda",
         "cases": 565
+      },
+      "vault-private.json": {
+        "sha256": "444736faef530a62aaf3a6374b9f99ab90912b78033b5b2abfa47fffe523cb24",
+        "cases": 341,
+        "files": 9
+      },
+      "vault-token-file.json": {
+        "sha256": "943589eafce7da9ea289a853030e49cd2e79327a30bafd855b1080c0b1721347",
+        "cases": 74
+      },
+      "vault-lease.json": {
+        "sha256": "9311ec3bf766bb6ca9b9568c9ae8db95a1faad059d1f5831a765fac59c7dfe2c",
+        "cases": 38
+      },
+      "vault-fsync.json": {
+        "sha256": "9ef6f649b7663025e533d9c2815ca98667988cbb9c7a53f1bb6908faa95e443c",
+        "cases": 2
       }
     },
     "pending": [
-      "Filesystem lease and durable enrollment backend",
+      "Complete filesystem fault/race and Windows ACL/runtime qualification; malformed numeric JSON diagnostics",
       "Full Subc route-opening refusal/timing and liveness qualification",
       "Roster/watch and outage receipt runtime",
       "Credential backup/marker and conditional restore",
@@ -373,6 +390,18 @@
       "Commands and native UI integration",
       "macOS and Windows native execution",
       "Live enrolled producer acceptance"
-    ]
+    ],
+    "filesystem": {
+      "stateAndTokenPolicies": "Separate pinned common-auth and Claustrum store policies; file fsync/FlushFileBuffers before rename, no invented directory-sync acknowledgement",
+      "realCeremonyCases": 168,
+      "leaseScenarios": 38,
+      "fsyncFailureCases": 2,
+      "windowsCrossCheck": "Rust 1.78 -Dwarnings x86_64-pc-windows-gnu check including package tests passed; native C and retained security test executables compiled",
+      "windowsExecution": "not tested",
+      "macOSExecution": "not tested",
+      "nativeCustody": "not wired",
+      "linuxRegressionTests": 46,
+      "windowsTransportTestCompilation": "Retained subc-os library and tests cross-check on Rust 1.78 with -Dwarnings; execution pending"
+    }
   }
 }

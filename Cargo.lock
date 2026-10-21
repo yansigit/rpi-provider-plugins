@@ -2487,6 +2487,7 @@ version = "0.1.6"
 dependencies = [
  "async-compression",
  "base64 0.22.1",
+ "cc",
  "cortexkit-claustrum-client",
  "encoding_rs",
  "flate2",
@@ -2495,6 +2496,7 @@ dependencies = [
  "http",
  "hyper",
  "indexmap 2.11.4",
+ "libc",
  "percent-encoding",
  "regex",
  "reqwest 0.12.28",
@@ -2511,6 +2513,7 @@ dependencies = [
  "url",
  "uuid",
  "webpki-roots 1.0.9",
+ "windows-sys 0.61.2",
  "zstd",
 ]
 

@@ -30,7 +30,7 @@ use windows_sys::Win32::{
         SECURITY_DESCRIPTOR, SECURITY_MAX_SID_SIZE, SE_DACL_PROTECTED, TOKEN_QUERY, TOKEN_USER,
     },
     Storage::FileSystem::{
-        CreateDirectoryW, CreateFileW, GetFileInformationByHandle, GetFileType,
+        CreateDirectoryW, CreateFileW, GetFileInformationByHandle, GetFileType, GetFullPathNameW,
         BY_HANDLE_FILE_INFORMATION, CREATE_NEW, FILE_ALL_ACCESS, FILE_ATTRIBUTE_DIRECTORY,
         FILE_ATTRIBUTE_NORMAL, FILE_ATTRIBUTE_REPARSE_POINT, FILE_FLAG_BACKUP_SEMANTICS,
         FILE_FLAG_OPEN_REPARSE_POINT, FILE_SHARE_DELETE, FILE_SHARE_READ, FILE_SHARE_WRITE,
@@ -54,9 +54,14 @@ impl Drop for Handle {
 fn wide(path: &Path) -> io::Result<Vec<u16>> {
     // Verbatim Win32 paths bypass MAX_PATH and disable Windows normalization,
     // so resolve relative paths and normalize separators and dot components
-    // before prefixing. std::path::absolute preserves already-verbatim inputs.
-    let path = std::path::absolute(path)?;
+    // before prefixing. Keep the same GetFullPathNameW behavior on Rust 1.78.
     let mut value: Vec<u16> = path.as_os_str().encode_wide().collect();
+    if value.is_empty() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "cannot make an empty path absolute",
+        ));
+    }
     if value.contains(&0) {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -67,6 +72,33 @@ fn wide(path: &Path) -> io::Result<Vec<u16>> {
     // MAX_PATH and must never be rewritten as a UNC share.
     let verbatim: Vec<u16> = r"\\?\".encode_utf16().collect();
     let device: Vec<u16> = r"\\.\".encode_utf16().collect();
+    if !matches!(path.components().next(),Some(std::path::Component::Prefix(prefix)) if prefix.kind().is_verbatim())
+    {
+        value.push(0);
+        let mut capacity = 260usize;
+        loop {
+            let mut output = vec![0u16; capacity];
+            // SAFETY: Both buffers stay live and the output has capacity UTF-16 units.
+            let length = unsafe {
+                GetFullPathNameW(
+                    value.as_ptr(),
+                    capacity as u32,
+                    output.as_mut_ptr(),
+                    null_mut(),
+                )
+            } as usize;
+            if length == 0 {
+                return Err(io::Error::last_os_error());
+            }
+            if length >= capacity {
+                capacity = length + 1;
+                continue;
+            }
+            output.truncate(length);
+            value = output;
+            break;
+        }
+    }
     if !value.starts_with(&verbatim) && !value.starts_with(&device) {
         value = if value.starts_with(&[b'\\' as u16, b'\\' as u16]) {
             r"\\?\UNC\"

@@ -10,16 +10,19 @@ pub const CUSTODY_PLACEHOLDER_PREFIX: &str = "claustrum-tombstone:v1:";
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ConsumerError {
     pub kind: &'static str,
-    pub message: &'static str,
+    pub message: String,
 }
 impl ConsumerError {
-    pub const fn new(kind: &'static str, message: &'static str) -> Self {
-        Self { kind, message }
+    pub fn new(kind: &'static str, message: impl Into<String>) -> Self {
+        Self {
+            kind,
+            message: message.into(),
+        }
     }
 }
 impl std::fmt::Display for ConsumerError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.message)
+        f.write_str(&self.message)
     }
 }
 impl std::error::Error for ConsumerError {}

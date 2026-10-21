@@ -149,10 +149,22 @@ proposal/poll/rotation and failure reports, plus connection replacement with
 coalesced reconnects and the original 60-second backoff. `vault-*-reference.ts`
 executes the pinned clients and common-auth code. Fixtures cover wire decoding,
 authenticated TCP frames, custody validation, enrollment authority and ceremony
-write ordering. Candidate ceremony tests currently use a storage port; they do
-not establish filesystem durability or a completed native vault enrollment.
-The filesystem lease backend, roster/watch runtime, credential-slot custody,
-physical-send retry and menus remain required before vault integration is usable.
+write ordering. The real filesystem store passes all 168 captured ceremony scenarios. Separate
+fixtures cover 341 parent-policy cases, nine secret-file cases, 74 token publication
+cases and 38 lease scenarios. Linux subprocess tests inject actual `fsync` errors
+and match the original old-token preservation, stage cleanup and zero-RPC result.
+State and token writes retain upstream file synchronization before rename; upstream
+does not synchronize the containing directory, so these APIs do not promise that.
+The renewable lease preserves stale-lock and eviction-marker checks, never renews
+an expired owner, and preserves a successor during release.
+
+Windows retains both pinned native private-files policies: common-auth 0.2.1 and
+Claustrum store 0.1.0. Only their N-API completion boundary is replaced by a Rust
+C ABI; Antigravity needs no Node runtime. The package and tests cross-check on
+Rust 1.78 for Windows GNU, and both retained C security suites compile. Windows
+and macOS execution, the full fault matrix, roster/watch runtime, credential-slot
+custody, physical-send retry and menus remain required before vault integration
+is usable. None of these checks establishes a live enrollment.
 
 Generate these fixtures using Node 24 with `RPI_REFERENCE_DIR` pointing to the
 locked Antigravity checkout and `RPI_REFERENCE_OUTPUT` naming the corresponding

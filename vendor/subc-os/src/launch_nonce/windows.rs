@@ -4,6 +4,7 @@ use super::{Cached, LaunchNonce, LaunchNonceError, LaunchNonceSource};
 use std::{
     ffi::OsStr,
     io,
+    mem::size_of,
     os::windows::{
         ffi::OsStrExt,
         io::{AsRawHandle, FromRawHandle, OwnedHandle},
@@ -805,20 +806,25 @@ mod buffered_delivery_tests {
     use crate::launch_nonce::{
         launch_nonce, LAUNCH_NONCE_ENV, LAUNCH_NONCE_PIPE_ENV, LAUNCH_NONCE_PIPE_FALLBACK_ENV,
     };
-    use tempfile::TempDir as ScratchDir;
     use std::{
         path::{Path, PathBuf},
         process::{Child, Command, Stdio},
     };
+    use tempfile::TempDir as ScratchDir;
     use windows_sys::Win32::System::Pipes::PeekNamedPipe;
 
     struct Gates(ScratchDir);
     impl Gates {
         fn new() -> Self {
-            Self(tempfile::Builder::new().prefix("subc-pipe-gates").tempdir().unwrap())
+            Self(
+                tempfile::Builder::new()
+                    .prefix("subc-pipe-gates")
+                    .tempdir()
+                    .unwrap(),
+            )
         }
         fn path(&self, name: &str) -> PathBuf {
-            self.0.join(name)
+            self.0.path().join(name)
         }
     }
 

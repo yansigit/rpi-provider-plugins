@@ -1,0 +1,17 @@
+{
+  "repository": "cortexkit/subconscious",
+  "revision": "eeab1627627b8ce7498b0bc633bdba83ea343fa4",
+  "packageVersion": "@cortexkit/private-files@0.1.0",
+  "sourceHashes": {
+    "LICENSE": "bf737fd6a5d9da55873eb7ea481fd9e875bcfefc13ed42766a1964c6040c5581",
+    "native/open-policy.h": "a47577cfe1f795bcf150ea50e9e3e41f84b37820136f59c197bfc1ef0cefb9f2",
+    "test/native-open-policy.c": "6849e82a71468bfac14492acd04dd1e09ce51033dc566e8fab88e4f956e604c9",
+    "test/native-security.c": "97b5dfdfe7c2567e5e7fce4fccb5cf404fafbddecd196da932c607ec89186cf6",
+    "native/delay-load-hook.c": "dcf7bab4f0ef0591e79dd1e126b845c5343368ceca84b4974b064e7afbfcceb6",
+    "native/addon.c": "71666e29e62406e1c3a5f3bd8544736f3e005b60da9deb09027ae0508a7aadec"
+  },
+  "changes": [
+    "Same RPI_NATIVE C ABI adaptation as the 0.2.1 copy.",
+    "Retained separately because the pinned Claustrum token publisher reaches @cortexkit/store 0.2.2 and private-files 0.1.0; its strict Windows directory policy and diagnostics differ from ceremony-state private-files 0.2.1."
+  ]
+}

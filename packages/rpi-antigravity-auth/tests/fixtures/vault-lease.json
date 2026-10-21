@@ -1,0 +1,2092 @@
+{
+  "runtime": "v24.22.0",
+  "platform": "linux",
+  "cases": [
+    {
+      "spec": {
+        "name": "initial",
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 110000
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 110000
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 110000
+        },
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 110000
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 100000
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 100000
+        },
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 99999
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 99999
+        },
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": "110000"
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": "110000"
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": "110000"
+        },
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": "110000"
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": null
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": null
+        },
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": "broken"
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": "broken"
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": "broken"
+        },
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": null,
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": null,
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": [],
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": [],
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": [],
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "expiresAt": 99999
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": {
+          "expiresAt": 99999
+        },
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": "malformed",
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": "malformed",
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "initial",
+        "initial": "malformed",
+        "age": 31000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "legacy": true,
+        "markerAge": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 90000
+            },
+            "marker": "other-marker"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "legacy": true,
+        "markerAge": 6000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "stale-marker-stat",
+        "stale-marker-claimed",
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "legacy": false,
+        "markerAge": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 90000
+            },
+            "marker": "other-marker"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "legacy": false,
+        "markerAge": 6000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "stale-marker-stat",
+        "stale-marker-claimed",
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "lifecycle",
+        "renew": true,
+        "steps": [
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-owner-confirmed",
+        "renewal-write-fenced",
+        "renewal-write-ready",
+        "renewal-write-finished",
+        "renewal-finished",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 140000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 140000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "lifecycle",
+        "renew": true,
+        "steps": [
+          "expire",
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-finished",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "expire",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "lifecycle",
+        "renew": true,
+        "steps": [
+          "takeover",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "takeover",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "successor",
+              "expiresAt": 160000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": {
+              "ownerId": "successor",
+              "expiresAt": 160000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": {
+              "ownerId": "successor",
+              "expiresAt": 160000
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "lifecycle",
+        "renew": true,
+        "steps": [
+          "marker",
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "renewal-marker-unavailable",
+        "renewal-finished",
+        "stale-marker-stat",
+        "stale-marker-claimed",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "marker",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker"
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker"
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker"
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "lifecycle",
+        "renew": true,
+        "steps": [
+          "renew",
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-owner-confirmed",
+        "renewal-write-fenced",
+        "renewal-write-ready",
+        "renewal-write-finished",
+        "renewal-finished",
+        "eviction-marker-acquired",
+        "renewal-owner-confirmed",
+        "renewal-write-fenced",
+        "renewal-write-ready",
+        "renewal-write-finished",
+        "renewal-finished",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 140000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 150000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 150000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "race",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "renew": true,
+        "race": {
+          "step": "stale-lock-observed",
+          "mutation": "takeover"
+        },
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "successor",
+              "expiresAt": 160000
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "race",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "renew": true,
+        "race": {
+          "step": "stale-lock-confirmed",
+          "mutation": "takeover"
+        },
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "successor",
+              "expiresAt": 160000
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "race",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "renew": true,
+        "race": {
+          "step": "stale-lock-recreated",
+          "mutation": "marker"
+        },
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "relinquish-read"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": null,
+            "marker": "other-marker"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "race",
+        "renew": true,
+        "race": {
+          "step": "renewal-write-fenced",
+          "mutation": "marker"
+        },
+        "steps": [
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-owner-confirmed",
+        "renewal-write-fenced",
+        "renewal-finished"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker"
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker"
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "race",
+        "renew": true,
+        "race": {
+          "step": "renewal-write-ready",
+          "mutation": "takeover"
+        },
+        "steps": [
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-owner-confirmed",
+        "renewal-write-fenced",
+        "renewal-write-ready",
+        "renewal-finished",
+        "eviction-marker-acquired"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": {
+              "ownerId": "successor",
+              "expiresAt": 170000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": {
+              "ownerId": "successor",
+              "expiresAt": 170000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": {
+              "ownerId": "successor",
+              "expiresAt": 170000
+            },
+            "marker": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "race",
+        "renew": true,
+        "race": {
+          "step": "renewal-write-finished",
+          "mutation": "marker"
+        },
+        "steps": [
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-owner-confirmed",
+        "renewal-write-fenced",
+        "renewal-write-ready",
+        "renewal-write-finished",
+        "relinquish-read",
+        "renewal-finished"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": "other-marker"
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": "other-marker"
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": "other-marker"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "race",
+        "renew": true,
+        "race": {
+          "step": "release-owner-confirmed",
+          "mutation": "marker"
+        },
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker"
+          }
+        }
+      ]
+    }
+  ]
+}

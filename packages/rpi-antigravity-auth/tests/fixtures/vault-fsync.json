@@ -1,0 +1,42 @@
+{
+  "runtime": "v24.22.0",
+  "platform": "linux",
+  "cases": [
+    {
+      "kind": "token",
+      "result": {
+        "error": {
+          "name": "Error",
+          "code": "EIO",
+          "message": "EIO: i/o error, fsync"
+        }
+      },
+      "calls": 0,
+      "token": {
+        "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "token_generation": 1
+      },
+      "entries": [
+        "sync-failure.json"
+      ]
+    },
+    {
+      "kind": "state",
+      "result": {
+        "error": {
+          "name": "Error",
+          "code": "EIO",
+          "message": "EIO: i/o error, fsync"
+        }
+      },
+      "calls": 0,
+      "token": {
+        "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "token_generation": 1
+      },
+      "entries": [
+        "token.json"
+      ]
+    }
+  ]
+}

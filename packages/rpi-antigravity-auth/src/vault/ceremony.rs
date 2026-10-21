@@ -15,6 +15,14 @@ pub enum Failure {
     Consumer(ConsumerError),
     Wire(Error),
     Storage(String),
+    Private(super::private::PrivateError),
+    Io(super::private::IoError),
+    LockLost {
+        target: std::path::PathBuf,
+        name: String,
+        expected_owner: String,
+        observed: Option<Value>,
+    },
 }
 impl From<ConsumerError> for Failure {
     fn from(value: ConsumerError) -> Self {
@@ -32,10 +40,24 @@ impl std::fmt::Display for Failure {
             Self::Consumer(e) => e.fmt(f),
             Self::Wire(e) => e.fmt(f),
             Self::Storage(e) => f.write_str(e),
+            Self::Private(e) => e.fmt(f),
+            Self::Io(e) => f.write_str(&e.message),
+            Self::LockLost { target, name, .. } => {
+                write!(f, "Lost {name} lock for {}", target.display())
+            }
         }
     }
 }
 impl std::error::Error for Failure {}
+impl Failure {
+    pub fn io_code(&self) -> Option<&str> {
+        match self {
+            Self::Io(e) => Some(&e.code),
+            Self::Private(e) => Some(&e.code),
+            _ => None,
+        }
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Slot {
     State,

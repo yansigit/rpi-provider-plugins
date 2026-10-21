@@ -125,9 +125,13 @@ fn result(value: Result<Value, Failure>) -> Value {
             json!({"error":{"name":"ClaustrumConsumerError","kind":e.kind,"message":e.message}})
         }
         Err(Failure::Storage(message)) => json!({"error":{"name":"Error","message":message}}),
+        Err(Failure::Private(error)) => {
+            json!({"error":{"name":"PrivateFileError","message":error.to_string()}})
+        }
         Err(Failure::Wire(e)) => {
             json!({"error":{"name":"ClaustrumCredentialError","message":e.to_string()}})
         }
+        Err(e) => json!({"error":{"name":"Error","message":e.to_string()}}),
     }
 }
 fn setup(case: &Value) -> (Memory, Manager<Memory, Memory>, Arc<AtomicU64>) {

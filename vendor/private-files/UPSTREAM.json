@@ -1,0 +1,17 @@
+{
+  "repository": "cortexkit/subconscious",
+  "revision": "3f9b1083257a0a0e27f6ff47e5c624bda190fbfe",
+  "packageVersion": "@cortexkit/private-files@0.2.1",
+  "sourceHashes": {
+    "native/addon.c": "636bbdc38858de22735a8f0d69b3d05a55519ec88729f438110138dc6dbceae6",
+    "native/open-policy.h": "a47577cfe1f795bcf150ea50e9e3e41f84b37820136f59c197bfc1ef0cefb9f2",
+    "test/native-open-policy.c": "6849e82a71468bfac14492acd04dd1e09ce51033dc566e8fab88e4f956e604c9",
+    "test/native-security.c": "43fb2b60eec5365f38ca8dea34b7382cbe97a004419ee7f4f689672cfb50a2be",
+    "native/delay-load-hook.c": "dcf7bab4f0ef0591e79dd1e126b845c5343368ceca84b4974b064e7afbfcceb6",
+    "LICENSE": "bf737fd6a5d9da55873eb7ea481fd9e875bcfefc13ed42766a1964c6040c5581"
+  },
+  "changes": [
+    "Keep the original Win32 policy and execution code; conditionally replace N-API completion with an owned synchronous C ABI for Rust.",
+    "Retain original native open-policy and security fault-injection tests. Production compiles with RPI_NATIVE and requires no Node runtime."
+  ]
+}

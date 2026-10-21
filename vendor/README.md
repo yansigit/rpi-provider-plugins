@@ -9,6 +9,8 @@ records the revision, original file hashes, and local changes.
 | cortexkit-claustrum-client | 0.5.0 | cortexkit/claustrum `64fe590ab5f81c43c801d70421111107ff8f1cf5` |
 | subc-client-rs | 0.30.5 | cortexkit/subconscious `3f9b1083257a0a0e27f6ff47e5c624bda190fbfe` |
 | subc-os | 0.1.16 | published crate, cortexkit/subconscious `668dfbde461d30aa63580dd032c91cf3f1b75f5f` |
+| private-files native | 0.2.1 | cortexkit/subconscious `3f9b1083257a0a0e27f6ff47e5c624bda190fbfe` |
+| private-files legacy native | 0.1.0 | cortexkit/subconscious `eeab1627627b8ce7498b0bc633bdba83ea343fa4` |
 
 The enrolled TypeScript protocol is stricter than the supervised Rust credential
 resolver. Antigravity validates that enrolled contract before calling the shared
@@ -30,3 +32,11 @@ cargo +1.78.0 test --manifest-path vendor/subc-os/Cargo.toml --lib launch_nonce 
 
 Passing these component suites does not establish completed vault integration,
 platform qualification, filesystem permissions or live producer acceptance.
+
+The two private-files copies are intentionally separate: pinned common-auth and
+Claustrum token publication reach different Windows directory policies. Their
+Win32 policy code and original C test suites are retained; `RPI_NATIVE` replaces
+only N-API dispatch/completion with synchronous owned results, preserving secret
+buffer erasure. Antigravity compiles these helpers into its native Windows DLL.
+Rust 1.78 Windows compatibility also uses `GetFullPathNameW` and explicit
+`size_of` imports in subc-os. Cross-compilation does not count as Windows execution.

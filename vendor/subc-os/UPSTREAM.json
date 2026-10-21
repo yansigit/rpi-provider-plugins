@@ -6,7 +6,8 @@
     "Replace Rust 1.87 std::io pipe types/functions with os_pipe 1.2.3, preserving private close-on-exec pipe ownership on Rust 1.78.",
     "Disable publishing this integration copy.",
     "Use tempfile for retained tests' scratch directories; upstream test-support uses post-1.78 File::lock. Test assertions and fixtures are unchanged.",
-    "Pin Tokio 1.53.1 and tokio-util 0.7.19 in standalone compatibility checks."
+    "Pin Tokio 1.53.1 and tokio-util 0.7.19 in standalone compatibility checks.",
+    "Import size_of explicitly and use GetFullPathNameW with verbatim-path preservation instead of post-1.78 std::path::absolute on Windows; retain the upstream path/ACL tests."
   ],
   "sourceHashes": {
     "src/fork_exec_test.rs": "0a71dadfab010b27c5b00d796fb424219eb6d04af260d0c86b4dd7af1330e432",

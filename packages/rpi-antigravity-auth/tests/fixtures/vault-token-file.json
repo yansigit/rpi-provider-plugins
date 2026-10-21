@@ -1,0 +1,1360 @@
+{
+  "runtime": "v24.22.0",
+  "platform": "linux",
+  "cases": [
+    {
+      "spec": {
+        "name": "validation",
+        "value": {},
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token_generation": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token_generation": 0
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token_generation": 1
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token_generation": 1.5
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token_generation": "1"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token_generation": 9007199254740991
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token_generation": 9007199254740992
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": null,
+          "token_generation": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": null,
+          "token_generation": 0
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": null,
+          "token_generation": 1
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": null,
+          "token_generation": 1.5
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": null,
+          "token_generation": "1"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": null,
+          "token_generation": 9007199254740991
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": null,
+          "token_generation": 9007199254740992
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": ""
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "",
+          "token_generation": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "",
+          "token_generation": 0
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "",
+          "token_generation": 1
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "",
+          "token_generation": 1.5
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "",
+          "token_generation": "1"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "",
+          "token_generation": 9007199254740991
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "",
+          "token_generation": 9007199254740992
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 0
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 1
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 1.5
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": "1"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 9007199254740991
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 9007199254740992
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 0
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 1
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"token_generation\":1}\n",
+        "mode": 384,
+        "parentMode": 448,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 1.5
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": "1"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 9007199254740991
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"token_generation\":9007199254740991}\n",
+        "mode": 384,
+        "parentMode": 448,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 9007199254740992
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "token_generation": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "token_generation": 0
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "token_generation": 1
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "token_generation": 1.5
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "token_generation": "1"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "token_generation": 9007199254740991
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "token_generation": 9007199254740992
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ]
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "token_generation": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "token_generation": 0
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "token_generation": 1
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":[\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"],\"token_generation\":1}\n",
+        "mode": 384,
+        "parentMode": 448,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "token_generation": 1.5
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "token_generation": "1"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "token_generation": 9007199254740991
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":[\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"],\"token_generation\":9007199254740991}\n",
+        "mode": 384,
+        "parentMode": 448,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "token_generation": 9007199254740992
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token generation must be a positive safe integer"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": 42
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": 42,
+          "token_generation": null
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": 42,
+          "token_generation": 0
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": 42,
+          "token_generation": 1
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": 42,
+          "token_generation": 1.5
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": 42,
+          "token_generation": "1"
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": 42,
+          "token_generation": 9007199254740991
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "validation",
+        "value": {
+          "token": 42,
+          "token_generation": 9007199254740992
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token must be exactly 64 lowercase hex characters"
+        },
+        "parentMode": 448,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "parent-mode",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "parentMode": 448
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"token_generation\":2}\n",
+        "mode": 384,
+        "parentMode": 448,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "parent-mode",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "parentMode": 493
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"token_generation\":2}\n",
+        "mode": 384,
+        "parentMode": 493,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "parent-mode",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "parentMode": 504
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"token_generation\":2}\n",
+        "mode": 384,
+        "parentMode": 504,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "parent-mode",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "parentMode": 511
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token folder <DIR>/parent is not private: world-writable ancestor"
+        },
+        "parentMode": 511,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "parent-mode",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "parentMode": 1023
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token folder <DIR>/parent is not private: world-writable ancestor"
+        },
+        "parentMode": 511,
+        "entries": []
+      }
+    },
+    {
+      "spec": {
+        "name": "missing-parents",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "target": "missing-parents",
+        "parentMode": 448
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"token_generation\":2}\n",
+        "mode": 384,
+        "parentMode": 448,
+        "entries": [
+          "nested"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "directory",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "target": "directory",
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "code": "EISDIR",
+          "message": "EISDIR: illegal operation on a directory, rename '<DIR>/parent/.token.json.<PID>.<RANDOM>.tmp' -> '<DIR>/parent/token.json'"
+        },
+        "parentMode": 448,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "symlink",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "target": "symlink",
+        "parentMode": 448
+      },
+      "result": {
+        "ok": true,
+        "bytes": "{\"token\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"token_generation\":2}\n",
+        "mode": 384,
+        "untouched": "original",
+        "parentMode": 448,
+        "entries": [
+          "token.json"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "dangling-parent",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "target": "dangling-parent",
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "message": "enrollment token folder <DIR>/parent/link is not private: could not resolve target or its nearest existing ancestor"
+        },
+        "parentMode": 448,
+        "entries": [
+          "link"
+        ]
+      }
+    },
+    {
+      "spec": {
+        "name": "file-parent",
+        "value": {
+          "token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "token_generation": 2
+        },
+        "target": "file-parent",
+        "parentMode": 448
+      },
+      "result": {
+        "error": {
+          "name": "Error",
+          "code": "ENOTDIR",
+          "message": "ENOTDIR: not a directory, open '<DIR>/parent/file/.token.json.<PID>.<RANDOM>.tmp'"
+        },
+        "parentMode": 448,
+        "entries": [
+          "file"
+        ]
+      }
+    }
+  ]
+}
