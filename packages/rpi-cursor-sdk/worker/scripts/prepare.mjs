@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+/**
+ * Purpose: Build generated dist output for GitHub/source installs even when Pi invokes npm install --omit=dev.
+ * Responsibilities: Detect missing source-build dependencies via the local node_modules tree, install dev
+ * dependencies with lifecycle scripts disabled, run the canonical build, then prune the dev tree so installs
+ * keep a runtime-only footprint.
+ * Scope: Package install lifecycle only; runtime behavior remains owned by scripts/build.mjs.
+ * Usage: package.json prepare script.
+ */
+
+import { execFile as execFileCallback } from "node:child_process";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import process from "node:process";
+import { promisify } from "node:util";
+
+const execFile = promisify(execFileCallback);
+
+// Checked as literal node_modules paths: require.resolve() is unusable here because
+// several @earendil-works packages expose import-only "exports" maps and throw
+// ERR_PACKAGE_PATH_NOT_EXPORTED even when installed.
+const REQUIRED_SOURCE_BUILD_MODULES = [
+	"typescript",
+	"@types/node",
+	"typebox",
+	"@earendil-works/pi-ai",
+	"@earendil-works/pi-coding-agent",
+	"@earendil-works/pi-tui",
+];
+
+function hasBuildDependencies() {
+	return REQUIRED_SOURCE_BUILD_MODULES.every((moduleName) =>
+		existsSync(join(process.cwd(), "node_modules", ...moduleName.split("/"), "package.json")),
+	);
+}
+
+async function runNpm(args) {
+	const npmExecPath = process.env.npm_execpath;
+	if (!npmExecPath) {
+		throw new Error(
+			`npm_execpath is not set; run "npm ${args.join(" ")}" manually in ${process.cwd()} and retry.`,
+		);
+	}
+	// No shell: process.execPath runs npm's cli.js directly, which is safe for paths
+	// containing spaces on every platform (shell:true concatenates args unescaped).
+	await execFile(process.execPath, [npmExecPath, ...args], {
+		cwd: process.cwd(),
+		maxBuffer: 20 * 1024 * 1024,
+	});
+}
+
+async function runBuild() {
+	const { stderr, stdout } = await execFile(process.execPath, [join(process.cwd(), "scripts", "build.mjs")], {
+		cwd: process.cwd(),
+		maxBuffer: 20 * 1024 * 1024,
+	});
+	// Forward build output on success too: install-time diagnostics such as the
+	// concurrent-swap race-loss warning are otherwise swallowed.
+	if (stdout) process.stdout.write(stdout);
+	if (stderr) process.stderr.write(stderr);
+}
+
+async function pruneDevDependencies() {
+	await runNpm(["prune", "--omit=dev", "--ignore-scripts"]);
+}
+
+async function pruneQuietly() {
+	try {
+		await pruneDevDependencies();
+	} catch (error) {
+		console.warn(`npm prune failed after a failed build: ${error?.message ?? error}`);
+	}
+}
+
+function reportError(error) {
+	if (error?.stdout) process.stdout.write(error.stdout);
+	if (error?.stderr) process.stderr.write(error.stderr);
+	console.error(error instanceof Error ? error.message : String(error));
+}
+
+async function main() {
+	if (hasBuildDependencies()) {
+		await runBuild();
+		return;
+	}
+	await runNpm(["install", "--include=dev", "--ignore-scripts"]);
+	try {
+		await runBuild();
+	} catch (buildError) {
+		// Report the build first; cleanup can warn afterward but never mask it.
+		reportError(buildError);
+		await pruneQuietly();
+		process.exitCode = 1;
+		return;
+	}
+	// A prune failure after a successful build still fails the install.
+	await pruneDevDependencies();
+}
+
+main().catch((error) => {
+	reportError(error);
+	process.exitCode = 1;
+});

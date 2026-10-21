@@ -1,0 +1,127 @@
+{
+  "status": "partial C01 transport foundation; not provider or package parity",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "sdk": "1.0.37 (external)",
+  "node": "24.22.0",
+  "rust": "1.78.0",
+  "retainedOriginalFiles": 461,
+  "originalFilesModified": 0,
+  "checks": {
+    "rustWarningsDenied": {
+      "unitPassed": 2,
+      "rustNodeIntegrationPassed": 8,
+      "concurrentCalls": 640,
+      "integrationTestsExplicitlyEnabled": true
+    },
+    "nodeTransportPassed": 5,
+    "nodeProtocolPassed": 4,
+    "retainedUnitSuite": {
+      "passed": 1637,
+      "failed": 0,
+      "skipped": 2,
+      "includesNewProtocolTests": 3,
+      "additionalControlPriorityTest": "separate passing targeted run"
+    },
+    "retainedPiNativeLoaderPassed": 53,
+    "typechecks": "src, tests and replay compile passed",
+    "npmPackDryRun": {
+      "files": 2760,
+      "cursorSdkDependencyFiles": 0
+    },
+    "windowsGnu": "Rust package and tests cross-compiled with warnings denied; not executed"
+  },
+  "review": {
+    "kind": "manual integration and maintainability review",
+    "scope": "new Rust/Node transport, retained-file provenance, tests and documentation",
+    "corrected": [
+      "strict validation for fields on unit-tagged cancellation frames",
+      "cancellation-safe event-credit publication",
+      "late and repeated host-call cancellation",
+      "admitted host work retained and drained through shutdown",
+      "monotonic request allocation and enqueue serialized across concurrent callers",
+      "credit queued before releasing admission capacity",
+      "separate bounded control and stream queues",
+      "bootstrap parse errors do not echo private connection input"
+    ],
+    "remainingInTransportChunk": [],
+    "retainedWhitespace": "Three unchanged upstream files contain a blank line at EOF; preserved to retain exact pinned source."
+  },
+  "upstreamFixtureLimitation": {
+    "initialFullRun": {
+      "passed": 1636,
+      "failed": 1,
+      "skipped": 2
+    },
+    "failure": "Artifact race fixture observed its own safe bytes under nested.safe/deep/safe.txt; it expected only the ordinary path or a quarantine record. Outside-data rejection checks passed.",
+    "unchangedTargetedComparison": {
+      "originalPassed": 27,
+      "retainedPassed": 27,
+      "skippedEach": 1
+    },
+    "subsequentFullRun": "passed; original test unchanged"
+  },
+  "pending": [
+    "native DLL registration and installed asset resolution",
+    "four authoritative host ports and adapter persistence awaits",
+    "actual retained-adapter streaming, auth, model catalog, tools and lifecycle",
+    "continuity, cleanup, usage, cloud and crash recovery",
+    "isolated imports and three-package composition",
+    "packaged Linux/macOS/Windows execution",
+    "live Cursor local and cloud acceptance"
+  ],
+  "liveCalls": 0,
+  "logs": [
+    {
+      "path": "/tmp/rpi-cursor-worker-install.log",
+      "sha256": "f08b618c65c304e2e36b4bd47d893905a7e517728b3c6ee72cc0e940e6dea0f6"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-build-final.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-protocol-final.log",
+      "sha256": "78ca179596385611ab80e99b2df3254f499aab0cd5dea92d4727d9258f4537d7"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-transport-final.log",
+      "sha256": "6e8f537c8c2ad9deb0c075e51e1e8a20262f3485e9eae8be58297c2e65b0cc29"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-rust-final.log",
+      "sha256": "467d625d1cb020ea346b37deab8c6f58538e3cdb3edd5e9745abfe2bff41e978"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-windows-final.log",
+      "sha256": "6c7de0cacc113aab1f4987a6cbe5dc7e9a9618631f7de8db3755f237edce9dd7"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-typechecks-final.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-pack-final.json",
+      "sha256": "894258051e8c1d053f6153503a0ab319dd693f496c231f9feeaf96563e761e4c"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-retained-final.json",
+      "sha256": "cf596c1d4ee74909c338eb6291940512da79310f728a701e36d6b69772fb69e2"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-retained-native.log",
+      "sha256": "65741494eefcfcb77bb0f7e8d88f250518312f22a5b664e83f4655345f3674d2"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-retained-final.log",
+      "sha256": "7446470b9941fd90ad5e38bae627fd22ea10c289faa0000e13029cc66bcab955"
+    },
+    {
+      "path": "/tmp/rpi-cursor-worker-artifact-targeted.log",
+      "sha256": "f95e457093292ef1a59749941cfa171d4bf80b5c736351247d6fc787c200f0ba"
+    },
+    {
+      "path": "/tmp/rpi-cursor-original-artifact-targeted.log",
+      "sha256": "89ab7f3064b506d7a97c3920278c5fc2d58e9dd8150e14dadd27b8d0d58d563c"
+    }
+  ]
+}

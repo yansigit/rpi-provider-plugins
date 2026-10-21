@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "packages/rpi-antigravity-auth",
+    "packages/rpi-cursor-sdk",
     "packages/rpi-run-stats",
     "packages/rpi-mcp-adapter",
     "packages/rpi-subagents",

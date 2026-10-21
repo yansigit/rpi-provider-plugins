@@ -1,0 +1,126 @@
+name: Pi compatibility check
+
+on:
+  workflow_call:
+    inputs:
+      official-version:
+        description: Official stable version resolved for this run; blank resolves latest
+        type: string
+        default: ''
+      fork-ref:
+        description: Maintained fork commit resolved for this run; blank resolves main
+        type: string
+        default: ''
+
+jobs:
+  resolve:
+    permissions:
+      contents: read
+    uses: fitchmultz/.github/.github/workflows/resolve-hosts.yml@3d1b323fd602274c55e5f44692f24c8605e52b60 # main
+    with:
+      automation-ref: 3d1b323fd602274c55e5f44692f24c8605e52b60 # main
+      official-version: ${{ inputs.official-version }}
+      fork-ref: ${{ inputs.fork-ref }}
+
+  compatibility:
+    needs: resolve
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-26.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      PI_OFFLINE: '1'
+      PI_TELEMETRY: '0'
+      PI_CURSOR_SETTING_SOURCES: none
+    steps:
+      - name: Require resolved latest hosts
+        shell: bash
+        env:
+          RESOLVE: ${{ needs.resolve.result }}
+        run: test "$RESOLVE" = success
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.21.0'
+          cache: npm
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: fitchmultz/.github
+          ref: 3d1b323fd602274c55e5f44692f24c8605e52b60 # main
+          path: automation
+          persist-credentials: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Qualify both frozen latest host graphs and installed forms
+        env:
+          # The shared host helpers read official installer assets through the GitHub API.
+          GH_TOKEN: ${{ github.token }}
+          OFFICIAL_VERSION: ${{ needs.resolve.outputs.official-version }}
+          FORK_REF: ${{ needs.resolve.outputs.fork-ref }}
+          PI_COMPAT_EVIDENCE_DIR: ${{ runner.temp }}/cursor-hosts
+        run: node scripts/ci-compatibility.mjs --automation automation --official-version "$OFFICIAL_VERSION" --fork-ref "$FORK_REF"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: cursor-hosts
+          path: ${{ runner.temp }}/cursor-hosts
+          if-no-files-found: error
+          retention-days: 3
+
+  native-platforms:
+    needs: resolve
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      PI_OFFLINE: '1'
+      PI_TELEMETRY: '0'
+      PI_CURSOR_SETTING_SOURCES: none
+    steps:
+      - name: Require resolved latest hosts
+        shell: bash
+        env:
+          RESOLVE: ${{ needs.resolve.result }}
+        run: test "$RESOLVE" = success
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.21.0'
+          cache: npm
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: fitchmultz/.github
+          ref: 3d1b323fd602274c55e5f44692f24c8605e52b60 # main
+          path: automation
+          persist-credentials: false
+      - run: npm ci --no-audit --no-fund
+      - name: Select the frozen latest official graph
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OFFICIAL_VERSION: ${{ needs.resolve.outputs.official-version }}
+          PI_COMPAT_EVIDENCE_DIR: ${{ runner.temp }}/native-host
+        run: node scripts/ci-compatibility.mjs --automation automation --official-version "$OFFICIAL_VERSION" --select-only
+      - run: npm run build
+      - run: node -e "require('node-pty')"
+      - run: npm run check:platform-smoke
+      - run: npm test -- --testTimeout=15000
+      - run: npm run typecheck
+      - run: npm pack --dry-run
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: cursor-native-host-${{ matrix.os }}
+          path: ${{ runner.temp }}/native-host
+          if-no-files-found: error
+          retention-days: 3

@@ -1,0 +1,20 @@
+[package]
+name = "rpi-cursor-sdk"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Native Cursor integration with the retained pinned Node adapter"
+publish = false
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
+tokio = { workspace = true, features = ["net", "io-util", "process", "macros"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+getrandom = "0.2"

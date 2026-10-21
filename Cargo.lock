@@ -2626,6 +2626,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpi-cursor-sdk"
+version = "0.1.6"
+dependencies = [
+ "getrandom 0.2.17",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-util",
+]
+
+[[package]]
 name = "rpi-extensions"
 version = "0.3.24"
 source = "git+https://github.com/bigfish1913/pi-rust?rev=cf4241d2ecef274dabec0b60108fe1ba14c738af#cf4241d2ecef274dabec0b60108fe1ba14c738af"
