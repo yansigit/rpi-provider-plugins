@@ -62,5 +62,14 @@
       "path": "/tmp/rpi-cursor-catalog-pack.json",
       "sha256": "45f6e3de2e3a62c9444e9092a49335d7bfd906e9db74ff61babc361e763743bf"
     }
-  ]
+  ],
+  "workerJournalNode24Regression": {
+    "node": "24.22.0",
+    "toolchain": "1.78.0",
+    "warnings": "denied",
+    "passed": 11,
+    "failed": 0,
+    "workerTests": 10,
+    "journalReferenceTests": 1
+  }
 }
