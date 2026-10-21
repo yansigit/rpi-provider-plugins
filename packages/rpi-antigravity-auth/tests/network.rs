@@ -1,47 +1,13 @@
-use rpi_antigravity_auth::transport::{
-    self,
-    network::{Client, Options},
-};
+use rpi_antigravity_auth::transport::{self, network::Options};
 use serde_json::Value;
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 use tokio::{
     io::{AsyncRead, AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
     sync::oneshot,
 };
-use tokio_rustls::{
-    rustls::{
-        self,
-        pki_types::{CertificateDer, PrivateKeyDer, PrivatePkcs8KeyDer},
-    },
-    TlsAcceptor,
-};
 use url::Url;
 
-fn tls() -> (Client, TlsAcceptor) {
-    let certificate = CertificateDer::from(include_bytes!("fixtures/tls/server-cert.der").to_vec());
-    let key = PrivateKeyDer::Pkcs8(PrivatePkcs8KeyDer::from(
-        include_bytes!("fixtures/tls/server-key.der").to_vec(),
-    ));
-    let crypto = Arc::new(rustls::crypto::ring::default_provider());
-    let mut roots = rustls::RootCertStore::empty();
-    roots.add(certificate.clone()).unwrap();
-    let client = rustls::ClientConfig::builder_with_provider(crypto.clone())
-        .with_safe_default_protocol_versions()
-        .unwrap()
-        .with_root_certificates(roots)
-        .with_no_client_auth();
-    let server = rustls::ServerConfig::builder_with_provider(crypto)
-        .with_safe_default_protocol_versions()
-        .unwrap()
-        .with_no_client_auth()
-        .with_single_cert(vec![certificate], key)
-        .unwrap();
-    (
-        Client::with_tls(client),
-        TlsAcceptor::from(Arc::new(server)),
-    )
-}
 fn options() -> Options {
     Options {
         timeout_ms: 2_000,
@@ -378,3 +344,7 @@ async fn malformed_nonprogressing_chunk_yields_to_timeout_after_eof() {
     );
     server.await.unwrap();
 }
+
+#[path = "common/tls.rs"]
+mod tls_fixture;
+use tls_fixture::tls;

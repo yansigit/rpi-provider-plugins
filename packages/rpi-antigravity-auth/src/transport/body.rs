@@ -90,24 +90,34 @@ impl Framer {
 }
 
 const OUTPUT_CHUNK: usize = 16 * 1024;
-pub struct GzipDecoder {
+pub struct Inflater {
+    gzip: bool,
     decoder: Decompress,
     member_end: bool,
     padding: bool,
 }
-impl Default for GzipDecoder {
+impl Default for Inflater {
     fn default() -> Self {
         Self {
             decoder: Decompress::new_gzip(15),
+            gzip: true,
             member_end: false,
             padding: false,
         }
     }
 }
-impl GzipDecoder {
+impl Inflater {
+    pub fn deflate(zlib: bool) -> Self {
+        Self {
+            decoder: Decompress::new(zlib),
+            gzip: false,
+            member_end: false,
+            padding: false,
+        }
+    }
     /// Returns consumed compressed bytes and at most 16 KiB of decoded output.
     pub fn push(&mut self, bytes: &[u8]) -> io::Result<(usize, Vec<u8>)> {
-        if self.padding {
+        if self.padding || (self.member_end && !self.gzip) {
             return Ok((bytes.len(), Vec::new()));
         }
         if self.member_end && !bytes.is_empty() {

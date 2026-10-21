@@ -8,6 +8,8 @@ use sha2::{Digest, Sha256};
 use std::future::Future;
 use url::Url;
 
+pub mod network;
+
 pub const CLIENT_ID: &str =
     "antigravity-oauth-client-id.invalid";
 // Public installed-application client identity, retained from the MIT upstream source.

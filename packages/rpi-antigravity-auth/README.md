@@ -1,9 +1,9 @@
 # rpi-antigravity-auth
 
-Work in progress: the native provider is not installable or parity complete.
+Work in progress: the native provider loads on Linux, but is not parity complete or ready for release.
 The implemented catalog/routing module matches the pinned Pi integration, including
 its `google` identity, six chat models, displayed zero prices, tier defaults and
-retired model classification. Loaded-provider authentication, vault custody and commands
+retired model classification. The native catalog, auth callbacks and local stream driver are connected. Vault custody and commands
 are still being implemented; see [PARITY.md](PARITY.md).
 
 Request conversion also matches the original text, image, signed thinking/tool
@@ -16,8 +16,8 @@ Request metadata and generation settings preserve the upstream session IDs,
 monotonic request timestamps, cumulative model-use labels, execution rotation and
 session-cache expiry/eviction. The stream state machine preserves thinking/text
 signatures, tool events, partial failures, usage updates and terminal outcomes.
-It emits through an awaited sink so the eventual transport driver can use the
-host's bounded queue. These modules are not a loaded provider yet.
+It emits through an awaited sink into the host's bounded queue. The loaded-library
+regression checks missing-key streaming, preflight and public refresh refusals.
 
 The reference is `cortexkit/antigravity-auth@a97f9055017f3c1546afbfe61a19d50b428be3d8`.
 Its MIT notice is retained in [LICENSE.upstream](LICENSE.upstream).
@@ -97,8 +97,8 @@ It confirms stage-specific timeout messages, but also an upstream limitation:
 body reads remain pending after idle timeout or cancellation. The candidate
 currently closes the connection and returns a terminal error. This is a proposed
 parity exception awaiting user agreement, not a passing parity assertion.
-Production TLS trust settings, OS-specific socket diagnostics and the provider's
-600-second pre-response/one-second trailing-usage driver remain pending.
+The driver implements the 600-second pre-response deadline and one-second trailing-usage
+window. Production TLS trust settings and OS-specific socket diagnostics remain pending.
 
 `auth-reference.ts` uses the original core and packed extension with Pi 1.3.0.
 It captures 56 exchange/refresh cases and four complete callback/code login
@@ -106,13 +106,40 @@ sequences, plus PKCE, packed refresh, expiry and access-token cache cases. The
 native tests compare full request forms, ordered headers, body reads, admission
 checks, cancellation checkpoints, results and unconsumed requests. Run it with
 Node 24's `--experimental-test-module-mocks` and the three reference environment
-variables used above. Its network and UI boundaries are scripted; the loaded
-native auth callbacks and malformed-JSON diagnostics
-are still pending. No existing credentials or enrollments are changed by these tests.
+variables used above. Its network and UI boundaries are scripted; native callbacks are registered, while full loaded OAuth and malformed-JSON diagnostics
+remain pending. No existing credentials or enrollments are changed by these tests.
 
 `project-reference.ts` captures 30 managed-project scenarios against the original
 core. The native store preserves endpoint order, tier selection, onboarding
 delays, default-project fallback, refresh-key cache identity, 30-minute expiry,
 concurrent request coalescing and failed-provisioning suppression. Resolution
 continues when one waiter cancels; it remains owned by the provider runtime.
-Loaded-provider integration and real project acquisition are not tested yet.
+Real project acquisition and complete loaded OAuth acceptance are not tested yet.
+
+`fetch-reference.ts` adds 30 ordinary Node 24 fetch cases, including compressed
+OAuth replies, layered encodings, truncated payloads, reason phrases and header-only
+deadlines. `local-reference.test.ts` runs seven original local-stream cases on
+Node 24 with Pi 1.3.0. The driver replays all 65 original stream cases with exact
+requests, events and results; separate clock tests cover deadline suspension,
+cancellation and the late-usage window. TLS futures are heap-pinned at the source
+boundary to keep loaded debug libraries within normal host worker stack sizes.
+
+For offline native CLI acceptance, build the host including its CLI auth bridge
+fix (`345a25f`) and this package, then run:
+
+```sh
+RPI_TEST_HOST=/path/to/pi-rust/target/debug/rpi \
+RPI_TEST_PROVIDER_LIBRARY=/path/to/librpi_antigravity_auth.so \
+  python3 scripts/native-acceptance.py
+```
+
+The script uses an isolated temporary agent directory and fixture key. It checks
+actual library registration, explicit catalog replacement, auth discovery, private
+durable API-key login, local status and logout without contacting a provider.
+The host's `provider_packages` integration suite also loads this library using
+`RPI_TEST_ANTIGRAVITY_LIBRARY`. These checks do not establish live OAuth/inference,
+vault behavior, commands, cross-platform support or full package distribution.
+
+The lock selects Rust 1.78-compatible UUID, async-compression, Clap, time,
+hyper-rustls and optional Quinn versions. Brotli and Zstandard decoding is private
+to this package; global reqwest decompression features remain disabled.

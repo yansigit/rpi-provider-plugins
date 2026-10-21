@@ -1,6 +1,6 @@
 //! One physical HTTP/1.1 send. All spawned work stays on the owning provider runtime.
 use super::{
-    body::{Framer, GzipDecoder},
+    body::{Framer, Inflater},
     https_proxy, parse_response_head, serialize_request, ResponseHead, IDLE_TIMEOUT_MS,
     RESPONSE_HEADER_TIMEOUT_MS,
 };
@@ -446,7 +446,7 @@ async fn pump(
         deadline: None,
     };
     output.arm();
-    let mut decoder = gzip.then(GzipDecoder::default);
+    let mut decoder = gzip.then(Inflater::default);
     let mut eof = false;
     let mut bytes = [0; READ_SIZE];
     framer.push(&leftover);

@@ -2,6 +2,8 @@
 pub mod auth;
 pub mod catalog;
 pub mod convert;
+pub mod driver;
+pub mod local;
 pub mod metadata;
 pub mod project;
 pub mod redaction;
@@ -12,3 +14,6 @@ pub mod transport;
 
 mod json;
 pub mod schema;
+
+mod native;
+rpi_plugin_sdk::export_plugin!(native::register);

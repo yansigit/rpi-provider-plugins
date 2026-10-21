@@ -4,7 +4,7 @@ use url::Url;
 
 #[test]
 fn body_framing_and_incremental_gzip_match_original() {
-    use transport::body::{Framer, GzipDecoder};
+    use transport::body::{Framer, Inflater};
     let fixture: Value = serde_json::from_str(include_str!("fixtures/transport.json")).unwrap();
     for case in fixture["responses"].as_array().unwrap() {
         let head = transport::parse_response_head(case["head"].as_str().unwrap()).unwrap();
@@ -24,7 +24,7 @@ fn body_framing_and_incremental_gzip_match_original() {
             assert!(framer.is_complete());
             let mut decoded = Vec::new();
             if head.gzip {
-                let mut decoder = GzipDecoder::default();
+                let mut decoder = Inflater::default();
                 for bytes in &framed {
                     let mut position = 0;
                     while position < bytes.len() {

@@ -1,5 +1,5 @@
 {
-  "status": "partial-not-installable",
+  "status": "partial-native-library-not-release-ready",
   "platform": "linux",
   "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
   "catalogHost": "1.3.0",
@@ -145,12 +145,48 @@
       "status": "passed",
       "log": "/tmp/rpi-antigravity-auth-project-final.log",
       "sha256": "21fd41f380b53284e25a0435a45549f1d37f526d0c4f14be58f4d7573e584870"
+    },
+    {
+      "command": "node --experimental-test-module-mocks scripts/fetch-reference.ts",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-fetch-reference-2.log",
+      "sha256": "383313ef7e82a2b2e765a9ca5250dcadbb2e584ddf6cf9f272f9d4c755b0f899"
+    },
+    {
+      "command": "node --experimental-test-module-mocks --test scripts/local-reference.test.ts",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-local-node-reference-3.log",
+      "sha256": "caaa2229b7d0057a1ee80364d5cd73c150919dd943939b980d27694263ed50b3"
+    },
+    {
+      "command": "cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-local-native-final.log",
+      "sha256": "07b887188ea7ab0f26575ef9b2c9c9581e6eccacec1201021723f5ec8a083240"
+    },
+    {
+      "command": "cargo +1.78.0 build -p rpi-antigravity-auth --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-stack-fix-build.log",
+      "sha256": "fe7dadbe8aa3fa0ffc3d73b1d1b4dcca050f22df8bcbb196a0e3509d41d60746"
+    },
+    {
+      "command": "python3 scripts/native-acceptance.py",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-native-acceptance-final.log",
+      "sha256": "612503037a111ab14697af41c2ff2699038b697f5bda9740a7a4a89707a4557e"
+    },
+    {
+      "command": "cargo +1.78.0 test -p rpi-cli --test provider_packages native_ --locked -- --ignored",
+      "status": "passed",
+      "log": "/tmp/rpi-native-auth-cli-final.log",
+      "sha256": "6eb58a1ae237e68cb02122f8d271056708276af8dbb437272fb5dcdb2bd765e3"
     }
   ],
   "notTested": [
-    "native provider registration and explicit catalog replacement",
-    "loaded-provider early refusal before credential acquisition/network",
-    "loaded authentication, timed provider driver, custody and commands",
+    "complete loaded OAuth and successful HTTP streaming",
+    "vault custody and commands",
+    "production TLS trust and OS-specific diagnostics",
     "macOS and Windows",
     "live inference"
   ],
@@ -164,7 +200,9 @@
     "tests/fixtures/transport.json": "20c5b982636328061cc938c6d8fbd5804baf972e1745e7ebff2a109e4bec8a45",
     "tests/fixtures/network.json": "53e1042b8b185cf4012ac0fbf8723c3991b0c9cfa274f70a71e16e145c306b80",
     "tests/fixtures/auth.json": "3584a5310e91ca527fbce91830000a60661bfdb8341845938b34db28afbf3a7b",
-    "tests/fixtures/project.json": "c361c401873da9082b077722cde46f4fd520fec67df3562c62c86ba98e753e10"
+    "tests/fixtures/project.json": "c361c401873da9082b077722cde46f4fd520fec67df3562c62c86ba98e753e10",
+    "tests/fixtures/fetch.json": "683e7d46d90800538e5984eaced07df92764ceead5fe7f12b4fccee33ac16687",
+    "tests/fixtures/local.json": "38fbd8e1dfe88f88a730a1e162826a584513442bb05a59c2674c5abe1d79c45e"
   },
   "conversion": {
     "referenceHost": "1.3.0",
@@ -213,7 +251,7 @@
       "credential results",
       "remaining requests"
     ],
-    "productionAuth": "not registered yet",
+    "productionAuth": "native callbacks registered; offline methods/API-key login/status/logout and refresh refusal passed",
     "projectScenarios": 30
   },
   "proposedExceptions": [
@@ -222,5 +260,16 @@
       "behavior": "return timeout/cancellation errors after closing the connection instead of leaving the original body read pending",
       "evidence": "tests/fixtures/network.json"
     }
-  ]
+  ],
+  "localDriver": {
+    "nodeFetchCases": 30,
+    "originalLocalStreamCases": 7,
+    "streamReplayCases": 65,
+    "driverTests": 4,
+    "packageTests": 27,
+    "hostCommit": "345a25f",
+    "nativeChecks": 7,
+    "loadedHostTests": 5,
+    "stackRegression": "source future heap-pinned; actual debug library tested on default host thread stack"
+  }
 }
