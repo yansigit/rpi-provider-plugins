@@ -1,4 +1,5 @@
 import { NativeSessionManager } from "./rpi/session.js";
+import { nativeProjectTrustResolved } from "./rpi/context.js";
 import { resolve } from "node:path";
 import { parseArgs } from "@earendil-works/pi-coding-agent";
 import type { ExtensionHandler, ProjectTrustHandler, SessionInfoChangedEvent, SessionStartEvent, SessionShutdownEvent } from "@earendil-works/pi-coding-agent";
@@ -185,7 +186,7 @@ export function registerCursorSessionScope(pi: CursorSessionScopeExtensionApi): 
 			ctx.sessionManager?.getSessionFile?.() ?? undefined,
 			ctx.sessionManager?.getSessionId?.() ?? undefined,
 			ctx.isProjectTrusted?.() === true
-				&& (trustedCwds.has(resolve(ctx.cwd)) || projectTrustResolutionCwds.has(resolve(ctx.cwd)) || isCliProjectTrustApproved()),
+				&& (nativeProjectTrustResolved(ctx) ?? (trustedCwds.has(resolve(ctx.cwd)) || projectTrustResolutionCwds.has(resolve(ctx.cwd)) || isCliProjectTrustApproved())),
 			ctx.sessionManager?.getSessionName?.() ?? undefined,
 			runtimeOwners.get(ctx.sessionManager),
 			ctx.sessionManager instanceof NativeSessionManager ? ctx.sessionManager.getPersistentScopeKey() : undefined,

@@ -121,3 +121,10 @@ blocked-emission test that still completes host callbacks, replies and cancellat
 `src/installed.rs` resolves assets beside the loaded module; installation and
 actual DLL registration remain pending. The image resolver has executed on Linux
 only.
+
+Native context snapshots require `context.trustProvenance`. Cursor project trust
+uses both the effective decision and its explicit CLI/stored-decision provenance;
+rpi default resource loading alone does not authorize project configuration.
+The retained Pi trust path remains unchanged. `tests/trust-evidence.json` records
+1,701 passing retained tests, two existing skips, the native trust boundary checks,
+type/build/package checks and a real packaged dispatcher run.

@@ -45,7 +45,7 @@ test("packaged dispatcher runs retained hooks, auth, commands and both streams t
 			case "context":
 				if (input.action === "flags") return { "cursor-no-fast": true };
 				assert.equal(input.action, "snapshot");
-				return { cwd, mode: "print", hasUI: false, projectTrusted: false, isIdle: operation === null, hasPendingMessages: false,
+				return { cwd, mode: "print", hasUI: false, projectTrusted: false, projectTrustResolved: false, isIdle: operation === null, hasPendingMessages: false,
 					systemPrompt: "native prompt", sessionId: session.metadata.id, model: publicModel, tools: [], identity: operation };
 			case "tools":
 				if (input.action === "setActive") return null;

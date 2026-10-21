@@ -7,6 +7,7 @@ import { bindNativeSessionCallback, trackNativeSessionWork } from "./session-wor
 export type HostRequest = (method: string, input: Record<string, unknown>) => Promise<unknown>;
 export type NativeContextSnapshot = {
 	cwd: string; mode: ExtensionContext["mode"]; hasUI: boolean; projectTrusted: boolean;
+	projectTrustResolved: boolean;
 	isIdle: boolean; hasPendingMessages: boolean; systemPrompt: string; sessionId: string;
 	model: Omit<Model<Api>, "baseUrl" | "headers">; thinkingLevel?: ExtensionContext["thinkingLevel"];
 	tools: string[]; identity: { operationId: string; purpose: string } | null;
@@ -15,7 +16,7 @@ export function contextSnapshot(value: unknown): NativeContextSnapshot {
 	if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid native context snapshot");
 	const input = value as Record<string, unknown>;
 	for (const key of ["cwd", "systemPrompt", "sessionId"]) if (typeof input[key] !== "string") throw new Error("Invalid native context text");
-	for (const key of ["hasUI", "projectTrusted", "isIdle", "hasPendingMessages"]) if (typeof input[key] !== "boolean") throw new Error("Invalid native context state");
+	for (const key of ["hasUI", "projectTrusted", "projectTrustResolved", "isIdle", "hasPendingMessages"]) if (typeof input[key] !== "boolean") throw new Error("Invalid native context state");
 	if (!["tui", "rpc", "json", "print"].includes(String(input.mode)) || !Array.isArray(input.tools) || input.tools.some(name => typeof name !== "string")) {
 		throw new Error("Invalid native context mode or tools");
 	}
@@ -44,6 +45,9 @@ export class NativeEffects {
 		if (this.failed) throw this.failure;
 	}
 }
+
+const trustResolutions = new WeakMap<ExtensionContext, boolean>();
+export function nativeProjectTrustResolved(context: ExtensionContext): boolean | undefined { return trustResolutions.get(context); }
 
 export function nativeContext(snapshot: NativeContextSnapshot, manager: NativeSessionManager, signal: AbortSignal | undefined,
 	request: HostRequest, effects: NativeEffects, models: () => readonly Model<Api>[]): ExtensionContext {
@@ -102,7 +106,7 @@ export function nativeContext(snapshot: NativeContextSnapshot, manager: NativeSe
 			return { errors, aborted: options.signal?.aborted === true };
 		},
 	};
-	return {
+	const context: ExtensionContext = {
 		cwd: snapshot.cwd, mode: snapshot.mode, hasUI: snapshot.hasUI, sessionManager: manager,
 		model: models().find(model => model.id === snapshot.model.id && model.provider === snapshot.model.provider)
 			?? { ...snapshot.model, baseUrl: "" },
@@ -116,6 +120,8 @@ export function nativeContext(snapshot: NativeContextSnapshot, manager: NativeSe
 		compact: options => effects.add(() => request("native", { port: "context", action: "compact", options })),
 		ui: ui as ExtensionContext["ui"], modelRegistry: modelRegistry as ExtensionContext["modelRegistry"],
 	};
+	trustResolutions.set(context, snapshot.projectTrustResolved);
+	return context;
 }
 
 export type NativeTools = ReturnType<ExtensionAPI["getAllTools"]>;

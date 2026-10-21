@@ -1,0 +1,59 @@
+{
+  "status": "Explicit native trust boundary verified; native DLL integration pending",
+  "platform": "Linux",
+  "node": "24.22.0",
+  "hostCommit": "d1d612fd461ce1bf1753329f1465a7ee656667ef",
+  "checks": {
+    "retained": {
+      "log": "/tmp/rpi-cursor-native-trust-suite.log",
+      "sha256": "e25bfd82c61bf88e9013a13a41c27485a325551e2f1218fbf204bd9b39333a8d",
+      "passed": 1701,
+      "skipped": 2
+    },
+    "boundary": {
+      "log": "/tmp/rpi-cursor-native-trust-tests.log",
+      "sha256": "68b5fb43302d8ba89c84d2263fd86ca719deece37109a6674b19f4976c9ec450",
+      "passed": 11,
+      "skipped": 0
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-native-trust-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b",
+      "passed": true,
+      "skipped": 0
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-native-trust-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04",
+      "passed": true,
+      "skipped": 0
+    },
+    "process": {
+      "log": "/tmp/rpi-cursor-native-trust-process.log",
+      "sha256": "24dabc35d85c2230456f20a84e86402fc187fbe080c3481af45b2253f035a6e5",
+      "passed": 1,
+      "skipped": 0
+    },
+    "package": {
+      "log": "/tmp/rpi-cursor-native-trust-pack.json",
+      "sha256": "0ff8337800090e0bfec49aaaaad58c9dd70a2a8a4965aa5e51cb2fc9dbffba15",
+      "passed": true,
+      "skipped": 0
+    }
+  },
+  "review": {
+    "kind": "Manual deep review of retained adapter boundary, native snapshot validation, fixtures, tests and package contents",
+    "resolved": [
+      "Default rpi resource loading does not approve Cursor project configuration",
+      "False native provenance overrides unrelated Pi resolution of the same cwd",
+      "Only native context objects carry host provenance; ordinary Pi path unchanged",
+      "Missing provenance is rejected explicitly",
+      "SDK dependency remains external, not bundled"
+    ]
+  },
+  "notTested": [
+    "Actual native DLL and installed assets",
+    "macOS/Windows execution",
+    "Cursor live acceptance"
+  ]
+}

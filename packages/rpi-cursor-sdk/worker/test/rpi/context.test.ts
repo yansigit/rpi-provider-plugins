@@ -1,18 +1,34 @@
 import { expect, it, vi } from "vitest";
 import { contextSnapshot, NativeEffects, nativeContext, type HostRequest } from "../../src/rpi/context.js";
 import type { NativeSessionManager } from "../../src/rpi/session.js";
+import { __testUtils as scopeTests, registerCursorSessionScope, getCursorSessionProjectTrusted } from "../../src/cursor-session-scope.js";
+import { createEventHarness, createExtensionTestContext } from "../helpers/pi-harness.js";
 
-const snapshot = () => contextSnapshot({ cwd: "/fixture", mode: "rpc", hasUI: true, projectTrusted: false,
+const snapshot = () => contextSnapshot({ cwd: "/fixture", mode: "rpc", hasUI: true, projectTrusted: false, projectTrustResolved: false,
 	isIdle: true, hasPendingMessages: false, systemPrompt: "actual prompt", sessionId: "session", tools: [], identity: null,
 	model: { id: "fixture", api: "cursor-sdk", provider: "cursor", name: "Fixture", reasoning: false, input: ["text"],
 		cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 100, maxTokens: 20 },
 });
 
 it("rejects private model bindings and missing authoritative mode/trust/identity", () => {
-	for (const change of [ { mode: "unknown" }, { projectTrusted: undefined }, { identity: { purpose: "prompt" } },
+	for (const change of [ { mode: "unknown" }, { projectTrusted: undefined }, { projectTrustResolved: undefined }, { identity: { purpose: "prompt" } },
 		{ model: { ...snapshot().model, headers: { Authorization: "fixture" } } }, { model: { ...snapshot().model, baseUrl: "private" } } ]) {
 		expect(() => contextSnapshot({ ...snapshot(), ...change })).toThrow();
 	}
+});
+
+it("uses explicit native trust provenance even when Pi has previously resolved the same cwd", async () => {
+	const pi = createEventHarness(); registerCursorSessionScope(pi);
+	const manager = createExtensionTestContext().sessionManager as unknown as NativeSessionManager;
+	scopeTests.recordProjectTrustResolution(snapshot().cwd);
+	try {
+		for (const [projectTrusted, projectTrustResolved, expected] of [[true, false, false], [true, true, true], [false, true, false]]) {
+			const context = nativeContext({ ...snapshot(), projectTrusted, projectTrustResolved }, manager, undefined,
+				async () => { throw new Error("unexpected host call"); }, new NativeEffects(), () => []);
+			await pi.invokeEventWithContext("session_start", { type: "session_start", reason: "startup" }, context);
+			expect(getCursorSessionProjectTrusted()).toBe(expected);
+		}
+	} finally { scopeTests.reset(); }
 });
 
 it("serializes presentation acknowledgements and retains a failure while draining later work", async () => {
