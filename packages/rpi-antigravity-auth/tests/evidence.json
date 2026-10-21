@@ -314,13 +314,6 @@
     "productionAuth": "native callbacks registered; offline methods/API-key login/status/logout and refresh refusal passed",
     "projectScenarios": 30
   },
-  "proposedExceptions": [
-    {
-      "status": "awaiting user agreement",
-      "behavior": "return timeout/cancellation errors after closing the connection instead of leaving the original body read pending",
-      "evidence": "tests/fixtures/network.json"
-    }
-  ],
   "localDriver": {
     "nodeFetchCases": 30,
     "originalLocalStreamCases": 7,
@@ -865,7 +858,7 @@
       "macOS/Windows native execution",
       "system/OpenSSL trust switches and OS-specific diagnostics",
       "complete loaded OAuth login/refresh",
-      "pending-body cancellation equivalence",
+      "remaining integrated/platform checks for the agreed timeout/cancellation resource-release behavior",
       "live vault enrollment/inference"
     ],
     "evidence": [
@@ -1012,5 +1005,14 @@
       "status": "passed",
       "qualification": "One authorized account copied to isolated rpi storage, converted explicit millisecond expiry to legacy seconds, and packed its project metadata. Existing source store byte-identical afterward. One native request refreshed and durably persisted the access credential, then returned exactly OK. No refresh-token rotation occurred. Displayed cost values are the upstream zero-price catalog, not a billing assertion. Vault and Cursor live acceptance are not covered."
     }
-  }
+  },
+  "agreedExceptions": [
+    {
+      "status": "agreed by user",
+      "behavior": "return timeout/cancellation errors after closing the connection instead of leaving the original body read pending",
+      "evidence": "tests/fixtures/network.json",
+      "approvedOn": "2026-10-21",
+      "approval": "Return the error and release resources (recommended)"
+    }
+  ]
 }

@@ -98,8 +98,8 @@ The lock retains tokio-util 0.7.19 and zeroize 1.8.2 for the same compiler basel
 `network-reference.ts` probes the original transport on real loopback sockets.
 It confirms stage-specific timeout messages, but also an upstream limitation:
 body reads remain pending after idle timeout or cancellation. The candidate
-currently closes the connection and returns a terminal error. This is a proposed
-parity exception awaiting user agreement, not a passing parity assertion.
+closes the connection and returns a terminal error. The user explicitly approved
+this parity exception on 2026-10-21; it does not waive other transport checks.
 The driver implements the 600-second pre-response deadline and one-second trailing-usage
 window. The production transports share Node 24.22.0's bundled certificates and
 `NODE_EXTRA_CA_CERTS`, captured when the library registers. Seven real TLS scenarios
