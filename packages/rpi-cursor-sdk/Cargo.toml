@@ -13,7 +13,7 @@ publish = false
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "c105655c62fe2ee26ad4465b9f39d29b2f72d3eb", default-features = false, features = ["provider"] }
+rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "189e7975d5bdd777769b189679e0400f478c4ade", default-features = false, features = ["provider"] }
 serde.workspace = true
 serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
 tokio = { workspace = true, features = ["net", "io-util", "process", "macros"] }

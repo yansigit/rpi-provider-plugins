@@ -1,0 +1,29 @@
+{
+  "status": "Bounded host tool progress required and integrated",
+  "hostMinimumCommit": "189e7975d5bdd777769b189679e0400f478c4ade",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "checks": {
+    "rust": {
+      "log": "/tmp/rpi-cursor-bounded-tool-rust.log",
+      "sha256": "cf533f2c8dc2bd838d82d358fc417d68bd7138c8ede48e97308bca0732e442fc",
+      "passed": 34
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-bounded-tool-dll-build.log",
+      "sha256": "476ba5e3ef0413ef05ff548da97510aad143f841bcc26da7e52823336fa12855"
+    },
+    "installedLibrary": {
+      "log": "/tmp/rpi-cursor-bounded-tool-dll-host.log",
+      "sha256": "b9c38941841c7e9d06f84fcf0a3bf875565a6e45475ba6b3742631d7fd082b3a",
+      "passed": 3
+    }
+  },
+  "retainedNodeEvidence": "options-evidence.json (Node implementation unchanged in this commit)",
+  "hostEvidence": "pi-rust/docs/provider-parity/host-bounded-tool-results.json",
+  "review": "Manual deep maintainability review of the exact capability requirement, SDK pin, lockfile and documentation diff against both host tool drivers and cancellation behavior. No adapter policy or Node source changed.",
+  "notTested": [
+    "Full fake-SDK/host bridge/replay execution-count acceptance",
+    "Live Cursor inference or cloud mutations",
+    "macOS and Windows native loading"
+  ]
+}

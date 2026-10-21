@@ -190,3 +190,8 @@ and absent optional values into Pi's request shape. It preserves explicit zeroes
 empty values and provider-specific options. Each request keeps the same reconstructed
 headers and cancellation signal through receipt generation and either stream entry.
 Legacy host provider serialization is unchanged.
+
+The package requires `tools.boundedProgress` so its host tool callbacks share the
+same count/byte backpressure as provider streaming. Accepted partials drain before
+the terminal result; cancellation releases blocked producers and retains ownership
+through cleanup. Older hosts report the missing capability during registration.
