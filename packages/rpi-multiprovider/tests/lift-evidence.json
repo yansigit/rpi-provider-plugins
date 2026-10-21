@@ -1,0 +1,31 @@
+{
+  "status": "Native streaming state machine verified against both original stream entry paths; delegated SDK/native-library integration pending",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "checks": {
+    "toolchain": "1.78.0",
+    "warnings": "denied",
+    "nativePackageTestsPassed": 15,
+    "subprocessEntriesIgnoredInParent": 1,
+    "differentialScenarios": 96,
+    "referenceFixtureSha256": "b332491a07556046800419c1c80647260cdff74b5db05165257a48508747ed7d",
+    "nativeCancelledAuthAndStoppedConsumerCases": 2
+  },
+  "compared": [
+    "Auth resolutions and physical sends, including one resolution per account lease",
+    "Private response status/header classification and response reset between physical sends",
+    "Both stream and streamSimple dispatch; delegated maxRetries default and opt-out",
+    "Latest buffered start, ordered events and unchanged partial/terminal messages",
+    "Fatal pre-output error tolerance, 250 ms pauses and cancellation during pause",
+    "Text, thinking and tool events closing the retry window",
+    "Setup/iterator errors, missing terminals, exhaustion and terminal precedence",
+    "External failover, callback errors, implicit affinity handoff and explicit pins",
+    "Account health, lease counts, selected accounts, cooldowns and injected timing"
+  ],
+  "limits": [
+    "This is the source state machine through fixture adapters; it is not a native library loading or combined inference result.",
+    "Request auth/header/environment conversion must be verified through the delegated provider boundary.",
+    "Native commands, services, provider discovery, virtual routing and Fabric-compatible integration remain required.",
+    "Only Linux execution was performed."
+  ]
+}

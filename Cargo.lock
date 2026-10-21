@@ -2728,6 +2728,8 @@ dependencies = [
 name = "rpi-multiprovider"
 version = "0.1.6"
 dependencies = [
+ "async-trait",
+ "futures-util",
  "getrandom 0.2.17",
  "indexmap 2.11.4",
  "regex",

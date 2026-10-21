@@ -34,5 +34,15 @@
     "Provider-owned authentication, OAuth refresh and native credential-store callbacks are not covered by these record tests.",
     "Native extension loading, commands, session lifecycle, stream wrapping and combined acceptance remain required.",
     "Only Linux execution was performed."
-  ]
+  ],
+  "privateTransactionPort": {
+    "testsPassed": 1,
+    "checks": [
+      "Provider/account identity binding",
+      "Opaque lock identity and idempotent release",
+      "Persisted OAuth milliseconds and metadata before acknowledgement",
+      "Refusal of released transactions and disabled accounts"
+    ],
+    "nativeCallbackIntegration": "pending"
+  }
 }

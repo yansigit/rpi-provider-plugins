@@ -6,7 +6,7 @@ native provider contracts and Pi 1.3.0 behavior. Original MIT notice is in `LICE
 
 Implementation is in progress. The scheduler, account records and session-pin parser/replay are
 implemented; this package does not yet register an installable native extension.
-Native account authentication, stream wrapping, virtual providers, commands,
+Native account authentication, stream adapter wiring, virtual providers, commands,
 services, session lifecycle wiring and combined acceptance remain required.
 
 `src/services.rs` retains inventory order, first-account bias, randomized smooth
@@ -43,3 +43,11 @@ fault tests cover competing writers, stale locks, cancellation and failed writes
 See `tests/store-evidence.json`. Native provider auth/refresh and the malformed-JSON
 diagnostic policy still require integration. Regenerate the source fixture with
 Node 24 and `tests/store-reference.mjs` from this workspace.
+
+`src/lift.rs` implements the pinned attempt loop. Its 96 differential traces
+cover both stream entry paths, private response receipts, retry timing, output
+boundaries, terminal/error precedence and affinity handoff. Native tests also
+release leases when an auth future is dropped or a consumer stops. See
+`tests/lift-evidence.json`; SDK delegation and native library loading remain pending.
+The private `src/store/port.rs` transaction protocol validates account identity
+and acknowledges replacement only after the account file has been replaced.

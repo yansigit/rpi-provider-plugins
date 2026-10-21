@@ -328,3 +328,61 @@ async fn stale_lock_is_replaced_but_a_live_lock_times_out_without_unlink() {
     );
     assert_eq!(std::fs::read_to_string(lock).unwrap(), "live");
 }
+
+#[tokio::test]
+async fn private_auth_transactions_bind_identity_and_commit_before_release() {
+    use rpi_multiprovider::store::port::{Port, STORE_ID};
+    let root = scratch();
+    let path = root.0.join("accounts.json");
+    let store = Store::new(path.clone());
+    let saved = checked(&store, add("private")).await;
+    let port = Port::new(store.clone());
+    let request = |action: &str, input: Value| json!({"version":1,"storeId":STORE_ID,"providerId":"example","accountId":saved["id"],"action":action,"input":input});
+    let checked_port = |input| async {
+        match port.request(input, CancellationToken::new()).await {
+            Ok(value) => value,
+            Err(error) => panic!("unexpected private port failure: {}", failure(error)),
+        }
+    };
+    let read = checked_port(request("read", Value::Null)).await;
+    assert_eq!(read["kind"], "credential");
+    assert_eq!(read["payload"]["key"], "fixture-secret");
+    let locked = checked_port(request("lock", Value::Null)).await;
+    let token = locked["payload"]["lockId"].as_str().unwrap();
+    assert!(root.0.join("accounts.json.lock").exists());
+    let credential = json!({"type":"oauth","access":"fixture-access","refresh":"fixture-rotated","expires":1_800_000_000_123i64,"projectId":"fixture-project"});
+    let replacement = request("replace", json!({"lockId":token,"credential":credential}));
+    let mut forged = replacement.clone();
+    forged["accountId"] = json!("different-account");
+    assert_eq!(
+        failure(
+            port.request(forged, CancellationToken::new())
+                .await
+                .err()
+                .expect("identity mismatch")
+        )["error"]["message"],
+        "multiprovider: credential transaction identity mismatch"
+    );
+    assert_eq!(checked_port(replacement).await["kind"], "success");
+    let stored: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    assert_eq!(
+        stored["providers"]["example"]["accounts"][0]["credential"],
+        credential
+    );
+    assert!(root.0.join("accounts.json.lock").exists());
+    port.release(token);
+    port.release(token);
+    assert!(!root.0.join("accounts.json.lock").exists());
+    assert!(port
+        .request(
+            request("remove", json!({"lockId":token})),
+            CancellationToken::new()
+        )
+        .await
+        .is_err());
+    checked(&store, json!({"op":"account","provider":"example","account":saved["id"],"input":{"enabled":false}})).await;
+    assert!(port
+        .request(request("read", Value::Null), CancellationToken::new())
+        .await
+        .is_err());
+}

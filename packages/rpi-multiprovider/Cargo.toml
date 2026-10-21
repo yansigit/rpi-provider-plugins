@@ -13,6 +13,8 @@ publish = false
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
+async-trait.workspace = true
+futures-util = "0.3"
 rpi-node-collation = { path = "../../crates/rpi-node-collation" }
 serde.workspace = true
 serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }

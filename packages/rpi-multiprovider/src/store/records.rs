@@ -52,7 +52,7 @@ fn remove(value: &mut Value, key: &str) {
         _ => {}
     }
 }
-fn truthy(value: &Value) -> bool {
+pub(super) fn truthy(value: &Value) -> bool {
     match value {
         Value::Null => false,
         Value::Bool(value) => *value,
