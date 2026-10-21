@@ -1,0 +1,17 @@
+[package]
+name = "rpi-antigravity-auth"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Native Antigravity provider and account custody integration for rpi"
+publish = false
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true

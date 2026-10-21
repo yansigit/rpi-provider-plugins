@@ -2430,6 +2430,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpi-antigravity-auth"
+version = "0.1.6"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "rpi-ask-user"
 version = "0.1.7"
 dependencies = [

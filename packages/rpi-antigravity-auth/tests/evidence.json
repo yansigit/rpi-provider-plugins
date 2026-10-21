@@ -1,0 +1,41 @@
+{
+  "status": "partial-not-installable",
+  "platform": "linux",
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "catalogHost": "1.3.0",
+  "models": 6,
+  "routingCases": 20376,
+  "checks": [
+    {
+      "command": "cargo test -p rpi-antigravity-auth --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-catalog-final.log",
+      "sha256": "da92992e7d38e15578dd893a011ccc3b19e1e4b537e455859106dd18ecbb8c58",
+      "environment": {
+        "RUSTFLAGS": "-D warnings",
+        "CARGO_BUILD_JOBS": "2"
+      }
+    },
+    {
+      "command": "cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+      "status": "passed",
+      "log": "/tmp/rpi-antigravity-catalog-msrv.log",
+      "sha256": "69fe5109418343a640d7a434c3171701f96fe2aaa55c968527c7bd4dcb0920a3",
+      "environment": {
+        "RUSTFLAGS": "-D warnings",
+        "CARGO_BUILD_JOBS": "2"
+      }
+    }
+  ],
+  "notTested": [
+    "native provider registration and explicit catalog replacement",
+    "early refusal before credential acquisition/network",
+    "authentication, transport, streaming, custody and commands",
+    "macOS and Windows",
+    "live inference"
+  ],
+  "fixtures": {
+    "tests/fixtures/catalog.json": "2fd5a6f891926542c73296669141d8568d587f30f0d65f5b23da9f0285ca9440",
+    "src/catalog.json": "aa02606c92be76224ffb2714c76c581187ddb127e87af65636b5c2151580f7df"
+  }
+}
