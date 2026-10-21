@@ -1,5 +1,6 @@
 import { envApiKeyAuth, type ApiKeyAuth, type ApiKeyCredential } from "@earendil-works/pi-ai";
 import { parseEnvBoolean } from "./cursor-env-boolean.js";
+import { cursorCredentialEnvironment } from "./rpi/environment.js";
 
 export const CURSOR_API_KEY_ENV_VAR = "CURSOR_API_KEY";
 
@@ -15,7 +16,7 @@ const CURSOR_API_KEY_PLACEHOLDERS = new Set([
 
 export function resolveCursorApiKey(apiKey?: string): string | undefined {
 	return normalizeCursorApiKey(apiKey) ?? (apiKey && CURSOR_API_KEY_PLACEHOLDERS.has(apiKey.trim())
-		? normalizeCursorApiKey(process.env.CURSOR_API_KEY) : undefined);
+		? normalizeCursorApiKey(cursorCredentialEnvironment(CURSOR_API_KEY_ENV_VAR)) : undefined);
 }
 
 export function normalizeCursorApiKey(apiKey?: string): string | undefined {

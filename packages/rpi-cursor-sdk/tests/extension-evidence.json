@@ -1,0 +1,86 @@
+{
+  "status": "Retained factory boundary verified under integrated Pi 1.3.0; native dispatcher and library wiring pending",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "checks": {
+    "retainedSuite": {
+      "files": 167,
+      "passed": 1688,
+      "skipped": 2
+    },
+    "piLoaderPassed": 53,
+    "nativeFactoryPassed": 5,
+    "focusedArchitectureTypingEnvironmentPassed": 20,
+    "types": "src, tests and replay compile passed",
+    "packages": [
+      {
+        "kind": "extension-pack",
+        "files": 2778,
+        "bundledCursorSdkFiles": 0,
+        "license": true
+      },
+      {
+        "kind": "extension-runtime-pack",
+        "files": 151,
+        "bundledCursorSdkFiles": 0,
+        "license": true
+      }
+    ]
+  },
+  "review": {
+    "kind": "Manual deep exact-diff review of native registration, real Pi hook dispatch, append acknowledgements, private stream receipts and credential isolation",
+    "findingsResolved": [
+      "Native entry uses static retained-factory imports, preserving the baseline loader architecture",
+      "Removed broad TypeScript escape hatches; version-specific dispatch uses the guarded Pi 1.3.0 runtime signature",
+      "Both stream entries preserve header/signal identity and request options",
+      "Replacement requests cannot restore the inherited process credential; concurrent environments never mutate process.env",
+      "Native replay executors are inaccessible through this boundary"
+    ],
+    "remainingInBoundaryChunk": []
+  },
+  "limitations": [
+    "The first full suite caught loader and typing violations in the initial boundary; the corrected exact sources passed the full rerun.",
+    "Factory checks use explicit offline ports, not an actually loaded rpi library or live Cursor inference."
+  ],
+  "logs": [
+    {
+      "path": "/tmp/rpi-cursor-native-extension-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    {
+      "path": "/tmp/rpi-cursor-native-extension-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    {
+      "path": "/tmp/rpi-cursor-extension-targeted.log",
+      "sha256": "61c2fdaebcea32c0e272219df30654a99333f20a9b5ddb5186fdcfb6ab78f210"
+    },
+    {
+      "path": "/tmp/rpi-cursor-native-stage.log",
+      "sha256": "d23cf2fa31831ae561950f6281439b413c6724e4913423296ef8480c3cd546f0"
+    },
+    {
+      "path": "/tmp/rpi-cursor-native-extension-tests.log",
+      "sha256": "1884f46e20becddc49c5173e9a3088d59206a41f3f2e667fda7d3818a40984d2"
+    },
+    {
+      "path": "/tmp/rpi-cursor-extension-all.log",
+      "sha256": "fcb14dc3e67883b6f7f5b0c19db5b351cae7b154a8533a52ab5b3d47222bfa20"
+    },
+    {
+      "path": "/tmp/rpi-cursor-extension-all-final.log",
+      "sha256": "23fc2e0760244dfb436942a719406916f04142864996f82252ed8032415ccd4a"
+    },
+    {
+      "path": "/tmp/rpi-cursor-extension-pi.log",
+      "sha256": "539d2cbb48b273ffa013d275745ee925e832c7d90b0b7c1005964ab6f50763a5"
+    },
+    {
+      "path": "/tmp/rpi-cursor-extension-pack.json",
+      "sha256": "b55d117952d1608b3828b415974fe9d1bf2c7bf299f8e593d2f6581a815a3e56"
+    },
+    {
+      "path": "/tmp/rpi-cursor-extension-runtime-pack.json",
+      "sha256": "7f97de2b99ca911bde1762da10fe77502b9debde9c22e7b5bed8645320f4b1eb"
+    }
+  ]
+}

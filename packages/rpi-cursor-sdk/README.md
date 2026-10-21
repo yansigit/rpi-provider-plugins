@@ -55,3 +55,17 @@ Native stream replay maps owned Cursor results to the host recorded-tool path,
 including incomplete partial markers and cancellation-safe terminal results.
 `tests/replay-evidence.json` compares outcomes with the retained Pi replay wrapper.
 Native library integration and execution-count acceptance remain required.
+
+The native factory boundary reuses Pi 1.3.0's ordered hook reducers, registers the
+retained commands and flags, and awaits host session appends. Both provider stream
+entries create their private request receipt with stable headers and cancellation
+objects. Request-local credential replacement cannot restore an inherited worker
+API key. The boundary refuses execution of native replay tools; executable bridge
+tools belong to rpi. Verification is recorded in `tests/extension-evidence.json`.
+
+The separate `runtime/` lock pins the integrated Pi 1.3.0 peers and external SDK
+1.0.37. It does not change the retained baseline lock. Build in `worker/`, run
+`npm ci --ignore-scripts --no-audit --no-fund` in `runtime/`, then run
+`node tests/stage-runtime.mjs` and `node --test tests/native-extension.mjs` from this
+directory to exercise the staged runtime. The native dispatcher, background
+session leases and installed-library loading still require integration.

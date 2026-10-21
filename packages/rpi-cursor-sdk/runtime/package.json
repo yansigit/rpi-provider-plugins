@@ -1,0 +1,27 @@
+{
+  "name": "rpi-cursor-sdk-runtime",
+  "version": "0.1.6",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@cursor/sdk": "1.0.37",
+    "@hono/node-server": "2.1.3",
+    "@modelcontextprotocol/hono": "2.0.2",
+    "@modelcontextprotocol/server": "2.3.1",
+    "hono": "4.13.13",
+    "@earendil-works/pi-ai": "1.3.0",
+    "@earendil-works/pi-agent-core": "1.3.0",
+    "@earendil-works/pi-coding-agent": "1.3.0",
+    "@earendil-works/pi-tui": "1.3.0",
+    "typebox": "1.3.36"
+  },
+  "files": [
+    "dist",
+    "shared",
+    "LICENSE"
+  ]
+}
