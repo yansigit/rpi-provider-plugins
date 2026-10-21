@@ -31,14 +31,14 @@ it("uses explicit native trust provenance even when Pi has previously resolved t
 	} finally { scopeTests.reset(); }
 });
 
-it("serializes presentation acknowledgements and retains a failure while draining later work", async () => {
+it("serializes acknowledgements and skips dependent effects after a failed commit", async () => {
 	const effects = new NativeEffects(), seen: number[] = [];
 	let release!: () => void;
 	effects.add(async () => { seen.push(1); await new Promise<void>(resolve => { release = resolve; }); throw new Error("failed acknowledgement"); });
 	effects.add(async () => { seen.push(2); });
 	let settled = false; const pending = effects.settled().finally(() => { settled = true; });
 	await Promise.resolve(); expect(seen).toEqual([1]); expect(settled).toBe(false);
-	release(); await expect(pending).rejects.toThrow("failed acknowledgement"); expect(seen).toEqual([1, 2]);
+	release(); await expect(pending).rejects.toThrow("failed acknowledgement"); expect(seen).toEqual([1]);
 });
 
 it("maps dialog controls and outcomes without inventing a choice or forwarding another provider's auth", async () => {

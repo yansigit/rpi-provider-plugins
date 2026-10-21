@@ -52,8 +52,18 @@ for (const mode of ["print", "tui"]) test(`packaged ${mode} dispatcher runs reta
 				return { cwd, mode, hasUI: mode === "tui", projectTrusted: false, projectTrustResolved: false, toolRegistration: { disabled: false, allow: null, deny: [] }, toolSelection: structuredClone(toolSelection), isIdle: operation === null, hasPendingMessages: false,
 					systemPrompt: "native prompt", sessionId: session.metadata.id, model: publicModel, tools: [...active], identity: operation };
 			case "tools":
+				if (input.action === "publish") {
+					for (const tool of input.tools) {
+						const index = hostTools.findIndex(item => item.name === tool.name);
+						const metadata = { ...tool, ownedBinding: true, exposure: "direct", sourceInfo: { source: "extension", path: "cursor", scope: "temporary", origin: "top-level" } };
+						if (index < 0) { hostTools.push(metadata); active.push(tool.name); }
+						else hostTools[index] = metadata;
+					}
+					toolSelection = { revision: String(BigInt(toolSelection.revision) + 1n), state: null };
+					return { registered: input.tools.map(tool => tool.name), tools: [...active], selection: structuredClone(toolSelection) };
+				}
 				if (input.action === "setActive") {
-					assert(input.tools.every(name => hostTools.some(tool => tool.name === name)), "presentation-only tools must never enter the executable host registry");
+					assert(input.tools.every(name => hostTools.some(tool => tool.name === name)), "only host-registered tools can be activated");
 					active = [...input.tools]; toolSelection = { revision: String(BigInt(toolSelection.revision) + 1n), state: structuredClone(input.state) };
 					return { tools: [...active], selection: structuredClone(toolSelection) };
 				}
@@ -101,6 +111,8 @@ for (const mode of ["print", "tui"]) test(`packaged ${mode} dispatcher runs reta
 	await begin("runtime.configure", {}).result();
 	await begin("extension.event", { event: { type: "session_start", reason: "startup" } }).result();
 	assert(revision > 0, "catalog refresh must reenter the worker while session_start awaits its host call");
+	assert.equal(trace.filter(item => item.input.port === "tools" && item.input.action === "publish").length, mode === "tui" ? 8 : 0);
+	if (mode === "tui") assert(hostTools.some(tool => tool.binding?.kind === "recorded"));
 	for (let index = 0; index < 70; index++) {
 		operation = { operationId: `info-${index}`, purpose: "session_info_changed" };
 		await begin("extension.event", { event: { type: "session_info_changed", name: `name-${index}` } }).result();

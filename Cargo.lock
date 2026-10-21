@@ -2559,7 +2559,7 @@ dependencies = [
 [[package]]
 name = "rpi-ai"
 version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=1aff6a72dfd676e7a811f131d600c22f0163f54d#1aff6a72dfd676e7a811f131d600c22f0163f54d"
+source = "git+https://github.com/yansigit/pi-rust?rev=0e65e4bea3242ce7bc55d94194224ca8604d56c7#0e65e4bea3242ce7bc55d94194224ca8604d56c7"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -2569,7 +2569,7 @@ dependencies = [
  "jsonschema",
  "regex",
  "reqwest 0.12.28",
- "rpi-telemetry 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=1aff6a72dfd676e7a811f131d600c22f0163f54d)",
+ "rpi-telemetry 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=0e65e4bea3242ce7bc55d94194224ca8604d56c7)",
  "schemars",
  "serde",
  "serde_json",
@@ -2667,7 +2667,7 @@ dependencies = [
  "fs2",
  "getrandom 0.2.17",
  "libc",
- "rpi-plugin-sdk 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=1aff6a72dfd676e7a811f131d600c22f0163f54d)",
+ "rpi-plugin-sdk 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=0e65e4bea3242ce7bc55d94194224ca8604d56c7)",
  "serde",
  "serde_json",
  "sha2",
@@ -2842,11 +2842,11 @@ dependencies = [
 [[package]]
 name = "rpi-plugin-sdk"
 version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=1aff6a72dfd676e7a811f131d600c22f0163f54d#1aff6a72dfd676e7a811f131d600c22f0163f54d"
+source = "git+https://github.com/yansigit/pi-rust?rev=0e65e4bea3242ce7bc55d94194224ca8604d56c7#0e65e4bea3242ce7bc55d94194224ca8604d56c7"
 dependencies = [
  "async-trait",
  "reqwest 0.12.28",
- "rpi-ai 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=1aff6a72dfd676e7a811f131d600c22f0163f54d)",
+ "rpi-ai 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=0e65e4bea3242ce7bc55d94194224ca8604d56c7)",
  "serde",
  "serde_json",
  "tokio",
@@ -2937,7 +2937,7 @@ dependencies = [
 [[package]]
 name = "rpi-telemetry"
 version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=1aff6a72dfd676e7a811f131d600c22f0163f54d#1aff6a72dfd676e7a811f131d600c22f0163f54d"
+source = "git+https://github.com/yansigit/pi-rust?rev=0e65e4bea3242ce7bc55d94194224ca8604d56c7#0e65e4bea3242ce7bc55d94194224ca8604d56c7"
 dependencies = [
  "async-trait",
  "serde",

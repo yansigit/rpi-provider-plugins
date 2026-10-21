@@ -68,7 +68,12 @@ export class NativeCursorRuntime {
 					await current.request("native", { port: "tools", action: "setActive", tools: change.tools, state: change.state })));
 			},
 			getAllTools: () => this.toolSurface.all(frame()),
-			toolsChanged: tools => { this.toolSurface.registered = tools; },
+			toolsChanged: tools => {
+				const current = this.frames.getStore() ?? this.selected;
+				const change = this.toolSurface.register(tools, current);
+				if (current && change) current.effects.add(async () => this.toolSurface.acknowledge(current, change,
+					await current.request("native", { port: "tools", action: "publish", tools: change.bindings })));
+			},
 			providerRegistered: provider => { this.catalog = new NativeCursorCatalog(provider); },
 			error: error => {
 				const current = frame();
@@ -156,7 +161,7 @@ export class NativeCursorRuntime {
 				if (entry !== "stream" && entry !== "streamSimple") throw new Error("Invalid Cursor stream entry");
 				if (input.authMode !== "ambient" && input.authMode !== "replace") throw new Error("Invalid Cursor authentication mode");
 				const options = nativeStreamOptions(object(input.options), frame.context.signal ?? call.signal);
-				const stream = await this.extension.stream(entry, requestModel(input.model), this.toolSurface.context(frame, requestContext(input.context)),
+				const stream = await this.extension.stream(entry, requestModel(input.model), requestContext(input.context),
 					options, input.authMode, call.emit);
 				return stream.finished;
 			});

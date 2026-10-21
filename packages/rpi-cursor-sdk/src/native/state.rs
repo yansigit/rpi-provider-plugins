@@ -79,6 +79,7 @@ impl Runtime {
                             "tools.registrationPolicy",
                             "tools.selectionState",
                             "tools.boundedProgress",
+                            "tools.hostBindings",
                             "sessions.location",
                             "sessions.view",
                             "sessions.persistenceLease",

@@ -164,26 +164,28 @@ prompt guidance reach the host's adapters; the question tool retains sequential
 execution. The current retained executable tools all use direct exposure, and a
 different exposure is rejected explicitly. Source provenance remains host-owned.
 
-`worker/src/rpi/tool-surface.ts` translates replay-only declarations and activation
-inside the worker. It sends only real host names to the host activation port and
-includes the retained replay schemas in the Cursor request snapshot. Builtin-name
-overlaps keep host execution ownership; recorded calls still use the inert result
-path. A host activation change invalidates stale local replay choices.
-`tests/tool-surface-evidence.json` records the metadata checks and a packaged TUI
-regression that failed before this translation and passes afterward. Complete
-SDK/bridge/replay execution-count acceptance remains separate.
+`worker/src/rpi/tool-surface.ts` publishes the retained adapter's dynamic builtin
+wrappers and recorded activity through `tools.hostBindings`. Synchronous Pi getters
+see registrations immediately, and the enclosing operation awaits host commit
+receipts. Builtins execute through rpi's ordinary invocation, cancellation and hook
+path. Recorded activity never executes a builtin. Missing recording identifiers
+return the retained adapter's error. The provider request keeps its exact tool
+selection and schemas, including an empty or restricted list.
 
-The worker also requires `tools.exactActivation` and `tools.registrationPolicy`.
-An explicitly empty host selection disables executable bridge tools, and retained
-hooks preserve that selection. Local replay declarations honor the host's captured
-allowlist, exclusions and `--no-tools` setting. Startup and reload supply the same
-policy used to filter real registrations; missing or malformed policy is rejected.
+The worker also requires `tools.exactActivation`, `tools.registrationPolicy` and
+`tools.selectionState`. Host registration respects allowlists, exclusions,
+`--no-tools`, foreign-extension ownership and inherited child ceilings.
+`--no-builtin-tools` still permits extension-owned builtin wrappers, as Pi does.
+Fresh child workers can reattach their inherited bindings. The committed active
+selection is authoritative; no worker-only replay state is reconstructed. Late
+acknowledgements cannot replace a later synchronous selection. Failed publication
+stops dependent effects and propagates through the enclosing operation.
 
-`tools.selectionState` commits local replay choices with the host selection and
-returns its exact revision. Each worker tags its presentation state with a fresh
-runtime ID, so snapshots recover their own selection even before an acknowledgement
-arrives. Repeated external selections clear that state, and a fresh worker ignores
-the previous worker's choices. Late acknowledgements cannot replace newer choices.
+`tests/tool-registration-parity.mjs` compares declaration/activation order against
+Pi 1.3.0's unchanged registry refresh across 48 controlled scenarios. Native host
+and installed-library tests additionally verify execution and authority boundaries.
+Evidence is recorded in `tests/host-bindings-evidence.json`. Complete
+SDK/bridge/replay acceptance remains separate.
 
 The native request boundary translates Rust reasoning/cache-retention enum spelling
 and absent optional values into Pi's request shape. It preserves explicit zeroes,

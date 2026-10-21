@@ -1,0 +1,77 @@
+{
+  "status": "Native dynamic tool binding boundary verified; complete SDK tool and lifecycle parity remains pending",
+  "host": "0e65e4bea3242ce7bc55d94194224ca8604d56c7",
+  "platform": "Linux",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "node": "24.22.0",
+  "piReference": "1.3.0",
+  "checks": {
+    "typecheck": {
+      "log": "/tmp/rpi-cursor-tool-bindings-typecheck.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b"
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-tool-bindings-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04"
+    },
+    "package": {
+      "log": "/tmp/rpi-cursor-tool-bindings-pack.log",
+      "sha256": "dc9f433efc164d0bd1c2fad67a7710cdb6d6b6490afd9be75233df872589d6e7"
+    },
+    "fullNode": {
+      "log": "/tmp/rpi-cursor-tool-bindings-final-node.log",
+      "sha256": "682142b6ba5face1c7b9e37b39db348154031738db9883f0353a8cc12e4215c7",
+      "passed": 1714,
+      "skipped": 2
+    },
+    "targetedNativeBoundaries": {
+      "log": "/tmp/rpi-cursor-tool-bindings-node.log",
+      "sha256": "ce3d7c1a3baadf20af4dd2f46c549df3a1cbb22e79f6737cf4636f6b163675aa",
+      "passed": 14
+    },
+    "packagedAndReference": {
+      "log": "/tmp/rpi-cursor-tool-bindings-native.log",
+      "sha256": "08fe42cdf2470f03614cd0657ae520d487825a450c4815fdc9be193964f8c88e",
+      "passed": 58
+    },
+    "pinnedRustBuild": {
+      "log": "/tmp/rpi-cursor-tool-bindings-pinned-build.log",
+      "sha256": "d562d99c4683efd2edde01a1ecbdc4e0d5e72ec15cdaed75c56e129ead649ad3"
+    },
+    "pinnedRust": {
+      "log": "/tmp/rpi-cursor-tool-bindings-pinned-rust.log",
+      "sha256": "eb2418fc55cbaec5fd2f5ef91a94b53bed7030874deeb4137193cf323973f5de",
+      "passed": 34
+    },
+    "pinnedInstalledLibrary": {
+      "log": "/tmp/rpi-cursor-tool-bindings-pinned-dll.log",
+      "sha256": "8c6d0c581ecd6920d999f729e196a1eaa5edb22ddf9794c52302b5b41984c746",
+      "passed": 4
+    },
+    "knownUpstreamRaceInitialFailure": {
+      "log": "/tmp/rpi-cursor-tool-bindings-full-node.log",
+      "sha256": "489cbce3a5f8b54a4162ca0f4f058b69297b54bc0891a98d82868628a75c73bf"
+    },
+    "knownUpstreamRaceTargetedRerun": {
+      "log": "/tmp/rpi-cursor-tool-bindings-artifact-rerun.log",
+      "sha256": "b6dffdf17ff73d77fec8c1e555537a72543cbf021e7c946ebcc5cd547f896546",
+      "passed": 27
+    }
+  },
+  "assertions": [
+    "48 direct comparisons against the unchanged Pi 1.3 registry refresh, covering no/four/seven builtins, allow/deny filters, inactive tools and repeat registration",
+    "Integrated Pi edit preparation is represented by the host binding and preserves legacy arguments",
+    "Both provider stream entry paths retain omitted, empty and overridden request tool lists exactly",
+    "Publication precedes activation and is awaited; failures stop dependent effects",
+    "Inherited bindings retain stable local source identity while foreign tools remain foreign",
+    "Actual loaded library creates eight dynamic bindings without pre-existing host builtins; ordinary edit executes once and a missing recorded edit executes zero times",
+    "Child startup, catalog/auth reentry, worker reaping, reload and successful/failed shutdown remain covered"
+  ],
+  "upstreamLimitation": "The initial full suite hit the unchanged artifact-race assertion at platform-artifact-boundaries.test.ts:171: safe bytes appeared under evidence/nested.safe/deep/safe.txt, with no outside data exposure. Targeted rerun and final full suite passed; two upstream skips remain.",
+  "review": "Manual deep review of the exact package diff, metadata and lockfile found no remaining material issues after fixing registry activation order and preserving Pi 1.3 edit preparation. Reviewed awaited host effects, source ownership, child ceilings, immutable request contexts, preparation-before-validation and stale acknowledgement handling. Unchanged adapter policy and original locks are retained; no workspace version bumps.",
+  "notTested": [
+    "macOS and Windows native execution",
+    "Live Cursor inference and cloud resources",
+    "Complete SDK/MCP/tool-bridge/replay execution behavior and lifecycle parity"
+  ]
+}

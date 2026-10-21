@@ -5,7 +5,7 @@ import { nativeRequestAuth } from "./auth.js";
 import { bindNativeSessionCallback, trackNativeSessionWork } from "./session-work.js";
 
 export type HostRequest = (method: string, input: Record<string, unknown>) => Promise<unknown>;
-export type NativeToolPolicy = { disabled: boolean; allow: string[] | null; deny: string[] };
+export type NativeToolPolicy = { disabled: boolean; allow: string[] | null; deny: string[]; ceiling?: string[] };
 export type NativeToolSelection = { revision: string; state: unknown };
 export function toolSelection(value: unknown): NativeToolSelection {
 	if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid native tool selection");
@@ -33,7 +33,7 @@ export function contextSnapshot(value: unknown): NativeContextSnapshot {
 	const policy = input.toolRegistration as Partial<NativeToolPolicy> | undefined;
 	const names = (value: unknown): value is string[] => Array.isArray(value) && value.every(name => typeof name === "string");
 	if (!policy || typeof policy !== "object" || typeof policy.disabled !== "boolean" ||
-		(policy.allow !== null && !names(policy.allow)) || !names(policy.deny)) throw new Error("Invalid native tool registration policy");
+		(policy.allow !== null && !names(policy.allow)) || !names(policy.deny) || (policy.ceiling !== undefined && !names(policy.ceiling))) throw new Error("Invalid native tool registration policy");
 	if (!input.model || typeof input.model !== "object" || Array.isArray(input.model)) throw new Error("Invalid native context model");
 	const model = input.model as Record<string, unknown>;
 	if (typeof model.id !== "string" || typeof model.provider !== "string" || typeof model.api !== "string" || "headers" in model || "baseUrl" in model) throw new Error("Invalid public native context model");
@@ -50,7 +50,10 @@ export class NativeEffects {
 	private failure: unknown;
 	private failed = false;
 	add(effect: () => Promise<unknown>): void {
-		const task = this.pending.then(bindNativeSessionCallback(effect));
+		const task = this.pending.then(bindNativeSessionCallback(() => {
+			if (this.failed) throw this.failure;
+			return effect();
+		}));
 		this.pending = task.then(() => {}, error => { if (!this.failed) { this.failed = true; this.failure = error; } });
 		trackNativeSessionWork(task);
 	}
