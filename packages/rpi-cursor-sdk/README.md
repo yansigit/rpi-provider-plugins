@@ -95,3 +95,20 @@ persistence, API-key login, both provider stream entries, and origin cleanup.
 and acknowledgement failures. These are offline process-boundary checks. The
 native DLL dispatcher, complete host event/tool translation, per-child worker
 ownership, installation and live Cursor acceptance remain required.
+
+`src/native_host.rs` now supplies the Rust origin router used by the dispatcher.
+An invocation installs its captured native context before the worker can call
+back. Captured origins retain a restricted `sessions.persistenceLease` for late
+session writes, while tools/auth/UI use the original live callback context.
+Standing callbacks cannot borrow a root context, redirect an origin, or reopen
+one after release. Journal paths come from the host's captured storage location.
+Shutdown releases abandoned journal readers before draining host callbacks and
+releases late captures that race shutdown. The router is bounded to 128 origins.
+Its unit and real transport regression evidence is in
+`tests/native-host-evidence.json`; these checks do not yet load the Cursor DLL.
+
+Native catalog discovery resolves auth from the refresh callback itself. It
+cannot reuse the registry context captured by an earlier event or restore the
+worker process's inherited API key when the host reports no credentials. The
+ordinary retained Pi registry/credential path is unchanged. The complete retained
+suite passes 1,700 tests with two existing skips at this boundary.

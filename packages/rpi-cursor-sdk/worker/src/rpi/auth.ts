@@ -1,4 +1,4 @@
-import type { ApiKeyCredential, AuthPrompt, Provider } from "@earendil-works/pi-ai";
+import type { ApiKeyCredential, AuthPrompt, AuthResult, Provider } from "@earendil-works/pi-ai";
 
 type ObjectValue = Record<string, unknown>;
 function object(value: unknown): ObjectValue {
@@ -62,4 +62,20 @@ export async function cursorNativeAuth(provider: Provider, action: string, raw: 
 		return response("interaction", { kind: "input", title: error.prompt.message, secret: true, allowEmpty: true,
 			continuation: { kind: "cursor-api-key" } });
 	}
+}
+
+/** Validate the private host RequestAuth response before exposing the Pi auth shape. */
+export function nativeRequestAuth(response: unknown): AuthResult | undefined {
+	if (response === null) return undefined;
+	if (!response || typeof response !== "object" || Array.isArray(response)) throw new Error("Invalid native authentication response");
+	const value = response as Record<string, unknown>;
+	for (const key of ["apiKey", "baseUrl", "source"]) if (value[key] != null && typeof value[key] !== "string") throw new Error("Invalid native authentication text");
+	const strings = (input: unknown): Record<string, string> | undefined => {
+		if (input == null) return undefined;
+		if (typeof input !== "object" || Array.isArray(input) || Object.values(input).some(value => typeof value !== "string")) throw new Error("Invalid native authentication map");
+		return input as Record<string, string>;
+	};
+	return { auth: { ...(typeof value.apiKey === "string" ? { apiKey: value.apiKey } : {}),
+		...(typeof value.baseUrl === "string" ? { baseUrl: value.baseUrl } : {}), headers: strings(value.headers) },
+		env: strings(value.env), ...(typeof value.source === "string" ? { source: value.source } : {}) };
 }

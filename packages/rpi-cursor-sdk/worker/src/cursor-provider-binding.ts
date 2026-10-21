@@ -1,4 +1,4 @@
-import { publishCursorCatalog } from "./rpi/catalog.js";
+import { nativeCatalogAuth, publishCursorCatalog } from "./rpi/catalog.js";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import type { Model, Provider } from "@earendil-works/pi-ai";
 import { cursorApiKeyAuth, normalizeCursorApiKey, resolveCursorCredentialApiKey } from "./cursor-api-key.js";
@@ -97,10 +97,11 @@ export function registerCursorProviderBinding(
 			streamSimple: stream,
 			async refreshModels(context) {
 				if (binding.closed) return;
-				const resolved = await registry?.getProviderAuth("cursor");
+				const nativeAuth = nativeCatalogAuth(context);
+				const resolved = nativeAuth ? nativeAuth.value : await registry?.getProviderAuth("cursor");
 				context.signal.throwIfAborted();
 				const credential = context.credential;
-				const apiKey = registry
+				const apiKey = nativeAuth || registry
 					? normalizeCursorApiKey(resolved?.auth.apiKey)
 					: credential && credential.type !== "api_key" ? undefined
 						: await resolveCursorCredentialApiKey(credential, async () => process.env.CURSOR_API_KEY);

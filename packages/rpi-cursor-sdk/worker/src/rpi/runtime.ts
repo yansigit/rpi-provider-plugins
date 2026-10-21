@@ -2,7 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { createEventBus, type ExtensionCommandContext, type ExtensionContext, type ExtensionEvent, type ExtensionToolContext, type RegisteredTool } from "@earendil-works/pi-coding-agent";
 import type { Api, Context, Model, SimpleStreamOptions } from "@earendil-works/pi-ai";
 import { NativeCursorExtension } from "./extension.js";
-import { cursorNativeAuth } from "./auth.js";
+import { cursorNativeAuth, nativeRequestAuth } from "./auth.js";
 import { NativeCursorCatalog } from "./catalog.js";
 import { contextSnapshot, nativeContext, NativeEffects, type HostRequest, type NativeTools } from "./context.js";
 import { NativeSessionManager, NativeSessionOrigin } from "./session.js";
@@ -155,7 +155,10 @@ export class NativeCursorRuntime {
 		switch (method) {
 			case "runtime.configure": await this.configure(call); return null;
 			case "provider.auth": return cursorNativeAuth(this.extension.provider(), text(input.action), input.input, call.signal);
-			case "provider.catalog": return this.catalog!.refresh(input as Parameters<NativeCursorCatalog["refresh"]>[0], request => call.host("native", request), call.signal);
+			case "provider.catalog": {
+				const auth = nativeRequestAuth(await call.host("native", { port: "auth", action: "resolve", providerId: "cursor" }));
+				return this.catalog!.refresh(input as Parameters<NativeCursorCatalog["refresh"]>[0], request => call.host("native", request), call.signal, auth);
+			}
 			case "provider.stream": return this.withContext(call, async frame => {
 				const entry = input.entry;
 				if (entry !== "stream" && entry !== "streamSimple") throw new Error("Invalid Cursor stream entry");

@@ -2569,7 +2569,31 @@ dependencies = [
  "jsonschema",
  "regex",
  "reqwest 0.12.28",
- "rpi-telemetry 0.7.0",
+ "rpi-telemetry 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=572f969b35dab9619c64166a70fa36d64fce271b)",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "rpi-ai"
+version = "0.7.0"
+source = "git+https://github.com/yansigit/pi-rust?rev=bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc#bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc"
+dependencies = [
+ "async-trait",
+ "base64 0.22.1",
+ "bytes",
+ "eventsource-stream",
+ "futures",
+ "jsonschema",
+ "regex",
+ "reqwest 0.12.28",
+ "rpi-telemetry 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc)",
  "schemars",
  "serde",
  "serde_json",
@@ -2603,7 +2627,7 @@ dependencies = [
  "regex",
  "reqwest 0.12.28",
  "rpi-node-collation",
- "rpi-plugin-sdk 0.7.0",
+ "rpi-plugin-sdk 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=572f969b35dab9619c64166a70fa36d64fce271b)",
  "serde",
  "serde_json",
  "sha2",
@@ -2643,6 +2667,7 @@ dependencies = [
  "fs2",
  "getrandom 0.2.17",
  "libc",
+ "rpi-plugin-sdk 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc)",
  "serde",
  "serde_json",
  "sha2",
@@ -2821,7 +2846,21 @@ source = "git+https://github.com/yansigit/pi-rust?rev=572f969b35dab9619c64166a70
 dependencies = [
  "async-trait",
  "reqwest 0.12.28",
- "rpi-ai 0.7.0",
+ "rpi-ai 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=572f969b35dab9619c64166a70fa36d64fce271b)",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-util",
+]
+
+[[package]]
+name = "rpi-plugin-sdk"
+version = "0.7.0"
+source = "git+https://github.com/yansigit/pi-rust?rev=bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc#bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc"
+dependencies = [
+ "async-trait",
+ "reqwest 0.12.28",
+ "rpi-ai 0.7.0 (git+https://github.com/yansigit/pi-rust?rev=bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc)",
  "serde",
  "serde_json",
  "tokio",
@@ -2899,6 +2938,17 @@ dependencies = [
 name = "rpi-telemetry"
 version = "0.7.0"
 source = "git+https://github.com/yansigit/pi-rust?rev=572f969b35dab9619c64166a70fa36d64fce271b#572f969b35dab9619c64166a70fa36d64fce271b"
+dependencies = [
+ "async-trait",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "rpi-telemetry"
+version = "0.7.0"
+source = "git+https://github.com/yansigit/pi-rust?rev=bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc#bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc"
 dependencies = [
  "async-trait",
  "serde",

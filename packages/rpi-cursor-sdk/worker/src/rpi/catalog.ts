@@ -1,7 +1,13 @@
-import type { Model, Provider, RefreshModelsContext } from "@earendil-works/pi-ai";
+import type { AuthResult, Model, Provider, RefreshModelsContext } from "@earendil-works/pi-ai";
 
 type Publisher = (models: readonly Model<"cursor-sdk">[], update: () => void) => Promise<boolean>;
 const publishers = new WeakMap<RefreshModelsContext, Publisher>();
+const authentications = new WeakMap<RefreshModelsContext, AuthResult | undefined>();
+
+/** Each native refresh resolves through its current host callback, never a previous event context. */
+export function nativeCatalogAuth(context: RefreshModelsContext): { value: AuthResult | undefined } | undefined {
+	return authentications.has(context) ? { value: authentications.get(context) } : undefined;
+}
 
 /** Native publication acknowledges the candidate before changing adapter-private catalog state. */
 export function publishCursorCatalog(context: RefreshModelsContext, models: readonly Model<"cursor-sdk">[], update: () => void): Promise<boolean> {
@@ -19,7 +25,7 @@ export class NativeCursorCatalog {
 	async settled(): Promise<void> {
 		for (;;) { const pending = this.pending; await pending; if (pending === this.pending) return; }
 	}
-	async refresh(input: NativeRefresh, request: Request, signal: AbortSignal): Promise<unknown> {
+	async refresh(input: NativeRefresh, request: Request, signal: AbortSignal, auth?: AuthResult): Promise<unknown> {
 		if (typeof input.publicationId !== "string" || !input.publicationId || typeof input.allowNetwork !== "boolean" || typeof input.force !== "boolean") {
 			throw new Error("Invalid native Cursor catalog refresh");
 		}
@@ -29,6 +35,7 @@ export class NativeCursorCatalog {
 			allowNetwork: input.allowNetwork, force: input.force, signal,
 			publish: async () => { throw new Error("Native Cursor catalog requires candidate publication"); },
 		};
+		authentications.set(context, auth);
 		publishers.set(context, (models, update) => {
 			// Pi serializes publication, while overlapping discovery can be superseded independently.
 			const operation = this.pending.then(async () => {
@@ -50,6 +57,6 @@ export class NativeCursorCatalog {
 		try {
 			await this.provider.refreshModels?.(context);
 			return published ? { published: true } : { models: this.provider.getModels() };
-		} finally { publishers.delete(context); }
+		} finally { publishers.delete(context); authentications.delete(context); }
 	}
 }

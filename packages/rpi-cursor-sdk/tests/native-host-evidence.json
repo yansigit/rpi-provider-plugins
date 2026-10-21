@@ -1,0 +1,75 @@
+{
+  "status": "origin router and callback-owned catalog auth verified; Cursor DLL wiring pending",
+  "platform": "Linux",
+  "node": "24.22.0",
+  "compiler": "Rust 1.78.0, warnings denied",
+  "sdkHostPin": "bd3c2fd6c8b0950da4e0b698d98a0ef9fe4940fc",
+  "checks": {
+    "retained": {
+      "log": "/tmp/rpi-cursor-native-auth-suite.log",
+      "sha256": "6af3342fdb7bb304a68aa3f1f1ca37b4544016009af7d2c01ed2c5808b99cdd0",
+      "passed": 1700,
+      "ignoredOrSkipped": 2
+    },
+    "authBoundary": {
+      "log": "/tmp/rpi-cursor-native-catalog-auth-tests.log",
+      "sha256": "e9cbae2ca2560592a1cdbc2ef7c3d933c619e6a9675029c00b4710ac0db97b34",
+      "passed": 11,
+      "ignoredOrSkipped": 0
+    },
+    "types": {
+      "log": "/tmp/rpi-cursor-native-catalog-auth-types.log",
+      "sha256": "22d09ca74478a5aadae4940e6ac6223bc2c91baf51ad4037f43fc15cbacf3d3b",
+      "passed": true,
+      "ignoredOrSkipped": 0
+    },
+    "build": {
+      "log": "/tmp/rpi-cursor-native-catalog-auth-build.log",
+      "sha256": "8cf4a4b0b20887b83ec3b11ad1e1e1e2267fbf15ee3bb3715323d743806b5a04",
+      "passed": true,
+      "ignoredOrSkipped": 0
+    },
+    "packagedProcess": {
+      "log": "/tmp/rpi-cursor-native-auth-process.log",
+      "sha256": "d6f47e1aa4c919c1d97dcb59db5d19a02b17bf2be808767211afe691a45b571c",
+      "passed": 6,
+      "ignoredOrSkipped": 0
+    },
+    "rustPackage": {
+      "log": "/tmp/rpi-cursor-native-router-package.log",
+      "sha256": "0c518eb8c613bef54d09b415032b0d8f0e6d0b6cbd70ce421e677860d4917bd2",
+      "passed": 12,
+      "ignoredOrSkipped": 13
+    },
+    "rustWorker": {
+      "log": "/tmp/rpi-cursor-native-router-worker.log",
+      "sha256": "119798f1effc32c7a24399e2ad45451ca27c440a9c09349cd6c4f39e80bcd6b7",
+      "passed": 11,
+      "ignoredOrSkipped": 0
+    },
+    "rustSdkPin": {
+      "log": "/tmp/rpi-cursor-native-sdk-pin.log",
+      "sha256": "01902b861d7b299c2bd9f1cfc5c4be1d7382f03cc52b9d2102c57414692f0eaf",
+      "passed": true,
+      "ignoredOrSkipped": 0
+    }
+  },
+  "review": {
+    "kind": "Manual deep review of exact router, callbacks, tests, package dependency and retained adapter boundary diff",
+    "resolved": [
+      "Capture live SDK context on callback thread before asynchronous dispatch",
+      "Reject direct session mutations that bypass origin lifetime tracking",
+      "Close late-initialized journals after origin release",
+      "Keep native refresh auth distinct from stale event registry and inherited process credentials",
+      "Original Pi auth path stays active outside the native refresh context"
+    ]
+  },
+  "remaining": [
+    "Native library exports and actual retained worker registration",
+    "Installed assets, complete event/tool translation and child runtime lifetime",
+    "Full local, cloud, recovery and composition differential acceptance",
+    "Imports and distribution",
+    "macOS/Windows execution",
+    "Cursor live local/cloud acceptance not tested"
+  ]
+}
