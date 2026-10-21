@@ -68,3 +68,21 @@ The UTF-8 decoder uses the existing encoding_rs dependency, pinned to 0.8.35 for
 Rust 1.78. JSON enables exact float round trips; usage values are compared without
 rounding tolerances. The host compatibility contract also retains Pi 1.3.0's
 `durationMs` on terminal results. Live acceptance remains not tested.
+
+HTTP request framing and proxy selection are tested separately through the
+original transport's intercepted TLS boundary. `transport-reference.test.ts`
+runs on Node 24 (the integrated reference runtime), because Bun's response-header
+iteration differs for `Set-Cookie`:
+
+```sh
+RPI_REFERENCE_DIR=/path/to/antigravity \
+RPI_REFERENCE_OUTPUT="$PWD/tests/fixtures/transport.json" \
+  node --experimental-test-module-mocks --test scripts/transport-reference.test.ts
+```
+
+The native serializer matches 66 raw requests, including header order, chunked
+bodies, empty-body behavior and proxy precedence; 64 user-agent variants and
+eight response-header cases are retained too. It preserves the upstream rule
+that `Content-Length` is removed only if `Content-Encoding: gzip` appeared first.
+These are framing tests, not working native TLS or live transport acceptance.
+The URL dependency's IDNA adapter is locked to 1.2.0 with ICU 1.5 for Rust 1.78.

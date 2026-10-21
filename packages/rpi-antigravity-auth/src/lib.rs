@@ -6,6 +6,7 @@ pub mod redaction;
 pub mod request;
 pub mod sse;
 pub mod stream;
+pub mod transport;
 
 mod json;
 pub mod schema;
