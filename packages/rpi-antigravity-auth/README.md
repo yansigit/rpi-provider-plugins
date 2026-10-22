@@ -308,6 +308,15 @@ malformed-store handling and EOF with an open dialog. Reproduce with
 `RPI_TEST_HOST`, `RPI_TEST_PROVIDER_LIBRARY`, `RPI_PRIVATE_TMP`,
 `RPI_REFERENCE_NODE` (Node 24+) and `RPI_REFERENCE_DIR` (locked upstream checkout).
 
+The AG-3 references regenerate `tests/ag3-slot-lock.json` (36 lease, 5 credential
+slot and 1 competing-process case) and `tests/ag3-menu.json` (90 walks) only after
+asserting that `RPI_REFERENCE_DIR` is at the pinned `a97f905` commit and that every
+`upstreamSha256` in `tests/ag3-evidence.json` matches; a pin, hash or runtime
+mismatch exits non-zero before upstream code is imported. Their owner, directory
+and auth-identity substitutions plus the `ENOTDIR`-to-absent mapping are listed in
+[tests/README.md](tests/README.md) and applied identically by the reference script
+and the Rust test, so no wrong value is hidden.
+
 Complete fault/cancellation coverage, production connection diagnostics, other
 platform execution and live vault acceptance remain pending.
 This is not a parity-complete package.

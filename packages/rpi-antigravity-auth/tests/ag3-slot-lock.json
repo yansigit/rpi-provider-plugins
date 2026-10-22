@@ -1,0 +1,2635 @@
+{
+  "runtime": "v24.22.0",
+  "platform": "linux",
+  "lease": [
+    {
+      "spec": {
+        "name": "corrupt ownerId number live",
+        "initial": {
+          "ownerId": 7,
+          "expiresAt": 110000
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": 7,
+              "expiresAt": 110000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt ownerId number stale",
+        "initial": {
+          "ownerId": 7,
+          "expiresAt": 90000
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt ownerId bool live",
+        "initial": {
+          "ownerId": true,
+          "expiresAt": 110000
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": true,
+              "expiresAt": 110000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt ownerId array live",
+        "initial": {
+          "ownerId": [
+            "x"
+          ],
+          "expiresAt": 110000
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": [
+                "x"
+              ],
+              "expiresAt": 110000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt ownerId object live",
+        "initial": {
+          "ownerId": {
+            "a": 1
+          },
+          "expiresAt": 110000
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": {
+                "a": 1
+              },
+              "expiresAt": 110000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt ownerId null live",
+        "initial": {
+          "ownerId": null,
+          "expiresAt": 110000
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": null,
+              "expiresAt": 110000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt true",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": true
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt false",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": false
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt array empty",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": []
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt array one",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": [
+            90000
+          ]
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt array many",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": [
+            1,
+            2
+          ]
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": [
+                1,
+                2
+              ]
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt object",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": {}
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": {}
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt hex",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": "0x10"
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt binary",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": "0b100"
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt exponent",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": "1e5"
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt padded",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": "  90000  "
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt negative",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": -1
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt expiresAt zero",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 0
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "corrupt extra fields",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 110000,
+          "extra": 1
+        },
+        "age": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 110000,
+              "extra": 1
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "symlink to live owner",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 110000
+        },
+        "age": 0,
+        "symlink": true,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 110000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "symlink to stale owner",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "age": 0,
+        "symlink": true,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "legacy directory owner",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "legacy": true,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "legacy directory malformed",
+        "legacy": true,
+        "malformedOwner": true,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker regular file fresh",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "markerKind": "file",
+        "markerAge": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 90000
+            },
+            "marker": null,
+            "markerKind": "file"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker regular file stale",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "markerKind": "file",
+        "markerAge": 6000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "stale-marker-stat",
+        "stale-marker-claimed",
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker malformed owner fresh",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "markerKind": "malformed",
+        "markerAge": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 90000
+            },
+            "marker": null,
+            "markerKind": "directory"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker wrong owner fresh",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "markerKind": "other",
+        "markerAge": 0,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": false,
+          "after": {
+            "lock": {
+              "ownerId": "previous",
+              "expiresAt": 90000
+            },
+            "marker": "other-marker",
+            "markerKind": "directory"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "marker wrong owner stale",
+        "initial": {
+          "ownerId": "previous",
+          "expiresAt": 90000
+        },
+        "markerKind": "other",
+        "markerAge": 6000,
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "lock-read-ready",
+        "stale-lock-observed",
+        "stale-marker-stat",
+        "stale-marker-claimed",
+        "lock-read-ready",
+        "stale-lock-observed",
+        "eviction-marker-acquired",
+        "lock-read-ready",
+        "stale-lock-confirmed",
+        "stale-lock-removed",
+        "stale-lock-recreated",
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "assert malformed while held",
+        "steps": [
+          "corruptLock",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "corruptLock",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "assert directory while held",
+        "steps": [
+          "corruptLockDir",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "corruptLockDir",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "assert removed while held",
+        "steps": [
+          "removeLock",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "removeLock",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "renew removed while held",
+        "renew": true,
+        "steps": [
+          "removeLock",
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-finished",
+        "eviction-marker-acquired"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "removeLock",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "renew malformed while held",
+        "renew": true,
+        "steps": [
+          "corruptLock",
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-finished",
+        "eviction-marker-acquired"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "corruptLock",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "error": {
+              "name": "LockOwnershipError",
+              "message": "Lost ceremony lock for <DIR>/state.json"
+            }
+          },
+          "lost": true,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": true,
+          "after": {
+            "lock": "malformed",
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "renew marker stolen while held",
+        "renew": true,
+        "race": {
+          "step": "renewal-write-ready",
+          "mutation": "marker"
+        },
+        "steps": [
+          "renew",
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "renewal-owner-confirmed",
+        "renewal-write-fenced",
+        "renewal-write-ready",
+        "renewal-finished"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "renew",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker",
+            "markerKind": "directory"
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker",
+            "markerKind": "directory"
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker",
+            "markerKind": "directory"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "release marker stolen while held",
+        "renew": true,
+        "race": {
+          "step": "release-owner-confirmed",
+          "mutation": "marker"
+        },
+        "steps": [
+          "assert",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired",
+        "release-owner-confirmed"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "assert",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": "other-marker",
+            "markerKind": "directory"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "release already succeeded",
+        "steps": [
+          "removeLock",
+          "release"
+        ]
+      },
+      "trace": [
+        "eviction-marker-acquired"
+      ],
+      "results": [
+        {
+          "operation": "acquire",
+          "acquired": true,
+          "after": {
+            "lock": {
+              "ownerId": "<OWNER>",
+              "expiresAt": 130000
+            },
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "removeLock",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        },
+        {
+          "operation": "release",
+          "result": {
+            "ok": true
+          },
+          "lost": false,
+          "after": {
+            "lock": null,
+            "marker": null,
+            "markerKind": null
+          }
+        }
+      ]
+    }
+  ],
+  "slot": [
+    {
+      "spec": {
+        "name": "second instance restores after first enters",
+        "raw": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}",
+        "steps": [
+          {
+            "op": "enter"
+          },
+          {
+            "op": "otherInspect"
+          },
+          {
+            "op": "otherExit"
+          },
+          {
+            "op": "inspect"
+          },
+          {
+            "op": "exit"
+          }
+        ]
+      },
+      "results": [
+        {
+          "outcome": {
+            "value": null
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": {
+              "slot": "placeholder",
+              "stash": "valid"
+            }
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": "restored"
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written",
+            "before-rename-auth",
+            "auth-written",
+            "stash-deleted"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        },
+        {
+          "outcome": {
+            "value": {
+              "slot": "original",
+              "stash": "missing"
+            }
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written",
+            "before-rename-auth",
+            "auth-written",
+            "stash-deleted"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        },
+        {
+          "outcome": {
+            "value": "nothing-to-do"
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written",
+            "before-rename-auth",
+            "auth-written",
+            "stash-deleted"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "second instance conflicts after foreign login",
+        "raw": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}",
+        "steps": [
+          {
+            "op": "enter"
+          },
+          {
+            "op": "write",
+            "target": "auth",
+            "raw": "{\"google\":{\"key\":\"new login\"},\"other\":{}}"
+          },
+          {
+            "op": "otherInspect"
+          },
+          {
+            "op": "otherExit"
+          },
+          {
+            "op": "inspect"
+          },
+          {
+            "op": "exit"
+          }
+        ]
+      },
+      "results": [
+        {
+          "outcome": {
+            "value": null
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {},
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"new login\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": {
+              "slot": "foreign",
+              "stash": "valid"
+            }
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"new login\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": "conflict"
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"new login\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": {
+              "slot": "foreign",
+              "stash": "valid"
+            }
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"new login\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": "conflict"
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"new login\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "stash parent is a file",
+        "raw": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}",
+        "stashDirFile": true,
+        "steps": [
+          {
+            "op": "enter"
+          },
+          {
+            "op": "inspect"
+          },
+          {
+            "op": "exit"
+          }
+        ]
+      },
+      "results": [
+        {
+          "outcome": {
+            "error": {
+              "name": "PiSlotError",
+              "message": "Pi slot: io",
+              "code": "io"
+            }
+          },
+          "events": [],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        },
+        {
+          "outcome": {
+            "error": {
+              "name": "PiSlotError",
+              "message": "Pi slot: io",
+              "code": "io"
+            }
+          },
+          "events": [],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        },
+        {
+          "outcome": {
+            "error": {
+              "name": "PiSlotError",
+              "message": "Pi slot: io",
+              "code": "io"
+            }
+          },
+          "events": [],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "interrupted auth rename leaves recoverable stash",
+        "raw": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}",
+        "hook": "before-rename-auth",
+        "steps": [
+          {
+            "op": "enter"
+          },
+          {
+            "op": "inspect"
+          },
+          {
+            "op": "enter"
+          },
+          {
+            "op": "inspect"
+          },
+          {
+            "op": "exit"
+          }
+        ]
+      },
+      "results": [
+        {
+          "outcome": {
+            "error": {
+              "name": "PiSlotError",
+              "message": "Pi slot: io",
+              "code": "io"
+            }
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": {
+              "slot": "original",
+              "stash": "valid"
+            }
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": null
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": {
+              "slot": "placeholder",
+              "stash": "valid"
+            }
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": "restored"
+          },
+          "events": [
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "before-rename-auth",
+            "auth-written",
+            "before-rename-auth",
+            "auth-written",
+            "stash-deleted"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        }
+      ]
+    },
+    {
+      "spec": {
+        "name": "interrupted stash rename leaves original auth",
+        "raw": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}",
+        "hook": "before-rename-stash",
+        "steps": [
+          {
+            "op": "enter"
+          },
+          {
+            "op": "inspect"
+          },
+          {
+            "op": "enter"
+          },
+          {
+            "op": "exit"
+          }
+        ]
+      },
+      "results": [
+        {
+          "outcome": {
+            "error": {
+              "name": "PiSlotError",
+              "message": "Pi slot: io",
+              "code": "io"
+            }
+          },
+          "events": [
+            "before-rename-stash"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        },
+        {
+          "outcome": {
+            "value": {
+              "slot": "original",
+              "stash": "missing"
+            }
+          },
+          "events": [
+            "before-rename-stash"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        },
+        {
+          "outcome": {
+            "value": null
+          },
+          "events": [
+            "before-rename-stash",
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"type\":\"api_key\",\"key\":\"antigravity-vault-custody\"},\"other\":{}}"
+          },
+          "stash": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"version\":1,\"provider\":\"google\",\"authIdentity\":\"<auth-identity>\",\"placeholderIdentity\":\"a86751ffa2eb5bc94bf38f6361d8a953a14e37d6dd017494a7fe77f0438363b7\",\"entry\":{\"key\":\"fixture-original\"},\"entryJson\":\"{\\\"key\\\":\\\"fixture-original\\\"}\",\"sha256\":\"8ae45898daf7a1c05725bad7bba26679d4376277006dd58f67ae72ac89062a8d\"}"
+          }
+        },
+        {
+          "outcome": {
+            "value": "restored"
+          },
+          "events": [
+            "before-rename-stash",
+            "before-rename-stash",
+            "stash-written",
+            "before-rename-auth",
+            "auth-written",
+            "before-rename-auth",
+            "auth-written",
+            "stash-deleted"
+          ],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        }
+      ]
+    }
+  ],
+  "process": [
+    {
+      "name": "competing child holds then hands off",
+      "childExit": 0,
+      "contender": null,
+      "successor": {
+        "ownerId": "<OWNER>",
+        "expiresAt": 130000
+      },
+      "leftover": [
+        "held.json",
+        "release"
+      ]
+    }
+  ]
+}
