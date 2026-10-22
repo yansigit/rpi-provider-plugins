@@ -1,0 +1,46 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "cloud-env-type-invalid",
+  "description": "Cloud environment type must be cloud, pool or machine.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Make a small change in the cloud.",
+    "extensions": [],
+    "args": [
+      "--cursor-runtime",
+      "cloud",
+      "--cursor-cloud-ack",
+      "--cursor-cloud-repo",
+      "https://github.com/example-org/sample-repo",
+      "--cursor-cloud-env-type",
+      "pod"
+    ],
+    "followUps": []
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "repositories": [
+    {
+      "url": "https://github.com/example-org/sample-repo"
+    }
+  ],
+  "turns": [],
+  "expect": {
+    "sdkCalls": {},
+    "sendErrorIncludes": "expected cloud, pool, or machine"
+  }
+}

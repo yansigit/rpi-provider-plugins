@@ -1,0 +1,44 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "cloud-repo-invalid",
+  "description": "Cloud repository must be an https URL without credentials, query parameters or fragments.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Make a small change in the cloud.",
+    "extensions": [],
+    "args": [
+      "--cursor-runtime",
+      "cloud",
+      "--cursor-cloud-ack",
+      "--cursor-cloud-repo",
+      "http://github.com/example-org/sample-repo"
+    ],
+    "followUps": []
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "repositories": [
+    {
+      "url": "https://github.com/example-org/sample-repo"
+    }
+  ],
+  "turns": [],
+  "expect": {
+    "sdkCalls": {},
+    "sendErrorIncludes": "must be an HTTPS repository URL"
+  }
+}
