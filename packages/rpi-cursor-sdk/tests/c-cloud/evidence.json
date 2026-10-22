@@ -1,0 +1,1357 @@
+{
+  "status": "pass",
+  "schema": "rpi-cursor-c-cloud-evidence/1",
+  "role": "candidate",
+  "purpose": "Offline cloud scenarios through the retained rpi Cursor worker (private peer protocol, emulated native host) against the fake @cursor/sdk. No Cursor network access; wall clock and SDK ids are fixed.",
+  "runtime": {
+    "node": "24.22.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "clock": "2026-01-01T00:00:00.000Z",
+  "referenceEvidenceSha256": "ab7436048483f81c7722f5fbb4ef0d1eb5d1e06c5f330b25b1017d77ef8b9800",
+  "upstream": {
+    "piCursorSdkCommit": "f337dc4",
+    "piVersion": "1.3.0",
+    "cursorSdkVersion": "1.0.37",
+    "piCursorSdkVersion": "0.5.3"
+  },
+  "toolchains": {
+    "rustMinimum": "1.78.0",
+    "rustDefault": "1.95.0",
+    "node": "24.22.0"
+  },
+  "scenarioCount": 13,
+  "caseCount": 13,
+  "normalization": {
+    "cloudCalls": "Agent.create/archive/delete/get/list and cloud agent.send records are kept whole; only agent.send message text and image bytes are dropped because prompt/image assembly is C01, not C06.",
+    "journal": "Whole durable entries are kept; only the per-run sessionId, sessionFile and anchorEntryId values are replaced by <session>/<file>/<anchor>.",
+    "lifecycle": "Complete entry data payloads from the cursor-cloud-lifecycle session entries.",
+    "clock": "RPI_CURSOR_FAKE_CLOCK freezes Date for both runtimes; fake SDK agent ids come from a counter."
+  },
+  "compared": [
+    "sdkCalls",
+    "cloudCalls",
+    "lifecycle",
+    "lifecycleCounts",
+    "journal",
+    "sendError"
+  ],
+  "files": {
+    "lib.mjs": "e6f6c8667b62f0cbd3cf05e4f99b46bb74c46a14775e77d3bc03a287ed38488f",
+    "run-reference.mjs": "9c68de02d94278b7495fd9df8c0b98f8ae01bf408894e4a501c6d6e6386bd9aa",
+    "run-rpi.mjs": "75c4a59c4e7d91794eeec781bafaad486ded4c0b209bdffebaaa2e93f53e2ba8",
+    "fake-sdk/sdk.mjs": "beb67a083672b089ae82babe1fea67653e8b27ee642e0551e134aa81e0fea079",
+    "fake-sdk/hooks.mjs": "852dd2a9857466891cc8333bcf2e95116aac11533cbdf665083b1f254eea104f",
+    "fake-sdk/register.mjs": "17124862a6e65ea1418964b70682280ffbd91dd6a65bcd03ea9d0e24af18fb9f",
+    "fake-sdk/sqlite.mjs": "7fcebb18b2e35ec1c45ae2efc6df7456e8c70ec66b9c8b555150063ddebf7dc1"
+  },
+  "scenarios": [
+    {
+      "name": "cloud-ack-missing",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-ack-missing.json",
+      "scenarioSha256": "a83dce4c1b72bff723ae423ea72ddd68e77e06d2a0a8cd2a9f9384c3f5cbbfec",
+      "observed": {
+        "sdkCalls": {},
+        "cloudCalls": [],
+        "lifecycle": [],
+        "lifecycleCounts": {},
+        "journal": [],
+        "sendError": "Cursor cloud runtime is not ready to start.\n- Cursor cloud runtime requires first-use acknowledgement; run /cursor-runtime cloud in an interactive session or pass --cursor-cloud-ack / PI_CURSOR_CLOUD_ACK=1.\nUse --cursor-runtime local or /cursor-runtime local to run with the local Cursor SDK agent."
+      },
+      "notifications": [],
+      "expect": {
+        "sdkCalls": {},
+        "sendErrorIncludes": "requires first-use acknowledgement"
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-archive-uncertain",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-archive-uncertain.json",
+      "scenarioSha256": "cac077e605e41544b4d052c04b8246daed49821a2953c030302accee7e5e247b",
+      "observed": {
+        "sdkCalls": {
+          "Agent.archive": 1,
+          "Agent.create": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.send": 1
+        },
+        "cloudCalls": [
+          {
+            "kind": "sdk_call",
+            "api": "Agent.create",
+            "options": {
+              "apiKey": "<redacted>",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "mode": "agent",
+              "cloud": {
+                "repos": [
+                  {
+                    "url": "https://github.com/example-org/sample-repo"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.send",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "runtime": "cloud",
+            "imageCount": 0,
+            "options": {
+              "mode": "agent",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "onDelta": "function",
+              "onStep": "function"
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.getUsage",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.listArtifacts",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.asyncDispose",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "Agent.archive",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "options": {
+              "apiKey": "<redacted>"
+            }
+          }
+        ],
+        "lifecycle": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ]
+          },
+          {
+            "action": "archive_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          }
+        ],
+        "lifecycleCounts": {
+          "archive_intent": 1,
+          "record": 3
+        },
+        "journal": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ],
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "archive_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          }
+        ],
+        "sendError": null
+      },
+      "notifications": [
+        {
+          "kind": "info",
+          "text": "Recorded Cursor cloud agents for this session branch:\n- bc-00000000-0000-4000-8000-000000000001 · run run-00000000-0000-4000-8000-000000000001 · branch main · PR https://github.com/example-org/sample-repo/pull/1"
+        },
+        {
+          "kind": "error",
+          "text": "Cursor cloud archive for agent bc-00000000-0000-4000-8000-000000000001 is unresolved: injected cloud sync failure Inspect it in the Cursor Cloud dashboard before retrying."
+        },
+        {
+          "kind": "info",
+          "text": "Recorded Cursor cloud agents for this session branch:\n- bc-00000000-0000-4000-8000-000000000001 (archive pending) · run run-00000000-0000-4000-8000-000000000001 · branch main · PR https://github.com/example-org/sample-repo/pull/1"
+        },
+        {
+          "kind": "error",
+          "text": "Cursor cloud agent bc-00000000-0000-4000-8000-000000000001 has an unresolved archive request; inspect it in the Cursor Cloud dashboard before retrying."
+        }
+      ],
+      "expect": {
+        "sdkCalls": {
+          "Agent.create": 1,
+          "agent.send": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.asyncDispose": 1,
+          "Agent.archive": 1
+        },
+        "noSendError": true
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-archive-unknown",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-archive-unknown.json",
+      "scenarioSha256": "8a065450630aa171ce782d043fdbb8bc79d6432a9d2015a531dd1982d4379faf",
+      "observed": {
+        "sdkCalls": {
+          "Agent.create": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.send": 1
+        },
+        "cloudCalls": [
+          {
+            "kind": "sdk_call",
+            "api": "Agent.create",
+            "options": {
+              "apiKey": "<redacted>",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "mode": "agent",
+              "cloud": {
+                "repos": [
+                  {
+                    "url": "https://github.com/example-org/sample-repo"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.send",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "runtime": "cloud",
+            "imageCount": 0,
+            "options": {
+              "mode": "agent",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "onDelta": "function",
+              "onStep": "function"
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.getUsage",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.listArtifacts",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.asyncDispose",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "lifecycle": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ]
+          }
+        ],
+        "lifecycleCounts": {
+          "record": 3
+        },
+        "journal": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ],
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          }
+        ],
+        "sendError": null
+      },
+      "notifications": [
+        {
+          "kind": "info",
+          "text": "Recorded Cursor cloud agents for this session branch:\n- bc-00000000-0000-4000-8000-000000000001 · run run-00000000-0000-4000-8000-000000000001 · branch main · PR https://github.com/example-org/sample-repo/pull/1"
+        },
+        {
+          "kind": "error",
+          "text": "Cursor cloud agent bc-00000000-0000-4000-8000-000000000002 is not recorded in this session branch."
+        }
+      ],
+      "expect": {
+        "sdkCalls": {
+          "Agent.create": 1,
+          "agent.send": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.asyncDispose": 1
+        },
+        "noSendError": true
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-branch-invalid",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-branch-invalid.json",
+      "scenarioSha256": "56a010846f12142dceb0d29e0115464fedf3d9255443cd90a0c3319751d5fd37",
+      "observed": {
+        "sdkCalls": {},
+        "cloudCalls": [],
+        "lifecycle": [],
+        "lifecycleCounts": {},
+        "journal": [],
+        "sendError": "Cursor cloud runtime is not ready to start.\n- Cursor cloud branch/ref must be a valid Git branch name, refs/heads/<branch>, or full commit SHA; invalid branch names and other refs/* are unsupported.\nUse --cursor-runtime local or /cursor-runtime local to run with the local Cursor SDK agent."
+      },
+      "notifications": [],
+      "expect": {
+        "sdkCalls": {},
+        "sendErrorIncludes": "must be a valid Git branch name"
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-branch-no-repo",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-branch-no-repo.json",
+      "scenarioSha256": "04960f0fcb2893e32c43973676ba07143cad53260cc4605a845f5fcdbb5a123e",
+      "observed": {
+        "sdkCalls": {},
+        "cloudCalls": [],
+        "lifecycle": [],
+        "lifecycleCounts": {},
+        "journal": [],
+        "sendError": "Cursor cloud runtime is not ready to start.\n- Cursor cloud branch/ref requires --cursor-cloud-repo because the installed Cursor SDK supports startingRef only on cloud.repos entries.\nUse --cursor-runtime local or /cursor-runtime local to run with the local Cursor SDK agent."
+      },
+      "notifications": [],
+      "expect": {
+        "sdkCalls": {},
+        "sendErrorIncludes": "requires --cursor-cloud-repo"
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-create-archive",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-create-archive.json",
+      "scenarioSha256": "fc86beaa6ff35433aae80159f0c2233e6f35de35ba82278e449fa8ad4d05c486",
+      "observed": {
+        "sdkCalls": {
+          "Agent.archive": 1,
+          "Agent.create": 1,
+          "Agent.delete": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.send": 1
+        },
+        "cloudCalls": [
+          {
+            "kind": "sdk_call",
+            "api": "Agent.create",
+            "options": {
+              "apiKey": "<redacted>",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "mode": "agent",
+              "cloud": {
+                "env": {
+                  "type": "pool",
+                  "name": "fake-pool"
+                },
+                "repos": [
+                  {
+                    "url": "https://github.com/example-org/sample-repo",
+                    "startingRef": "main"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.send",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "runtime": "cloud",
+            "imageCount": 0,
+            "options": {
+              "mode": "agent",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "onDelta": "function",
+              "onStep": "function"
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.getUsage",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.listArtifacts",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.asyncDispose",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "Agent.archive",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "options": {
+              "apiKey": "<redacted>"
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "Agent.delete",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "options": {
+              "apiKey": "<redacted>"
+            }
+          }
+        ],
+        "lifecycle": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ]
+          },
+          {
+            "action": "archive_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "archive",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "delete_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "delete",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          }
+        ],
+        "lifecycleCounts": {
+          "archive": 1,
+          "archive_intent": 1,
+          "delete": 1,
+          "delete_intent": 1,
+          "record": 3
+        },
+        "journal": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ],
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "archive_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "archive",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "delete_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "delete",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          }
+        ],
+        "sendError": null
+      },
+      "notifications": [
+        {
+          "kind": "info",
+          "text": "Recorded Cursor cloud agents for this session branch:\n- bc-00000000-0000-4000-8000-000000000001 · run run-00000000-0000-4000-8000-000000000001 · branch main · PR https://github.com/example-org/sample-repo/pull/1"
+        },
+        {
+          "kind": "info",
+          "text": "Cursor cloud agent bc-00000000-0000-4000-8000-000000000001 archived."
+        },
+        {
+          "kind": "info",
+          "text": "Cursor cloud agent bc-00000000-0000-4000-8000-000000000001 deleted."
+        }
+      ],
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.archive": 1,
+          "Agent.create": 1,
+          "Agent.delete": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.send": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "piToolExecutions": {},
+        "violations": 0
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-delete-without-yes",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-delete-without-yes.json",
+      "scenarioSha256": "86def43a9d523315bfe5f4143acdc538a7157eebed1d12990f90de41960c6f87",
+      "observed": {
+        "sdkCalls": {
+          "Agent.create": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.send": 1
+        },
+        "cloudCalls": [
+          {
+            "kind": "sdk_call",
+            "api": "Agent.create",
+            "options": {
+              "apiKey": "<redacted>",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "mode": "agent",
+              "cloud": {
+                "repos": [
+                  {
+                    "url": "https://github.com/example-org/sample-repo"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.send",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "runtime": "cloud",
+            "imageCount": 0,
+            "options": {
+              "mode": "agent",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "onDelta": "function",
+              "onStep": "function"
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.getUsage",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.listArtifacts",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.asyncDispose",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "lifecycle": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ]
+          }
+        ],
+        "lifecycleCounts": {
+          "record": 3
+        },
+        "journal": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ],
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          }
+        ],
+        "sendError": null
+      },
+      "notifications": [
+        {
+          "kind": "info",
+          "text": "Recorded Cursor cloud agents for this session branch:\n- bc-00000000-0000-4000-8000-000000000001 · run run-00000000-0000-4000-8000-000000000001 · branch main · PR https://github.com/example-org/sample-repo/pull/1"
+        },
+        {
+          "kind": "error",
+          "text": "Delete requires exactly one recorded bc- cloud agent ID and --yes. Usage: /cursor-cloud list | archive <bc-agentId> | delete <bc-agentId> --yes"
+        }
+      ],
+      "expect": {
+        "sdkCalls": {
+          "Agent.create": 1,
+          "agent.send": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.asyncDispose": 1
+        },
+        "noSendError": true
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-env-forwarding",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-env-forwarding.json",
+      "scenarioSha256": "634ec740c528449a785cf2f8292b6b2845fc959e9d7c86c4d7bdbbe6211ad0d7",
+      "observed": {
+        "sdkCalls": {},
+        "cloudCalls": [],
+        "lifecycle": [],
+        "lifecycleCounts": {},
+        "journal": [],
+        "sendError": "Cursor cloud runtime is not ready to start.\n- Cursor cloud env forwarding is not implemented; use Cursor-native environment setup such as .cursor/environment.json or dashboard-managed secrets.\nUse --cursor-runtime local or /cursor-runtime local to run with the local Cursor SDK agent."
+      },
+      "notifications": [],
+      "expect": {
+        "sdkCalls": {},
+        "sendErrorIncludes": "env forwarding is not implemented"
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-env-repo-conflict",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-env-repo-conflict.json",
+      "scenarioSha256": "cd10a417f90b63b082587736fe7267b3ae00d92cca23eb3ea1a1f615cdb769ac",
+      "observed": {
+        "sdkCalls": {},
+        "cloudCalls": [],
+        "lifecycle": [],
+        "lifecycleCounts": {},
+        "journal": [],
+        "sendError": "Cursor cloud runtime is not ready to start.\n- Cursor cloud named environments cannot be combined with --cursor-cloud-repo; omit the repo or use a pool/machine environment.\nUse --cursor-runtime local or /cursor-runtime local to run with the local Cursor SDK agent."
+      },
+      "notifications": [],
+      "expect": {
+        "sdkCalls": {},
+        "sendErrorIncludes": "cannot be combined with --cursor-cloud-repo"
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-env-type-invalid",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-env-type-invalid.json",
+      "scenarioSha256": "4a6408067ee2ec7214455dd7089434ae6f79d294d123b99bc240554faa32fa35",
+      "observed": {
+        "sdkCalls": {},
+        "cloudCalls": [],
+        "lifecycle": [],
+        "lifecycleCounts": {},
+        "journal": [],
+        "sendError": "Cursor cloud runtime is not ready to start.\n- Invalid Cursor cloud environment type \"pod\"; expected cloud, pool, or machine.\nUse --cursor-runtime local or /cursor-runtime local to run with the local Cursor SDK agent."
+      },
+      "notifications": [],
+      "expect": {
+        "sdkCalls": {},
+        "sendErrorIncludes": "expected cloud, pool, or machine"
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-env-type-required",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-env-type-required.json",
+      "scenarioSha256": "8a55d25213bc78cab11a7af62c74aab2ea8a3f23d2fb06f016761aa24a80654f",
+      "observed": {
+        "sdkCalls": {},
+        "cloudCalls": [],
+        "lifecycle": [],
+        "lifecycleCounts": {},
+        "journal": [],
+        "sendError": "Cursor cloud runtime is not ready to start.\n- Cursor cloud environment name requires --cursor-cloud-env-type=cloud|pool|machine or PI_CURSOR_CLOUD_ENV_TYPE.\nUse --cursor-runtime local or /cursor-runtime local to run with the local Cursor SDK agent."
+      },
+      "notifications": [],
+      "expect": {
+        "sdkCalls": {},
+        "sendErrorIncludes": "environment name requires"
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-list-no-replay",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-list-no-replay.json",
+      "scenarioSha256": "45036ebe60d0b3cb8725c9b740253cec6d197e15ea696abb04ecbc3c09f5b914",
+      "observed": {
+        "sdkCalls": {
+          "Agent.archive": 1,
+          "Agent.create": 1,
+          "Agent.delete": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.send": 1
+        },
+        "cloudCalls": [
+          {
+            "kind": "sdk_call",
+            "api": "Agent.create",
+            "options": {
+              "apiKey": "<redacted>",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "mode": "agent",
+              "cloud": {
+                "repos": [
+                  {
+                    "url": "https://github.com/example-org/sample-repo"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.send",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "runtime": "cloud",
+            "imageCount": 0,
+            "options": {
+              "mode": "agent",
+              "model": {
+                "id": "composer-2",
+                "params": [
+                  {
+                    "id": "fast",
+                    "value": "true"
+                  }
+                ]
+              },
+              "onDelta": "function",
+              "onStep": "function"
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.getUsage",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.listArtifacts",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "agent.asyncDispose",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "sdk_call",
+            "api": "Agent.archive",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "options": {
+              "apiKey": "<redacted>"
+            }
+          },
+          {
+            "kind": "sdk_call",
+            "api": "Agent.delete",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "options": {
+              "apiKey": "<redacted>"
+            }
+          }
+        ],
+        "lifecycle": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ]
+          },
+          {
+            "action": "archive_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "archive",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "delete_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "action": "delete",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z"
+          }
+        ],
+        "lifecycleCounts": {
+          "archive": 1,
+          "archive_intent": 1,
+          "delete": 1,
+          "delete_intent": 1,
+          "record": 3
+        },
+        "journal": [
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "record",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "runId": "run-00000000-0000-4000-8000-000000000001",
+            "branches": [
+              {
+                "branch": "main",
+                "prUrl": "https://github.com/example-org/sample-repo/pull/1"
+              }
+            ],
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "archive_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "archive",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "delete_intent",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          },
+          {
+            "action": "delete",
+            "runtime": "cloud",
+            "agentId": "bc-00000000-0000-4000-8000-000000000001",
+            "timestamp": "2026-01-01T00:00:00.000Z",
+            "version": 1,
+            "sessionId": "<session>",
+            "sessionFile": "<file>",
+            "anchorEntryId": "<anchor>"
+          }
+        ],
+        "sendError": null
+      },
+      "notifications": [
+        {
+          "kind": "info",
+          "text": "Recorded Cursor cloud agents for this session branch:\n- bc-00000000-0000-4000-8000-000000000001 · run run-00000000-0000-4000-8000-000000000001 · branch main · PR https://github.com/example-org/sample-repo/pull/1"
+        },
+        {
+          "kind": "info",
+          "text": "Recorded Cursor cloud agents for this session branch:\n- bc-00000000-0000-4000-8000-000000000001 · run run-00000000-0000-4000-8000-000000000001 · branch main · PR https://github.com/example-org/sample-repo/pull/1"
+        },
+        {
+          "kind": "info",
+          "text": "Cursor cloud agent bc-00000000-0000-4000-8000-000000000001 archived."
+        },
+        {
+          "kind": "info",
+          "text": "Recorded Cursor cloud agents for this session branch:\n- bc-00000000-0000-4000-8000-000000000001 (archived) · run run-00000000-0000-4000-8000-000000000001 · branch main · PR https://github.com/example-org/sample-repo/pull/1"
+        },
+        {
+          "kind": "error",
+          "text": "Cursor cloud agent bc-00000000-0000-4000-8000-000000000001 is already archived."
+        },
+        {
+          "kind": "info",
+          "text": "Cursor cloud agent bc-00000000-0000-4000-8000-000000000001 deleted."
+        }
+      ],
+      "expect": {
+        "sdkCalls": {
+          "Agent.create": 1,
+          "agent.send": 1,
+          "agent.getUsage": 1,
+          "agent.listArtifacts": 1,
+          "agent.asyncDispose": 1,
+          "Agent.archive": 1,
+          "Agent.delete": 1
+        },
+        "noSendError": true
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cloud-repo-invalid",
+      "scenarioFile": "tests/c-cloud/scenarios/cloud-repo-invalid.json",
+      "scenarioSha256": "124b8b703635e06eb7e15078d6bce9378e902887cdefb3a5c346d01db2492554",
+      "observed": {
+        "sdkCalls": {},
+        "cloudCalls": [],
+        "lifecycle": [],
+        "lifecycleCounts": {},
+        "journal": [],
+        "sendError": "Cursor cloud runtime is not ready to start.\n- Cursor cloud repository must be an HTTPS repository URL without embedded credentials, query parameters, or fragments.\nUse --cursor-runtime local or /cursor-runtime local to run with the local Cursor SDK agent."
+      },
+      "notifications": [],
+      "expect": {
+        "sdkCalls": {},
+        "sendErrorIncludes": "must be an HTTPS repository URL"
+      },
+      "determinism": {
+        "candidate": true
+      },
+      "problems": [],
+      "status": "pass"
+    }
+  ],
+  "notTested": [
+    "Live Cursor cloud resources, billing and the real Cursor backend are never contacted.",
+    "The rpi host binary/cdylib is not run; the packaged worker is driven over its real peer protocol by an emulated host, including the native journal port.",
+    "Interactive/TUI cloud acknowledgement dialogs are not rendered; only the non-interactive flag path is exercised.",
+    "Prompt/image assembly is compared by the C01 prompt lane, not here."
+  ],
+  "commands": [
+    "cd worker && npm ci --offline --ignore-scripts && npm run build",
+    "node tests/stage-runtime.mjs",
+    "(cd runtime && npm ci --offline --ignore-scripts)",
+    "node tests/c-cloud/run-rpi.mjs        (check mode)",
+    "node tests/c-cloud/run-rpi.mjs --write"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "cloud-ack-missing",
+  "description": "Cloud runtime without first-use acknowledgement is refused before any SDK agent is created.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Make a small change in the cloud.",
+    "extensions": [],
+    "args": [
+      "--cursor-runtime",
+      "cloud",
+      "--cursor-cloud-repo",
+      "https://github.com/example-org/sample-repo"
+    ],
+    "followUps": []
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "repositories": [
+    {
+      "url": "https://github.com/example-org/sample-repo"
+    }
+  ],
+  "turns": [],
+  "expect": {
+    "sdkCalls": {},
+    "sendErrorIncludes": "requires first-use acknowledgement"
+  }
+}
