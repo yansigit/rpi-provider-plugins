@@ -1,0 +1,241 @@
+{
+  "identical": false,
+  "mismatches": [
+    {
+      "index": 0,
+      "paths": [
+        "$.command",
+        "$.data",
+        "$.id",
+        "$.limits",
+        "$.parityComplete",
+        "$.piCompatibilityTarget",
+        "$.protocol",
+        "$.semantics",
+        "$.success",
+        "$.supportedCommands",
+        "$.type"
+      ],
+      "pi": "response",
+      "rpi": "ready"
+    },
+    {
+      "index": 1,
+      "paths": [
+        "$.command",
+        "$.data",
+        "$.id",
+        "$.success",
+        "$.type"
+      ],
+      "pi": "agent_start",
+      "rpi": "response"
+    },
+    {
+      "index": 2,
+      "paths": [
+        "$.type"
+      ],
+      "pi": "turn_start",
+      "rpi": "agent_start"
+    },
+    {
+      "index": 3,
+      "paths": [
+        "$.message",
+        "$.type"
+      ],
+      "pi": "message_start",
+      "rpi": "turn_start"
+    },
+    {
+      "index": 4,
+      "paths": [
+        "$.message.api",
+        "$.message.content",
+        "$.message.kind",
+        "$.message.model",
+        "$.message.provider",
+        "$.message.role",
+        "$.message.sections",
+        "$.message.stopReason",
+        "$.message.usage",
+        "$.type"
+      ],
+      "pi": "message_end",
+      "rpi": "message_start"
+    },
+    {
+      "index": 5,
+      "paths": [
+        "$.assistantMessageEvent",
+        "$.eventType",
+        "$.message.api",
+        "$.message.content[0].text",
+        "$.message.kind",
+        "$.message.model",
+        "$.message.provider",
+        "$.message.responseId",
+        "$.message.responseModel",
+        "$.message.role",
+        "$.message.stopReason",
+        "$.message.usage",
+        "$.type"
+      ],
+      "pi": "message_start",
+      "rpi": "message_update"
+    },
+    {
+      "index": 6,
+      "paths": [
+        "$.assistantMessageEvent",
+        "$.contentIndex",
+        "$.delta",
+        "$.eventType",
+        "$.message.api",
+        "$.message.content[0].text",
+        "$.message.kind",
+        "$.message.model",
+        "$.message.provider",
+        "$.message.rawStopReason",
+        "$.message.responseId",
+        "$.message.responseModel",
+        "$.message.role",
+        "$.message.stopReason",
+        "$.message.usage",
+        "$.type"
+      ],
+      "pi": "message_end",
+      "rpi": "message_update"
+    },
+    {
+      "index": 7,
+      "paths": [
+        "$.assistantMessageEvent",
+        "$.eventType",
+        "$.message.content[0]",
+        "$.message.content.length",
+        "$.message.kind",
+        "$.message.rawStopReason",
+        "$.message.responseId",
+        "$.message.responseModel",
+        "$.message.usage.input",
+        "$.message.usage.output",
+        "$.message.usage.totalTokens",
+        "$.type"
+      ],
+      "pi": "message_start",
+      "rpi": "message_update"
+    },
+    {
+      "index": 8,
+      "paths": [
+        "$.assistantMessageEvent",
+        "$.message",
+        "$.type",
+        "$.usage"
+      ],
+      "pi": "message_update",
+      "rpi": "message_end"
+    },
+    {
+      "index": 9,
+      "paths": [
+        "$.assistantMessageEvent",
+        "$.message",
+        "$.toolResultCount",
+        "$.toolResults",
+        "$.type",
+        "$.usage"
+      ],
+      "pi": "message_update",
+      "rpi": "turn_end"
+    },
+    {
+      "index": 10,
+      "paths": [
+        "$.assistantMessageEvent",
+        "$.messageCount",
+        "$.messages",
+        "$.type",
+        "$.usage"
+      ],
+      "pi": "message_update",
+      "rpi": "agent_end"
+    },
+    {
+      "index": 11,
+      "paths": [
+        "$.aborted",
+        "$.error",
+        "$.message",
+        "$.outcome",
+        "$.pendingResume",
+        "$.runId",
+        "$.summary",
+        "$.type"
+      ],
+      "pi": "message_end",
+      "rpi": "agent_settled"
+    },
+    {
+      "index": 12,
+      "paths": [
+        "missing in rpi"
+      ],
+      "pi": "turn_end",
+      "rpi": null
+    },
+    {
+      "index": 13,
+      "paths": [
+        "missing in rpi"
+      ],
+      "pi": "agent_end",
+      "rpi": null
+    },
+    {
+      "index": 14,
+      "paths": [
+        "missing in rpi"
+      ],
+      "pi": "agent_settled",
+      "rpi": null
+    }
+  ],
+  "piRecords": 15,
+  "rpiRecords": 12,
+  "typeSequence": {
+    "pi": [
+      "response",
+      "agent_start",
+      "turn_start",
+      "message_start",
+      "message_end",
+      "message_start",
+      "message_end",
+      "message_start",
+      "message_update",
+      "message_update",
+      "message_update",
+      "message_end",
+      "turn_end",
+      "agent_end",
+      "agent_settled"
+    ],
+    "rpi": [
+      "ready",
+      "response",
+      "agent_start",
+      "turn_start",
+      "message_start",
+      "message_update",
+      "message_update",
+      "message_update",
+      "message_end",
+      "turn_end",
+      "agent_end",
+      "agent_settled"
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "prompt-basic",
+  "description": "One prompt answered by the scripted provider with a fixed reply sent as a single streamed chunk, so delta structure is deterministic on both sides. get_state is not sent: Pi echoes the ephemeral provider endpoint in its state.",
+  "provider": {
+    "name": "parity",
+    "model": "parity-model",
+    "replies": [
+      "Hello from the scripted provider."
+    ],
+    "chunkChars": 1000
+  },
+  "systemPrompt": "Parity fixed system prompt.",
+  "steps": [
+    {
+      "send": {
+        "id": "prompt-1",
+        "type": "prompt",
+        "message": "Say hi"
+      },
+      "await": [
+        {
+          "type": "agent_settled"
+        }
+      ]
+    }
+  ],
+  "dialogs": []
+}
