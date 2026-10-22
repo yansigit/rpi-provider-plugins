@@ -1,0 +1,1063 @@
+{
+  "status": "pass",
+  "schema": "rpi-cursor-c-usage-evidence/1",
+  "purpose": "Offline differential of the C07 usage/billing view, refresh, export and interrupted-recovery behaviour of the unchanged pinned pi-cursor-sdk usage modules, run against the real Pi 1.3.0 SessionManager with an injected clock/randomness/IDs and a fake @cursor/sdk usage endpoint. No Cursor network calls.",
+  "reference": {
+    "piCursorSdkVersion": "0.5.3",
+    "revision": "git+https://github.com/fitchmultz/pi-cursor-sdk.git",
+    "files": {
+      "pi-cursor-sdk/dist/cursor-usage-ledger.js": "d250d021068b1981e77af2b2e6f86e5a31d6c520ebd04acb1c63e5489faa0e5e",
+      "pi-cursor-sdk/dist/cursor-usage-command.js": "a694a459e2d964b153b8bfc249ddb08c047dc27ca18540fe01563d892201ecd2",
+      "pi-cursor-sdk/dist/cursor-durable-fs.js": "cfbce8180d46f6d2d8ddd91d118d222bf5966a5b5b13f9a463005f541dfa90e6",
+      "pi-cursor-sdk/dist/cursor-sdk-billed-usage.js": "cf35bad5c39dc91c6f19fdfcd8638aa54e7d38fb0026c4af060822cf06f3da8c",
+      "pi-coding-agent/dist/core/session-manager.js": "046b6a1109ac3f0ed893bb85bf0648709362fa926a5da75761216cf2fcf9d926"
+    }
+  },
+  "harness": {
+    "harness.mjs": "99ab3e79e859e254e86e1939f3207db15ba133a73448117db40c3e89faa3c085",
+    "scenarios.mjs": "126b884b4f9587caadd5507cc2ae72c3eec9eb1a070210b0b96b0b82e8527498",
+    "sdk.mjs": "0c3e20a6723f2607a125ef14fedcaa5d1ec0d51e0b51d9180a154330fc3cdc83",
+    "hooks.mjs": "5c46b8d62bc6f88b73b951ccf3ee5ceb1ea9b8edc50bfd7d1b1ef43f20cd000d",
+    "register.mjs": "380e4f30163b9a6d9a1d37b518bb38129d40f73631250fcea5117cfdaf2222cf",
+    "inject.cjs": "4caba2982ac6b2dfdf155df66d429c7772a6e7182d034f75b0ee5339e7c224af"
+  },
+  "injection": {
+    "clock": "Date is fixed at 2026-10-22T00:00:00.123Z via inject.cjs.",
+    "randomness": "node:crypto randomUUID/randomBytes/randomInt are replaced by monotonic deterministic values via a CJS preload, so entry ids, turn ids and record ids replay.",
+    "sessions": "Session files are prefixed with a fixed header id; interrupted-recovery forks reuse that id.",
+    "fakeSdk": "The bare @cursor/sdk specifier is redirected to tests/c-usage/sdk.mjs; Agent.getUsage answers from RPI_CURSOR_USAGE_SDK_RESPONSE.",
+    "paths": "The per-run temporary root is replaced by <root> in every captured string and journal byte."
+  },
+  "scenarios": [
+    {
+      "name": "raw-cache-correction-revised-bills",
+      "covers": [
+        "raw cache correction",
+        "revised aggregate bills",
+        "restart"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "correctedRawTotal": {
+          "inputTokens": 136,
+          "outputTokens": 3,
+          "cacheReadTokens": 4096,
+          "cacheWriteTokens": 0,
+          "totalTokens": 4235
+        },
+        "wholeAgentUsage1": {
+          "inputTokens": 136,
+          "outputTokens": 3,
+          "cacheReadTokens": 4096,
+          "cacheWriteTokens": 0,
+          "totalTokens": 4235
+        },
+        "terminalWaitUsage": {
+          "inputTokens": 4232,
+          "outputTokens": 3,
+          "cacheReadTokens": 4096,
+          "cacheWriteTokens": 0,
+          "totalTokens": 8331
+        },
+        "view2ChargedCents": 0.05,
+        "view2AggregateOnlyOutput": 500000,
+        "view3": {
+          "correctedRawTotal": {
+            "inputTokens": 136,
+            "outputTokens": 3,
+            "cacheReadTokens": 4096,
+            "cacheWriteTokens": 0,
+            "totalTokens": 4235
+          },
+          "wholeAgentUsage": {
+            "inputTokens": 136,
+            "outputTokens": 500003,
+            "cacheReadTokens": 4096,
+            "cacheWriteTokens": 0,
+            "totalTokens": 504235
+          },
+          "unknownHistory": false
+        },
+        "containsNotExported": false,
+        "render": "Cursor usage — durable; persistence ok; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 4235 (input 136, cache read 4096, cache write 0, output 3).\nOriginal telemetry: 1 raw turns; normalization unavailable/invalid: 0; 1 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 0; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nagent-test: observed-pending-settlement; whole-agent facts, no client-run billing join. Latest known billed tokens: 504235; SDK charged cents: 0.05; aggregate-only tokens: 500000. Origin 20000000-0000-4000-8000-000000000001: observed-pending-settlement; latest known billed tokens 504235; charged cents 0.05.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content."
+      },
+      "journals": 1,
+      "journalFrames": 10
+    },
+    {
+      "name": "unknown-history-unavailable-late",
+      "covers": [
+        "unknown inherited history",
+        "unavailable observation",
+        "late facts"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "render0": "Cursor usage — durable; persistence ok; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 0 (input 0, cache read 0, cache write 0, output 0).\nOriginal telemetry: 0 raw turns; normalization unavailable/invalid: 0; 0 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 0; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nagent-test: pending; unknown historical baseline; whole-agent facts, no client-run billing join. Latest known billed tokens: pending; SDK charged cents: pending; aggregate-only tokens: pending.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content.",
+        "agent1": {
+          "agentId": "agent-test",
+          "unknownHistory": true,
+          "sharedAcrossBranches": false,
+          "billingStatus": "unavailable",
+          "observationsByOrigin": [
+            {
+              "origin": {
+                "sessionFile": "<root>/sessions/fixed-session.jsonl",
+                "sessionId": "20000000-0000-4000-8000-000000000002",
+                "anchorId": "00000000-0000-4000-8000-000000001632"
+              },
+              "lastAttempt": {
+                "status": "unavailable",
+                "reason": "request-failed"
+              },
+              "incompleteHistory": false
+            }
+          ],
+          "lastAttempt": {
+            "status": "unavailable",
+            "reason": "request-failed"
+          }
+        },
+        "containsPrivateCredential": false,
+        "render1": "Cursor usage — durable; persistence ok; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 0 (input 0, cache read 0, cache write 0, output 0).\nOriginal telemetry: 0 raw turns; normalization unavailable/invalid: 0; 1 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 0; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nagent-test: unavailable; unknown historical baseline; whole-agent facts, no client-run billing join. Latest known billed tokens: unavailable; SDK charged cents: unavailable; aggregate-only tokens: unavailable. Origin 20000000-0000-4000-8000-000000000002: unavailable; latest known billed tokens unavailable; charged cents unavailable.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content.",
+        "terminals": [
+          "abandon",
+          "abort"
+        ],
+        "render2": "Cursor usage — durable; persistence ok; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 0 (input 0, cache read 0, cache write 0, output 0).\nOriginal telemetry: 0 raw turns; normalization unavailable/invalid: 0; 2 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 0; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nagent-test: observed-pending-settlement; unknown historical baseline; whole-agent facts, no client-run billing join. Latest known billed tokens: 4235; SDK charged cents: 0.2; aggregate-only tokens: 0. Origin 20000000-0000-4000-8000-000000000002: observed-pending-settlement; latest known billed tokens 4235; charged cents 0.2.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content.",
+        "render3": "Cursor usage — durable; persistence ok; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 0 (input 0, cache read 0, cache write 0, output 0).\nOriginal telemetry: 0 raw turns; normalization unavailable/invalid: 0; 2 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 0; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nagent-test: observed-pending-settlement; unknown historical baseline; whole-agent facts, no client-run billing join. Latest known billed tokens: 4235; SDK charged cents: not reported; aggregate-only tokens: 0. Origin 20000000-0000-4000-8000-000000000002: observed-pending-settlement; latest known billed tokens 4235; charged cents not reported.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content."
+      },
+      "journals": 1,
+      "journalFrames": 6
+    },
+    {
+      "name": "late-completion-original-journal",
+      "covers": [
+        "late completion",
+        "switched branch isolation"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "writesBefore": 3,
+        "writesAfter": 3,
+        "switchedAgents": [],
+        "reopenedWholeAgent": {
+          "inputTokens": 136,
+          "outputTokens": 3,
+          "cacheReadTokens": 4096,
+          "cacheWriteTokens": 0,
+          "totalTokens": 4235
+        },
+        "appendedOnBranchChange": 0
+      },
+      "journals": 1,
+      "journalFrames": 4
+    },
+    {
+      "name": "failed-persistence-torn-recovery",
+      "covers": [
+        "failed persistence",
+        "guarded warning",
+        "torn recovery"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "thrown": [
+          "incomplete journal frame",
+          "incomplete journal frame"
+        ],
+        "notify": [
+          [
+            "Cursor usage persistence failed; accounting is incomplete. New sends require a recorded origin. See /cursor-usage help for recovery.",
+            "warning"
+          ],
+          [
+            "Cursor usage exported to <root>/torn-export.json.",
+            "info"
+          ]
+        ],
+        "view": {
+          "agents": [
+            {
+              "agentId": "agent-test",
+              "unknownHistory": false,
+              "sharedAcrossBranches": false,
+              "billingStatus": "pending",
+              "observationsByOrigin": []
+            }
+          ],
+          "persistenceStatus": "incomplete",
+          "incompleteJournals": [
+            "20000000-0000-4000-8000-000000000004"
+          ]
+        },
+        "exported": {
+          "persistenceStatus": "incomplete",
+          "records": [
+            {
+              "kind": "start"
+            }
+          ]
+        },
+        "bytesUnchanged": true,
+        "recoveryWholeAgent": {
+          "inputTokens": 136,
+          "outputTokens": 3,
+          "cacheReadTokens": 4096,
+          "cacheWriteTokens": 0,
+          "totalTokens": 4235
+        },
+        "recoveryIncompleteJournals": 1,
+        "originalJournalSha": "606b6fc5a3b20390692e5d66c3fa8e0595cafeeca6a6d3f6c9405af930eb9593"
+      },
+      "journals": 1,
+      "journalFrames": 1
+    },
+    {
+      "name": "abandon-without-fetch",
+      "covers": [
+        "abandon terminal",
+        "no fetch on abandon"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "abandoned": "undefined",
+        "callsAfterAbandon": 0,
+        "terminal1": [
+          {
+            "kind": "terminal",
+            "status": "abandon",
+            "version": 1,
+            "id": "00000000-0000-4000-8000-000000003779",
+            "turnId": "00000000-0000-4000-8000-000000003575",
+            "timestamp": "2024-10-15T13:46:40.123Z",
+            "origin": {
+              "sessionFile": "<root>/sessions/fixed-session.jsonl",
+              "sessionId": "20000000-0000-4000-8000-000000000005",
+              "anchorId": "00000000-0000-4000-8000-000000003676"
+            }
+          }
+        ],
+        "callsAfterAbort": 1
+      },
+      "journals": 1,
+      "journalFrames": 4
+    },
+    {
+      "name": "growing-snapshots-linear",
+      "covers": [
+        "linear growth",
+        "row revision",
+        "deletion"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "journalLength": 21750,
+        "sessionLength": 29415,
+        "halfJournal": 11158,
+        "halfSession": 15687,
+        "runs32": 32,
+        "revised": {
+          "usage": {
+            "inputTokens": 1,
+            "outputTokens": 1,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "totalTokens": 2
+          },
+          "runs": [
+            {
+              "runId": "uuid-1",
+              "usage": {
+                "inputTokens": 1,
+                "outputTokens": 1,
+                "cacheReadTokens": 0,
+                "cacheWriteTokens": 0,
+                "totalTokens": 2
+              },
+              "cost": {
+                "rawCostCents": 0.01,
+                "chargedCents": 0
+              }
+            }
+          ],
+          "cost": {
+            "rawCostCents": 0.01,
+            "chargedCents": 0
+          }
+        },
+        "agent": {
+          "billingStatus": "unavailable",
+          "wholeAgent": {
+            "usage": {
+              "inputTokens": 1,
+              "outputTokens": 1,
+              "cacheReadTokens": 0,
+              "cacheWriteTokens": 0,
+              "totalTokens": 2
+            },
+            "runs": [
+              {
+                "runId": "uuid-1",
+                "usage": {
+                  "inputTokens": 1,
+                  "outputTokens": 1,
+                  "cacheReadTokens": 0,
+                  "cacheWriteTokens": 0,
+                  "totalTokens": 2
+                },
+                "cost": {
+                  "rawCostCents": 0.01,
+                  "chargedCents": 0
+                }
+              }
+            ],
+            "cost": {
+              "rawCostCents": 0.01,
+              "chargedCents": 0
+            }
+          }
+        },
+        "billingRecords": 34,
+        "renderContainsLatest": true
+      },
+      "journals": 1,
+      "journalFrames": 35
+    },
+    {
+      "name": "refuse-malformed-symlink-directory",
+      "covers": [
+        "malformed journal",
+        "symlink journal",
+        "directory journal"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "results": {
+          "malformed": "threw: current Cursor usage journal unavailable or invalid",
+          "symlink": "threw: current Cursor usage journal unavailable or invalid",
+          "directory": "threw: current Cursor usage journal unavailable or invalid"
+        },
+        "untouched": "untouched"
+      },
+      "journals": 0,
+      "journalFrames": 0
+    },
+    {
+      "name": "fork-shared-lineage",
+      "covers": [
+        "fork lineage",
+        "shared spend"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "agent": {
+          "sharedAcrossBranches": true,
+          "unknownHistory": false,
+          "billingStatus": "ambiguous-shared-lineage",
+          "observationUsages": [
+            {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 4096,
+              "cacheWriteTokens": 0,
+              "totalTokens": 4235
+            },
+            {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 4096,
+              "cacheWriteTokens": 0,
+              "totalTokens": 4235
+            }
+          ]
+        },
+        "sessionIds": [
+          "20000000-0000-4000-8000-000000000008",
+          "20000000-0000-4000-8000-000000000008",
+          "20000000-0000-4000-8000-000000000080",
+          "20000000-0000-4000-8000-000000000080"
+        ],
+        "render": "Cursor usage — durable; persistence ok; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 0 (input 0, cache read 0, cache write 0, output 0).\nOriginal telemetry: 0 raw turns; normalization unavailable/invalid: 0; 0 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 0; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nagent-test: ambiguous-shared-lineage; shared lineage, not attributable to this branch. Latest known billed tokens: ambiguous; SDK charged cents: ambiguous; aggregate-only tokens: ambiguous. Origin 20000000-0000-4000-8000-000000000008: observed-pending-settlement; latest known billed tokens 4235; charged cents 0.2. Origin 20000000-0000-4000-8000-000000000080: observed-pending-settlement; latest known billed tokens 4235; charged cents 0.2.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content."
+      },
+      "journals": 1,
+      "journalFrames": 2
+    },
+    {
+      "name": "journal-only-descendant",
+      "covers": [
+        "mirror failure",
+        "descendant ownership"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "wholeAgent": {
+          "inputTokens": 136,
+          "outputTokens": 3,
+          "cacheReadTokens": 4096,
+          "cacheWriteTokens": 0,
+          "totalTokens": 4235
+        },
+        "siblingAgents": [],
+        "otherBranchRecords": 2,
+        "unclaimedRecords": []
+      },
+      "journals": 1,
+      "journalFrames": 2
+    },
+    {
+      "name": "append-chronology-backward-clock",
+      "covers": [
+        "append chronology",
+        "backward wall clock"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "chargedCents": 0.05,
+        "timestamps": [
+          "2024-10-15T13:46:40.123Z",
+          "2030-01-01T00:00:00Z",
+          "1990-01-01T00:00:00Z",
+          "1990-01-01T00:00:00Z"
+        ]
+      },
+      "journals": 1,
+      "journalFrames": 4
+    },
+    {
+      "name": "cloud-unqualified-invalid-local",
+      "covers": [
+        "cloud telemetry",
+        "invalid local partition"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "normalization": [
+          "cloud-unqualified",
+          "invalid-local-partition"
+        ],
+        "correctedPresent": [
+          false,
+          false
+        ],
+        "reported": [
+          {
+            "inputTokens": 136,
+            "outputTokens": 3,
+            "cacheReadTokens": 4096,
+            "cacheWriteTokens": 0,
+            "totalTokens": 4235
+          },
+          {
+            "inputTokens": 136,
+            "outputTokens": 3,
+            "cacheReadTokens": 4096,
+            "cacheWriteTokens": 0,
+            "totalTokens": 4235
+          }
+        ]
+      },
+      "journals": 1,
+      "journalFrames": 4
+    },
+    {
+      "name": "pricing-tiers-immutable",
+      "covers": [
+        "pricing tiers",
+        "metadata rejection"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "tierInput": 7,
+        "thrown": [
+          "invalid Cursor model selection",
+          "Cursor usage lineage cannot be both resumed and newly created"
+        ]
+      },
+      "journals": 1,
+      "journalFrames": 1
+    },
+    {
+      "name": "cross-directory-fork-unavailable",
+      "covers": [
+        "cross-directory fork",
+        "unavailable inherited journal"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "beforeDelete": {
+          "wholeAgent": {
+            "inputTokens": 136,
+            "outputTokens": 3,
+            "cacheReadTokens": 4096,
+            "cacheWriteTokens": 0,
+            "totalTokens": 4235
+          }
+        },
+        "latestAggregate": {
+          "usage": {
+            "inputTokens": 136,
+            "outputTokens": 3,
+            "cacheReadTokens": 4096,
+            "cacheWriteTokens": 0,
+            "totalTokens": 4235
+          },
+          "cost": {
+            "rawCostCents": 0.3,
+            "chargedCents": 0.2
+          }
+        },
+        "lineageGaps": [
+          "Origin 20000000-0000-4000-8000-000000000013: journal missing or without recognized frames; only native branch claim/mirror facts remain, accounting is incomplete."
+        ],
+        "persistenceStatus": "incomplete",
+        "observation": {
+          "origin": {
+            "sessionFile": "<root>/sessions/fixed-session.jsonl",
+            "sessionId": "20000000-0000-4000-8000-000000000013",
+            "anchorId": "00000000-0000-4000-8000-000000011837"
+          },
+          "lastAttempt": {
+            "status": "observed-pending-settlement",
+            "usage": {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 4096,
+              "cacheWriteTokens": 0,
+              "totalTokens": 4235
+            },
+            "cost": {
+              "rawCostCents": 0.3,
+              "chargedCents": 0.2
+            },
+            "upsertRuns": [
+              {
+                "runId": "uuid-a",
+                "usage": {
+                  "inputTokens": 136,
+                  "outputTokens": 3,
+                  "cacheReadTokens": 4096,
+                  "cacheWriteTokens": 0,
+                  "totalTokens": 4235
+                },
+                "cost": {
+                  "rawCostCents": 0.3,
+                  "chargedCents": 0.2
+                }
+              }
+            ],
+            "deletedRunIds": []
+          },
+          "latestAggregate": {
+            "usage": {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 4096,
+              "cacheWriteTokens": 0,
+              "totalTokens": 4235
+            },
+            "cost": {
+              "rawCostCents": 0.3,
+              "chargedCents": 0.2
+            }
+          },
+          "incompleteHistory": true
+        },
+        "render": "Cursor usage — durable; persistence incomplete; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 0 (input 0, cache read 0, cache write 0, output 0).\nOriginal telemetry: 0 raw turns; normalization unavailable/invalid: 0; 0 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 1; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nOrigin 20000000-0000-4000-8000-000000000013: journal missing or without recognized frames; only native branch claim/mirror facts remain, accounting is incomplete.\nagent-test: observed-pending-settlement; whole-agent facts, no client-run billing join. Latest known billed tokens: 4235; SDK charged cents: 0.2; aggregate-only tokens: unknown (incomplete run history). Origin 20000000-0000-4000-8000-000000000013: observed-pending-settlement; incomplete run history; latest known billed tokens 4235; charged cents 0.2.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content."
+      },
+      "journals": 0,
+      "journalFrames": 0
+    },
+    {
+      "name": "aggregate-revisions-missing-mirrors",
+      "covers": [
+        "aggregate revisions",
+        "missing mirrors"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "persistenceStatus": "incomplete",
+        "agent": {
+          "lastAttempt": {
+            "status": "unavailable",
+            "reason": "invalid-response"
+          },
+          "latestAggregate": {
+            "usage": {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 0,
+              "cacheWriteTokens": 0,
+              "totalTokens": 139
+            },
+            "cost": {
+              "rawCostCents": 0.15,
+              "chargedCents": 0.1
+            }
+          },
+          "observation": {
+            "origin": {
+              "sessionFile": "<root>/sessions/fixed-session.jsonl",
+              "sessionId": "20000000-0000-4000-8000-000000000014",
+              "anchorId": "00000000-0000-4000-8000-000000012245"
+            },
+            "lastAttempt": {
+              "status": "unavailable",
+              "reason": "invalid-response"
+            },
+            "latestAggregate": {
+              "usage": {
+                "inputTokens": 136,
+                "outputTokens": 3,
+                "cacheReadTokens": 0,
+                "cacheWriteTokens": 0,
+                "totalTokens": 139
+              },
+              "cost": {
+                "rawCostCents": 0.15,
+                "chargedCents": 0.1
+              }
+            },
+            "incompleteHistory": true
+          }
+        },
+        "billingRecords": 3,
+        "render": "Cursor usage — durable; persistence incomplete; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 0 (input 0, cache read 0, cache write 0, output 0).\nOriginal telemetry: 0 raw turns; normalization unavailable/invalid: 0; 0 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 1; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nOrigin 20000000-0000-4000-8000-000000000014: journal missing or without recognized frames; only native branch claim/mirror facts remain, accounting is incomplete.\nagent-test: unavailable; whole-agent facts, no client-run billing join. Latest known billed tokens: 139; SDK charged cents: 0.1; aggregate-only tokens: unknown (incomplete run history). Origin 20000000-0000-4000-8000-000000000014: unavailable; incomplete run history; latest known billed tokens 139; charged cents 0.1.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content.",
+        "exportedAgent": {
+          "agentId": "agent-test",
+          "unknownHistory": false,
+          "sharedAcrossBranches": false,
+          "billingStatus": "unavailable",
+          "observationsByOrigin": [
+            {
+              "origin": {
+                "sessionFile": "<root>/sessions/fixed-session.jsonl",
+                "sessionId": "20000000-0000-4000-8000-000000000014",
+                "anchorId": "00000000-0000-4000-8000-000000012245"
+              },
+              "lastAttempt": {
+                "status": "unavailable",
+                "reason": "invalid-response"
+              },
+              "latestAggregate": {
+                "usage": {
+                  "inputTokens": 136,
+                  "outputTokens": 3,
+                  "cacheReadTokens": 0,
+                  "cacheWriteTokens": 0,
+                  "totalTokens": 139
+                },
+                "cost": {
+                  "rawCostCents": 0.15,
+                  "chargedCents": 0.1
+                }
+              },
+              "incompleteHistory": true
+            }
+          ],
+          "lastAttempt": {
+            "status": "unavailable",
+            "reason": "invalid-response"
+          },
+          "latestAggregate": {
+            "usage": {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 0,
+              "cacheWriteTokens": 0,
+              "totalTokens": 139
+            },
+            "cost": {
+              "rawCostCents": 0.15,
+              "chargedCents": 0.1
+            }
+          }
+        }
+      },
+      "journals": 0,
+      "journalFrames": 0
+    },
+    {
+      "name": "other-branch-claims-fork",
+      "covers": [
+        "other-branch claims"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "unclaimedRecords": [],
+        "otherBranchRecords": 2,
+        "records": 1,
+        "inheritedUnclaimedRecords": []
+      },
+      "journals": 1,
+      "journalFrames": 3
+    },
+    {
+      "name": "first-turn-orphan-unclaimed",
+      "covers": [
+        "orphan intent",
+        "lost claim"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "view": {
+          "records": [],
+          "agents": [],
+          "unclaimed": 0
+        },
+        "inherited": {
+          "records": 1,
+          "unclaimed": [],
+          "otherBranch": [],
+          "inheritedUnclaimed": 0
+        }
+      },
+      "journals": 1,
+      "journalFrames": 2
+    },
+    {
+      "name": "help-missing-export-non-ui",
+      "covers": [
+        "help",
+        "missing export",
+        "stdout untouched"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "stderr": "/cursor-usage — current branch telemetry (native footer unchanged)\n/cursor-usage refresh — public getUsage only; up to 32 agents, 5 seconds each; no model sends or automatic polling\n/cursor-usage export <new-file.json> — exclusive private JSON export; never overwrites a file\n/cursor-usage help — this help\nStorage ceiling: 16MiB per origin session. At the ceiling or after an incomplete trailing frame, new sends fail before spend. A torn tail is retained unchanged; view/export preserve validated prior frames and mark accounting incomplete. Malformed complete frames remain fail-closed.\nRecovery: export readable facts and retain the original journal/session unchanged. Use Pi's native fork to preserve the conversation under a new session origin, or start a new native session. Never delete, truncate, or rewrite journals or native sessions to continue the old origin.\nOther-branch facts have valid native claims elsewhere in this session; unclaimed facts have no surviving claim here and are not branch usage. Inherited records without a claim in this session retain unknown ownership; no sibling sessions are scanned. Fileless sessions are ephemeral.\n\n/cursor-usage — current branch telemetry (native footer unchanged)\n/cursor-usage refresh — public getUsage only; up to 32 agents, 5 seconds each; no model sends or automatic polling\n/cursor-usage export <new-file.json> — exclusive private JSON export; never overwrites a file\n/cursor-usage help — this help\nStorage ceiling: 16MiB per origin session. At the ceiling or after an incomplete trailing frame, new sends fail before spend. A torn tail is retained unchanged; view/export preserve validated prior frames and mark accounting incomplete. Malformed complete frames remain fail-closed.\nRecovery: export readable facts and retain the original journal/session unchanged. Use Pi's native fork to preserve the conversation under a new session origin, or start a new native session. Never delete, truncate, or rewrite journals or native sessions to continue the old origin.\nOther-branch facts have valid native claims elsewhere in this session; unclaimed facts have no surviving claim here and are not branch usage. Inherited records without a claim in this session retain unknown ownership; no sibling sessions are scanned. Fileless sessions are ephemeral.\n",
+        "stdoutCalls": 0
+      },
+      "journals": 1,
+      "journalFrames": 1
+    },
+    {
+      "name": "refresh-bounded-exclusive-export",
+      "covers": [
+        "bounded refresh",
+        "exclusive export"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "fetchCount": 1,
+        "wholeAgentCost": {
+          "rawCostCents": 0.3,
+          "chargedCents": 0.2
+        },
+        "records": 2,
+        "containsNotExported": false,
+        "replaced": false
+      },
+      "journals": 1,
+      "journalFrames": 2
+    },
+    {
+      "name": "fake-sdk-command-refresh",
+      "covers": [
+        "fake SDK usage endpoint",
+        "command refresh"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "agent": {
+          "agentId": "agent-test",
+          "unknownHistory": false,
+          "sharedAcrossBranches": false,
+          "billingStatus": "observed-pending-settlement",
+          "observationsByOrigin": [
+            {
+              "origin": {
+                "sessionFile": "<root>/sessions/fixed-session.jsonl",
+                "sessionId": "20000000-0000-4000-8000-000000000020",
+                "anchorId": "00000000-0000-4000-8000-000000015203"
+              },
+              "lastAttempt": {
+                "status": "observed-pending-settlement",
+                "usage": {
+                  "inputTokens": 136,
+                  "outputTokens": 3,
+                  "cacheReadTokens": 4096,
+                  "cacheWriteTokens": 0,
+                  "totalTokens": 4235
+                },
+                "cost": {
+                  "rawCostCents": 0.3,
+                  "chargedCents": 0.2
+                },
+                "upsertRuns": [
+                  {
+                    "runId": "uuid-sdk",
+                    "usage": {
+                      "inputTokens": 136,
+                      "outputTokens": 3,
+                      "cacheReadTokens": 4096,
+                      "cacheWriteTokens": 0,
+                      "totalTokens": 4235
+                    },
+                    "cost": {
+                      "rawCostCents": 0.3,
+                      "chargedCents": 0.2
+                    }
+                  }
+                ],
+                "deletedRunIds": []
+              },
+              "latestAggregate": {
+                "usage": {
+                  "inputTokens": 136,
+                  "outputTokens": 3,
+                  "cacheReadTokens": 4096,
+                  "cacheWriteTokens": 0,
+                  "totalTokens": 4235
+                },
+                "cost": {
+                  "rawCostCents": 0.3,
+                  "chargedCents": 0.2
+                }
+              },
+              "wholeAgent": {
+                "usage": {
+                  "inputTokens": 136,
+                  "outputTokens": 3,
+                  "cacheReadTokens": 4096,
+                  "cacheWriteTokens": 0,
+                  "totalTokens": 4235
+                },
+                "runs": [
+                  {
+                    "runId": "uuid-sdk",
+                    "usage": {
+                      "inputTokens": 136,
+                      "outputTokens": 3,
+                      "cacheReadTokens": 4096,
+                      "cacheWriteTokens": 0,
+                      "totalTokens": 4235
+                    },
+                    "cost": {
+                      "rawCostCents": 0.3,
+                      "chargedCents": 0.2
+                    }
+                  }
+                ],
+                "cost": {
+                  "rawCostCents": 0.3,
+                  "chargedCents": 0.2
+                }
+              },
+              "incompleteHistory": false
+            }
+          ],
+          "lastAttempt": {
+            "status": "observed-pending-settlement",
+            "usage": {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 4096,
+              "cacheWriteTokens": 0,
+              "totalTokens": 4235
+            },
+            "cost": {
+              "rawCostCents": 0.3,
+              "chargedCents": 0.2
+            },
+            "upsertRuns": [
+              {
+                "runId": "uuid-sdk",
+                "usage": {
+                  "inputTokens": 136,
+                  "outputTokens": 3,
+                  "cacheReadTokens": 4096,
+                  "cacheWriteTokens": 0,
+                  "totalTokens": 4235
+                },
+                "cost": {
+                  "rawCostCents": 0.3,
+                  "chargedCents": 0.2
+                }
+              }
+            ],
+            "deletedRunIds": []
+          },
+          "latestAggregate": {
+            "usage": {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 4096,
+              "cacheWriteTokens": 0,
+              "totalTokens": 4235
+            },
+            "cost": {
+              "rawCostCents": 0.3,
+              "chargedCents": 0.2
+            }
+          },
+          "wholeAgent": {
+            "usage": {
+              "inputTokens": 136,
+              "outputTokens": 3,
+              "cacheReadTokens": 4096,
+              "cacheWriteTokens": 0,
+              "totalTokens": 4235
+            },
+            "runs": [
+              {
+                "runId": "uuid-sdk",
+                "usage": {
+                  "inputTokens": 136,
+                  "outputTokens": 3,
+                  "cacheReadTokens": 4096,
+                  "cacheWriteTokens": 0,
+                  "totalTokens": 4235
+                },
+                "cost": {
+                  "rawCostCents": 0.3,
+                  "chargedCents": 0.2
+                }
+              }
+            ],
+            "cost": {
+              "rawCostCents": 0.3,
+              "chargedCents": 0.2
+            }
+          },
+          "aggregateOnly": {
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "totalTokens": 0
+          },
+          "costReconciliation": "observed",
+          "aggregateOnlyCost": {
+            "rawCostCents": 0,
+            "chargedCents": 0
+          }
+        },
+        "notify": [
+          [
+            "Cursor usage — durable; persistence ok; current branch telemetry\nNative Pi /stats retains configured-price estimates for emitted messages, not full Cursor invoice totals. Raw telemetry and whole-agent billed snapshots are separate overlapping sources; do not sum them.\nRecorded corrected LOCAL raw tokens: 0 (input 0, cache read 0, cache write 0, output 0).\nOriginal telemetry: 0 raw turns; normalization unavailable/invalid: 0; 0 terminal facts (not added to raw).\nOther-branch journal records: 0; unclaimed records: 0; inherited records with unknown claim ownership: 0; inherited journal gaps: 0; incomplete trailing frames: 0. Export retains these facts without billing them to this branch.\nagent-test: observed-pending-settlement; whole-agent facts, no client-run billing join. Latest known billed tokens: 4235; SDK charged cents: 0.2; aggregate-only tokens: 0. Origin 20000000-0000-4000-8000-000000000020: observed-pending-settlement; latest known billed tokens 4235; charged cents 0.2.\nSnapshots are observations, not final invoices. Multiple origin journals have no qualified global revision ordering. Cloud raw normalization is unqualified.\nJournal ceiling: 16MiB per origin session. See /cursor-usage help for recovery. Export contains no prompts or tool content.",
+            "info"
+          ]
+        ]
+      },
+      "journals": 1,
+      "journalFrames": 2
+    },
+    {
+      "name": "fileless-ephemeral-fixed",
+      "covers": [
+        "ephemeral session"
+      ],
+      "status": "pass",
+      "problems": [],
+      "observations": {
+        "durability": "ephemeral",
+        "correctedRawTotal": {
+          "inputTokens": 2,
+          "outputTokens": 1,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "totalTokens": 3
+        },
+        "terminal": {
+          "kind": "terminal",
+          "status": "success",
+          "invalidReportedUsage": true,
+          "version": 1,
+          "id": "00000000-0000-4000-8000-000000015714",
+          "turnId": "00000000-0000-4000-8000-000000015408",
+          "timestamp": "2024-10-15T13:46:40.123Z",
+          "origin": {
+            "sessionId": "20000000-0000-4000-8000-000000000021",
+            "anchorId": "00000000-0000-4000-8000-000000015509"
+          }
+        },
+        "journalFiles": 0
+      },
+      "journals": 0,
+      "journalFrames": 0
+    }
+  ],
+  "recovery": [
+    {
+      "name": "empty-journal",
+      "outcome": "committed",
+      "bytes": "33434a6002028a1bfeb65494dd92c680ae854d664526851a18c7165e1249f696"
+    },
+    {
+      "name": "complete-frame",
+      "outcome": "committed",
+      "bytes": "371eede07bdf07e7af0f05a713ef5660dbb9f2ac3c3b6c010db9cc4256d56b2a"
+    },
+    {
+      "name": "torn-tail",
+      "outcome": "threw: incomplete journal frame",
+      "bytes": "1d8338948c0f33a89928fcbbbf88c76b0b05f3744679d603d485f6c4ccf5c821"
+    },
+    {
+      "name": "no-newline",
+      "outcome": "threw: incomplete journal frame",
+      "bytes": "c3d03f7dd99c4b261b4c208b703ff802c2fce6f988302e501fcd999e0abf82a5"
+    }
+  ],
+  "counts": {
+    "scenarios": 20,
+    "scenarioPass": 20,
+    "recoveryCases": 4,
+    "journals": 16,
+    "frames": 83
+  },
+  "components": [
+    "raw cache correction and repeated/revised aggregate bills",
+    "unknown inherited history, unavailable observation, late terminal and billing facts",
+    "late completion on the original journal and switched branch isolation",
+    "failed persistence, guarded warning, export and torn-journal recovery",
+    "abandon without fetch, then eventual billing",
+    "linear growing snapshots, row revision and deletion",
+    "malformed, symlink and directory journal refusal",
+    "fork lineage and shared-spend ambiguity",
+    "journal-only descendant facts after mirror failure",
+    "append-chronology revision order under backward wall clocks",
+    "unqualified Cloud and invalid LOCAL telemetry",
+    "immutable pricing tiers and metadata rejection",
+    "cross-directory fork with an unavailable inherited journal",
+    "available aggregate revisions with missing mirrors",
+    "other-branch claims copied by a native fork",
+    "first-turn orphan intent without a native claim",
+    "fileless ephemeral sessions",
+    "help and missing export arguments in non-UI mode",
+    "bounded refresh through the command and an exclusive export",
+    "fake @cursor/sdk endpoint refresh through the command"
+  ],
+  "commands": [
+    "node tests/c-usage/usage-reference.mjs        (check mode)",
+    "node tests/c-usage/usage-reference.mjs --write",
+    "node tests/c-usage/usage-reference.mjs --only <name>"
+  ],
+  "rust": "tests/c_usage_reference.rs replays every recorded journal frame sequence and recovery prefix through the native JournalPort and compares complete bytes and outcomes.",
+  "notTested": [
+    "Live Cursor billing, real cloud agents and the raw REST usage fallback (/v1/agents/{id}/usage) are not exercised.",
+    "Interactive/TUI/RPC rendering is not exercised; only the non-UI notification and export paths are recorded.",
+    "The native rpi worker's own copy of the usage ledger is exercised only at the journal-port boundary by the Rust replay, not end-to-end through the DLL.",
+    "C09 lifecycle stop-admission/cancel/close/flush/reap is covered separately by lifecycle-reference.mjs and the Rust worker tests."
+  ],
+  "problems": []
+}
