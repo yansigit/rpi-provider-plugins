@@ -1,0 +1,110 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "local-reuse",
+  "description": "Two local turns in one worker/session. The second send must reuse the pooled SDK agent and send only the appended user input (incremental), matching Pi's follow-up behaviour.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "First question from the fake.",
+    "followUps": [
+      "Second question from the fake."
+    ],
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "first",
+      "expect": {
+        "promptIncludes": "First question from the fake.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "First answer."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 10,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "First answer."
+      }
+    },
+    {
+      "name": "second",
+      "expect": {
+        "promptIncludes": "Second question from the fake.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Second answer."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 8,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Second answer."
+      }
+    }
+  ],
+  "expect": {
+    "exitCode": 0,
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 7,
+      "SqliteLocalAgentStore.dispose": 1,
+      "SqliteLocalAgentStore.open": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 2,
+      "agent.send": 2,
+      "createAgentPlatform": 2
+    },
+    "runs": {
+      "finished": 2
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0,
+    "piToolExecutions": {}
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "local-custom-agents",
+  "description": "One local turn with a user-configured custom subagent. The retained adapter must pass the subagent definitions to Agent.create and include them in the pool key.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Turn with a custom subagent.",
+    "extensions": []
+  },
+  "config": {
+    "subagents": {
+      "reviewer": {
+        "description": "Reviews the change",
+        "prompt": "Review the current change for correctness."
+      }
+    }
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "subagent",
+      "expect": {
+        "promptIncludes": "Turn with a custom subagent.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Custom subagent registered."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 11,
+            "outputTokens": 5,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Custom subagent registered."
+      }
+    }
+  ],
+  "expect": {
+    "exitCode": 0,
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 3,
+      "SqliteLocalAgentStore.dispose": 1,
+      "SqliteLocalAgentStore.open": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 1,
+      "agent.send": 1,
+      "createAgentPlatform": 1
+    },
+    "runs": {
+      "finished": 1
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0,
+    "piToolExecutions": {}
+  }
+}

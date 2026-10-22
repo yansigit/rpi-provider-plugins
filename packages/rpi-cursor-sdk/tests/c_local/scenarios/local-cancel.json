@@ -1,0 +1,65 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "local-cancel",
+  "description": "Cold start then a hung local turn cancelled through the worker's private cancel frame. The SDK run must be cancelled exactly once and the pooled agent disposed. rpi-only: the unchanged Pi 1.3.0 CLI cannot cancel a print-mode turn deterministically, so no reference comparison is recorded.",
+  "rpiOnly": true,
+  "cancelAfterMs": 150,
+  "run": {
+    "model": "composer-2",
+    "prompt": "Hang until cancelled.",
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "hang",
+      "expect": {
+        "promptIncludes": "Hang until cancelled.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "hang"
+        }
+      ],
+      "outcome": {
+        "status": "cancelled"
+      }
+    }
+  ],
+  "expect": {
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 2,
+      "SqliteLocalAgentStore.dispose": 1,
+      "SqliteLocalAgentStore.open": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 1,
+      "agent.send": 1,
+      "createAgentPlatform": 1
+    },
+    "runs": {
+      "cancelled": 1
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0
+  }
+}
