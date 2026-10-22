@@ -1,0 +1,104 @@
+{
+  "lane": "ag-2",
+  "status": "linux-system-trust-store-and-openSSL-chain-diagnostics-ported",
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "platform": "linux",
+  "compiler": "Rust 1.78.0 (-D warnings) and Rust 1.95.0; reference runtime Node 24.22.0",
+  "upstreamFiles": {
+    "packages/core/src/agy-transport.ts": "ca6d74b8703d8d3f25dc5d2e9fcfb7129039c2b6ecaa407daea218227698e1bb",
+    "packages/core/dist/agy-transport.js": "64ea3f6e1082848f15fe7a66c6c4ead53daaa57ae66d8a74d6a7dd7851859c24"
+  },
+  "fixture": {
+    "fixture": "tests/fixtures/ag2-trust.json",
+    "sha256": "3afba80f08c41a7900a1d378e04292edba5bc1ab644085990ce0ff3f0bd2a3cb",
+    "cases": 16,
+    "runtime": "v24.22.0",
+    "referenceScript": "scripts/ag2-trust-reference.mjs",
+    "certificateFixtures": "tests/fixtures/tls/{ca,leaf}-{cert,key}.{pem,der} are disposable test certs generated with openssl (CA: CN=rpi-ag2-test-ca; leaf: CN=localhost, SAN DNS:localhost,IP:127.0.0.1,IP:::1). The self-signed server-cert/key pair already existed.",
+    "reproduction": "Two independent check-mode runs regenerated identical bytes; check mode exits non-zero on any difference.",
+    "peers": "Two loopback TLS servers built from committed disposable fixtures; no real host, credential or network."
+  },
+  "trustStore": {
+    "bundledCertificates": 121,
+    "bundledCertificateSha256": "1f20173c6c5bd4e836fbd5d025ec4eb7464e1521439cde2fea0aca3122c7a1a9",
+    "switches": {
+      "NODE_EXTRA_CA_CERTS": "appended to whatever store is active; unchanged from the earlier port",
+      "NODE_USE_SYSTEM_CA=1": "bundled Node 24 roots plus OpenSSL's default verify paths",
+      "NODE_OPTIONS=--use-system-ca": "same store as NODE_USE_SYSTEM_CA=1",
+      "NODE_OPTIONS=--use-openssl-ca": "OpenSSL's default verify paths replace the bundled roots",
+      "SSL_CERT_FILE": "selects the CA file for a system/OpenSSL store; ignored by the bundled store",
+      "SSL_CERT_DIR": "selects the hashed CA directory for a system/OpenSSL store; ignored by the bundled store"
+    },
+    "qualification": "Only the exact value 1 enables NODE_USE_SYSTEM_CA: 0, false, true, empty and any other value leave the bundled store, matching the reference process. System roots are read once per process from OpenSSL's default verify paths (SSL_CERT_FILE/SSL_CERT_DIR when set, else the platform defaults) with the same tolerance for unreadable or non-certificate directory entries. Duplicate certificates between the file and the directory do not change any trust decision, so only decisions are compared.",
+    "cases": 16,
+    "compared": [
+      "trusted (HTTP 200 with the exact loopback body)",
+      "the complete Node error message for a rejected chain"
+    ]
+  },
+  "diagnostics": {
+    "mapped": {
+      "DEPTH_ZERO_SELF_SIGNED_CERT": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca",
+      "UNABLE_TO_VERIFY_LEAF_SIGNATURE": "unable to verify the first certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+    },
+    "method": "rustls reports UnknownIssuer for both a self-signed leaf and a leaf issued by an unknown CA, so the handshake captures the presented leaf and compares its DER issuer and subject: equal issuer/subject is the self-signed reason, otherwise the unknown-issuer reason. No other error text is changed.",
+    "cases": 6,
+    "certificateSha256": {
+      "selfSigned": "66579bb5bdb4938494842bc61602d2d0bb9717c2f6303c8b48bb521d03036c6a",
+      "leaf": "ea090b6fb6d737a5b47139a3de7f84c92a1536369467abd12139504a946e270c",
+      "ca": "3d77c3463abdac0a8a8195657bd34109f98f39bdc591603d8b9977f07a48d2fc"
+    }
+  },
+  "custodyResponseWrapper": {
+    "status": "already-implemented-and-covered-by-the-base-commit; verified, not duplicated",
+    "implementation": [
+      "src/vault/slot.rs: enter() writes the byte-preserving stash (backup) then the non-secret placeholder (marker) before custody; exit() chooses restored/conflict/nothing-to-do; the Hook is the fault-injection seam.",
+      "src/vault/source.rs: synchronize() wraps the transition: read mode, enter on custody, exit on local and refuse SLOT_CONFLICT on conflict, re-read the mode and refuse CHANGED if it moved.",
+      "src/native/vault.rs: transaction() exposes enter/exit through the host credential-store port for custody/local mode changes."
+    ],
+    "existingEvidence": [
+      "tests/vault_slot.rs + fixtures/vault-slot.json: 66 byte-preservation/refusal/crash scenarios; outcomes restored 32, nothing-to-do 19, conflict 6, errors 139.",
+      "tests/vault_source.rs + fixtures/vault-startup.json: 149 slot-synchronization cases incl. backup/marker ordering, conditional restore and both refusals; plus 286 admission cases.",
+      "tests/vault_fsync.rs + fixtures/vault-slot-fsync.json: 5 real file/directory fsync failure boundaries.",
+      "tests/vault_send.rs: 37 physical-send traces with fresh receipt/project and single 401 retry."
+    ],
+    "notDeliveredHere": "No new wrapper code or fixture was added for this part: the base commit already contains the backup+marker+conditional-restore wrapper behind the injectable Slot Hook and Source transition, with differential coverage. Duplicating it would not add evidence."
+  },
+  "commands": [
+    {
+      "command": "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+      "targetDir": ".targets/ag-2",
+      "status": "passed",
+      "passed": 74,
+      "failed": 0,
+      "ignored": 4,
+      "warnings": 0
+    },
+    {
+      "command": "cargo test -p rpi-antigravity-auth --locked",
+      "targetDir": ".targets/ag-2-195",
+      "status": "passed",
+      "passed": 74,
+      "failed": 0,
+      "ignored": 4
+    },
+    {
+      "command": "RPI_REFERENCE_DIR=... node scripts/ag2-trust-reference.mjs",
+      "status": "passed",
+      "cases": 16,
+      "mode": "check (regenerate and compare to the committed fixture)"
+    },
+    {
+      "command": "RPI_REFERENCE_NODE=... RPI_REFERENCE_DIR=... cargo test -p rpi-antigravity-auth --test ag2_trust -- --ignored",
+      "status": "passed",
+      "mode": "Node reference regenerates the committed fixture"
+    }
+  ],
+  "notTested": [
+    "macOS and Windows: the system and OpenSSL stores are read from Linux default verify paths only; Node's platform stores are not reproduced there",
+    "hostname/IP mismatch diagnostics (ERR_TLS_CERT_ALTNAME_INVALID): the reference message embeds the peer's parsed SAN list, which rustls does not surface; the transport keeps rustls's own text for that failure",
+    "expired/not-yet-valid certificate text and the mutually exclusive --use-openssl-ca + --use-system-ca combination, which the reference process refuses to start with",
+    "CLI --use-system-ca/--use-openssl-ca flags on process.execArgv (only NODE_OPTIONS and NODE_USE_SYSTEM_CA are honored)",
+    "live inference and any real network"
+  ]
+}

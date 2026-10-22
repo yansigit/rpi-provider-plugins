@@ -1,0 +1,281 @@
+{
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "runtime": "v24.22.0",
+  "sourceHashes": {
+    "packages/core/src/agy-transport.ts": "ca6d74b8703d8d3f25dc5d2e9fcfb7129039c2b6ecaa407daea218227698e1bb",
+    "packages/core/dist/agy-transport.js": "64ea3f6e1082848f15fe7a66c6c4ead53daaa57ae66d8a74d6a7dd7851859c24"
+  },
+  "certificateSha256": "66579bb5bdb4938494842bc61602d2d0bb9717c2f6303c8b48bb521d03036c6a",
+  "cases": [
+    {
+      "name": "default",
+      "server": "self-signed",
+      "set": {},
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_OPTIONS",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": false,
+        "message": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+      }
+    },
+    {
+      "name": "extra-self-signed",
+      "server": "self-signed",
+      "set": {
+        "NODE_EXTRA_CA_CERTS": "@cert@"
+      },
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_OPTIONS",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "leaf-unknown-ca",
+      "server": "leaf",
+      "set": {},
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_OPTIONS",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": false,
+        "message": "unable to verify the first certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+      }
+    },
+    {
+      "name": "leaf-extra-ca",
+      "server": "leaf",
+      "set": {
+        "NODE_EXTRA_CA_CERTS": "@ca@"
+      },
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_OPTIONS",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "system-ca",
+      "server": "self-signed",
+      "set": {
+        "NODE_USE_SYSTEM_CA": "1"
+      },
+      "unset": [
+        "NODE_OPTIONS",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": false,
+        "message": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+      }
+    },
+    {
+      "name": "system-ca-extra",
+      "server": "self-signed",
+      "set": {
+        "NODE_USE_SYSTEM_CA": "1",
+        "NODE_EXTRA_CA_CERTS": "@cert@"
+      },
+      "unset": [
+        "NODE_OPTIONS",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "system-ca-ssl-file",
+      "server": "self-signed",
+      "set": {
+        "NODE_USE_SYSTEM_CA": "1",
+        "SSL_CERT_FILE": "@cert@"
+      },
+      "unset": [
+        "NODE_OPTIONS",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "system-ca-ssl-dir",
+      "server": "self-signed",
+      "set": {
+        "NODE_USE_SYSTEM_CA": "1",
+        "SSL_CERT_DIR": "@certdir@"
+      },
+      "unset": [
+        "NODE_OPTIONS",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_FILE"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "system-ca-option",
+      "server": "self-signed",
+      "set": {
+        "NODE_OPTIONS": "--use-system-ca",
+        "SSL_CERT_FILE": "@cert@"
+      },
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "system-ca-off",
+      "server": "self-signed",
+      "set": {
+        "NODE_USE_SYSTEM_CA": "0",
+        "SSL_CERT_FILE": "@cert@"
+      },
+      "unset": [
+        "NODE_OPTIONS",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": false,
+        "message": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+      }
+    },
+    {
+      "name": "ssl-file-only",
+      "server": "self-signed",
+      "set": {
+        "SSL_CERT_FILE": "@cert@"
+      },
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_OPTIONS",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": false,
+        "message": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+      }
+    },
+    {
+      "name": "openssl-ca",
+      "server": "self-signed",
+      "set": {
+        "NODE_OPTIONS": "--use-openssl-ca"
+      },
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": false,
+        "message": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+      }
+    },
+    {
+      "name": "openssl-ca-ssl-file",
+      "server": "self-signed",
+      "set": {
+        "NODE_OPTIONS": "--use-openssl-ca",
+        "SSL_CERT_FILE": "@cert@"
+      },
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "openssl-ca-extra",
+      "server": "self-signed",
+      "set": {
+        "NODE_OPTIONS": "--use-openssl-ca",
+        "NODE_EXTRA_CA_CERTS": "@cert@"
+      },
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "system-ca-leaf-ca-file",
+      "server": "leaf",
+      "set": {
+        "NODE_USE_SYSTEM_CA": "1",
+        "SSL_CERT_FILE": "@ca@"
+      },
+      "unset": [
+        "NODE_OPTIONS",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    },
+    {
+      "name": "openssl-ca-leaf-ca-file",
+      "server": "leaf",
+      "set": {
+        "NODE_OPTIONS": "--use-openssl-ca",
+        "SSL_CERT_FILE": "@ca@"
+      },
+      "unset": [
+        "NODE_USE_SYSTEM_CA",
+        "NODE_EXTRA_CA_CERTS",
+        "SSL_CERT_DIR"
+      ],
+      "result": {
+        "trusted": true,
+        "message": null
+      }
+    }
+  ]
+}
