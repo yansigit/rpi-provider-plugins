@@ -1,0 +1,78 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "continuity-turn",
+  "description": "One local turn. The adapter records a forensic lineage entry at the send boundary and a resume handle at turn_end; both are written through Pi's session append.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Branch continuity first turn.",
+    "followUps": []
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "first",
+      "expect": {
+        "promptIncludes": "Branch continuity first turn.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "First continuity answer."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 10,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "First continuity answer."
+      }
+    }
+  ],
+  "expect": {
+    "exitCode": 0,
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 3,
+      "SqliteLocalAgentStore.dispose": 1,
+      "SqliteLocalAgentStore.open": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 1,
+      "agent.send": 1,
+      "createAgentPlatform": 1
+    },
+    "runs": {
+      "finished": 1
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0,
+    "piToolExecutions": {}
+  }
+}

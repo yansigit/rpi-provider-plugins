@@ -1,0 +1,282 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "compaction-summary",
+  "description": "Compaction summary agent over awaited session ports: session_before_compact releases the pooled conversation run before a separate temporary summary agent is created (tools:[], ephemeral store), and session_compact resets resume state before the next turn rebuilds the pool.",
+  "rpiOnly": true,
+  "run": {
+    "model": "composer-2",
+    "prompt": "Compaction first turn.",
+    "followUps": []
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "first",
+      "expect": {
+        "promptIncludes": "Compaction first turn.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "First compaction answer."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 10,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "First compaction answer."
+      }
+    },
+    {
+      "name": "summary",
+      "expect": {
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Compaction summary text."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 30,
+            "outputTokens": 6,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Compaction summary text."
+      }
+    },
+    {
+      "name": "second",
+      "expect": {
+        "promptIncludes": "Compaction second turn.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Second compaction answer."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 12,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Second compaction answer."
+      }
+    }
+  ],
+  "rpi": {
+    "steps": [
+      {
+        "kind": "turn",
+        "prompt": "Compaction first turn."
+      },
+      {
+        "kind": "identity",
+        "identity": {
+          "operationId": "op-compaction",
+          "purpose": "compaction"
+        }
+      },
+      {
+        "kind": "event",
+        "event": {
+          "type": "session_before_compact"
+        }
+      },
+      {
+        "kind": "summary",
+        "prompt": "Summarize the conversation so far."
+      },
+      {
+        "kind": "event",
+        "event": {
+          "type": "session_compact",
+          "compactionEntry": {
+            "type": "compaction",
+            "id": "compaction-1",
+            "parentId": null,
+            "timestamp": "2026-10-22T00:00:00.000Z",
+            "summary": "Compaction summary text.",
+            "tokensBefore": 42
+          }
+        }
+      },
+      {
+        "kind": "identity",
+        "identity": null
+      },
+      {
+        "kind": "turn",
+        "prompt": "Compaction second turn."
+      }
+    ],
+    "expectAppends": [
+      "cursor-sdk-agent-lineage",
+      "cursor-sdk-agent-resume",
+      "cursor-sdk-agent-resume"
+    ],
+    "expectEntries": [
+      {
+        "customType": "cursor-sdk-agent-lineage",
+        "data": {
+          "version": 1,
+          "runtime": "local",
+          "agentId": "agent-00000000-0000-4000-8000-000000000001",
+          "sessionId": "<session-id>",
+          "sessionFile": "<session-file>",
+          "scopeKey": "<scope-key>",
+          "cwd": "<cwd>",
+          "timestamp": "<iso>"
+        }
+      },
+      {
+        "customType": "cursor-sdk-agent-resume",
+        "data": {
+          "version": 2,
+          "runtime": "local",
+          "agentId": "agent-00000000-0000-4000-8000-000000000001",
+          "scopeKey": "<scope-key>",
+          "sessionFile": "<session-file>",
+          "sessionId": "<session-id>",
+          "cwd": "<cwd>",
+          "poolKey": "<session-file>\u0000<cwd>\u0000{\"id\":\"composer-2\",\"params\":[{\"id\":\"fast\",\"value\":\"true\"}]}\u0000all\u0000{\"autoReview\":false,\"sandboxEnabled\":false}\u0000http1:default\u0000<hash>\u0000bridge:empty",
+          "branchPathHash": "<hash>",
+          "compactionGeneration": 0,
+          "sendState": {
+            "bootstrapped": true,
+            "contextFingerprint": "<fingerprint>",
+            "incrementalSendCount": 0
+          },
+          "createdAt": "<iso>",
+          "storeIdentity": {
+            "version": 1,
+            "stateRoot": "<store-root>"
+          }
+        }
+      },
+      {
+        "customType": "cursor-sdk-agent-resume",
+        "data": {
+          "version": 2,
+          "runtime": "local",
+          "agentId": "agent-00000000-0000-4000-8000-000000000001",
+          "scopeKey": "<scope-key>",
+          "sessionFile": "<session-file>",
+          "sessionId": "<session-id>",
+          "cwd": "<cwd>",
+          "poolKey": "<session-file>\u0000<cwd>\u0000{\"id\":\"composer-2\",\"params\":[{\"id\":\"fast\",\"value\":\"true\"}]}\u0000all\u0000{\"autoReview\":false,\"sandboxEnabled\":false}\u0000http1:default\u0000<hash>\u0000bridge:empty",
+          "branchPathHash": "<hash>",
+          "compactionGeneration": 0,
+          "sendState": {
+            "bootstrapped": true,
+            "contextFingerprint": "<fingerprint>",
+            "incrementalSendCount": 0
+          },
+          "createdAt": "<iso>",
+          "storeIdentity": {
+            "version": 1,
+            "stateRoot": "<store-root>"
+          }
+        }
+      }
+    ],
+    "expectAppendDetails": [
+      {
+        "action": "append",
+        "customType": "cursor-sdk-agent-lineage",
+        "phase": null,
+        "durability": "durable",
+        "entryId": "committed-4",
+        "parentId": "committed-3",
+        "advancedLane": true
+      },
+      {
+        "action": "append",
+        "customType": "cursor-sdk-agent-resume",
+        "phase": null,
+        "durability": "durable",
+        "entryId": "committed-10",
+        "parentId": "assistant-9",
+        "advancedLane": true
+      },
+      {
+        "action": "append",
+        "customType": "cursor-sdk-agent-resume",
+        "phase": null,
+        "durability": "durable",
+        "entryId": "committed-25",
+        "parentId": "assistant-24",
+        "advancedLane": true
+      }
+    ],
+    "expectNotifications": []
+  },
+  "expect": {
+    "sdkCalls": {
+      "Agent.create": 2,
+      "Agent.messages.list": 7,
+      "Agent.resume": 1,
+      "SqliteLocalAgentStore.dispose": 3,
+      "SqliteLocalAgentStore.open": 3,
+      "agent.asyncDispose": 3,
+      "agent.getUsage": 3,
+      "agent.send": 3,
+      "createAgentPlatform": 2
+    },
+    "runs": {
+      "finished": 3
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0
+  }
+}
