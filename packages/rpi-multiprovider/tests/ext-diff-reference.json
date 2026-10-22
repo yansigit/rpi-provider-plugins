@@ -1,0 +1,1983 @@
+{
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "hashes": {
+    "extensions/multiprovider.ts": "086a0d9c4fbc8431e81026e5d689747d1c31dfcdf89c9d180c0bbd7e37c0a267",
+    "src/announcement.ts": "fc0bf72467dba7b524146ade4a66c420d546a01e7867b8095c8b7d8b1804ae18",
+    "src/auth-store.ts": "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6",
+    "src/index.ts": "90b3b79432e4d556f75b7b8e25fc3fb512cb56293f5263e6b2090465f5cfaa66",
+    "src/lift.ts": "887b91aab533565504449b6094c1a2b076832b0fdc73bfc352e2c46a53ac3695",
+    "src/managed.ts": "5a139118f805ed4825259df761dd5e2fbec515da19d3bc10b9719c9bf30bdeef",
+    "src/service.ts": "2eafa61662b3ee75a96a7b07a6ccad62ca600bbb2139a407b81cd9983564a026",
+    "src/session-pins.ts": "45b1ff1fbfcc6853a717b917aaede404f32fe96a64208c75283a53e954bdc005",
+    "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+    "src/virtual.ts": "6c38efe1d8bcd180e3287b182df592914a1af0a7091f872cd6dc32042575f808",
+    "tests/extension-resume.spec.ts": "fb768939799048972fbb4d805fb110a400435c3ce000325cea8df54ced18caac",
+    "tests/extension-composition.spec.ts": "4a65b884b4c99ff12e68d58570748c7dfb11cb402af214d0ec8b7d1a6a4872f0",
+    "tests/session-pins.spec.ts": "b76859b11511fe615ca0b5769152aa049e4d55677cfefb25ae287d23df8f7173"
+  },
+  "resume": [
+    {
+      "name": "resume restores the last switch and notifies followers",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "account-3",
+              "label": "Personal"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "env": {},
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-1",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-3",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "account-3",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-3",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          }
+        ],
+        "active": {
+          "example": {
+            "id": "account-3",
+            "label": "Personal",
+            "authKind": "api-key"
+          }
+        }
+      }
+    },
+    {
+      "name": "an explicit return to automatic is not resurrected",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "account-8",
+              "label": "Personal"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1"
+            },
+            "id": "entry-2",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "env": {},
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-6",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-8",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "account-8",
+            "label": "Personal"
+          },
+          {
+            "pool": "example",
+            "key": "session-1"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": null
+          }
+        ],
+        "active": {
+          "example": null
+        }
+      }
+    },
+    {
+      "name": "a fresh session without a journal stays automatic",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [],
+        "env": {},
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-11",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-13",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [],
+        "notifications": [],
+        "accountChanges": [],
+        "active": {
+          "example": null
+        }
+      }
+    },
+    {
+      "name": "a removed pinned account warns and falls back to automatic",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "deleted-account",
+              "label": "Deleted"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "env": {},
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-16",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-18",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "deleted-account",
+            "label": "Deleted"
+          }
+        ],
+        "notifications": [
+          [
+            "multiprovider: pinned account \"Deleted\" could not be restored for \"example\": multiprovider: provider \"example\" has no account \"deleted-account\"",
+            "warning"
+          ]
+        ],
+        "accountChanges": [],
+        "active": {
+          "example": null
+        }
+      }
+    },
+    {
+      "name": "a disabled pinned account warns and falls back to automatic",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "account-23",
+              "label": "Personal"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "env": {},
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-21",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-23",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": false,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "account-23",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [
+          [
+            "multiprovider: pinned account \"Personal\" could not be restored for \"example\": multiprovider: account \"Personal\" is disabled",
+            "warning"
+          ]
+        ],
+        "accountChanges": [],
+        "active": {
+          "example": null
+        }
+      }
+    },
+    {
+      "name": "an inherited env pin binds onto the child session",
+      "input": {
+        "sessionId": "child-session",
+        "entries": [],
+        "env": {
+          "PI_MULTIPROVIDER_SESSION_PINS": "[{\"pool\":\"example\",\"accountId\":\"account-28\",\"label\":\"Personal\"}]"
+        },
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-26",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-28",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "child-session",
+            "accountId": "account-28",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-28",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          }
+        ],
+        "active": {
+          "example": {
+            "id": "account-28",
+            "label": "Personal",
+            "authKind": "api-key"
+          }
+        }
+      }
+    },
+    {
+      "name": "the child journal wins over inherited env pins",
+      "input": {
+        "sessionId": "child-session",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "child-session"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "env": {
+          "PI_MULTIPROVIDER_SESSION_PINS": "[{\"pool\":\"example\",\"accountId\":\"account-33\",\"label\":\"Personal\"}]"
+        },
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-31",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-33",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "child-session"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": null
+          }
+        ],
+        "active": {
+          "example": null
+        }
+      }
+    },
+    {
+      "name": "a stale inherited pin warns and is not journalled",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [],
+        "env": {
+          "PI_MULTIPROVIDER_SESSION_PINS": "[{\"pool\":\"example\",\"accountId\":\"deleted-account\",\"label\":\"Deleted\"}]"
+        },
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-36",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-38",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [],
+        "notifications": [
+          [
+            "multiprovider: pinned account \"Deleted\" could not be restored for \"example\": multiprovider: provider \"example\" has no account \"deleted-account\"",
+            "warning"
+          ]
+        ],
+        "accountChanges": [],
+        "active": {
+          "example": null
+        }
+      }
+    },
+    {
+      "name": "an inherited pin waits for its pool and applies at the next reconcile",
+      "input": {
+        "sessionId": "child-session",
+        "entries": [],
+        "env": {
+          "PI_MULTIPROVIDER_SESSION_PINS": "[{\"pool\":\"example\",\"accountId\":\"account-43\",\"label\":\"Personal\"}]"
+        },
+        "reload": false,
+        "pending": true,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-41",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-43",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "child-session",
+            "accountId": "account-43",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-43",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          }
+        ],
+        "active": {
+          "example": {
+            "id": "account-43",
+            "label": "Personal",
+            "authKind": "api-key"
+          }
+        }
+      }
+    },
+    {
+      "name": "a branch prefix keeps the decision that was current then",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "account-48",
+              "label": "Personal"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "env": {},
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-46",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-48",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "account-48",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-48",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          }
+        ],
+        "active": {
+          "example": {
+            "id": "account-48",
+            "label": "Personal",
+            "authKind": "api-key"
+          }
+        }
+      }
+    },
+    {
+      "name": "a branch after the later decision keeps the later decision",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "account-53",
+              "label": "Personal"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1"
+            },
+            "id": "entry-2",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "env": {},
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-51",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-53",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "account-53",
+            "label": "Personal"
+          },
+          {
+            "pool": "example",
+            "key": "session-1"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": null
+          }
+        ],
+        "active": {
+          "example": null
+        }
+      }
+    },
+    {
+      "name": "a reload replays the journal on the second start",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "account-58",
+              "label": "Personal"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "env": {},
+        "reload": true,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-56",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-58",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "account-58",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-58",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          },
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-58",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          }
+        ],
+        "active": {
+          "example": {
+            "id": "account-58",
+            "label": "Personal",
+            "authKind": "api-key"
+          }
+        }
+      }
+    },
+    {
+      "name": "a reload does not re-journal an inherited pin",
+      "input": {
+        "sessionId": "child-session",
+        "entries": [],
+        "env": {
+          "PI_MULTIPROVIDER_SESSION_PINS": "[{\"pool\":\"example\",\"accountId\":\"account-63\",\"label\":\"Personal\"}]"
+        },
+        "reload": true,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-61",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-63",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "child-session",
+            "accountId": "account-63",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-63",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          },
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-63",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          }
+        ],
+        "active": {
+          "example": {
+            "id": "account-63",
+            "label": "Personal",
+            "authKind": "api-key"
+          }
+        }
+      }
+    },
+    {
+      "name": "an inherited pin outranks disabled affinity",
+      "input": {
+        "sessionId": "child-session",
+        "entries": [],
+        "env": {
+          "PI_MULTIPROVIDER_SESSION_PINS": "[{\"pool\":\"example\",\"accountId\":\"account-68\",\"label\":\"Personal\"}]"
+        },
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": false,
+            "accounts": [
+              {
+                "id": "account-66",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-68",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "child-session",
+            "accountId": "account-68",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-68",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          }
+        ],
+        "active": {
+          "example": {
+            "id": "account-68",
+            "label": "Personal",
+            "authKind": "api-key"
+          }
+        }
+      }
+    },
+    {
+      "name": "two accounts in the journal: the later decision wins",
+      "input": {
+        "sessionId": "session-1",
+        "entries": [
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "account-71",
+              "label": "Work"
+            },
+            "id": "entry-1",
+            "parentId": null,
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "type": "custom",
+            "customType": "pi-multiprovider:switch-account",
+            "data": {
+              "pool": "example",
+              "key": "session-1",
+              "accountId": "account-73",
+              "label": "Personal"
+            },
+            "id": "entry-2",
+            "parentId": "entry-1",
+            "timestamp": "2023-11-14T22:13:21.000Z"
+          }
+        ],
+        "env": {},
+        "reload": false,
+        "pending": false,
+        "pools": [
+          {
+            "id": "example",
+            "affinity": true,
+            "accounts": [
+              {
+                "id": "account-71",
+                "label": "Work",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1
+              },
+              {
+                "id": "account-73",
+                "label": "Personal",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "journal": [
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "account-71",
+            "label": "Work"
+          },
+          {
+            "pool": "example",
+            "key": "session-1",
+            "accountId": "account-73",
+            "label": "Personal"
+          }
+        ],
+        "notifications": [],
+        "accountChanges": [
+          {
+            "providerId": "example",
+            "account": {
+              "id": "account-73",
+              "label": "Personal",
+              "authKind": "api-key"
+            }
+          }
+        ],
+        "active": {
+          "example": {
+            "id": "account-73",
+            "label": "Personal",
+            "authKind": "api-key"
+          }
+        }
+      }
+    }
+  ],
+  "composition": [
+    {
+      "name": "a composed registry lifts the base once",
+      "input": {
+        "registry": "composed",
+        "managed": [
+          "example"
+        ],
+        "bases": [
+          "example"
+        ],
+        "models": [
+          {
+            "id": "probe-model",
+            "name": "Probe Model",
+            "api": "probe-api",
+            "provider": "example",
+            "baseUrl": "https://example.invalid",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000,
+            "maxTokens": 100
+          }
+        ],
+        "virtual": [],
+        "ids": [
+          "example"
+        ],
+        "ops": [
+          {
+            "session": 0,
+            "op": "load"
+          },
+          {
+            "session": 0,
+            "op": "start"
+          },
+          {
+            "session": 0,
+            "op": "before_agent_start"
+          },
+          {
+            "session": 0,
+            "op": "before_agent_start"
+          },
+          {
+            "session": 0,
+            "op": "request"
+          }
+        ]
+      },
+      "expected": {
+        "trace": [
+          {
+            "op": "step",
+            "name": "0:load"
+          },
+          {
+            "op": "step",
+            "name": "0:start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "0:before_agent_start"
+          },
+          {
+            "op": "step",
+            "name": "0:before_agent_start"
+          },
+          {
+            "op": "step",
+            "name": "0:request"
+          }
+        ],
+        "registry": {
+          "example": {
+            "view": {
+              "id": "example",
+              "isLift": false,
+              "liftedBaseId": null,
+              "hasHeaders": true
+            },
+            "native": {
+              "id": "example",
+              "isLift": true,
+              "liftedBaseId": "example",
+              "hasHeaders": true
+            }
+          }
+        },
+        "requests": [
+          {
+            "id": "example",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": true
+          }
+        ],
+        "notify": []
+      }
+    },
+    {
+      "name": "a child session lifts the base, not the parent lift",
+      "input": {
+        "registry": "composed",
+        "managed": [
+          "example"
+        ],
+        "bases": [
+          "example"
+        ],
+        "models": [
+          {
+            "id": "probe-model",
+            "name": "Probe Model",
+            "api": "probe-api",
+            "provider": "example",
+            "baseUrl": "https://example.invalid",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000,
+            "maxTokens": 100
+          }
+        ],
+        "virtual": [],
+        "ids": [
+          "example"
+        ],
+        "ops": [
+          {
+            "session": 0,
+            "op": "load"
+          },
+          {
+            "session": 0,
+            "op": "start"
+          },
+          {
+            "session": 1,
+            "op": "load"
+          },
+          {
+            "session": 1,
+            "op": "start"
+          },
+          {
+            "session": 0,
+            "op": "request"
+          },
+          {
+            "session": 0,
+            "op": "before_agent_start"
+          },
+          {
+            "session": 0,
+            "op": "request"
+          },
+          {
+            "session": 1,
+            "op": "shutdown"
+          },
+          {
+            "session": 0,
+            "op": "request"
+          }
+        ]
+      },
+      "expected": {
+        "trace": [
+          {
+            "op": "step",
+            "name": "0:load"
+          },
+          {
+            "op": "step",
+            "name": "0:start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "1:load"
+          },
+          {
+            "op": "step",
+            "name": "1:start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "0:request"
+          },
+          {
+            "op": "step",
+            "name": "0:before_agent_start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "0:request"
+          },
+          {
+            "op": "step",
+            "name": "1:shutdown"
+          },
+          {
+            "op": "step",
+            "name": "0:request"
+          }
+        ],
+        "registry": {
+          "example": {
+            "view": {
+              "id": "example",
+              "isLift": false,
+              "liftedBaseId": null,
+              "hasHeaders": true
+            },
+            "native": {
+              "id": "example",
+              "isLift": true,
+              "liftedBaseId": "example",
+              "hasHeaders": true
+            }
+          }
+        },
+        "requests": [
+          {
+            "id": "example",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": true
+          },
+          {
+            "id": "example",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": true
+          },
+          {
+            "id": "example",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": true
+          }
+        ],
+        "notify": []
+      }
+    },
+    {
+      "name": "sessions hand the registry back in whatever order they end",
+      "input": {
+        "registry": "plain",
+        "managed": [
+          "example"
+        ],
+        "bases": [
+          "example"
+        ],
+        "models": [
+          {
+            "id": "probe-model",
+            "name": "Probe Model",
+            "api": "probe-api",
+            "provider": "example",
+            "baseUrl": "https://example.invalid",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000,
+            "maxTokens": 100
+          }
+        ],
+        "virtual": [],
+        "ids": [
+          "example"
+        ],
+        "ops": [
+          {
+            "session": 0,
+            "op": "load"
+          },
+          {
+            "session": 0,
+            "op": "start"
+          },
+          {
+            "session": 1,
+            "op": "load"
+          },
+          {
+            "session": 1,
+            "op": "start"
+          },
+          {
+            "session": 2,
+            "op": "load"
+          },
+          {
+            "session": 2,
+            "op": "start"
+          },
+          {
+            "session": 1,
+            "op": "shutdown"
+          },
+          {
+            "session": 0,
+            "op": "request"
+          },
+          {
+            "session": 2,
+            "op": "shutdown"
+          },
+          {
+            "session": 0,
+            "op": "request"
+          }
+        ]
+      },
+      "expected": {
+        "trace": [
+          {
+            "op": "step",
+            "name": "0:load"
+          },
+          {
+            "op": "step",
+            "name": "0:start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "1:load"
+          },
+          {
+            "op": "step",
+            "name": "1:start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "2:load"
+          },
+          {
+            "op": "step",
+            "name": "2:start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "1:shutdown"
+          },
+          {
+            "op": "step",
+            "name": "0:request"
+          },
+          {
+            "op": "step",
+            "name": "2:shutdown"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "0:request"
+          }
+        ],
+        "registry": {
+          "example": {
+            "view": {
+              "id": "example",
+              "isLift": true,
+              "liftedBaseId": "example",
+              "hasHeaders": true
+            },
+            "native": {
+              "id": "example",
+              "isLift": true,
+              "liftedBaseId": "example",
+              "hasHeaders": true
+            }
+          }
+        },
+        "requests": [
+          {
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          }
+        ],
+        "notify": []
+      }
+    },
+    {
+      "name": "a session shutdown restores the original base",
+      "input": {
+        "registry": "plain",
+        "managed": [
+          "example"
+        ],
+        "bases": [
+          "example"
+        ],
+        "models": [
+          {
+            "id": "probe-model",
+            "name": "Probe Model",
+            "api": "probe-api",
+            "provider": "example",
+            "baseUrl": "https://example.invalid",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000,
+            "maxTokens": 100
+          }
+        ],
+        "virtual": [],
+        "ids": [
+          "example"
+        ],
+        "ops": [
+          {
+            "session": 0,
+            "op": "load"
+          },
+          {
+            "session": 0,
+            "op": "start"
+          },
+          {
+            "session": 0,
+            "op": "shutdown"
+          }
+        ]
+      },
+      "expected": {
+        "trace": [
+          {
+            "op": "step",
+            "name": "0:load"
+          },
+          {
+            "op": "step",
+            "name": "0:start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "0:shutdown"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          }
+        ],
+        "registry": {
+          "example": {
+            "view": {
+              "id": "example",
+              "isLift": false,
+              "liftedBaseId": null,
+              "hasHeaders": false
+            },
+            "native": {
+              "id": "example",
+              "isLift": false,
+              "liftedBaseId": null,
+              "hasHeaders": false
+            }
+          }
+        },
+        "requests": [],
+        "notify": []
+      }
+    },
+    {
+      "name": "a subagent ending keeps the parent virtual provider registered",
+      "input": {
+        "registry": "plain",
+        "managed": [
+          "example"
+        ],
+        "bases": [
+          "example"
+        ],
+        "models": [
+          {
+            "id": "probe-model",
+            "name": "Probe Model",
+            "api": "probe-api",
+            "provider": "example",
+            "baseUrl": "https://example.invalid",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000,
+            "maxTokens": 100
+          }
+        ],
+        "virtual": [
+          {
+            "id": "pooled",
+            "label": "Pooled",
+            "models": [
+              {
+                "id": "ultra",
+                "backends": [
+                  {
+                    "providerId": "example",
+                    "modelId": "probe-model"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "ids": [
+          "example",
+          "pooled"
+        ],
+        "ops": [
+          {
+            "session": 0,
+            "op": "load"
+          },
+          {
+            "session": 0,
+            "op": "start"
+          },
+          {
+            "session": 1,
+            "op": "load"
+          },
+          {
+            "session": 1,
+            "op": "start"
+          },
+          {
+            "session": 1,
+            "op": "shutdown"
+          },
+          {
+            "session": 0,
+            "op": "request"
+          },
+          {
+            "session": 0,
+            "op": "shutdown"
+          }
+        ]
+      },
+      "expected": {
+        "trace": [
+          {
+            "op": "step",
+            "name": "0:load"
+          },
+          {
+            "op": "register",
+            "id": "pooled",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          },
+          {
+            "op": "step",
+            "name": "0:start"
+          },
+          {
+            "op": "register",
+            "id": "pooled",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "1:load"
+          },
+          {
+            "op": "register",
+            "id": "pooled",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          },
+          {
+            "op": "step",
+            "name": "1:start"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "1:shutdown"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "register",
+            "id": "pooled",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          },
+          {
+            "op": "step",
+            "name": "0:request"
+          },
+          {
+            "op": "step",
+            "name": "0:shutdown"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          },
+          {
+            "op": "unregister",
+            "id": "pooled"
+          }
+        ],
+        "registry": {
+          "example": {
+            "view": {
+              "id": "example",
+              "isLift": false,
+              "liftedBaseId": null,
+              "hasHeaders": false
+            },
+            "native": {
+              "id": "example",
+              "isLift": false,
+              "liftedBaseId": null,
+              "hasHeaders": false
+            }
+          },
+          "pooled": null
+        },
+        "requests": [
+          {
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          }
+        ],
+        "notify": []
+      }
+    },
+    {
+      "name": "a parent ending removes the last virtual provider",
+      "input": {
+        "registry": "plain",
+        "managed": [
+          "example"
+        ],
+        "bases": [
+          "example"
+        ],
+        "models": [
+          {
+            "id": "probe-model",
+            "name": "Probe Model",
+            "api": "probe-api",
+            "provider": "example",
+            "baseUrl": "https://example.invalid",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000,
+            "maxTokens": 100
+          }
+        ],
+        "virtual": [
+          {
+            "id": "pooled",
+            "label": "Pooled",
+            "models": [
+              {
+                "id": "ultra",
+                "backends": [
+                  {
+                    "providerId": "example",
+                    "modelId": "probe-model"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "ids": [
+          "example",
+          "pooled"
+        ],
+        "ops": [
+          {
+            "session": 0,
+            "op": "load"
+          },
+          {
+            "session": 0,
+            "op": "start"
+          },
+          {
+            "session": 0,
+            "op": "shutdown"
+          }
+        ]
+      },
+      "expected": {
+        "trace": [
+          {
+            "op": "step",
+            "name": "0:load"
+          },
+          {
+            "op": "register",
+            "id": "pooled",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          },
+          {
+            "op": "step",
+            "name": "0:start"
+          },
+          {
+            "op": "register",
+            "id": "pooled",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": true,
+            "liftedBaseId": "example",
+            "hasHeaders": true
+          },
+          {
+            "op": "step",
+            "name": "0:shutdown"
+          },
+          {
+            "op": "register",
+            "id": "example",
+            "isLift": false,
+            "liftedBaseId": null,
+            "hasHeaders": false
+          },
+          {
+            "op": "unregister",
+            "id": "pooled"
+          }
+        ],
+        "registry": {
+          "example": {
+            "view": {
+              "id": "example",
+              "isLift": false,
+              "liftedBaseId": null,
+              "hasHeaders": false
+            },
+            "native": {
+              "id": "example",
+              "isLift": false,
+              "liftedBaseId": null,
+              "hasHeaders": false
+            }
+          },
+          "pooled": null
+        },
+        "requests": [],
+        "notify": []
+      }
+    }
+  ]
+}

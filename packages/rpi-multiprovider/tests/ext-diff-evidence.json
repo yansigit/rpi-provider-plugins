@@ -1,0 +1,57 @@
+{
+  "status": "Extension session-pin resume, inherited child pins, branch/reload replay, live-provider handoff and composed-registry lifting verified against the unchanged upstream extension; native session-journal transport and the /switch-account command itself remain outside this lane",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "checks": {
+    "toolchain": "1.78.0",
+    "defaultToolchain": "1.95",
+    "warnings": "denied",
+    "resumeScenarios": 15,
+    "compositionScenarios": 6,
+    "upstreamSpecCases": {
+      "tests/extension-resume.spec.ts": "8 declarations; 5 mapped to resume scenarios, 2 to composition scenarios, 1 (stale session ctx) deferred to the lift/context evidence",
+      "tests/extension-composition.spec.ts": "2 declarations; both mapped to composition scenarios",
+      "tests/session-pins.spec.ts": "9 declarations; parsing/inherited-env/replay already covered by scheduler-evidence, extension-level composition covered here",
+      "tests/extension-failover.spec.ts": "covered by the retry/Fabric lane, not duplicated"
+    },
+    "rustGuardTests": 2,
+    "referenceFixtureSha256": "2bdf852509b18be2019e7a3769a391f66888ead059778564cb9bdaa65eaed19c",
+    "upstreamHashes": 13
+  },
+  "compared": [
+    "Resume replay: the journal's latest decision per pool and key, applied to a fresh scheduler",
+    "An explicit return to automatic replays as `clear`, and the follower sees the account drop to null",
+    "A removed or disabled pinned account warns with the exact upstream message and falls back to automatic",
+    "Inherited env pins rebound onto the child session's affinity key and journalled with that key",
+    "The child journal wins over inherited env pins for the same pool",
+    "A stale inherited pin warns and is not journalled",
+    "An inherited pin stays pending until its pool registers, then applies at the next reconcile",
+    "Branch prefixes (a journal cut between decisions) and reloads (shutdown then start) replay the decision that is current then",
+    "Reload does not re-journal an inherited pin because the replayed entry now decides the pool",
+    "Explicit pins outrank a pool with affinity disabled",
+    "The complete `{journal, notifications, accountChanges, active}` effect of every resume case",
+    "Every registerProvider/unregisterProvider with the registered provider's classification (lift, lifted base, shared headers) and the registry left behind, for plain and Pi-composed registries",
+    "One lift per session from the real base, never another session's lift or Pi's composed copy of it",
+    "Sessions hand the registry back to the newest live lift in whatever order they end; the last one restores the base",
+    "A departing subagent leaves the parent's virtual provider registered; the last session unregisters it",
+    "Virtual template healing re-registers a config exactly once, when the backing provider first resolves",
+    "realBase through a composed wrapper and through a lift of a lift; isLiftOf identity guards; replaceLiveProvider with an absent previous provider",
+    "install warns once and stays uninstalled while the base provider is missing, then lifts it when the base appears"
+  ],
+  "commands": [
+    "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-multiprovider --locked",
+    "CARGO_TARGET_DIR=/home/user/Projects/.targets/m-ext-diff-195 cargo test -p rpi-multiprovider --locked",
+    "node --experimental-transform-types tests/ext-diff-reference.mjs",
+    "node --experimental-transform-types tests/ext-diff-reference.mjs --write"
+  ],
+  "limits": [
+    "The reference boots a new extension instance against a fresh scheduler in the same process; it does not reopen a session file on disk or start a second OS process.",
+    "`ctx.sessionManager.getEntries` and `pi.appendEntry` are host callbacks in the port; Pi's session-file write, branch formation and tree navigation are not exercised. The resume module consumes the entries a real extension instance produced.",
+    "The live `/switch-account` command that writes the journal belongs to the commands lane; this lane replays genuine journals it produced rather than re-implementing the picker.",
+    "`extension-resume.spec.ts`'s stale-context case (a lifted provider kept usable after its session ctx is disposed) is a fresh-runtime/context-ownership concern covered by the lift evidence, not by this lane.",
+    "The prose `request` in the composition scenarios resolves through Pi's composed wrapper. The reference asserts the base credential (`k-default`) serves, matching the spec's claim that a second lift would surface the stored account instead; the port compares the provider graph decisions, not credential bytes.",
+    "Extension failover ordering versus the lift state machine (`extension-failover.spec.ts`) is verified by the retry/Fabric lane's differential evidence and is deliberately not duplicated here.",
+    "Virtual configs are supplied from the reference's store snapshot; store persistence and permissions are covered by the store evidence.",
+    "Only Linux execution was performed."
+  ]
+}
