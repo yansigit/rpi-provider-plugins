@@ -8,6 +8,7 @@ use sha2::{Digest, Sha256};
 use std::future::Future;
 use url::Url;
 
+pub mod json_error;
 pub mod network;
 
 pub const CLIENT_ID: &str =
@@ -265,7 +266,9 @@ fn prop(value: &Value, key: &str) -> String {
         .unwrap_or_else(|| "undefined".into())
 }
 pub(crate) async fn json_body(body: impl Body) -> Result<Value, String> {
-    serde_json::from_str(&body.text().await?).map_err(|error| error.to_string())
+    let text = body.text().await?;
+    serde_json::from_str(&text)
+        .map_err(|error| json_error::parse_error(&text).unwrap_or_else(|| error.to_string()))
 }
 pub fn bootstrap_headers(access: &str, user_agent: String) -> Vec<(String, String)> {
     vec![
