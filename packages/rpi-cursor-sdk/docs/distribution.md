@@ -78,7 +78,44 @@ node scripts/stage-package-runtime.mjs
 
 `scripts/stage-package-runtime.mjs` writes `.package/runtime/` (ignored by git)
 and `.package/runtime-assets.json`. It resolves esbuild from the worker's
-installed dependencies and fails if the compiled worker is missing.
+installed dependencies (pinned as an explicit `devDependency` so a transitive
+update cannot remove it) and fails if the compiled worker is missing.
+
+## Releasing without crates.io
+
+This crate is `publish = false`: it is distributed only as a GitHub Release, but
+its release still needs the same `<package>-v<version>` tag as every published
+extension. `release-plz release` skips `cargo publish` for it and still creates
+the tag and GitHub Release. Because the crate is never in the cargo registry,
+release-plz cannot confirm the version from the registry, so after a release run
+check that `rpi-cursor-sdk-v<version>` exists on the release commit. If it does
+not, create the tag and empty release manually and let the asset workflow fill
+them in:
+
+```sh
+commit="$(git rev-parse HEAD)"          # the released, already-tested commit
+version="$(cargo metadata --no-deps --format-version 1 --locked \
+  | python3 -c 'import json,sys; print(next(p["version"] for p in json.load(sys.stdin)["packages"] if p["name"] == "rpi-cursor-sdk"))')"
+tag="rpi-cursor-sdk-v${version}"
+
+git tag "$tag" "$commit"
+git push origin "$tag"
+gh release create "$tag" --verify-tag \
+  --title "rpi-cursor-sdk v${version}" \
+  --notes "Prebuilt Cursor extension assets are attached by release-assets.yml."
+
+# Then build and upload the five platform archives plus rpi-extension.json.
+gh workflow run release-assets.yml \
+  -f source_ref="$commit" \
+  -f package_releases="[\"$tag\"]" \
+  -f bundle_tag="rpi-packages-${commit:0:12}"
+```
+
+For a package-only retry (no aggregate bundle), add `-f packages_only=true`; the
+backfill workflow requires the tag to point at `source_ref`, because
+`select-release-tags.py` only selects package tags whose peeled commit equals the
+built revision. Do not push a package tag later at a different commit: the
+release job then finds no matching package and uploads nothing.
 
 ## Install-time npm step
 

@@ -69,6 +69,7 @@ jobs:
         with:
           key: backfill-${{ matrix.target }}
       - name: Stage the Cursor worker runtime assets
+        if: hashFiles('packages/rpi-cursor-sdk/scripts/stage-package-runtime.mjs') != ''
         working-directory: packages/rpi-cursor-sdk
         run: |
           cd worker

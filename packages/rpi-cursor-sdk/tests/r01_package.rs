@@ -52,7 +52,7 @@ fn manifest_declares_a_strict_host_compatible_sidecar_layout() {
     assert_eq!(
         assets.len(),
         21,
-        "the packaged runtime is one launcher, five bundles, four tracked files and ten shared files"
+        "the packaged runtime is one launcher, five bundles, three other tracked files and twelve shared files"
     );
     // The host accepts at most 128 archive entries, including the library.
     assert!(assets.len() + 1 <= 128);
@@ -180,7 +180,8 @@ fn cargo_metadata_and_catalog_advertise_the_prebuilt_release() {
         .iter()
         .find(|entry| entry["name"] == "rpi-cursor-sdk")
         .expect("catalog entry");
-    assert_eq!(entry["version"], "0.1.6");
+    let version = env!("CARGO_PKG_VERSION");
+    assert_eq!(entry["version"], version);
     assert_eq!(entry["type"], "extension");
     assert_eq!(
         entry["install"],
@@ -188,7 +189,9 @@ fn cargo_metadata_and_catalog_advertise_the_prebuilt_release() {
     );
     assert_eq!(
         entry["prebuilt_manifest"],
-        "https://github.com/pi-rust/rpi-package/releases/download/rpi-cursor-sdk-v0.1.6/rpi-extension.json"
+        format!(
+            "https://github.com/pi-rust/rpi-package/releases/download/rpi-cursor-sdk-v{version}/rpi-extension.json"
+        )
     );
 }
 

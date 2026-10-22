@@ -114,6 +114,7 @@ jobs:
         with:
           node-version: '24'
       - name: Build the Cursor worker runtime and stage its sidecar assets
+        if: hashFiles('packages/rpi-cursor-sdk/scripts/stage-package-runtime.mjs') != ''
         working-directory: packages/rpi-cursor-sdk
         run: |
           cd worker
