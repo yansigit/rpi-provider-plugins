@@ -77,7 +77,7 @@
         "exitCode": 0,
         "fakeLogRecords": 25,
         "fakeLogSha256": "1576374b183259d0fffc5b3b2de7c06da9f0a8cff069faebdfc0cf4db7dadd17",
-        "normalizedPiSha256": "83a2f0b30d5787d386b7b37ea6a6f5af09870ae8b2e323ae96d6340ca3a7db98",
+        "normalizedPiSha256": "c83eff83c6502c0901547e1b5b239bec44003e2276fb16b4e6076cb83e04a210",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -152,7 +152,7 @@
         "exitCode": 0,
         "fakeLogRecords": 25,
         "fakeLogSha256": "f71ce834157065c5cd60146a4c5524c3b17271eef86dc6c7cfc6669656f9832f",
-        "normalizedPiSha256": "5a585882579ad5edabcd486a1fadaa1ddefb248ed5573ae9a9c2f3c8319b3382",
+        "normalizedPiSha256": "108489e55cf07f075f619e84452e7f84c944ba8c039f15bd1318bf5a96eccff1",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -233,7 +233,7 @@
         "exitCode": 0,
         "fakeLogRecords": 20,
         "fakeLogSha256": "89c6c623f78466ffe2e7a3a0e7565ac34de078771aa35885eb4b04a114a4863b",
-        "normalizedPiSha256": "ebde07907edb1746fe75481be2bb97a0aac24021db26a795105b88864f958cf4",
+        "normalizedPiSha256": "a063f71142894fb32e64e9495baf48aaff31dcac0381d96d174fef76efb04714",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -314,13 +314,88 @@
         "exitCode": 0,
         "fakeLogRecords": 23,
         "fakeLogSha256": "f0891a19568339ea9ade1fd8cf6d83154e27b6819c430a3a1cea978fdae43e70",
-        "normalizedPiSha256": "81c756a2b2d26ec8c57ebb947d8390e7fef286a579e4de5e0d0262ba6e6a0886",
+        "normalizedPiSha256": "f98634ea0c453f9df0e6d2117b0eb7c338270a3c253486fe307a74532b2d5416",
         "stderrLines": 0
       },
       "candidateDetail": {
         "exitCode": 0,
         "fakeLogRecords": 22,
         "fakeLogSha256": "7bc5479559a1233265b3685e49f9c32b314b712dcd43aaaafc7cd2f2d452c802",
+        "hostFailures": [],
+        "workerOutputLines": 0,
+        "recordedBindings": {
+          "bash": "builtin",
+          "cursor": "recorded",
+          "edit": "builtin",
+          "find": "builtin",
+          "grep": "builtin",
+          "ls": "builtin",
+          "read": "builtin",
+          "write": "builtin"
+        },
+        "recordedPrefixes": {
+          "bash": "cursor-replay-",
+          "cursor": "cursor-replay-",
+          "edit": "cursor-replay-",
+          "find": "cursor-replay-",
+          "grep": "cursor-replay-",
+          "ls": "cursor-replay-",
+          "read": "cursor-replay-",
+          "write": "cursor-replay-"
+        }
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "replay-not-bridgeable",
+      "scenarioFile": "tests/c_tools/scenarios/replay-not-bridgeable.json",
+      "scenarioSha256": "cfdb52a49d0af37076b34c1e3b380be188074a8aa4ad505b2c253d07237f1f20",
+      "expect": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "reference": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "candidate": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "determinism": {
+        "reference": true,
+        "candidate": true
+      },
+      "referenceDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 24,
+        "fakeLogSha256": "7afe11e89b58d8a990bd29307eb05ccf6923d2994c163cb8d36e09c47123b4f8",
+        "normalizedPiSha256": "2f846b491ba781f07ff025dec71a5ecca4900d9d9559bed9d49316fcaddf7bbd",
+        "stderrLines": 0
+      },
+      "candidateDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 23,
+        "fakeLogSha256": "0be14a0573d338a930a6c7e2778c89b376a9e4b54a7b4a88e62e89851d6cfcb9",
         "hostFailures": [],
         "workerOutputLines": 0,
         "recordedBindings": {
@@ -398,7 +473,7 @@
         "exitCode": 0,
         "fakeLogRecords": 30,
         "fakeLogSha256": "69f852be98e5fc6d5a5c17156f34ecf376cd2492471cbb9a2858f9270e9850d6",
-        "normalizedPiSha256": "e11cefc87f7ecf592d4b54472eace64fa7bf14d795a65a05d14e722888adde44",
+        "normalizedPiSha256": "9f8287e129ecb3e3f400131093ef1d922274a4adc0f66cc4a080b71a51cb279a",
         "stderrLines": 0
       },
       "candidateDetail": {

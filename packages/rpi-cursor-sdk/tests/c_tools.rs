@@ -37,7 +37,7 @@ fn every_tool_scenario_agrees_between_reference_and_rpi_worker() {
     assert_eq!(evidence["provenance"]["cursorSdkVersion"], "1.0.37");
     assert_eq!(evidence["provenance"]["piCursorSdkVersion"], "0.5.3");
     let scenarios = scenarios(&evidence);
-    assert_eq!(scenarios.len(), 5);
+    assert_eq!(scenarios.len(), 6);
     for scenario in scenarios {
         assert_eq!(scenario["status"], "pass", "{}", scenario["name"]);
         assert!(
@@ -133,4 +133,12 @@ fn recorded_activity_stays_inert_on_both_runtimes() {
     assert_eq!(failure["reference"]["hostToolInvocations"], json!({"fake_fail": 1}));
     assert_eq!(failure["reference"]["replayToolExecutions"], 0);
     assert_eq!(failure["candidate"], failure["reference"]);
+    // A direct MCP call to the replay-only activity tool is refused by the bridge;
+    // the surfaced card is inert and performs no work.
+    let replay = scenario(&evidence, "replay-not-bridgeable");
+    assert_eq!(replay["reference"]["bridgeToolExecutions"], 1);
+    assert_eq!(replay["reference"]["bridgeToolFailures"], 1);
+    assert_eq!(replay["reference"]["hostToolInvocations"], json!({"cursor": 1}));
+    assert_eq!(replay["reference"]["replayToolExecutions"], 0);
+    assert_eq!(replay["candidate"], replay["reference"]);
 }

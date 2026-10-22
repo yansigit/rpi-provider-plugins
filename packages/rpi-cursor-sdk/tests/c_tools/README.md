@@ -24,6 +24,7 @@ Override with `RPI_CURSOR_FAKE_SDK`.
 | `scenarios/bridge-only.json` | One bridge tool, no native tool: 0 Cursor, 1 bridge. |
 | `scenarios/bridge-failure.json` | A bridge tool that throws: executed once, one tool-level failure, 0 replay work. |
 | `scenarios/incomplete-native.json` | A native tool that never completes: one inert replay-only `cursor` card, 0 replay work. |
+| `scenarios/replay-not-bridgeable.json` | A direct MCP call to the replay-only tool is refused by the bridge and surfaces an inert card. |
 
 `fixtures/failing-extension.mjs` registers the always-failing bridge tool.
 
