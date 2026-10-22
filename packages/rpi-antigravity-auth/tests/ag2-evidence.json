@@ -1,6 +1,6 @@
 {
   "lane": "ag-2",
-  "status": "linux-system-trust-store-and-openSSL-chain-diagnostics-ported",
+  "status": "linux-system-trust-store-openSSL-chain-diagnostics-and-custody-receipt-wrapper-ported",
   "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
   "platform": "linux",
   "compiler": "Rust 1.78.0 (-D warnings) and Rust 1.95.0; reference runtime Node 24.22.0",
@@ -50,48 +50,80 @@
     }
   },
   "custodyResponseWrapper": {
-    "status": "already-implemented-and-covered-by-the-base-commit; verified, not duplicated",
-    "implementation": [
-      "src/vault/slot.rs: enter() writes the byte-preserving stash (backup) then the non-secret placeholder (marker) before custody; exit() chooses restored/conflict/nothing-to-do; the Hook is the fault-injection seam.",
-      "src/vault/source.rs: synchronize() wraps the transition: read mode, enter on custody, exit on local and refuse SLOT_CONFLICT on conflict, re-read the mode and refuse CHANGED if it moved.",
-      "src/native/vault.rs: transaction() exposes enter/exit through the host credential-store port for custody/local mode changes."
-    ],
-    "existingEvidence": [
-      "tests/vault_slot.rs + fixtures/vault-slot.json: 66 byte-preservation/refusal/crash scenarios; outcomes restored 32, nothing-to-do 19, conflict 6, errors 139.",
-      "tests/vault_source.rs + fixtures/vault-startup.json: 149 slot-synchronization cases incl. backup/marker ordering, conditional restore and both refusals; plus 286 admission cases.",
-      "tests/vault_fsync.rs + fixtures/vault-slot-fsync.json: 5 real file/directory fsync failure boundaries.",
-      "tests/vault_send.rs: 37 physical-send traces with fresh receipt/project and single 401 retry."
-    ],
-    "notDeliveredHere": "No new wrapper code or fixture was added for this part: the base commit already contains the backup+marker+conditional-restore wrapper behind the injectable Slot Hook and Source transition, with differential coverage. Duplicating it would not add evidence."
+    "status": "new-differential-evidence-for-the-opaque-receipt-wrapper",
+    "scope": "The custody response wrapper is the object ClaustrumScopedCustody.authorize() returns for one physical send: enumerable receipt metadata plus a non-enumerable accessToken and custody-held provenance. It is NOT the credential-slot transition (backup/marker/restore in src/vault/slot.rs and src/vault/source.rs) and not the source mode synchronization. The earlier entry cited those slot files by mistake; they belong to tests/vault_slot.rs, tests/vault_fsync.rs and tests/vault_source.rs.",
+    "implementation": "src/vault/custody.rs: authorize()/serve_kept() return Receipt, which wraps policy::Authorized (private access token plus metadata Value) and keeps provenance in the issuing Custody. src/vault/policy.rs builds the metadata in the original field order; the bearer never appears in it. report_failure() refuses a receipt issued by another custody instance.",
+    "priorCoverage": "tests/vault_custody.rs + fixtures/vault-custody.json already compare 40 complete custody traces (results, calls, logs, timers), including fresh and kept receipts and forged-receipt refusal. This lane added a targeted wrapper fixture instead of reusing that trace as the only evidence.",
+    "newEvidence": {
+      "fixture": "tests/fixtures/vault-custody-wrapper.json",
+      "sha256": "c7477ca42d01d20eb89a846d625a207fd3f41365905bf8b622fd18d9a41cdbf4",
+      "cases": 4,
+      "referenceScript": "scripts/vault-custody-wrapper-reference.mjs",
+      "runtime": "Node 24.22.0",
+      "referenceFiles": {
+        "packages/core/src/common-auth-embedded/claustrum/custody.js": "5d2ead857d6e6384980dace94d308f1f47afe831c82e2b644ab434ffb0bcf151",
+        "packages/core/node_modules/@cortexkit/claustrum-client/dist/index.js": "e3fe275b63914e87913357588f5d4dad321c0163fb50fe263e5877d00175b2e2"
+      },
+      "scenarios": [
+        "fresh-asserted-with-project",
+        "fresh-asserted-without-project",
+        "kept-receipt",
+        "kept-receipt-token-rotated"
+      ],
+      "compared": [
+        "the complete enumerable receipt metadata object (whole Value, including projectId presence and fromKeptReceipt)",
+        "the exact enumerable key list in original order",
+        "the separately read access token, and that it never appears in the serialized metadata",
+        "the copied-wrapper surface (spread object) equals the metadata, i.e. the token is non-enumerable",
+        "report provenance: a copied/foreign wrapper is refused with no-receipt; a fresh wrapper reports with its issuing enrollment token; a kept wrapper is never reported"
+      ],
+      "reproduction": "Two independent check-mode runs produced identical fixture bytes; check mode exits non-zero on any difference."
+    },
+    "notTested": [
+      "JavaScript object frozenness, non-extensibility and the accessToken property descriptor are reference-only observations; the Rust Receipt is opaque (private fields, no public constructor, Clone or Serialize), so those are structural rather than runtime-differential.",
+      "api_key receipts with a null expiresAtMs are outside this port's oauth-only receipt path.",
+      "live enrolled vault acceptance and non-Linux execution."
+    ]
   },
   "commands": [
     {
       "command": "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-antigravity-auth --locked",
       "targetDir": ".targets/ag-2",
       "status": "passed",
-      "passed": 74,
+      "passed": 75,
       "failed": 0,
-      "ignored": 4,
+      "ignored": 5,
       "warnings": 0
     },
     {
       "command": "cargo test -p rpi-antigravity-auth --locked",
       "targetDir": ".targets/ag-2-195",
       "status": "passed",
-      "passed": 74,
+      "passed": 75,
       "failed": 0,
-      "ignored": 4
+      "ignored": 5
     },
     {
       "command": "RPI_REFERENCE_DIR=... node scripts/ag2-trust-reference.mjs",
       "status": "passed",
       "cases": 16,
-      "mode": "check (regenerate and compare to the committed fixture)"
+      "mode": "check (regenerate and compare to the committed fixture), run twice"
+    },
+    {
+      "command": "RPI_REFERENCE_DIR=... node scripts/vault-custody-wrapper-reference.mjs",
+      "status": "passed",
+      "cases": 4,
+      "mode": "check (regenerate and compare to the committed fixture), run twice"
     },
     {
       "command": "RPI_REFERENCE_NODE=... RPI_REFERENCE_DIR=... cargo test -p rpi-antigravity-auth --test ag2_trust -- --ignored",
       "status": "passed",
       "mode": "Node reference regenerates the committed fixture"
+    },
+    {
+      "command": "RPI_REFERENCE_NODE=... RPI_REFERENCE_DIR=... cargo test -p rpi-antigravity-auth --test vault_custody_wrapper -- --ignored",
+      "status": "passed",
+      "mode": "Node wrapper reference regenerates the committed fixture"
     }
   ],
   "notTested": [
