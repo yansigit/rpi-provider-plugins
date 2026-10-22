@@ -1,0 +1,45 @@
+{
+  "reference": {
+    "upstream": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+    "pi": "1.3.0",
+    "node": "v24.22.0"
+  },
+  "pinned": {
+    "extensions/multiprovider.ts": "086a0d9c4fbc8431e81026e5d689747d1c31dfcdf89c9d180c0bbd7e37c0a267",
+    "extensions/pool-manager.ts": "67873d40ae349d13d0293c1b92fabaeb9f3b531a7242a0424c721ff3e323cbe8",
+    "src/multilogin.ts": "f6ce501e18b0fb8550fcfbbe77ace3d06cde9bd5b2ad25b29bc8f2e079c590dc",
+    "src/auth-store.ts": "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6",
+    "src/service.ts": "2eafa61662b3ee75a96a7b07a6ccad62ca600bbb2139a407b81cd9983564a026",
+    "src/session-pins.ts": "45b1ff1fbfcc6853a717b917aaede404f32fe96a64208c75283a53e954bdc005",
+    "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+    "src/errors.ts": "1e4f189fc4aac4488c84912b29bfc7e78629600ead41ce2924c8d8c3a3bac4b7",
+    "src/managed.ts": "5a139118f805ed4825259df761dd5e2fbec515da19d3bc10b9719c9bf30bdeef",
+    "src/virtual.ts": "6c38efe1d8bcd180e3287b182df592914a1af0a7091f872cd6dc32042575f808",
+    "src/announcement.ts": "fc0bf72467dba7b524146ade4a66c420d546a01e7867b8095c8b7d8b1804ae18",
+    "src/index.ts": "90b3b79432e4d556f75b7b8e25fc3fb512cb56293f5263e6b2090465f5cfaa66",
+    "src/lift.ts": "887b91aab533565504449b6094c1a2b076832b0fdc73bfc352e2c46a53ac3695",
+    "src/register.ts": "946932988b5884081d0f173b464e1b2d42740849803463bdb8fd9841fcc87449"
+  },
+  "commands": [
+    {
+      "name": "multilogin",
+      "description": "Manage a provider pool, Pi default auth, schedulers, and accounts"
+    },
+    {
+      "name": "multilogout",
+      "description": "Remove an account saved by /multilogin"
+    },
+    {
+      "name": "accounts",
+      "description": "Show multiprovider account pools and health"
+    },
+    {
+      "name": "switch-account",
+      "description": "Switch the pooled account used by the current model for this session"
+    },
+    {
+      "name": "vprovider",
+      "description": "Create virtual providers that map one model across multiple provider models"
+    }
+  ]
+}
