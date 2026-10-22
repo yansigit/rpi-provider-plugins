@@ -1,0 +1,84 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "incomplete-native",
+  "description": "One turn whose Cursor shell tool starts but never completes. The adapter must surface an inert recorded activity card; no recorded work may execute. Ledger C05/H08 replay inertness.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Run the simulated shell command.",
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "incomplete-shell",
+      "expect": {
+        "promptIncludes": "Run the simulated shell command."
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Running the shell tool."
+          ]
+        },
+        {
+          "op": "nativeTool",
+          "callId": "call-shell-1",
+          "phase": "started-only",
+          "toolCall": {
+            "type": "shell",
+            "args": {
+              "command": "echo simulated"
+            }
+          }
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "The shell tool did not finish."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 30,
+            "outputTokens": 12,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "The shell tool did not finish."
+      }
+    }
+  ],
+  "cToolsExpect": {
+    "nativeToolCalls": {
+      "shell": 1
+    },
+    "bridgeToolExecutions": 0,
+    "bridgeToolFailures": 0,
+    "hostToolInvocations": {
+      "cursor": 1
+    },
+    "replayToolExecutions": 0,
+    "violations": 0
+  }
+}

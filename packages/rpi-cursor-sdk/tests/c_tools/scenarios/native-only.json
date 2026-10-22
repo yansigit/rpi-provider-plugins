@@ -1,0 +1,93 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "native-only",
+  "description": "One native-only turn: a single Cursor shell tool is replayed through the host's recorded-activity binding and no Pi tool runs through the bridge. Ledger C05/H08: one Cursor native tool, zero bridge executions, zero replay executions.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Run the simulated shell command.",
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "native-shell",
+      "expect": {
+        "promptIncludes": "Run the simulated shell command."
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Running the shell tool."
+          ]
+        },
+        {
+          "op": "nativeTool",
+          "callId": "call-shell-1",
+          "toolCall": {
+            "type": "shell",
+            "args": {
+              "command": "echo simulated"
+            },
+            "result": {
+              "status": "success",
+              "value": {
+                "exitCode": 0,
+                "signal": "",
+                "stdout": "simulated\n",
+                "stderr": "",
+                "executionTime": 1
+              }
+            }
+          }
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "The shell tool finished."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 30,
+            "outputTokens": 12,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "The shell tool finished."
+      }
+    }
+  ],
+  "cToolsExpect": {
+    "nativeToolCalls": {
+      "shell": 1
+    },
+    "bridgeToolExecutions": 0,
+    "bridgeToolFailures": 0,
+    "hostToolInvocations": {
+      "bash": 1
+    },
+    "replayToolExecutions": 0,
+    "violations": 0
+  }
+}
