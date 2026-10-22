@@ -1,0 +1,123 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "tool-turn",
+  "description": "One local Cursor turn that calls a Pi tool through the adapter's MCP bridge exactly once, plus one simulated native shell tool call.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Echo the bridge check text.",
+    "extensions": [
+      "fixtures/echo-extension.mjs"
+    ]
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "bridge-echo",
+      "expect": {
+        "promptIncludes": "Echo the bridge check text.",
+        "mcpServers": [
+          "pi_tools"
+        ]
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Calling the echo tool."
+          ]
+        },
+        {
+          "op": "mcpCall",
+          "server": "pi_tools",
+          "tool": "pi__fake_echo",
+          "callId": "call-echo-1",
+          "arguments": {
+            "text": "bridge-check"
+          }
+        },
+        {
+          "op": "nativeTool",
+          "callId": "call-shell-1",
+          "toolCall": {
+            "type": "shell",
+            "args": {
+              "command": "echo simulated"
+            },
+            "result": {
+              "status": "success",
+              "value": {
+                "exitCode": 0,
+                "signal": "",
+                "stdout": "simulated\n",
+                "stderr": "",
+                "executionTime": 1
+              }
+            }
+          }
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "The echo tool replied."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 40,
+            "outputTokens": 21,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "The echo tool replied."
+      }
+    }
+  ],
+  "expect": {
+    "exitCode": 0,
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 3,
+      "SqliteLocalAgentStore.dispose": 1,
+      "SqliteLocalAgentStore.open": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 1,
+      "agent.send": 1,
+      "createAgentPlatform": 1
+    },
+    "runs": {
+      "finished": 1
+    },
+    "bridgeToolExecutions": 1,
+    "toolExecutions": {
+      "pi_tools/pi__fake_echo": 1
+    },
+    "nativeToolCalls": {
+      "shell": 1
+    },
+    "piToolExecutions": {
+      "bash": 1,
+      "fake_echo": 1
+    },
+    "violations": 0
+  }
+}

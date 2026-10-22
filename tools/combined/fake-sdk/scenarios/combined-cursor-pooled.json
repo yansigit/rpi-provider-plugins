@@ -1,0 +1,39 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "combined-cursor-pooled",
+  "description": "Cursor selected through a multiprovider pool. The pinned Cursor extension refuses this path before the SDK is reached.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Cursor pooled prompt.",
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "fixture-cursor-a"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "pooled-cursor",
+      "expect": {
+        "promptIncludes": "Cursor pooled prompt.",
+        "imageCount": 0,
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [{ "op": "text", "chunks": ["unexpected"] }],
+      "outcome": { "status": "finished", "result": "unexpected" }
+    }
+  ]
+}
