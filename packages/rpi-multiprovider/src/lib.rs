@@ -1,10 +1,12 @@
 pub mod announcement;
 pub mod commands;
+pub mod composition;
 pub mod fabric;
 pub mod lift;
 pub mod managed;
 pub mod native;
 pub mod pins;
+pub mod resume;
 pub mod retry;
 pub mod services;
 pub mod store;
