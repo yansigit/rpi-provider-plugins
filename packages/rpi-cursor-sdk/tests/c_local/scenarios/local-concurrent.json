@@ -1,0 +1,114 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "local-concurrent",
+  "description": "Two provider.stream calls issued before either is collected, so overlapping callers exercise the per-scope turn queue and pooled-agent ownership. The second caller must wait for the first, then reuse the same SDK agent. rpi-only: the unchanged Pi 1.3.0 print CLI cannot issue two overlapping turns deterministically, so no reference comparison is recorded.",
+  "rpiOnly": true,
+  "concurrent": true,
+  "run": {
+    "model": "composer-2",
+    "prompt": "Concurrent first.",
+    "followUps": [
+      "Concurrent second."
+    ],
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "first",
+      "expect": {
+        "promptIncludes": "Concurrent first.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "delay",
+          "ms": 120
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "First concurrent answer."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 7,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "First concurrent answer."
+      }
+    },
+    {
+      "name": "second",
+      "expect": {
+        "promptIncludes": "Concurrent second.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Second concurrent answer."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 6,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Second concurrent answer."
+      }
+    }
+  ],
+  "expect": {
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 7,
+      "SqliteLocalAgentStore.dispose": 1,
+      "SqliteLocalAgentStore.open": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 2,
+      "agent.send": 2,
+      "createAgentPlatform": 2
+    },
+    "runs": {
+      "finished": 2
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0
+  }
+}

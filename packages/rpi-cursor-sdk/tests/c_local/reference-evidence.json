@@ -1,0 +1,359 @@
+{
+  "status": "pass",
+  "schema": "rpi-cursor-c-local-reference-evidence/1",
+  "purpose": "Offline scenario runs of the unchanged Pi 1.3.0 reference against the fake @cursor/sdk@1.0.37. No Cursor network calls.",
+  "runtime": {
+    "node": "24.22.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "reference": {
+    "files": {
+      "@cursor/sdk/package.json": "3c5dd6867664290accd4b6e9045c901e6fc40e5773b1c4a792a8edb01db7ef99",
+      "@earendil-works/pi-coding-agent/package.json": "83c3bb7619f590c213cc96a24216eb29a819a3ef6dc548607cc037ed276e8dc5",
+      "@earendil-works/pi-coding-agent/dist/bundle/cli.js": "e79626f2dd6f94aa45d30f3fa63cd84319a6eefcd150b353cfaf274366926774",
+      "pi-cursor-sdk/package.json": "8ad2dd0f358afa4c8b1c0a9fa1fa8165b36e084ddb871d3ddd4608566c3d161f",
+      "pi-cursor-sdk/dist/index.js": "4680a835ac8cbe3c90555d62529faf4e7e01cddb1359090ffb626b08a62b24b9",
+      "integrated/package-lock.json": "72a0e5eb204b17155a41dfb5c99d8e45caaa98af39d8f2acf92394aae0a39bc8"
+    },
+    "piVersion": "1.3.0",
+    "cursorSdkVersion": "1.0.37",
+    "piCursorSdkVersion": "0.5.3"
+  },
+  "fake": {
+    "fake-sdk/sdk.mjs": "7385a8296888d1c9893b63d2519a5de74cc455852d4a4d16a6929d38c17e28e6",
+    "fake-sdk/hooks.mjs": "852dd2a9857466891cc8333bcf2e95116aac11533cbdf665083b1f254eea104f",
+    "fake-sdk/register.mjs": "20bd210452865950c6825f4961f9fa2348ae86d7bcc5e14652f15f3d416926db",
+    "fake-sdk/sqlite.mjs": "7fcebb18b2e35ec1c45ae2efc6df7456e8c70ec66b9c8b555150063ddebf7dc1",
+    "fake-sdk/fixtures/echo-extension.mjs": "47022b99c3abb78b06c087810c72d44e6343cf5a5c86a9cb53ca09155c791f42",
+    "run-reference.mjs": "93b9a60ee86096e465cf348ec707407db3837ca2d5f95bd3839e36e42de3df4e"
+  },
+  "normalization": {
+    "piJsonStream": "Each JSON line is re-serialized with timestamp, durationMs, executionTime set to 0; UUIDs to <uuid>; ISO-8601 timestamps to <iso>; session-file timestamps to <session-time>; Pi's random 8-hex entry id/parentId/anchorId to <entry>; cursor-replay-<ms>-<n>- to cursor-replay-<n>-<n>-; cursor-pi-bridge run IDs to <run>; pi-sessions/<32-hex store hash> to pi-sessions/<scope>; the temporary root to <root>.",
+    "fakeLog": "No normalization: the fake writes no clocks, PIDs or random IDs; only the temporary root is replaced by <root>."
+  },
+  "scenarios": [
+    {
+      "name": "local-create",
+      "scenarioFile": "tests/c_local/scenarios/local-create.json",
+      "scenarioSha256": "3355fd3ccbaba881dbef4b1b30910722399650cff890bc19e3fc6ffe5a9bea57",
+      "run": {
+        "model": "composer-2",
+        "prompt": "Say hello from the fake.",
+        "followUps": [],
+        "extensions": [],
+        "args": []
+      },
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "observed": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "piEventCounts": {
+        "agent_end": 1,
+        "agent_settled": 1,
+        "agent_start": 1,
+        "entry_appended": 6,
+        "message_end": 3,
+        "message_start": 3,
+        "message_update": 7,
+        "session": 1,
+        "turn_end": 1,
+        "turn_start": 1
+      },
+      "piEventTotal": 25,
+      "fakeLogRecords": 19,
+      "fakeLogSha256": "5a4510fffae339d20f819a9762c16851c3499a23c2c30cc1831c96170b3b0dfb",
+      "normalizedPiSha256": "766b1631f0c90e0c9a0f0f45e0b94a1cf96980478f3d3875f5413f8d779f3f0b",
+      "stderrLines": 0,
+      "determinism": {
+        "fakeLogIdentical": true,
+        "normalizedPiIdentical": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "local-custom-agents",
+      "scenarioFile": "tests/c_local/scenarios/local-custom-agents.json",
+      "scenarioSha256": "fe0bd4aa02a12c9d3c64a7210a7d480be0ccd88a5ae2e40018e23f4b0df7ea38",
+      "run": {
+        "model": "composer-2",
+        "prompt": "Turn with a custom subagent.",
+        "followUps": [],
+        "extensions": [],
+        "args": []
+      },
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "observed": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "piEventCounts": {
+        "agent_end": 1,
+        "agent_settled": 1,
+        "agent_start": 1,
+        "entry_appended": 6,
+        "message_end": 3,
+        "message_start": 3,
+        "message_update": 3,
+        "session": 1,
+        "turn_end": 1,
+        "turn_start": 1
+      },
+      "piEventTotal": 21,
+      "fakeLogRecords": 16,
+      "fakeLogSha256": "446e9dafd8f8e2bf47c49cedf8a0a37433012938df9b68cc74de5771a8c3d315",
+      "normalizedPiSha256": "a17a1c9076679b27d77fc411d682a7cc1a76fda29d97079f9b8d0b8b4700de69",
+      "stderrLines": 0,
+      "determinism": {
+        "fakeLogIdentical": true,
+        "normalizedPiIdentical": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "local-reuse",
+      "scenarioFile": "tests/c_local/scenarios/local-reuse.json",
+      "scenarioSha256": "559fdd76a7ed3162e483eed7e39fec4bc515e106bcf7e1fbab7763d6125030f7",
+      "run": {
+        "model": "composer-2",
+        "prompt": "First question from the fake.",
+        "followUps": [
+          "Second question from the fake."
+        ],
+        "extensions": [],
+        "args": []
+      },
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 7,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 2,
+          "agent.send": 2,
+          "createAgentPlatform": 2
+        },
+        "runs": {
+          "finished": 2
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "observed": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 7,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 2,
+          "agent.send": 2,
+          "createAgentPlatform": 2
+        },
+        "runs": {
+          "finished": 2
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "piEventCounts": {
+        "agent_end": 2,
+        "agent_settled": 2,
+        "agent_start": 2,
+        "entry_appended": 12,
+        "message_end": 5,
+        "message_start": 5,
+        "message_update": 6,
+        "session": 1,
+        "turn_end": 2,
+        "turn_start": 2
+      },
+      "piEventTotal": 39,
+      "fakeLogRecords": 28,
+      "fakeLogSha256": "cd8da95ee4ffcdc27fa997ebb34c1b791fb49b6a4db9bb165fd0255cc9e09eb6",
+      "normalizedPiSha256": "d8929de27c386734286493959c131f326387b630318b94e0e98a5085f6247b37",
+      "stderrLines": 0,
+      "determinism": {
+        "fakeLogIdentical": true,
+        "normalizedPiIdentical": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "local-settings",
+      "scenarioFile": "tests/c_local/scenarios/local-settings.json",
+      "scenarioSha256": "def6b1dea52bb9b41f17d4fb8f02cb8ed81e40fcc595a83535b536bf09339565",
+      "run": {
+        "model": "composer-2",
+        "prompt": "Turn with http1 settings.",
+        "followUps": [],
+        "extensions": [],
+        "args": []
+      },
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "Cursor.configure": 2,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "observed": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "Cursor.configure": 2,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "piEventCounts": {
+        "agent_end": 1,
+        "agent_settled": 1,
+        "agent_start": 1,
+        "entry_appended": 6,
+        "message_end": 3,
+        "message_start": 3,
+        "message_update": 3,
+        "session": 1,
+        "turn_end": 1,
+        "turn_start": 1
+      },
+      "piEventTotal": 21,
+      "fakeLogRecords": 18,
+      "fakeLogSha256": "ea9a88c09dd152d8861bc3de2811d3946c0bfc1357b65bb5d60c5aa7334fe2a8",
+      "normalizedPiSha256": "c45318f44aaa5218c58d47a90d2728d14c777a70148cb90a252059300bf342f3",
+      "stderrLines": 0,
+      "determinism": {
+        "fakeLogIdentical": true,
+        "normalizedPiIdentical": true
+      },
+      "problems": [],
+      "status": "pass"
+    }
+  ],
+  "notTested": [
+    "Image prompts (Pi @image.png attachments) are not exercised.",
+    "Turn-level errors (sendError/error), mid-run crashes and cloud billing are not exercised by these scenarios.",
+    "Cancellation and concurrent owners are rpi-only checks (see tests/c_local/run-rpi.mjs); the Pi 1.3.0 print CLI cannot drive them deterministically.",
+    "Interactive/TUI mode, RPC mode and the cursor-usage command are not exercised."
+  ],
+  "commands": [
+    "node tests/c_local/run-reference.mjs        (check mode)",
+    "node tests/c_local/run-reference.mjs --write"
+  ]
+}

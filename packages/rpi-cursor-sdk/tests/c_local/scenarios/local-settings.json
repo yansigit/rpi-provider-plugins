@@ -1,0 +1,82 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "local-settings",
+  "description": "One local turn with the HTTP/1.1 transport control enabled through PI_CURSOR_HTTP_1_1. Exercises the SDK configuration call and the http1 setting that participates in the session-agent pool key.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Turn with http1 settings.",
+    "extensions": []
+  },
+  "env": {
+    "PI_CURSOR_HTTP_1_1": "1"
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "http1",
+      "expect": {
+        "promptIncludes": "Turn with http1 settings.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Configured with http1."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 9,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Configured with http1."
+      }
+    }
+  ],
+  "expect": {
+    "exitCode": 0,
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 3,
+      "Cursor.configure": 2,
+      "SqliteLocalAgentStore.dispose": 1,
+      "SqliteLocalAgentStore.open": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 1,
+      "agent.send": 1,
+      "createAgentPlatform": 1
+    },
+    "runs": {
+      "finished": 1
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0,
+    "piToolExecutions": {}
+  }
+}
