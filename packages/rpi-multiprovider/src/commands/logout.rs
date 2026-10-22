@@ -1,0 +1,1 @@
+//! Multiprovider command flow: logout.
