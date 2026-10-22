@@ -1,0 +1,51 @@
+{
+  "status": "Managed account integration, resolveAccount decision logic and service announcement ported and differentially verified; the end-to-end liftProvider/createModels path of managed.spec.ts is covered at component level only",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "checks": {
+    "toolchain": "1.78.0 (declared minimum, warnings denied) and default 1.95.0",
+    "warnings": "denied",
+    "managedScenarios": 58,
+    "announcementScenarios": 27,
+    "upstreamSpecTests": {
+      "tests/managed.spec.ts": 2,
+      "tests/announcement.spec.ts": 6
+    },
+    "upstreamSpecScenarios": {
+      "managed": 1,
+      "announcement": 6,
+      "note": "managed.spec.ts test 2 is covered by three unprefixed managed scenarios: 'stored upstream preferences apply to the listing', 'empty upstream preferences fall back to defaults', 'upstream account hidden when includeUpstream is off'"
+    },
+    "referenceFixtureSha256": "954064d0ac52d9bd25457bfdae17a8e82754cd363a559e4006a1aea553ab814f",
+    "referenceScriptSha256": "1daa64810785397e2b9428fdd6e887f936954257d497f472543cc53a160a31ee",
+    "upstreamSourceSha256": {
+      "src/managed.ts": "5a139118f805ed4825259df761dd5e2fbec515da19d3bc10b9719c9bf30bdeef",
+      "src/announcement.ts": "fc0bf72467dba7b524146ade4a66c420d546a01e7867b8095c8b7d8b1804ae18",
+      "src/auth-store.ts": "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6",
+      "src/service.ts": "2eafa61662b3ee75a96a7b07a6ccad62ca600bbb2139a407b81cd9983564a026",
+      "src/errors.ts": "1e4f189fc4aac4488c84912b29bfc7e78629600ead41ce2924c8d8c3a3bac4b7",
+      "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e"
+    },
+    "rustTests": {
+      "managed_cases_match_the_upstream_reference": "2 tests in tests/managed.rs (58 cases, complete JSON)",
+      "announcement_cases_match_the_upstream_reference": "1 test in tests/announcement.rs (27 cases, complete JSON)"
+    },
+    "mutationChecks": "Breaking the managed sanitize marker branch and the announcement token trim each made the matching Rust test fail; sources were restored before commit"
+  },
+  "compared": [
+    "Every action result of each managed scenario: accounts, pool snapshots, hasAccounts, surface shape, merged api-key check/resolve and OAuth toAuth/refresh, excludeAccountIds, resolveAuth, sanitize, resolveAccount, with exact success values or error messages",
+    "Ordered per-action traces of native calls (apiKey.check, apiKey.resolve, oauth.refresh, oauth.toAuth with credential and signal state) and of store events (lock, read, write, unlock)",
+    "The parsed auth file after each managed scenario, including refreshed OAuth credentials and their updatedAt timestamp",
+    "Marker header round trips, upstream credential exclusion, pool-only spill, sanitize of headers and environment, and base URL restoration",
+    "Announcement results for active account, auth resolution, subscription, unsubscribe, notify and their errors, with the scheduler's affinityKeyFor calls and the integration resolveAuth calls",
+    "Listener order: live Set semantics for removal and addition during notification, per-provider isolation, duplicate subscription, error isolation for throwing listeners"
+  ],
+  "limits": [
+    "managed.spec.ts test 1 (liftProvider, MultiProviderService and createModels end to end) is covered at component level: exclusion, marker, pool spill and sanitize run through ManagedIntegration directly, not through the lift pipeline, which belongs to the lift lane.",
+    "The store file is an in-memory fixture that emits the same lock, read, write and unlock events as the upstream file operations. The upstream parseState validation of malformed files and the atomic temp-file write are not part of this port; the store port owns them.",
+    "Native provider responses are scripted fixtures. Rust model auth and auth results keep the apiKey, headers, baseUrl, env and source fields only; unknown extra fields from a native method would be dropped (none appear in the fixtures).",
+    "Upstream JavaScript Date is injected as a fixed clock; no real time, network, credential or ~/.pi access occurs.",
+    "The host context (ExtensionContext) is modelled by a fixture context type that exposes the model and session id only.",
+    "Only Linux execution was performed."
+  ]
+}
