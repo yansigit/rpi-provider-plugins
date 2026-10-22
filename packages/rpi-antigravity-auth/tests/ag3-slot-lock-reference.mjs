@@ -8,7 +8,7 @@
 // RPI_REFERENCE_DIR must point at the locked Antigravity checkout.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {spawn} from 'node:child_process';
+import {execFileSync,spawn} from 'node:child_process';
 import {writeFile,readFile,mkdtemp,mkdir,rm,utimes,symlink,chmod,lstat,readdir} from 'node:fs/promises';
 import {join,resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -18,8 +18,32 @@ import {pathToFileURL} from 'node:url';
 
 const self = fileURLToPath(import.meta.url);
 const fixture = resolve(dirname(self),'ag3-slot-lock.json');
-const root = resolve(process.env.RPI_REFERENCE_DIR ?? '');
+const evidence = JSON.parse(await readFile(resolve(dirname(self),'ag3-evidence.json'),'utf8'));
 const scratchRoot = process.env.RPI_PRIVATE_TMP ?? tmpdir();
+
+// --- fail before importing anything unless the exact upstream is present ----
+function fail(message) {
+  console.error(`ag3-slot-lock-reference: ${message}`);
+  process.exit(1);
+}
+if (!process.env.RPI_REFERENCE_DIR) fail('RPI_REFERENCE_DIR is required');
+if (process.version !== `v${evidence.referenceNode}`) fail(`runtime ${process.version} != v${evidence.referenceNode}`);
+const root = resolve(process.env.RPI_REFERENCE_DIR);
+let head;
+try {
+  head = execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+} catch (error) {
+  fail(`cannot read the reference pin at ${root}: ${error.message}`);
+}
+if (head !== evidence.reference) fail(`reference pin ${head} != ${evidence.reference}`);
+const mismatches = [];
+for (const [file,expected] of Object.entries(evidence.upstreamSha256)) {
+  let actual;
+  try { actual = createHash('sha256').update(await readFile(join(root,file))).digest('hex'); }
+  catch (error) { mismatches.push(`${file}: unreadable (${error.code ?? error.message})`); continue; }
+  if (actual !== expected) mismatches.push(`${file}: ${actual} != ${expected}`);
+}
+if (mismatches.length) fail(`upstream sha256 mismatch:\n  ${mismatches.join('\n  ')}`);
 const load = (path) => import(pathToFileURL(join(root,path)).href);
 
 // --- renewal timers are deterministic ---------------------------------------

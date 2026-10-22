@@ -2,6 +2,30 @@
   "status": "Component differential evidence for the pinned slot-lock faults and the complete /antigravity menu walk; loaded host boundary checked for the existing enrollment scenario; platform execution beyond Linux and live vault acceptance remain pending",
   "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
   "referenceNode": "24.22.0",
+  "toolchains": {
+    "rustMinimum": "1.78.0",
+    "rustDefault": "1.95.0",
+    "node": "24.22.0",
+    "warnings": "denied on the 1.78.0 run (RUSTFLAGS=-Dwarnings); no warnings emitted on either run",
+    "targetDirectories": [
+      "/home/user/Projects/.targets/ag-3-178 (Rust 1.78.0)",
+      "/home/user/Projects/.targets/ag-3 (Rust 1.95.0)"
+    ],
+    "tests": {
+      "packagePassed": 78,
+      "packageFailed": 0,
+      "packageIgnored": 3,
+      "packageIgnoredTests": [
+        "loaded_enrollment_watch_account_controls_and_restoration_match_pi",
+        "loaded_vault_receipts_rotation_refusal_and_reports",
+        "production_trust_outcomes_match_original_transports"
+      ],
+      "rust178": { "passed": 78, "failed": 0, "ignored": 3 },
+      "rust195": { "passed": 78, "failed": 0, "ignored": 3 },
+      "referenceSlotLock": { "leaseCases": 36, "slotCases": 5, "processCases": 1, "checkRuns": 2, "byteIdentical": true },
+      "referenceMenu": { "menuWalks": 90, "notifyingWalks": 35, "checkRuns": 2, "byteIdentical": true }
+    }
+  },
   "upstreamSha256": {
     "packages/core/src/common-auth-embedded/fs/refresh-file-lock.js": "5c52aad573e84e8065dcf06259ecf38345e8b5a2c401029a23d942f28c7a8521",
     "packages/core/src/common-auth-embedded/pi-slot/slot.js": "13a7d5941b79c6d444cf9dc6f23263cf9237146c7dd5de7d162dbc21e015532c",
@@ -14,6 +38,59 @@
     "packages/core/src/antigravity-command-menu.ts": "ccd51fdc729a79d09f40fa190f30d82020c1b9db00f5249661376f22d6d111d5",
     "packages/core/src/common-auth-embedded/commands/index.js": "1fbda89803e0ca21bd3e2f4ac01e5303b8858409e63467477ca4d3904bd16c53",
     "packages/core/src/vault-folder-refusal.ts": "78ceb5cf9accf687de440b1b3e00b31fff23ac24e324831c4e70caceda79b924"
+  },
+  "normalizations": {
+    "policy": "Every replacement below is applied identically by tests/ag3-slot-lock-reference.mjs (reference side) and tests/ag3_slot_lock.rs (native side) before comparison. Nothing else is rewritten: every byte outside these exact substitutions is compared, so a wrong or unexpected value still fails. The menu reference has no value normalization; only the injected entropy below is fixed.",
+    "items": [
+      {
+        "id": "lease-owner-token",
+        "replacement": "<OWNER>",
+        "where": "lease snapshots, for an ownerId string exactly equal to the ownerId returned by the acquire that created the case",
+        "reference": "tests/ag3-slot-lock-reference.mjs normalize(): k === 'ownerId' && v === owner",
+        "native": "tests/ag3_slot_lock.rs lease_normalize(): key == \"ownerId\" && value.as_str() == Some(owner)",
+        "why": "Each acquisition mints a random owner id, and renewal rewrites it. Only that case's exact captured owner is replaced; a corrupt or foreign owner id is compared verbatim."
+      },
+      {
+        "id": "process-successor-owner-token",
+        "replacement": "<OWNER>",
+        "where": "competing-process successor snapshot",
+        "reference": "tests/ag3-slot-lock-reference.mjs processScenario(): successor = {ownerId:'<OWNER>', expiresAt: saved.expiresAt}",
+        "native": "tests/ag3_slot_lock.rs: successor_value = {\"ownerId\":\"<OWNER>\",\"expiresAt\":saved[\"expiresAt\"]}",
+        "why": "The successor lease's random owner id is replaced unconditionally after acquisition succeeds; its expiresAt is compared exactly, and the child, contender and leftover entries remain exact."
+      },
+      {
+        "id": "scratch-directory-token",
+        "replacement": "<DIR>",
+        "where": "lease error messages",
+        "reference": "tests/ag3-slot-lock-reference.mjs: error.message.replaceAll(directory,'<DIR>')",
+        "native": "tests/ag3_slot_lock.rs: error.to_string().replace(scratch.0.to_str().unwrap(),\"<DIR>\")",
+        "why": "The message embeds the per-case private mkdtemp path. Each side replaces only its own case scratch root with the same token; the rest of the message, including the error name, is compared unchanged."
+      },
+      {
+        "id": "auth-path-identity-token",
+        "replacement": "<auth-identity>",
+        "where": "credential-slot snapshot file text",
+        "reference": "tests/ag3-slot-lock-reference.mjs: sha256(JSON.stringify(paths.auth))",
+        "native": "tests/ag3_slot_lock.rs: Sha256(json!(auth).to_string())",
+        "why": "The pinned slot writes a marker derived from the expected auth path. Both sides replace only that exact digest, so the fixture never contains the temporary path and any other text, including malformed markers, is compared verbatim."
+      },
+      {
+        "id": "enotdir-is-absent",
+        "replacement": "null (absent) snapshot",
+        "where": "credential-slot snapshot when a parent component was replaced by a regular file",
+        "reference": "tests/ag3-slot-lock-reference.mjs: error.code === 'ENOENT' || error.code === 'ENOTDIR' -> null",
+        "native": "tests/ag3_slot_lock.rs: ErrorKind::NotFound or raw_os_error() == ENOTDIR -> Value::Null",
+        "why": "Linux reports ENOTDIR rather than ENOENT when an ancestor is a file. Both sides map only those two absence errors to absent and panic or throw on every other error, so a real permission or IO failure is not hidden."
+      },
+      {
+        "id": "menu-entropy",
+        "replacement": "crypto.randomBytes(16) -> 16 bytes of 0x07",
+        "where": "menu item ids in the reference walk",
+        "reference": "tests/ag3-menu-reference.ts: randomBytes(size === 16) = Buffer.alloc(16,7)",
+        "native": "tests/ag3_menu.rs: Menu { salt: [7; 16] }",
+        "why": "Item ids are salted with one 16-byte draw. Only that draw is fixed; menu text, ordering, uiTrace, calls and notifications are compared without normalization."
+      }
+    ]
   },
   "fixtures": {
     "tests/ag3-slot-lock.json": {
@@ -49,31 +126,60 @@
     {
       "command": "node tests/ag3-slot-lock-reference.mjs --write",
       "status": "passed",
-      "environment": { "RPI_REFERENCE_DIR": "locked Antigravity checkout", "RPI_PRIVATE_TMP": "private scratch" }
+      "node": "24.22.0",
+      "environment": { "RPI_REFERENCE_DIR": "locked Antigravity checkout", "RPI_PRIVATE_TMP": "private scratch" },
+      "pinAndSha256Gate": "passed before importing any upstream module",
+      "cases": { "lease": 36, "slot": 5, "process": 1 }
     },
     {
       "command": "node tests/ag3-slot-lock-reference.mjs",
       "status": "passed",
+      "node": "24.22.0",
       "runs": 2,
-      "byteIdentical": true
+      "byteIdentical": true,
+      "cases": { "lease": 36, "slot": 5, "process": 1 }
     },
     {
       "command": "node --experimental-transform-types tests/ag3-menu-reference.ts --write",
-      "status": "passed"
+      "status": "passed",
+      "node": "24.22.0",
+      "pinAndSha256Gate": "passed before importing any upstream module",
+      "cases": { "menuWalks": 90, "notifyingWalks": 35 }
     },
     {
       "command": "node --experimental-transform-types tests/ag3-menu-reference.ts",
       "status": "passed",
+      "node": "24.22.0",
       "runs": 2,
-      "byteIdentical": true
+      "byteIdentical": true,
+      "cases": { "menuWalks": 90, "notifyingWalks": 35 }
+    },
+    {
+      "command": "RPI_REFERENCE_DIR=<temporary wrong-commit checkout> node tests/ag3-slot-lock-reference.mjs && node --experimental-transform-types tests/ag3-menu-reference.ts",
+      "status": "passed",
+      "expectation": "both scripts exited 1 before importing upstream",
+      "wrongPin": "a533bd… rejected against a97f905…",
+      "wrongHash": "a fabricated upstreamSha256 entry was rejected before import"
     },
     {
       "command": "cargo test -p rpi-antigravity-auth --locked",
-      "status": "passed"
+      "status": "passed",
+      "toolchain": "1.95.0",
+      "targetDir": "/home/user/Projects/.targets/ag-3",
+      "passed": 78,
+      "failed": 0,
+      "ignored": 3,
+      "warnings": 0
     },
     {
-      "command": "cargo +1.78.0 test -p rpi-antigravity-auth --locked",
-      "status": "passed"
+      "command": "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+      "status": "passed",
+      "toolchain": "1.78.0",
+      "targetDir": "/home/user/Projects/.targets/ag-3-178",
+      "passed": 78,
+      "failed": 0,
+      "ignored": 3,
+      "warnings": 0
     },
     {
       "command": "cargo test -p rpi-antigravity-auth --locked --test native_menu -- --ignored",

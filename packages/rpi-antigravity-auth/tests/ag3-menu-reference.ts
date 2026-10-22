@@ -8,6 +8,7 @@
 // RPI_REFERENCE_DIR must point at the locked Antigravity checkout.
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {syncBuiltinESMExports} from 'node:module';
 import {readFile,writeFile} from 'node:fs/promises';
 import {dirname,join,resolve} from 'node:path';
@@ -15,10 +16,34 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 
 const self = fileURLToPath(import.meta.url);
 const fixture = resolve(dirname(self),'ag3-menu.json');
+const evidence = JSON.parse(await readFile(resolve(dirname(self),'ag3-evidence.json'),'utf8'));
+
+// --- fail before importing anything unless the exact upstream is present ----
+function fail(message:string):never {
+  console.error(`ag3-menu-reference: ${message}`);
+  process.exit(1);
+}
+if (!process.env.RPI_REFERENCE_DIR) fail('RPI_REFERENCE_DIR is required');
+if (process.version !== `v${evidence.referenceNode}`) fail(`runtime ${process.version} != v${evidence.referenceNode}`);
+const root = resolve(process.env.RPI_REFERENCE_DIR);
+let head:string;
+try {
+  head = execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+} catch (error:any) {
+  fail(`cannot read the reference pin at ${root}: ${error.message}`);
+}
+if (head !== evidence.reference) fail(`reference pin ${head} != ${evidence.reference}`);
+const mismatches:string[] = [];
+for (const [file,expected] of Object.entries(evidence.upstreamSha256) as [string,string][]) {
+  let actual:string;
+  try { actual = crypto.createHash('sha256').update(await readFile(join(root,file))).digest('hex'); }
+  catch (error:any) { mismatches.push(`${file}: unreadable (${error.code ?? error.message})`); continue; }
+  if (actual !== expected) mismatches.push(`${file}: ${actual} != ${expected}`);
+}
+if (mismatches.length) fail(`upstream sha256 mismatch:\n  ${mismatches.join('\n  ')}`);
 const originalRandom = crypto.randomBytes;
 (crypto as any).randomBytes = (size:number) => size === 16 ? Buffer.alloc(16,7) : originalRandom(size);
 syncBuiltinESMExports();
-const root = resolve(process.env.RPI_REFERENCE_DIR!);
 const load = (path:string) => import(pathToFileURL(join(root,path)).href);
 const {createPiVaultSection,PiVaultSetupError} = await load('packages/pi/src/vault-setup.ts');
 const {createPiAntigravityAccountSections} = await load('packages/pi/src/commands.ts');

@@ -136,6 +136,15 @@ async fn complete_menu_walks_notifications_and_cancellation_match_upstream() {
             case["calls"],
             "calls {i}"
         );
+        // The reference records the invocation-level notifier separately from the
+        // walk's Ui::notify trace. No walk uses it, and the native renderer has no
+        // invocation-level sink, so the array must be present and empty and every
+        // notification must already appear in uiTrace above.
+        assert_eq!(
+            case["notifications"],
+            json!([]),
+            "notifications {i}: success and error notifications belong to uiTrace"
+        );
         assert!(ui.answers.lock().unwrap().is_empty(), "unused answers {i}");
         for private in [
             "owner@example.test",
