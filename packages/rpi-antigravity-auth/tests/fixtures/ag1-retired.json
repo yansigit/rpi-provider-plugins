@@ -1,0 +1,1686 @@
+{
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "host": "1.3.0",
+  "runtime": "v24.22.0",
+  "body": "data: {\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"hello\"}]},\"finishReason\":\"STOP\"}]}\n\n",
+  "sourceHashes": {
+    "packages/pi/src/stream.ts": "41f22771dd1dfdb3b6f72ee02f5a57317193b0a2b210be706042bf26d4af2cf6",
+    "packages/pi/src/credential-cache.ts": "23fa0f358ca6c60cd8474865b3d72eab3d55c4ec6234255d7a03eecc969614e6"
+  },
+  "cases": [
+    {
+      "model": {
+        "id": "antigravity-gemini-3.8-flash",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "antigravity-gemini-3.8-flash",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 2,
+      "ids": [
+        "00000000-0000-4000-8000-000000000001",
+        "00000000-0000-4000-8000-000000000002",
+        "00000000-0000-4000-8000-000000000003"
+      ],
+      "requests": [
+        {
+          "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer fixture-access",
+            "Content-Type": "application/json",
+            "User-Agent": "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)",
+            "Accept-Encoding": "gzip"
+          },
+          "body": "{\"project\":\"fixture-managed\",\"requestId\":\"agent/00000000-0000-4000-8000-000000000001/1784285195116/00000000-0000-4000-8000-000000000002/2\",\"request\":{\"contents\":[{\"role\":\"user\",\"parts\":[{\"text\":\"hello\"}]}],\"systemInstruction\":{\"parts\":[{\"text\":\"Be useful\"}]},\"tools\":[{\"functionDeclarations\":[{\"name\":\"read\",\"description\":\"Read text\",\"parameters\":{\"type\":\"OBJECT\",\"properties\":{\"path\":{\"type\":\"STRING\"}},\"required\":[\"path\"]}}]}],\"toolConfig\":{\"functionCallingConfig\":{\"mode\":\"VALIDATED\"}},\"labels\":{\"last_step_index\":\"1\",\"model_enum\":\"MODEL_PLACEHOLDER_M319\",\"trajectory_id\":\"00000000-0000-4000-8000-000000000002\",\"used_claude\":\"false\",\"used_claude_conservative\":\"false\",\"used_non_gemini_model\":\"false\"},\"generationConfig\":{\"thinkingConfig\":{\"includeThoughts\":true,\"thinkingBudget\":4000},\"maxOutputTokens\":65536},\"sessionId\":\"-3750763034362895579\"},\"model\":\"gemini-3.8-flash-medium\",\"userAgent\":\"antigravity\",\"requestType\":\"agent\"}"
+        }
+      ],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "text_start",
+          "contentIndex": 0,
+          "partial": {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "text_delta",
+          "contentIndex": 0,
+          "delta": "hello",
+          "partial": {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "hello"
+              }
+            ],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "text_end",
+          "contentIndex": 0,
+          "content": "hello",
+          "partial": {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "hello"
+              }
+            ],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "done",
+          "reason": "stop",
+          "message": {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "hello"
+              }
+            ],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116,
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "hello"
+          }
+        ],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "antigravity-gemini-3.8-flash",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "stop",
+        "timestamp": 1784285195116,
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "antigravity-gemini-3.7-flash",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "antigravity-gemini-3.7-flash",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 1,
+      "ids": [],
+      "requests": [],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.7-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "error",
+          "reason": "error",
+          "error": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.7-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "error",
+            "timestamp": 1784285195116,
+            "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "antigravity-gemini-3.7-flash",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "error",
+        "timestamp": 1784285195116,
+        "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "gemini-3.6-flash",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "gemini-3.6-flash",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 1,
+      "ids": [],
+      "requests": [],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "gemini-3.6-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "error",
+          "reason": "error",
+          "error": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "gemini-3.6-flash",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "error",
+            "timestamp": 1784285195116,
+            "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "gemini-3.6-flash",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "error",
+        "timestamp": 1784285195116,
+        "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "antigravity-gemini-3.1-pro-high",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "antigravity-gemini-3.1-pro-high",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 1,
+      "ids": [],
+      "requests": [],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.1-pro-high",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "error",
+          "reason": "error",
+          "error": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.1-pro-high",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "error",
+            "timestamp": 1784285195116,
+            "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "antigravity-gemini-3.1-pro-high",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "error",
+        "timestamp": 1784285195116,
+        "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "gemini-3.1-pro",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "gemini-3.1-pro",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 1,
+      "ids": [],
+      "requests": [],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "gemini-3.1-pro",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "error",
+          "reason": "error",
+          "error": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "gemini-3.1-pro",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "error",
+            "timestamp": 1784285195116,
+            "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "gemini-3.1-pro",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "error",
+        "timestamp": 1784285195116,
+        "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "gemini-claude-opus-4-6",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "gemini-claude-opus-4-6",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 1,
+      "ids": [],
+      "requests": [],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "gemini-claude-opus-4-6",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "error",
+          "reason": "error",
+          "error": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "gemini-claude-opus-4-6",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "error",
+            "timestamp": 1784285195116,
+            "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "gemini-claude-opus-4-6",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "error",
+        "timestamp": 1784285195116,
+        "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "claude-sonnet-4-6-thinking",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "claude-sonnet-4-6-thinking",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 1,
+      "ids": [],
+      "requests": [],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "claude-sonnet-4-6-thinking",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "error",
+          "reason": "error",
+          "error": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "claude-sonnet-4-6-thinking",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "error",
+            "timestamp": 1784285195116,
+            "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "claude-sonnet-4-6-thinking",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "error",
+        "timestamp": 1784285195116,
+        "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "gemini-pro-agent",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "gemini-pro-agent",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 1,
+      "ids": [],
+      "requests": [],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "gemini-pro-agent",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "error",
+          "reason": "error",
+          "error": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "gemini-pro-agent",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "error",
+            "timestamp": 1784285195116,
+            "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "gemini-pro-agent",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "error",
+        "timestamp": 1784285195116,
+        "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "antigravity-gemini-3.7-flash-preview-customtools",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "antigravity-gemini-3.7-flash-preview-customtools",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 1,
+      "ids": [],
+      "requests": [],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.7-flash-preview-customtools",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "error",
+          "reason": "error",
+          "error": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.7-flash-preview-customtools",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "error",
+            "timestamp": 1784285195116,
+            "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "antigravity-gemini-3.7-flash-preview-customtools",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "error",
+        "timestamp": 1784285195116,
+        "errorMessage": "This Antigravity model is no longer offered. Choose another model.",
+        "durationMs": 0
+      }
+    },
+    {
+      "model": {
+        "id": "antigravity-gemini-3.8-flash-high",
+        "name": "test",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://cloudcode-pa.googleapis.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 1048576,
+        "maxTokens": 65536
+      },
+      "context": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Be useful",
+            "toolsAdded": [
+              {
+                "name": "read",
+                "description": "Read text",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                }
+              }
+            ],
+            "timestamp": 0
+          },
+          {
+            "role": "user",
+            "content": "hello",
+            "timestamp": 10
+          }
+        ]
+      },
+      "options": {
+        "sessionId": "antigravity-gemini-3.8-flash-high",
+        "apiKey": "fixture-access"
+      },
+      "packed": "fixture-refresh|fixture-project|fixture-managed",
+      "admissions": 2,
+      "ids": [
+        "00000000-0000-4000-8000-000000000001",
+        "00000000-0000-4000-8000-000000000002",
+        "00000000-0000-4000-8000-000000000003"
+      ],
+      "requests": [
+        {
+          "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer fixture-access",
+            "Content-Type": "application/json",
+            "User-Agent": "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)",
+            "Accept-Encoding": "gzip"
+          },
+          "body": "{\"project\":\"fixture-managed\",\"requestId\":\"agent/00000000-0000-4000-8000-000000000001/1784285195116/00000000-0000-4000-8000-000000000002/2\",\"request\":{\"contents\":[{\"role\":\"user\",\"parts\":[{\"text\":\"hello\"}]}],\"systemInstruction\":{\"parts\":[{\"text\":\"Be useful\"}]},\"tools\":[{\"functionDeclarations\":[{\"name\":\"read\",\"description\":\"Read text\",\"parameters\":{\"type\":\"OBJECT\",\"properties\":{\"path\":{\"type\":\"STRING\"}},\"required\":[\"path\"]}}]}],\"toolConfig\":{\"functionCallingConfig\":{\"mode\":\"VALIDATED\"}},\"labels\":{\"last_step_index\":\"1\",\"model_enum\":\"MODEL_PLACEHOLDER_M318\",\"trajectory_id\":\"00000000-0000-4000-8000-000000000002\",\"used_claude\":\"false\",\"used_claude_conservative\":\"false\",\"used_non_gemini_model\":\"false\"},\"generationConfig\":{\"thinkingConfig\":{\"includeThoughts\":true,\"thinkingBudget\":-1},\"maxOutputTokens\":65536},\"sessionId\":\"-3750763034362895579\"},\"model\":\"gemini-3.8-flash-high\",\"userAgent\":\"antigravity\",\"requestType\":\"agent\"}"
+        }
+      ],
+      "events": [
+        {
+          "type": "start",
+          "partial": {
+            "role": "assistant",
+            "content": [],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash-high",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "text_start",
+          "contentIndex": 0,
+          "partial": {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash-high",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "text_delta",
+          "contentIndex": 0,
+          "delta": "hello",
+          "partial": {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "hello"
+              }
+            ],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash-high",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "text_end",
+          "contentIndex": 0,
+          "content": "hello",
+          "partial": {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "hello"
+              }
+            ],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash-high",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116
+          }
+        },
+        {
+          "type": "done",
+          "reason": "stop",
+          "message": {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "hello"
+              }
+            ],
+            "api": "google-generative-ai",
+            "provider": "google",
+            "model": "antigravity-gemini-3.8-flash-high",
+            "usage": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "totalTokens": 0,
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "total": 0
+              }
+            },
+            "stopReason": "stop",
+            "timestamp": 1784285195116,
+            "durationMs": 0
+          }
+        }
+      ],
+      "result": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "hello"
+          }
+        ],
+        "api": "google-generative-ai",
+        "provider": "google",
+        "model": "antigravity-gemini-3.8-flash-high",
+        "usage": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "stop",
+        "timestamp": 1784285195116,
+        "durationMs": 0
+      }
+    }
+  ]
+}
