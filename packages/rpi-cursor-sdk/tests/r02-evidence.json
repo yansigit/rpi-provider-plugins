@@ -1,0 +1,256 @@
+{
+  "status": "R02 Linux native loading, old-plugin/short-vtable compatibility and packaged Cursor worker execution verified; macOS/Windows execution not tested; rpi-providers cannot build on Rust 1.78 because its pinned SDK revision uses a post-1.82 API",
+  "lane": "R02",
+  "platform": "linux-x86_64",
+  "reference": {
+    "packageRepo": "rpi-package codex/provider-parity",
+    "packageBase": "adc459b (test(multiprovider): compare managed and announcement outputs to the reference)",
+    "hostReference": "/home/user/Projects/pi-rust at 37ca034 (read-only)",
+    "sdkPins": {
+      "rpi-providers": "bigfish1913/pi-rust cf4241d2 (rpi-plugin-sdk 0.3.24)",
+      "rpi-antigravity-auth": "yansigit/pi-rust 1347dbe2 (rpi-plugin-sdk 0.7.0)",
+      "rpi-cursor-sdk": "yansigit/pi-rust 1347dbe2 (rpi-plugin-sdk 0.7.0)"
+    },
+    "upstreamProviderSources": {
+      "multiprovider": "bd97d65",
+      "cursorSdk": "f337dc4",
+      "antigravity": "a97f905"
+    }
+  },
+  "toolchains": {
+    "rust": [
+      "1.78.0",
+      "1.95.0"
+    ],
+    "node": "24.22.0",
+    "locale": "en_US.UTF-8",
+    "windowsCrossCompiler": "GCC 13-posix x86_64-w64-mingw32, unpacked under /tmp/opencode/mingw (not installed system-wide); cargo check only, no linking or execution"
+  },
+  "test": {
+    "file": "packages/rpi-cursor-sdk/tests/r02_native_loading.rs",
+    "sha256": "0530a75d67c521f7bee69f541e838678e8e1e13a559caa438fdbb187093bd31b",
+    "gating": "RPI_TEST_PROVIDER_LIBRARY, RPI_TEST_ANTIGRAVITY_LIBRARY, RPI_TEST_CURSOR_LIBRARY. An unset variable skips that library; an explicit path that is not a file fails; all unset prints SKIP and returns without asserting.",
+    "notRunOn": [
+      "macos",
+      "windows"
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "old compiled plugin on the current full vtable",
+      "library": "rpi-providers (compiled against rpi-plugin-sdk 0.3.24 / cf4241d2)",
+      "checks": [
+        "dlopen + dlsym(rpi_plugin_register) succeed",
+        "registration returns 0",
+        "4 catalog declarations (deepseek, openrouter, llama-cpp, proxy), each with a non-empty model list",
+        "4 streaming provider registrations with the exact provider ids"
+      ]
+    },
+    {
+      "name": "short vtable accepted with one-shot provider fallback",
+      "library": "rpi-providers",
+      "checks": [
+        "the advertised prefix ends at offset_of(PluginApi, declare); only that many bytes are allocated",
+        "registration returns 0 without reading missing trailing slots",
+        "no declare and no streaming registration (both slots are absent from the prefix)",
+        "4 register_provider fallbacks, one per provider id"
+      ]
+    },
+    {
+      "name": "short vtable refused by a plugin with newer requirements",
+      "library": "rpi-antigravity-auth",
+      "checks": [
+        "the same truncated prefix is passed",
+        "registration returns nonzero without reading past the prefix",
+        "no lifecycle is published"
+      ]
+    },
+    {
+      "name": "future ABI version refused before any slot is read",
+      "library": "rpi-providers",
+      "checks": [
+        "abi_version is RPI_PLUGIN_ABI_VERSION_UNIFIED + 1",
+        "entrypoint returns 1",
+        "no registration callbacks run"
+      ]
+    },
+    {
+      "name": "newest host vtable registers Antigravity",
+      "library": "rpi-antigravity-auth",
+      "checks": [
+        "registration returns 0",
+        "one catalog for provider google with 6 models",
+        "streaming provider google, native command, result events, provider auth and provider runtime registrations",
+        "lifecycle begin/finish both succeed and finish returns 0"
+      ]
+    },
+    {
+      "name": "packaged Cursor worker executes through the loaded library",
+      "library": "rpi-cursor-sdk",
+      "setup": "the cdylib is copied next to a runtime/ directory containing main.mjs, dist and shared from the built worker; node_modules is linked; the agent/project/session directories are temporary",
+      "checks": [
+        "registration returns 0",
+        "the worker starts and load() returns the Cursor manifest: one catalog for provider cursor with models",
+        "10 native command registrations, flags, owned tools, result events, provider auth, provider runtime and the cursor-sdk streaming provider",
+        "capability negotiation and context bootstrap cross the real native_request port",
+        "lifecycle begin/finish both succeed and finish returns 0, reaping the worker"
+      ]
+    },
+    {
+      "name": "image without packaged runtime refuses to register",
+      "library": "rpi-cursor-sdk copied without runtime/ assets",
+      "checks": [
+        "registration returns nonzero with 'Cursor runtime/main.mjs is missing beside the installed library'"
+      ]
+    }
+  ],
+  "scenarioCount": 7,
+  "artifacts": {
+    "rust195": {
+      "librpi_providers.so": "fe969bada0caea2716e913007aaeb9cc555ab988bf75ae4a2ffe89b98d347c81",
+      "librpi_antigravity_auth.so": "2fecb77cf6bd7e505c771a7916af9d095d395c987617f48b37d63a5ccff7c623",
+      "librpi_cursor_sdk.so": "13f9deb9f6785112f052be8bf78414126cba5fac2f08c7d78badc00e534182cc"
+    },
+    "rust178": {
+      "librpi_antigravity_auth.so": "972817b25bbad1f803b015b4d77ce88cdaf3e4c3a8cfbcc4327bd9cface076ca",
+      "librpi_cursor_sdk.so": "0dc361664d452caa8692d496d9129e1401f8795c60ef40e66cf1da16ec5520c0",
+      "librpi_providers.so": "not built: pinned rpi-plugin-sdk cf4241d2 does not compile on Rust 1.78"
+    },
+    "packagedWorker": {
+      "entry": "runtime/main.mjs",
+      "entrySha256": "f4f4dcc03a83582cbfe7e861ba7dcd50c50fdb17163bffd3f2e0c0e6ba8ad8ad",
+      "distFiles": 142,
+      "distPeerSha256": "8571a9088f6374f13479a3c5eef0e8537fda08007eb19fa89799d039b4256ecc",
+      "build": "npm ci --ignore-scripts --no-audit --no-fund && npm run build in worker/, then npm ci --prefix runtime and node tests/stage-runtime.mjs",
+      "tracked": false
+    }
+  },
+  "checks": {
+    "linuxNativeLoadingDlopen": {
+      "result": "passed",
+      "libraries": 3,
+      "toolchain": "1.95.0 and 1.78.0",
+      "note": "1.78 run used the 1.95-built rpi-providers library because its pinned SDK cannot compile on 1.78; Antigravity and Cursor libraries were built by 1.78"
+    },
+    "rust195": {
+      "rpi-cursor-sdk": {
+        "passed": 18,
+        "failed": 0,
+        "ignored": 17
+      },
+      "rpi-antigravity-auth": {
+        "passed": 71,
+        "failed": 0,
+        "ignored": 3
+      },
+      "rpi-providers": {
+        "passed": 12,
+        "failed": 0,
+        "ignored": 2
+      }
+    },
+    "rust178WarningsDenied": {
+      "rpi-cursor-sdk": {
+        "passed": 18,
+        "failed": 0,
+        "ignored": 17
+      },
+      "rpi-antigravity-auth": {
+        "passed": 71,
+        "failed": 0,
+        "ignored": 3
+      },
+      "rpi-providers": {
+        "passed": 0,
+        "failed": 0,
+        "blocked": "rpi-plugin-sdk cf4241d2 uses Option::is_none_or (Rust 1.82) in crates/rpi-plugin-sdk/src/dialogs.rs"
+      }
+    },
+    "windowsCrossCompile": {
+      "target": "x86_64-pc-windows-gnu",
+      "scope": "all targets, warnings denied, no execution",
+      "rust195": "rpi-providers, rpi-antigravity-auth and rpi-cursor-sdk passed",
+      "rust178": "rpi-antigravity-auth and rpi-cursor-sdk passed; rpi-providers blocked by the same pinned-SDK MSRV"
+    }
+  },
+  "commands": [
+    "cargo build -p rpi-providers -p rpi-cursor-sdk -p rpi-antigravity-auth",
+    "RPI_TEST_PROVIDER_LIBRARY=.targets/r02/debug/librpi_providers.so RPI_TEST_ANTIGRAVITY_LIBRARY=.targets/r02/debug/librpi_antigravity_auth.so RPI_TEST_CURSOR_LIBRARY=.targets/r02/debug/librpi_cursor_sdk.so cargo test -p rpi-cursor-sdk --locked",
+    "RUSTFLAGS=-D\\ warnings RPI_TEST_PROVIDER_LIBRARY=.targets/r02/debug/librpi_providers.so RPI_TEST_ANTIGRAVITY_LIBRARY=.targets/r02-178/debug/librpi_antigravity_auth.so RPI_TEST_CURSOR_LIBRARY=.targets/r02-178/debug/librpi_cursor_sdk.so cargo +1.78.0 test -p rpi-cursor-sdk --locked",
+    "RUSTFLAGS=-D\\ warnings cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+    "cargo test -p rpi-antigravity-auth --locked",
+    "cargo test -p rpi-providers --locked",
+    "PATH=/tmp/opencode/mingw/root/usr/bin:$PATH RUSTFLAGS=-D\\ warnings cargo check --target x86_64-pc-windows-gnu -p rpi-providers -p rpi-antigravity-auth -p rpi-cursor-sdk --all-targets",
+    "PATH=/tmp/opencode/mingw/root/usr/bin:$PATH RUSTFLAGS=-D\\ warnings cargo +1.78.0 check --target x86_64-pc-windows-gnu -p rpi-cursor-sdk -p rpi-antigravity-auth --all-targets",
+    "cargo +1.78.0 check -p rpi-providers (blocked)"
+  ],
+  "logs": [
+    {
+      "path": "/tmp/opencode/r02-logs/cursor-suite-1.95.log",
+      "sha256": "45175846c61bdab586295b5880a3f7750ccee7d3dc29a02ddfa9328e005a9800",
+      "exit": 0,
+      "passed": 18,
+      "ignored": 17
+    },
+    {
+      "path": "/tmp/opencode/r02-logs/cursor-suite-1.78.log",
+      "sha256": "c71c6859a72ab65295d593d27f9d207284b972cb7b1627df97ae82baa43e700f",
+      "exit": 0,
+      "passed": 18,
+      "ignored": 17
+    },
+    {
+      "path": "/tmp/opencode/r02-logs/antigravity-suite-1.95.log",
+      "sha256": "d402226c879445606ddb01e8fd12482fe4884752b92e87b89566eab8481e3ccd",
+      "exit": 0,
+      "passed": 71,
+      "ignored": 3
+    },
+    {
+      "path": "/tmp/opencode/r02-logs/antigravity-suite-1.78.log",
+      "sha256": "d0dd3ccd8e5689455fe53fde12f4f84e307a41897dd1fc490425c6d950b76229",
+      "exit": 0,
+      "passed": 71,
+      "ignored": 3
+    },
+    {
+      "path": "/tmp/opencode/r02-logs/providers-suite-1.95.log",
+      "sha256": "0fa1e1113228ae775eb4be2ed878f092d78bbd645f56db93b486c60c221c1a00",
+      "exit": 0,
+      "passed": 12,
+      "ignored": 2
+    },
+    {
+      "path": "/tmp/opencode/r02-logs/windows-gnu-check-1.95.log",
+      "sha256": "ff2ffb9bb9d7c2424c8ee2a55f718759f96615844597216fca8aec092bcbf880",
+      "exit": 0
+    },
+    {
+      "path": "/tmp/opencode/r02-logs/windows-gnu-check-1.78.log",
+      "sha256": "91100f0494232850a6361a30302dd7c5a03da4eb25fe5f05e2c992d416fb8aeb",
+      "exit": 0
+    },
+    {
+      "path": "/tmp/opencode/r02-logs/providers-1.78-blocked.log",
+      "sha256": "c8c72ef78cbf1be69a2b2a84bd4b631dc4687b73eec88e78da93fac3583dbe31",
+      "exit": 101
+    }
+  ],
+  "notTested": [
+    "macOS native loading or execution (no macOS host)",
+    "Windows native loading or execution (cross-compile only, no DLL load, no worker run)",
+    "Windows packaged Cursor worker execution",
+    "rpi-providers build and tests on Rust 1.78 (blocked by the pinned SDK revision, see gaps)",
+    "host CLI provider_packages.rs integration run (host-owned; not exercised by this lane)",
+    "release-built (optimized) cdylibs and stripped archives",
+    "package installation through the CLI (R01 owns install/upgrade)",
+    "historical prebuilt plugin binaries from released archives (the old plugin here is the current source built against the older pinned SDK revision)"
+  ],
+  "gaps": [
+    "rpi-providers pins rpi-plugin-sdk cf4241d2, whose crates/rpi-plugin-sdk/src/dialogs.rs:72 uses Option::is_none_or (stabilized in Rust 1.82). The package therefore fails `cargo +1.78.0 check -p rpi-providers` with E0599 before any provider code is checked. Fixing this needs a package pin bump to a 1.78-clean host revision; pins are outside this lane.",
+    "The 1.78 native-loading run mixed a 1.95-built rpi-providers library with 1.78-built Antigravity/Cursor libraries; the C ABI is identical, but a single-toolchain build could not be produced for rpi-providers for the reason above.",
+    "Short-vtable coverage uses an allocated prefix of the current PluginApi and the SDK-normalized registration path; it does not include a binary compiled against a genuinely historical SDK struct that predates this repository baseline.",
+    "The packaged Cursor worker check asserts manifest shape (catalog, 10 commands, flags, tools, events, auth, runtime, streaming provider) and a clean shutdown, not live Cursor inference or event payload parity; those remain C-lane and R04 work.",
+    "Runtime/dist and node_modules needed by the Cursor test are untracked build products. A clean checkout must run the documented npm build/stage commands before setting RPI_TEST_CURSOR_LIBRARY, otherwise registration fails with a clear missing-runtime error."
+  ]
+}
