@@ -1,0 +1,57 @@
+{
+  "status": "Virtual provider model, scheduler registration, template capture/heal and stream failover state machine verified against upstream src/virtual.ts through the VirtualHost trait; host cross-provider delegation binding pending (H-DELEG)",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "upstreamFiles": {
+    "src/virtual.ts": "6c38efe1d8bcd180e3287b182df592914a1af0a7091f872cd6dc32042575f808",
+    "src/lift.ts": "887b91aab533565504449b6094c1a2b076832b0fdc73bfc352e2c46a53ac3695",
+    "src/service.ts": "2eafa61662b3ee75a96a7b07a6ccad62ca600bbb2139a407b81cd9983564a026",
+    "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+    "src/errors.ts": "1e4f189fc4aac4488c84912b29bfc7e78629600ead41ce2924c8d8c3a3bac4b7",
+    "node_modules/@earendil-works/pi-ai/dist/api/lazy.js": "f3e5dece7b31d0a223d96994f062edcf82fbe91039accaf40c0553abbe2ee359",
+    "node_modules/@earendil-works/pi-ai/dist/utils/event-stream.js": "fe0d774b75db25ff0149d4267884bc4fd34db82d53c26843758d0eda2467ce65"
+  },
+  "fixture": {
+    "path": "tests/virtual-reference.json",
+    "sha256": "78ecaac8489c6c43d0e2f6c43ea0e6d5cf51611f93a9b4d57ce9d4c8847aaebe",
+    "generator": "tests/virtual-reference.mjs",
+    "generatorSha256": "0ad1ee240f90818239ff08ba2a6f80eced9e70895123b71cbd4f013a7015ef5f"
+  },
+  "checks": {
+    "toolchain": "1.78.0 (declared minimum) and default 1.95",
+    "warnings": "denied",
+    "upstreamSpecCases": 18,
+    "generatedCases": 52,
+    "totalScenarios": 70,
+    "traceEntries": 782,
+    "rustIntegrationTests": 1,
+    "specCaseNamesMatchUpstream": true
+  },
+  "compared": [
+    "Each scenario's complete ordered op outputs, complete ordered trace and final injected clock; the Rust test compares whole JSON values, JavaScript numbers by value",
+    "createVirtualIntegrations: scheduler ids, labels, selectionBias none, enabled-backend accounts, weights, metadata, maxAccountAttempts recorded but not enforced, duplicate backend and duplicate model registration errors",
+    "Transport-failure classification: status-less network messages, the unavailable prefix, and non-transport negatives including a non-ASCII codepoint inside 'Connection error'",
+    "Backend selection and resolveTarget: lookups, unavailable provider or model failover, backing model identity, ambient auth merge over caller options, base URL override, placeholder auth",
+    "Same-account tolerance (errorsBeforeSwitch) with 250 ms pauses, cancellation during the pause, response receipt reset per physical stream and classification by response status",
+    "Failover across backends, maxAccountAttempts bounds, onFailover surface/void/throw, implicit affinity hand-off and explicit pin retention, terminal replay of the last buffered start and error",
+    "Setup failure paths: ambient auth throws, exhausted setup errors, missing terminal events before and after output, iterator throws after output",
+    "Event forwarding: buffered latest start, durationMs stamping on terminal messages, abort handling, streamSimple kind forwarding",
+    "createVirtualProvider: models templated from live or persisted backends, disabled backends ignored, metadata fallback defaults, auth resolution with configured checks, template capture and heal (fill missing, keep existing, null template blocks healing)",
+    "Scheduling delegated to services.rs: round-robin and weights through the verified Service, rate-limit cooldowns, pins and affinity read through Service",
+    "The eighteen upstream virtual.spec.ts case names are asserted in the reference script against the upstream behaviour before fixture generation"
+  ],
+  "commands": [
+    "node --experimental-transform-types tests/virtual-reference.mjs --check",
+    "node --experimental-transform-types tests/virtual-reference.mjs --write",
+    "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-multiprovider --locked",
+    "cargo test -p rpi-multiprovider --locked"
+  ],
+  "limits": [
+    "The VirtualHost trait is host-independent: the physical backing stream is an opaque fixture stream, not a real provider SDK or pi-ai stream.",
+    "The cross-provider delegation binding to the host is not implemented; the start/resolve_ambient_auth/backing_models hooks are the boundary a later lane must bind (H-DELEG).",
+    "Upstream's SDK-level request conversion (headers, env, baseUrl applied by the real backing provider) is not reproduced; only the options handed to the backing provider are compared.",
+    "The lazy-stream wrapper is modelled by Pending::drive and durationMs stamping of terminal messages; pi-ai's real AssistantMessageEventStream internals are not exercised.",
+    "Persistence of healed configs and the editor/config-file round trip are not part of this lane.",
+    "Only Linux execution was performed."
+  ]
+}
