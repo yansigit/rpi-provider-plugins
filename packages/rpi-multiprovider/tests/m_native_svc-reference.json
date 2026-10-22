@@ -1,0 +1,1472 @@
+{
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "service": {
+    "id": "pi-multiprovider",
+    "serviceVersion": 1
+  },
+  "hashes": {
+    "src/announcement.ts": "fc0bf72467dba7b524146ade4a66c420d546a01e7867b8095c8b7d8b1804ae18",
+    "src/register.ts": "946932988b5884081d0f173b464e1b2d42740849803463bdb8fd9841fcc87449",
+    "src/service.ts": "2eafa61662b3ee75a96a7b07a6ccad62ca600bbb2139a407b81cd9983564a026",
+    "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+    "tests/announcement.spec.ts": "eb7d75aba8b3fd10edd175cb8a9262bd3ed280f1a71a476c44eb356ad55cde1a",
+    "tests/extension-resume.spec.ts": "fb768939799048972fbb4d805fb110a400435c3ce000325cea8df54ced18caac"
+  },
+  "cases": {
+    "registration": [
+      {
+        "name": "register.ts announces each integration at registration and on every session start",
+        "registrations": [
+          {
+            "id": "alpha",
+            "label": "Alpha"
+          },
+          {
+            "id": "beta",
+            "label": "Beta",
+            "managementHint": "Manage beta",
+            "selectionBias": "none"
+          }
+        ],
+        "sessionStarts": 2,
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "alpha",
+              "label": "Alpha"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "beta",
+              "label": "Beta",
+              "managementHint": "Manage beta",
+              "selectionBias": "none"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "alpha",
+              "label": "Alpha"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "beta",
+              "label": "Beta",
+              "managementHint": "Manage beta",
+              "selectionBias": "none"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "alpha",
+              "label": "Alpha"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "beta",
+              "label": "Beta",
+              "managementHint": "Manage beta",
+              "selectionBias": "none"
+            }
+          }
+        ],
+        "inventory": [
+          {
+            "id": "alpha",
+            "label": "Alpha"
+          },
+          {
+            "id": "beta",
+            "label": "Beta",
+            "managementHint": "Manage beta",
+            "selectionBias": "none"
+          }
+        ]
+      },
+      {
+        "name": "a repeated id is announced again and keeps its first inventory position",
+        "registrations": [
+          {
+            "id": "alpha",
+            "label": "One"
+          },
+          {
+            "id": "beta",
+            "label": "Beta"
+          },
+          {
+            "id": "alpha",
+            "label": "Two"
+          }
+        ],
+        "sessionStarts": 1,
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "alpha",
+              "label": "One"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "beta",
+              "label": "Beta"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "alpha",
+              "label": "Two"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "alpha",
+              "label": "One"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "beta",
+              "label": "Beta"
+            }
+          },
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "alpha",
+              "label": "Two"
+            }
+          }
+        ],
+        "inventory": [
+          {
+            "id": "alpha",
+            "label": "Two"
+          },
+          {
+            "id": "beta",
+            "label": "Beta"
+          }
+        ]
+      },
+      {
+        "name": "no integrations announce nothing",
+        "registrations": [],
+        "sessionStarts": 1,
+        "publications": [],
+        "inventory": []
+      }
+    ],
+    "service": [
+      {
+        "name": "spec: explicit pin resolves its stored credential",
+        "affinity": false,
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "input": {
+              "providerId": "example"
+            }
+          },
+          {
+            "op": "pin",
+            "account": "a"
+          },
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "input": {
+              "providerId": "example"
+            }
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            }
+          }
+        ],
+        "results": [
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "result": null,
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              }
+            ]
+          },
+          {
+            "op": "pin",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "result": {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth"
+            },
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              }
+            ]
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": {
+              "accessToken": "token-a",
+              "label": "Work",
+              "source": "Work · Test OAuth"
+            },
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              },
+              {
+                "integration": "resolveAuth",
+                "account": "a",
+                "aborted": false,
+                "model": "model",
+                "context": {
+                  "messages": []
+                },
+                "requestOptions": {}
+              }
+            ]
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          }
+        ]
+      },
+      {
+        "name": "spec: last scheduler selection is reported while affinity is on",
+        "selectionBias": "none",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "acquire",
+            "key": "session-1"
+          },
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "input": {
+              "providerId": "example"
+            }
+          }
+        ],
+        "results": [
+          {
+            "op": "acquire",
+            "result": "a",
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "result": {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth"
+            },
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              }
+            ]
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          }
+        ]
+      },
+      {
+        "name": "spec: upstream and unpinned sessions never resolve credentials",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            }
+          },
+          {
+            "op": "pin",
+            "account": "pi:default"
+          },
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "input": {
+              "providerId": "example"
+            }
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            }
+          }
+        ],
+        "results": [
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": null,
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              }
+            ]
+          },
+          {
+            "op": "pin",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "result": {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom"
+            },
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              }
+            ]
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": null,
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              }
+            ]
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          }
+        ]
+      },
+      {
+        "name": "spec: bearer headers and resolver failures",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "headers": {
+                    "Authorization": "Bearer header-token"
+                  }
+                }
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "pin",
+            "account": "a"
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            }
+          },
+          {
+            "op": "pin",
+            "account": "b"
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            }
+          },
+          {
+            "op": "setResolve",
+            "accountId": "a",
+            "entry": {
+              "value": {
+                "auth": {}
+              }
+            }
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            }
+          }
+        ],
+        "results": [
+          {
+            "op": "pin",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": {
+              "accessToken": "header-token",
+              "label": "Work"
+            },
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              },
+              {
+                "integration": "resolveAuth",
+                "account": "a",
+                "aborted": false,
+                "model": "model",
+                "context": {
+                  "messages": []
+                },
+                "requestOptions": {}
+              }
+            ]
+          },
+          {
+            "op": "pin",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": null,
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              },
+              {
+                "integration": "resolveAuth",
+                "account": "b",
+                "aborted": false,
+                "model": "model",
+                "context": {
+                  "messages": []
+                },
+                "requestOptions": {}
+              }
+            ]
+          },
+          {
+            "op": "setResolve",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": null,
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              },
+              {
+                "integration": "resolveAuth",
+                "account": "b",
+                "aborted": false,
+                "model": "model",
+                "context": {
+                  "messages": []
+                },
+                "requestOptions": {}
+              }
+            ]
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          }
+        ]
+      },
+      {
+        "name": "spec: listeners are per provider and unsubscribe",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "subscribe",
+            "handle": "h1",
+            "listener": "L1"
+          },
+          {
+            "op": "notify",
+            "account": {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth"
+            }
+          },
+          {
+            "op": "notify"
+          },
+          {
+            "op": "notify",
+            "account": {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth"
+            },
+            "provider": "other"
+          },
+          {
+            "op": "unsubscribe",
+            "handle": "h1"
+          },
+          {
+            "op": "notify",
+            "account": {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth"
+            }
+          }
+        ],
+        "results": [
+          {
+            "op": "subscribe",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "notify",
+            "result": null,
+            "trace": [
+              {
+                "listener": "L1",
+                "providerId": "example",
+                "account": {
+                  "id": "a",
+                  "label": "Work",
+                  "authKind": "oauth"
+                },
+                "ctxSessionId": "session-1"
+              }
+            ]
+          },
+          {
+            "op": "notify",
+            "result": null,
+            "trace": [
+              {
+                "listener": "L1",
+                "providerId": "example",
+                "account": null,
+                "ctxSessionId": "session-1"
+              }
+            ]
+          },
+          {
+            "op": "notify",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "unsubscribe",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "notify",
+            "result": null,
+            "trace": []
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          },
+          {
+            "topic": "activeAccountChanged",
+            "value": {
+              "providerId": "example",
+              "account": {
+                "id": "a",
+                "label": "Work",
+                "authKind": "oauth"
+              }
+            }
+          },
+          {
+            "topic": "activeAccountChanged",
+            "value": {
+              "providerId": "example",
+              "account": null
+            }
+          },
+          {
+            "topic": "activeAccountChanged",
+            "value": {
+              "providerId": "other",
+              "account": {
+                "id": "a",
+                "label": "Work",
+                "authKind": "oauth"
+              }
+            }
+          },
+          {
+            "topic": "activeAccountChanged",
+            "value": {
+              "providerId": "example",
+              "account": {
+                "id": "a",
+                "label": "Work",
+                "authKind": "oauth"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "spec: missing integration returns nothing",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "input": {
+              "providerId": "missing"
+            }
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "missing"
+            }
+          },
+          {
+            "op": "call",
+            "method": "accounts",
+            "input": {
+              "providerId": "missing"
+            }
+          }
+        ],
+        "results": [
+          {
+            "op": "call",
+            "method": "getActiveAccount",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "accounts",
+            "result": null,
+            "trace": []
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          }
+        ]
+      },
+      {
+        "name": "a throwing listener does not stop its siblings",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "subscribe",
+            "handle": "h1",
+            "listener": "L1"
+          },
+          {
+            "op": "subscribe",
+            "handle": "h2",
+            "listener": "L2"
+          },
+          {
+            "op": "notify",
+            "account": {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth"
+            }
+          },
+          {
+            "op": "notify"
+          }
+        ],
+        "results": [
+          {
+            "op": "subscribe",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "subscribe",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "notify",
+            "result": null,
+            "trace": [
+              {
+                "listener": "L1",
+                "providerId": "example",
+                "account": {
+                  "id": "a",
+                  "label": "Work",
+                  "authKind": "oauth"
+                },
+                "ctxSessionId": "session-1"
+              },
+              {
+                "listener": "L2",
+                "providerId": "example",
+                "account": {
+                  "id": "a",
+                  "label": "Work",
+                  "authKind": "oauth"
+                },
+                "ctxSessionId": "session-1"
+              }
+            ]
+          },
+          {
+            "op": "notify",
+            "result": null,
+            "trace": [
+              {
+                "listener": "L1",
+                "providerId": "example",
+                "account": null,
+                "ctxSessionId": "session-1"
+              },
+              {
+                "listener": "L2",
+                "providerId": "example",
+                "account": null,
+                "ctxSessionId": "session-1"
+              }
+            ]
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          },
+          {
+            "topic": "activeAccountChanged",
+            "value": {
+              "providerId": "example",
+              "account": {
+                "id": "a",
+                "label": "Work",
+                "authKind": "oauth"
+              }
+            }
+          },
+          {
+            "topic": "activeAccountChanged",
+            "value": {
+              "providerId": "example",
+              "account": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "signal state crosses the service call into the integration",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "pin",
+            "account": "a"
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            },
+            "signal": "live"
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            },
+            "signal": "aborted"
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "input": {
+              "providerId": "example"
+            }
+          }
+        ],
+        "results": [
+          {
+            "op": "pin",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": {
+              "accessToken": "token-a",
+              "label": "Work",
+              "source": "Work · Test OAuth"
+            },
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              },
+              {
+                "integration": "resolveAuth",
+                "account": "a",
+                "aborted": false,
+                "model": "model",
+                "context": {
+                  "messages": []
+                },
+                "requestOptions": {}
+              }
+            ]
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": {
+              "accessToken": "token-a",
+              "label": "Work",
+              "source": "Work · Test OAuth"
+            },
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              },
+              {
+                "integration": "resolveAuth",
+                "account": "a",
+                "aborted": true,
+                "model": "model",
+                "context": {
+                  "messages": []
+                },
+                "requestOptions": {}
+              }
+            ]
+          },
+          {
+            "op": "call",
+            "method": "resolveActiveAccountAuth",
+            "result": {
+              "accessToken": "token-a",
+              "label": "Work",
+              "source": "Work · Test OAuth"
+            },
+            "trace": [
+              {
+                "affinityKeyFor": "example"
+              },
+              {
+                "integration": "resolveAuth",
+                "account": "a",
+                "aborted": false,
+                "model": "model",
+                "context": {
+                  "messages": []
+                },
+                "requestOptions": {}
+              }
+            ]
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          }
+        ]
+      },
+      {
+        "name": "account inventory is whitelisted and ordered like the integration",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "call",
+            "method": "accounts",
+            "input": {
+              "providerId": "example"
+            }
+          },
+          {
+            "op": "call",
+            "method": "providers",
+            "input": {}
+          }
+        ],
+        "results": [
+          {
+            "op": "call",
+            "method": "accounts",
+            "result": {
+              "providerId": "example",
+              "accounts": [
+                {
+                  "id": "pi:default",
+                  "label": "Pi default",
+                  "authKind": "custom"
+                },
+                {
+                  "id": "a",
+                  "label": "Work",
+                  "authKind": "oauth"
+                },
+                {
+                  "id": "b",
+                  "label": "Personal",
+                  "authKind": "oauth"
+                }
+              ]
+            },
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "providers",
+            "result": {
+              "providers": [
+                {
+                  "id": "example",
+                  "label": "Example"
+                }
+              ]
+            },
+            "trace": []
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          }
+        ]
+      },
+      {
+        "name": "account inventory failures propagate to the caller",
+        "integration": {
+          "accounts": [
+            {
+              "id": "pi:default",
+              "label": "Pi default",
+              "authKind": "custom",
+              "credentialRef": "pi:default"
+            },
+            {
+              "id": "a",
+              "label": "Work",
+              "authKind": "oauth",
+              "credentialRef": "ref-a"
+            },
+            {
+              "id": "b",
+              "label": "Personal",
+              "authKind": "oauth",
+              "credentialRef": "ref-b"
+            }
+          ],
+          "resolve": {
+            "a": {
+              "value": {
+                "auth": {
+                  "apiKey": "token-a"
+                },
+                "source": "Work · Test OAuth"
+              }
+            },
+            "b": {
+              "throw": "resolve failed"
+            }
+          }
+        },
+        "registrations": [
+          {
+            "id": "example",
+            "label": "Example"
+          }
+        ],
+        "steps": [
+          {
+            "op": "setAccountsError",
+            "message": "accounts down"
+          },
+          {
+            "op": "call",
+            "method": "accounts",
+            "input": {
+              "providerId": "example"
+            }
+          }
+        ],
+        "results": [
+          {
+            "op": "setAccountsError",
+            "result": null,
+            "trace": []
+          },
+          {
+            "op": "call",
+            "method": "accounts",
+            "error": "accounts down",
+            "trace": []
+          }
+        ],
+        "publications": [
+          {
+            "topic": "providerRegistered",
+            "value": {
+              "id": "example",
+              "label": "Example"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
