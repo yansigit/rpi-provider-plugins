@@ -2401,9 +2401,9 @@ dependencies = [
 
 [[package]]
 name = "rpi-agent"
-version = "0.6.3"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a9b0baed23372341379551b7b63d68162e1d345507945945166538dde8ae73d"
+checksum = "ced96ae1417c9c4f0248dc3426aaf8be03ae2cf15ea0df4dc729b3a700eb82e5"
 dependencies = [
  "async-trait",
  "futures",
@@ -2420,9 +2420,9 @@ dependencies = [
 
 [[package]]
 name = "rpi-ai"
-version = "0.6.3"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "914f23e600119f8468f7435cca167542ea6b79c762b4ec572fec8e5b68bb5011"
+checksum = "48964c31091b90c718a19515ee6a11767fd97e8473b08b2b10626b28c425c67d"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -2469,9 +2469,9 @@ dependencies = [
 
 [[package]]
 name = "rpi-extensions"
-version = "0.6.3"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3de92b749bda3b51e9aaffa930b85c978419c388047ada7dd5f45987ec65204f"
+checksum = "ad0ba93984dc7e78e9e49561541e6bce56bf0cd998110b835521aa4914fea43a"
 dependencies = [
  "async-trait",
  "dirs",
@@ -2479,7 +2479,7 @@ dependencies = [
  "libloading",
  "rpi-agent",
  "rpi-ai",
- "rpi-plugin-sdk 0.6.3",
+ "rpi-plugin-sdk 0.8.0",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -2600,9 +2600,9 @@ dependencies = [
 
 [[package]]
 name = "rpi-plugin-sdk"
-version = "0.6.3"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67468ea2041972b86f58a1819320076a0bd5701aa64b4bf7b98f2ede6dbe49aa"
+checksum = "d3c1fe1606b32c28f419e3693068628ae06328f3585ad7abd1c3980095f38c62"
 dependencies = [
  "reqwest 0.12.28",
  "rpi-ai",
@@ -2619,7 +2619,7 @@ dependencies = [
  "reqwest 0.12.28",
  "rpi-ai",
  "rpi-extensions",
- "rpi-plugin-sdk 0.6.3",
+ "rpi-plugin-sdk 0.8.0",
  "serde",
  "serde_json",
  "tempfile",
@@ -2655,9 +2655,9 @@ dependencies = [
 
 [[package]]
 name = "rpi-telemetry"
-version = "0.6.3"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95206c42356341d136d93058ec6f154379582afca3e0efe6e4f3210b7af69c3a"
+checksum = "92cc9a785669176f601b28521689710ce83d355cbaa19992764080c1777029fa"
 dependencies = [
  "async-trait",
  "serde",
