@@ -110,6 +110,17 @@ jobs:
         run: cargo test --locked -p rpi-package-install
       - name: Build extension libraries and installer
         run: cargo build --release --workspace --locked
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build the Cursor worker runtime and stage its sidecar assets
+        working-directory: packages/rpi-cursor-sdk
+        run: |
+          cd worker
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+          cd ..
+          node scripts/stage-package-runtime.mjs
       - name: Assemble full extension bundle and ACP bridge
         run: |
           cargo run --release --locked -p rpi-package-install -- pack --all

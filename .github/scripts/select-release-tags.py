@@ -12,7 +12,11 @@ def output(*command):
 def select(metadata, refs, revision):
     tags = []
     for package in metadata["packages"]:
-        if package["id"] not in metadata["workspace_members"] or package["publish"] == []:
+        if package["id"] not in metadata["workspace_members"]:
+            continue
+        # GitHub prebuilt-only extensions stay off crates.io but still need assets.
+        prebuilt = ((package.get("metadata") or {}).get("rpi") or {}).get("prebuilt", False)
+        if package["publish"] == [] and not prebuilt:
             continue
         if not any("cdylib" in target["crate_types"] for target in package["targets"]):
             continue

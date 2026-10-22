@@ -9,6 +9,11 @@ repository.workspace = true
 description = "Native Cursor integration with the retained pinned Node adapter"
 publish = false
 
+# Publish GitHub prebuilt releases even though the crate itself is not on crates.io.
+[package.metadata.rpi]
+prebuilt = true
+assets = ".package/runtime-assets.json"
+
 [lib]
 crate-type = ["rlib", "cdylib"]
 

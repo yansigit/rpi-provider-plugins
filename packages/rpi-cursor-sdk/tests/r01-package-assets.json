@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "package": "rpi-cursor-sdk",
+  "source": ".package",
+  "assets": [
+    {
+      "path": "runtime/LICENSE",
+      "sha256": "a69cb493aff5f26dce3939d4b5716f66d3e62bbac7a287de69fdfe177804a0c4"
+    },
+    {
+      "path": "runtime/dist/cursor-sensitive-text.js",
+      "sha256": "82f3e501c19b70469a1c10aa5a837ca0cfe7a275057eb10c6771c3d20fdba4f4"
+    },
+    {
+      "path": "runtime/dist/rpi/paths.js",
+      "sha256": "0d0e68adcbd72298b67746f0238176573f76c98f701f6d26ad1dab2c9570f832"
+    },
+    {
+      "path": "runtime/dist/rpi/peer.js",
+      "sha256": "2b58ee12772576e7ee5acea2e3a1d08916d11803a5cfa2ab9d49e27f0e7f2472"
+    },
+    {
+      "path": "runtime/dist/rpi/runtime.js",
+      "sha256": "ae71e6cc462192fcd676edb2f3a418cb27c5374476e62a6f0ea76ef96142920f"
+    },
+    {
+      "path": "runtime/dist/rpi/transport-thread.js",
+      "sha256": "d73e9d87b8f8d5d3c9d6cee1b5a70e0f8199073a46da2f3bb0f565232fb866c9"
+    },
+    {
+      "path": "runtime/main.mjs",
+      "sha256": "f4f4dcc03a83582cbfe7e861ba7dcd50c50fdb17163bffd3f2e0c0e6ba8ad8ad"
+    },
+    {
+      "path": "runtime/package-lock.json",
+      "sha256": "185ce5a643e81a35e89a1f03cb3501e9c316fcee5d09992e9eab056abb5dec37"
+    },
+    {
+      "path": "runtime/package.json",
+      "sha256": "4968918e0988fc2ba2de8c6ee9df9f331b36a864232ed398443efa391f01f970"
+    },
+    {
+      "path": "runtime/shared/cursor-cloud-lifecycle-constants.d.mts",
+      "sha256": "d31db310dfceafaf0e2f4890ad5ad69b6576f58624ffadf2d12f1423e16e12eb"
+    },
+    {
+      "path": "runtime/shared/cursor-cloud-lifecycle-constants.mjs",
+      "sha256": "b232945db6ac46efca48b1c197012316421d06d83287b4d2ffd5d3e8012382fa"
+    },
+    {
+      "path": "runtime/shared/cursor-model-selection-identities.d.mts",
+      "sha256": "de57fb240d4c3550759269af8ced7ffaf4843fefdd62e7e2ef217ad2d78be239"
+    },
+    {
+      "path": "runtime/shared/cursor-model-selection-identities.mjs",
+      "sha256": "6ad60b6254d4072ae4d2cb06a447052092012c10dae0995928cf291897ca97fe"
+    },
+    {
+      "path": "runtime/shared/cursor-sdk-event-debug-env.d.mts",
+      "sha256": "ac6e62561e1b41edf61269cf7d333f4377c272a8715bc47a4f1d6ba519dd408e"
+    },
+    {
+      "path": "runtime/shared/cursor-sdk-event-debug-env.mjs",
+      "sha256": "62ab6f47afe382d9aca4ba5ee6e97a527141ae87642726800d93a1cba904a53f"
+    },
+    {
+      "path": "runtime/shared/cursor-sdk-output-filter.d.mts",
+      "sha256": "454789761bb30ffe377c1ff84ae904bde06363fd075bbe70eea3859aa17cbb01"
+    },
+    {
+      "path": "runtime/shared/cursor-sdk-output-filter.mjs",
+      "sha256": "6912f672a6c225a22fbf172f04cdf80802593fb42d36747e237d43ab5d41be6a"
+    },
+    {
+      "path": "runtime/shared/cursor-sensitive-text.d.mts",
+      "sha256": "19e58e8f1a42a220255697937a7c14581d85c81fc0d0a674c9601d57fa8a35c4"
+    },
+    {
+      "path": "runtime/shared/cursor-sensitive-text.mjs",
+      "sha256": "62f800ba068770f341115f0a8f72a82d1baf802f2a2df554626748201a64f8ef"
+    },
+    {
+      "path": "runtime/shared/cursor-setting-sources.d.mts",
+      "sha256": "106769a3fbf45b6e9542511ec562089a4399726b7561884a527021be38202d28"
+    },
+    {
+      "path": "runtime/shared/cursor-setting-sources.mjs",
+      "sha256": "c2a6a0d78c2308c51176f90d85fa46bd86a8f5719992e99c5a761d04b8f024fe"
+    }
+  ]
+}
