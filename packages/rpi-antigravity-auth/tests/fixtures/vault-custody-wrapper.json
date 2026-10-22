@@ -1,0 +1,232 @@
+{
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "runtime": "v24.22.0",
+  "sourceHashes": {
+    "packages/core/src/common-auth-embedded/claustrum/custody.js": "5d2ead857d6e6384980dace94d308f1f47afe831c82e2b644ab434ffb0bcf151",
+    "packages/core/node_modules/@cortexkit/claustrum-client/dist/index.js": "e3fe275b63914e87913357588f5d4dad321c0163fb50fe263e5877d00175b2e2"
+  },
+  "cases": [
+    {
+      "name": "fresh-asserted-with-project",
+      "served": {
+        "credentialId": "id",
+        "accountId": "account",
+        "material": "fixture-access",
+        "recordVersion": 3,
+        "expiresAtMs": 901000,
+        "projectId": "project"
+      },
+      "kept": false,
+      "changedToken": false,
+      "metadata": {
+        "credentialId": "id",
+        "credentialType": "oauth",
+        "accountIdentity": "account",
+        "accountIdentitySource": "asserted",
+        "expectedAccountIdentity": "account",
+        "assertedCredentialId": "id",
+        "assertedAccountIdentity": "account",
+        "projectId": "project",
+        "recordVersion": 3,
+        "expiresAtMs": 901000
+      },
+      "keys": [
+        "credentialId",
+        "credentialType",
+        "accountIdentity",
+        "accountIdentitySource",
+        "expectedAccountIdentity",
+        "assertedCredentialId",
+        "assertedAccountIdentity",
+        "projectId",
+        "recordVersion",
+        "expiresAtMs"
+      ],
+      "accessToken": "fixture-access",
+      "spread": {
+        "credentialId": "id",
+        "credentialType": "oauth",
+        "accountIdentity": "account",
+        "accountIdentitySource": "asserted",
+        "expectedAccountIdentity": "account",
+        "assertedCredentialId": "id",
+        "assertedAccountIdentity": "account",
+        "projectId": "project",
+        "recordVersion": 3,
+        "expiresAtMs": 901000
+      },
+      "tokenInJson": false,
+      "fromKeptReceipt": false,
+      "provenanceErrorKind": "no-receipt",
+      "reportToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "reportCalls": 1
+    },
+    {
+      "name": "fresh-asserted-without-project",
+      "served": {
+        "credentialId": "id",
+        "accountId": "account",
+        "material": "fixture-access",
+        "recordVersion": 3,
+        "expiresAtMs": 901000
+      },
+      "kept": false,
+      "changedToken": false,
+      "metadata": {
+        "credentialId": "id",
+        "credentialType": "oauth",
+        "accountIdentity": "account",
+        "accountIdentitySource": "asserted",
+        "expectedAccountIdentity": "account",
+        "assertedCredentialId": "id",
+        "assertedAccountIdentity": "account",
+        "recordVersion": 3,
+        "expiresAtMs": 901000
+      },
+      "keys": [
+        "credentialId",
+        "credentialType",
+        "accountIdentity",
+        "accountIdentitySource",
+        "expectedAccountIdentity",
+        "assertedCredentialId",
+        "assertedAccountIdentity",
+        "recordVersion",
+        "expiresAtMs"
+      ],
+      "accessToken": "fixture-access",
+      "spread": {
+        "credentialId": "id",
+        "credentialType": "oauth",
+        "accountIdentity": "account",
+        "accountIdentitySource": "asserted",
+        "expectedAccountIdentity": "account",
+        "assertedCredentialId": "id",
+        "assertedAccountIdentity": "account",
+        "recordVersion": 3,
+        "expiresAtMs": 901000
+      },
+      "tokenInJson": false,
+      "fromKeptReceipt": false,
+      "provenanceErrorKind": "no-receipt",
+      "reportToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "reportCalls": 1
+    },
+    {
+      "name": "kept-receipt",
+      "served": {
+        "credentialId": "id",
+        "accountId": "account",
+        "material": "fixture-access",
+        "recordVersion": 3,
+        "expiresAtMs": 901000,
+        "projectId": "project"
+      },
+      "kept": true,
+      "changedToken": false,
+      "metadata": {
+        "credentialId": "id",
+        "credentialType": "oauth",
+        "accountIdentity": "account",
+        "accountIdentitySource": "asserted",
+        "expectedAccountIdentity": "account",
+        "assertedCredentialId": "id",
+        "assertedAccountIdentity": "account",
+        "projectId": "project",
+        "recordVersion": 3,
+        "expiresAtMs": 901000,
+        "fromKeptReceipt": true
+      },
+      "keys": [
+        "credentialId",
+        "credentialType",
+        "accountIdentity",
+        "accountIdentitySource",
+        "expectedAccountIdentity",
+        "assertedCredentialId",
+        "assertedAccountIdentity",
+        "projectId",
+        "recordVersion",
+        "expiresAtMs",
+        "fromKeptReceipt"
+      ],
+      "accessToken": "fixture-access",
+      "spread": {
+        "credentialId": "id",
+        "credentialType": "oauth",
+        "accountIdentity": "account",
+        "accountIdentitySource": "asserted",
+        "expectedAccountIdentity": "account",
+        "assertedCredentialId": "id",
+        "assertedAccountIdentity": "account",
+        "projectId": "project",
+        "recordVersion": 3,
+        "expiresAtMs": 901000,
+        "fromKeptReceipt": true
+      },
+      "tokenInJson": false,
+      "fromKeptReceipt": true,
+      "provenanceErrorKind": "no-receipt",
+      "reportToken": null,
+      "reportCalls": 0
+    },
+    {
+      "name": "kept-receipt-token-rotated",
+      "served": {
+        "credentialId": "id",
+        "accountId": "account",
+        "material": "fixture-access",
+        "recordVersion": 3,
+        "expiresAtMs": 901000,
+        "projectId": "project"
+      },
+      "kept": true,
+      "changedToken": true,
+      "metadata": {
+        "credentialId": "id",
+        "credentialType": "oauth",
+        "accountIdentity": "account",
+        "accountIdentitySource": "asserted",
+        "expectedAccountIdentity": "account",
+        "assertedCredentialId": "id",
+        "assertedAccountIdentity": "account",
+        "projectId": "project",
+        "recordVersion": 3,
+        "expiresAtMs": 901000,
+        "fromKeptReceipt": true
+      },
+      "keys": [
+        "credentialId",
+        "credentialType",
+        "accountIdentity",
+        "accountIdentitySource",
+        "expectedAccountIdentity",
+        "assertedCredentialId",
+        "assertedAccountIdentity",
+        "projectId",
+        "recordVersion",
+        "expiresAtMs",
+        "fromKeptReceipt"
+      ],
+      "accessToken": "fixture-access",
+      "spread": {
+        "credentialId": "id",
+        "credentialType": "oauth",
+        "accountIdentity": "account",
+        "accountIdentitySource": "asserted",
+        "expectedAccountIdentity": "account",
+        "assertedCredentialId": "id",
+        "assertedAccountIdentity": "account",
+        "projectId": "project",
+        "recordVersion": 3,
+        "expiresAtMs": 901000,
+        "fromKeptReceipt": true
+      },
+      "tokenInJson": false,
+      "fromKeptReceipt": true,
+      "provenanceErrorKind": "no-receipt",
+      "reportToken": null,
+      "reportCalls": 0
+    }
+  ]
+}

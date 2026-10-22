@@ -7,6 +7,7 @@ use std::sync::OnceLock;
 use url::Url;
 
 pub mod body;
+pub(crate) mod diagnostics;
 pub mod network;
 pub(crate) mod trust;
 

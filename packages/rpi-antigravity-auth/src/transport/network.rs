@@ -22,7 +22,11 @@ use tokio::{
     time::{sleep_until, Instant},
 };
 use tokio_rustls::{
-    rustls::{self, pki_types::ServerName},
+    rustls::{
+        self,
+        client::danger::ServerCertVerifier,
+        pki_types::ServerName,
+    },
     TlsConnector,
 };
 use tokio_util::sync::CancellationToken;
@@ -77,6 +81,7 @@ impl Options {
 #[derive(Clone)]
 pub struct Client {
     tls: Arc<rustls::ClientConfig>,
+    verifier: Option<Arc<dyn ServerCertVerifier>>,
 }
 impl Default for Client {
     fn default() -> Self {
@@ -86,21 +91,45 @@ impl Default for Client {
                 .add(certificate.clone())
                 .expect("validated certificate");
         }
-        Self::with_tls(
-            rustls::ClientConfig::builder_with_provider(Arc::new(
-                rustls::crypto::ring::default_provider(),
-            ))
+        let roots = Arc::new(roots);
+        let provider = Arc::new(rustls::crypto::ring::default_provider());
+        let verifier = super::diagnostics::verifier(roots.clone(), provider.clone());
+        let mut config = rustls::ClientConfig::builder_with_provider(provider)
             .with_safe_default_protocol_versions()
             .expect("ring TLS versions")
             .with_root_certificates(roots)
-            .with_no_client_auth(),
-        )
+            .with_no_client_auth();
+        config
+            .dangerous()
+            .set_certificate_verifier(verifier.clone());
+        Self::configured(config, Some(verifier))
     }
 }
 impl Client {
     pub fn with_tls(config: rustls::ClientConfig) -> Self {
+        Self::configured(config, None)
+    }
+    fn configured(
+        config: rustls::ClientConfig,
+        verifier: Option<Arc<dyn ServerCertVerifier>>,
+    ) -> Self {
         Self {
             tls: Arc::new(config),
+            verifier,
+        }
+    }
+    /// A per-connection connector that records the peer leaf for diagnostics.
+    fn connector(&self) -> (TlsConnector, Option<Arc<super::diagnostics::CapturingVerifier>>) {
+        match &self.verifier {
+            Some(delegate) => {
+                let capture = super::diagnostics::CapturingVerifier::new(delegate.clone());
+                let mut config = (*self.tls).clone();
+                config
+                    .dangerous()
+                    .set_certificate_verifier(capture.clone());
+                (TlsConnector::from(Arc::new(config)), Some(capture))
+            }
+            None => (TlsConnector::from(self.tls.clone()), None),
         }
     }
 
@@ -190,7 +219,7 @@ impl Client {
         let port = target.port().unwrap_or(443);
         let server_name =
             ServerName::try_from(host.to_owned()).map_err(|error| error.to_string())?;
-        let connector = TlsConnector::from(self.tls.clone());
+        let (connector, capture) = self.connector();
         let timeout = options.timeout_ms;
         if let Some(proxy) = https_proxy(target, &options.environment) {
             let mut socket = options
@@ -227,7 +256,7 @@ impl Client {
                 return Err(format!("Proxy CONNECT failed: {first}"));
             }
             options.stage(async {
-                connector.connect(server_name, Prefixed { socket, prefix: io::Cursor::new(prefix) }).await.map_err(io_error)
+                connector.connect(server_name, Prefixed { socket, prefix: io::Cursor::new(prefix) }).await.map_err(|error| handshake_error(error, capture.as_deref()))
             }, &format!("Antigravity request timed out during proxy TLS handshake after {timeout}ms"),
             &format!("agy transport proxy TLS handshake timeout after {timeout}ms")).await
         } else {
@@ -244,7 +273,7 @@ impl Client {
                                 },
                             )
                             .await
-                            .map_err(io_error)
+                            .map_err(|error| handshake_error(error, capture.as_deref()))
                     },
                     &format!("Antigravity request timed out connecting after {timeout}ms"),
                     &format!("agy transport TLS connect timeout after {timeout}ms"),
@@ -255,6 +284,20 @@ impl Client {
 }
 
 fn io_error(error: io::Error) -> String {
+    error.to_string()
+}
+
+/// Node's OpenSSL chain diagnostic when the pinned verifier rejected the peer.
+fn handshake_error(
+    error: io::Error,
+    capture: Option<&super::diagnostics::CapturingVerifier>,
+) -> String {
+    if let Some(capture) = capture {
+        let certificate = capture.end_entity();
+        if let Some(message) = super::diagnostics::message(&error, certificate.as_ref()) {
+            return message;
+        }
+    }
     error.to_string()
 }
 

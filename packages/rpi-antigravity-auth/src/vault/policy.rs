@@ -237,10 +237,14 @@ pub fn validate_receipt(
             "Claustrum served credential identity changed",
         ));
     }
-    let mut metadata = json!({"credentialId":identity["credentialId"],"credentialType":identity["credentialType"],"accountIdentity":served["accountId"],"accountIdentitySource":"asserted","expectedAccountIdentity":identity["accountIdentity"],"assertedCredentialId":served["credentialId"],"assertedAccountIdentity":served["accountId"],"recordVersion":served["recordVersion"],"expiresAtMs":served["expiresAtMs"]});
+    // Field order is observable through the enumerable receipt wrapper; keep the
+    // original construction order (projectId before recordVersion) intact.
+    let mut metadata = json!({"credentialId":identity["credentialId"],"credentialType":identity["credentialType"],"accountIdentity":served["accountId"],"accountIdentitySource":"asserted","expectedAccountIdentity":identity["accountIdentity"],"assertedCredentialId":served["credentialId"],"assertedAccountIdentity":served["accountId"]});
     if let Some(project) = served.get("projectId") {
         metadata["projectId"] = project.clone();
     }
+    metadata["recordVersion"] = served["recordVersion"].clone();
+    metadata["expiresAtMs"] = served["expiresAtMs"].clone();
     Ok(Authorized {
         metadata,
         access_token,
