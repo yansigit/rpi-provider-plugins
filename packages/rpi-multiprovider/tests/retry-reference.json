@@ -1,0 +1,2566 @@
+{
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "hashes": {
+    "extensions/multiprovider.ts": "086a0d9c4fbc8431e81026e5d689747d1c31dfcdf89c9d180c0bbd7e37c0a267",
+    "extensions/pool-manager.ts": "67873d40ae349d13d0293c1b92fabaeb9f3b531a7242a0424c721ff3e323cbe8",
+    "extensions/settings-ui.ts": "bbbf4fcd97d6c9e0e62180b15ea20adbd15129a63f243f4431ad192ae4a0f782",
+    "src/announcement.ts": "fc0bf72467dba7b524146ade4a66c420d546a01e7867b8095c8b7d8b1804ae18",
+    "src/auth-store.ts": "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6",
+    "src/errors.ts": "1e4f189fc4aac4488c84912b29bfc7e78629600ead41ce2924c8d8c3a3bac4b7",
+    "src/index.ts": "90b3b79432e4d556f75b7b8e25fc3fb512cb56293f5263e6b2090465f5cfaa66",
+    "src/lift.ts": "887b91aab533565504449b6094c1a2b076832b0fdc73bfc352e2c46a53ac3695",
+    "src/managed.ts": "5a139118f805ed4825259df761dd5e2fbec515da19d3bc10b9719c9bf30bdeef",
+    "src/multilogin.ts": "f6ce501e18b0fb8550fcfbbe77ace3d06cde9bd5b2ad25b29bc8f2e079c590dc",
+    "src/register.ts": "946932988b5884081d0f173b464e1b2d42740849803463bdb8fd9841fcc87449",
+    "src/service.ts": "2eafa61662b3ee75a96a7b07a6ccad62ca600bbb2139a407b81cd9983564a026",
+    "src/session-pins.ts": "45b1ff1fbfcc6853a717b917aaede404f32fe96a64208c75283a53e954bdc005",
+    "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+    "src/virtual.ts": "6c38efe1d8bcd180e3287b182df592914a1af0a7091f872cd6dc32042575f808",
+    "tests/extension-failover.spec.ts": "66099b172f13b9e8bc8e81ad6c486ab4e6a8922289a8a3519139a92d26aea680",
+    "@earendil-works/pi-ai/dist/utils/retry.js": "cab8af3e38101abc2a7c1c51caa871481c805b3cbe83b9d7267e24857736fc60"
+  },
+  "classifier": [
+    {
+      "name": "non-retryable: GoUsageLimitError: usage limit",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "GoUsageLimitError: usage limit"
+      },
+      "result": false
+    },
+    {
+      "name": "non-retryable: FreeUsageLimitError",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "FreeUsageLimitError"
+      },
+      "result": false
+    },
+    {
+      "name": "non-retryable: Monthly usage limit reached",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "Monthly usage limit reached"
+      },
+      "result": false
+    },
+    {
+      "name": "non-retryable: please add available balance to continue",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "please add available balance to continue"
+      },
+      "result": false
+    },
+    {
+      "name": "non-retryable: insufficient_quota",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "insufficient_quota"
+      },
+      "result": false
+    },
+    {
+      "name": "non-retryable: you are out of budget",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "you are out of budget"
+      },
+      "result": false
+    },
+    {
+      "name": "non-retryable: quota exceeded",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "quota exceeded"
+      },
+      "result": false
+    },
+    {
+      "name": "non-retryable: billing hard limit reached",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "billing hard limit reached"
+      },
+      "result": false
+    },
+    {
+      "name": "non-retryable: subscription_sharing_usage_limit_exceeded",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "subscription_sharing_usage_limit_exceeded"
+      },
+      "result": false
+    },
+    {
+      "name": "retryable: overloaded",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "overloaded"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: server_busy",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "server_busy"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: the servers are currently busy",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "the servers are currently busy"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: currently experiencing high demand",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "currently experiencing high demand"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: model is at capacity",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "model is at capacity"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: rate limit hit",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "rate limit hit"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: too many requests",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "too many requests"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: HTTP 429",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 429"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: HTTP 500 upstream",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 500 upstream"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: HTTP 502 bad gateway",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 502 bad gateway"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: HTTP 503 upstream",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 503 upstream"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: HTTP 504 gateway timeout",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 504 gateway timeout"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: HTTP 520",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 520"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: HTTP 524",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 524"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: The service is temporarily unavailable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "The service is temporarily unavailable"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: server error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "server error"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: internal error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "internal error"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: Provider returned error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "Provider returned error"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: The upstream provider returned an error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "The upstream provider returned an error"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: exceeded request buffer limit while retrying upstream",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "exceeded request buffer limit while retrying upstream"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: unable to forward upstream",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "unable to forward upstream"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: network error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "network error"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: connection error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "connection error"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: connection refused",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "connection refused"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: connection lost",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "connection lost"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: other side closed",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "other side closed"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: fetch failed",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "fetch failed"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: getaddrinfo ENOTFOUND",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "getaddrinfo ENOTFOUND"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: EAI_AGAIN",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "EAI_AGAIN"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: upstream connect error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "upstream connect error"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: reset before headers",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "reset before headers"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: socket hang up",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "socket hang up"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: socket connection was closed",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "socket connection was closed"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: request timed out",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "request timed out"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: timeout",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "timeout"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: terminated",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "terminated"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: websocket closed",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "websocket closed"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: websocket error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "websocket error"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: stream ended without a terminal event",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "stream ended without a terminal event"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: stream ended before message_stop",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "stream ended before message_stop"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: stream ended before a terminal response event",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "stream ended before a terminal response event"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: http2 request did not get a response",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "http2 request did not get a response"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: pending stream has been canceled",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "pending stream has been canceled"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: retry delay exceeded",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "retry delay exceeded"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: you can retry your request",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "you can retry your request"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: try your request again",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "try your request again"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: please retry your request",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "please retry your request"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: ResourceExhausted",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "ResourceExhausted"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: subscription_sharing_usage_unavailable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "subscription_sharing_usage_unavailable"
+      },
+      "result": true
+    },
+    {
+      "name": "retryable: subscription_sharing_user_unavailable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "subscription_sharing_user_unavailable"
+      },
+      "result": true
+    },
+    {
+      "name": "success message",
+      "message": {
+        "stopReason": "stop"
+      },
+      "result": false
+    },
+    {
+      "name": "aborted message",
+      "message": {
+        "stopReason": "aborted",
+        "errorMessage": "HTTP 429"
+      },
+      "result": false
+    },
+    {
+      "name": "error without errorMessage",
+      "message": {
+        "stopReason": "error"
+      },
+      "result": false
+    },
+    {
+      "name": "error with empty errorMessage",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": ""
+      },
+      "result": false
+    },
+    {
+      "name": "non-error stopReason with retryable text",
+      "message": {
+        "stopReason": "length",
+        "errorMessage": "HTTP 503"
+      },
+      "result": false
+    },
+    {
+      "name": "quota text beats 429",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "429 insufficient_quota"
+      },
+      "result": false
+    },
+    {
+      "name": "quota text beats 503",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "503 quota exceeded"
+      },
+      "result": false
+    },
+    {
+      "name": "billing beats retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "billing: too many requests"
+      },
+      "result": false
+    },
+    {
+      "name": "uppercase retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "TOO MANY REQUESTS"
+      },
+      "result": true
+    },
+    {
+      "name": "mixed case retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "RaTe LiMiT"
+      },
+      "result": true
+    },
+    {
+      "name": "rate with dot filler",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "rateXlimit"
+      },
+      "result": true
+    },
+    {
+      "name": "rate with no filler",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "ratelimit"
+      },
+      "result": true
+    },
+    {
+      "name": "rate across a newline does not match the dot",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "rate\nlimit"
+      },
+      "result": false
+    },
+    {
+      "name": "rate across a carriage return does not match the dot",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "rate\rlimit"
+      },
+      "result": false
+    },
+    {
+      "name": "rate across a line separator does not match the dot",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "rate limit"
+      },
+      "result": false
+    },
+    {
+      "name": "rate across a paragraph separator does not match the dot",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "rate limit"
+      },
+      "result": false
+    },
+    {
+      "name": "rate across one non-ASCII character matches the dot",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "rate€limit"
+      },
+      "result": true
+    },
+    {
+      "name": "service unavailable variants",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "service is temporarily unavailable"
+      },
+      "result": true
+    },
+    {
+      "name": "service unavailable short",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "service unavailable"
+      },
+      "result": true
+    },
+    {
+      "name": "provider returned error with an",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "provider returned an error"
+      },
+      "result": true
+    },
+    {
+      "name": "internal server error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "internal server error"
+      },
+      "result": true
+    },
+    {
+      "name": "400 is not retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 400: bad request"
+      },
+      "result": false
+    },
+    {
+      "name": "401 is not retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 401: invalid token"
+      },
+      "result": false
+    },
+    {
+      "name": "403 is not retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "HTTP 403: forbidden"
+      },
+      "result": false
+    },
+    {
+      "name": "user cancellation is not retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "Request cancelled by user"
+      },
+      "result": false
+    },
+    {
+      "name": "context overflow is not retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "context length exceeded"
+      },
+      "result": false
+    },
+    {
+      "name": "codex usage limit",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "Codex error: The usage limit has been reached"
+      },
+      "result": false
+    },
+    {
+      "name": "leading and trailing noise",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "  !!HTTP 503!!  "
+      },
+      "result": true
+    },
+    {
+      "name": "multiline retryable",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "failed:\nHTTP 503 service unavailable\n"
+      },
+      "result": true
+    },
+    {
+      "name": "number embedded in text",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "code 15003"
+      },
+      "result": true
+    },
+    {
+      "name": "empty-ish whitespace error",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "   "
+      },
+      "result": false
+    },
+    {
+      "name": "500 with word boundaries absent",
+      "message": {
+        "stopReason": "error",
+        "errorMessage": "x5000x"
+      },
+      "result": true
+    }
+  ],
+  "failover": [
+    {
+      "name": "quota error rotates inline when fabric is available",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "Codex error: The usage limit has been reached"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 0,
+        "exhausted": [
+          "a1",
+          "a2"
+        ],
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1",
+          "a2",
+          "a3"
+        ],
+        "events": [
+          "start",
+          "done"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "quota error surfaces after every account is exhausted",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "Codex error: The usage limit has been reached"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1",
+          "a2",
+          "a3"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "authentication failure rotates inline",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 401: invalid token"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": [
+          "a1",
+          "a2"
+        ],
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1",
+          "a2",
+          "a3"
+        ],
+        "events": [
+          "start",
+          "done"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "retryable error rotates inline when fabric is absent",
+      "input": {
+        "handled": false,
+        "fabric": "absent",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": [
+          "a1",
+          "a2"
+        ],
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1",
+          "a2",
+          "a3"
+        ],
+        "events": [
+          "start",
+          "done"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "retryable error surfaces and compacts when fabric is available",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "visible output closes the fabric retry window",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": true,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "text_delta",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "aborted run never compacts",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": true,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "a throwing tool listing counts as fabric absent",
+      "input": {
+        "handled": false,
+        "fabric": "error",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": [
+          "a1",
+          "a2"
+        ],
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1",
+          "a2",
+          "a3"
+        ],
+        "events": [
+          "start",
+          "done"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "a single enabled account skips compaction",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          }
+        ],
+        "pool": {
+          "enabled": 1
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "one disabled account leaves fewer than two enabled",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": false,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 1
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "exactly two enabled accounts compacts",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "idle wait ends before compacting",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [
+            false,
+            false
+          ],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 2
+      }
+    },
+    {
+      "name": "a run that never idles times out after fifteen seconds",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": false
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": true,
+        "polls": 300
+      }
+    },
+    {
+      "name": "debounce suppresses a second compaction inside thirty seconds (step 1)",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "debounce suppresses a second compaction inside thirty seconds (step 2)",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 10000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "debounce suppresses a second compaction at twenty-nine seconds (step 1)",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "debounce suppresses a second compaction at twenty-nine seconds (step 2)",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 29999,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "the debounce window ends at exactly thirty seconds (step 1)",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "the debounce window ends at exactly thirty seconds (step 2)",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "the idle wait runs after the debounce window has passed (step 1)",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "the idle wait runs after the debounce window has passed (step 2)",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 250
+      }
+    },
+    {
+      "name": "an empty error message is not retryable",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": ""
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "an error message without text is not retryable",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "a throwing pool snapshot skips compaction",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2,
+          "error": "snapshot failed"
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "a compaction error is silent",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": "error"
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    },
+    {
+      "name": "an external failover handler claims the transition",
+      "input": {
+        "handled": true,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "Codex error: The usage limit has been reached"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "an external failover handler declines and the pool rotates",
+      "input": {
+        "handled": false,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "Codex error: The usage limit has been reached"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": [
+          "a1",
+          "a2"
+        ],
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": false,
+        "attempts": [
+          "a1",
+          "a2",
+          "a3"
+        ],
+        "events": [
+          "start",
+          "done"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "an external failover handler still wins without fabric",
+      "input": {
+        "handled": true,
+        "fabric": "absent",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          },
+          {
+            "label": "a3",
+            "enabled": true,
+            "priority": 3
+          }
+        ],
+        "pool": {
+          "enabled": 3
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 0,
+        "notify": [],
+        "accountsQueried": false,
+        "polls": 0
+      }
+    },
+    {
+      "name": "an external failover handler cannot stop fabric compaction",
+      "input": {
+        "handled": true,
+        "fabric": "available",
+        "failure": {
+          "stopReason": "error",
+          "errorMessage": "HTTP 429: too many requests"
+        },
+        "accounts": [
+          {
+            "label": "a1",
+            "enabled": true,
+            "priority": 1
+          },
+          {
+            "label": "a2",
+            "enabled": true,
+            "priority": 2
+          }
+        ],
+        "pool": {
+          "enabled": 2
+        },
+        "idle": {
+          "values": [],
+          "default": true
+        },
+        "gapMs": 30000,
+        "exhausted": null,
+        "visible": false,
+        "aborted": false,
+        "compactOutcome": null
+      },
+      "expected": {
+        "handled": true,
+        "attempts": [
+          "a1"
+        ],
+        "events": [
+          "start",
+          "error"
+        ],
+        "compactCalls": 1,
+        "notify": [
+          [
+            "multiprovider: compacted session context before account failover",
+            "info"
+          ]
+        ],
+        "accountsQueried": true,
+        "polls": 0
+      }
+    }
+  ]
+}
