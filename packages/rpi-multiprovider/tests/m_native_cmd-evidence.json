@@ -1,0 +1,46 @@
+{
+  "status": "Five native owned commands register with Pi's names and descriptions and run through the host dialogs and UI ports. Manifests and the non-mutating upstream flow traces match the unchanged extension. Loaded-library RPC acceptance belongs to the native integration lane.",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "pi": "1.3.0",
+  "referenceNode": "24.22.0",
+  "checks": {
+    "toolchains": ["1.78.0", "1.95.0"],
+    "warnings": "denied",
+    "nativeTestsPassed": 9,
+    "nativeTestsIgnored": 0,
+    "manifestCases": 5,
+    "flowScenarios": 16,
+    "flowScenarioSources": {
+      "commands-reference.json": 13,
+      "commands-a2-reference.json": 3
+    },
+    "referenceFixtureSha256": "ca6ff30442b34dd63aaf1afea3309a94adc8065da5a4d472d3d4348eba1d02f7",
+    "commandsFixtureSha256": "cca87cf6b8988b8d08c0c3e449b3b3bcb09c3f78f5d6770d63de0076d7b42996",
+    "a2FixtureSha256": "8e529267bf6e1c5f2c19c8b7d24904da6c0a94146af589ce9cccc1eaee4dad8c",
+    "upstreamFilesPinned": 14,
+    "envelopeErrorClasses": 5
+  },
+  "compared": [
+    "pi.registerCommand order, names and descriptions captured from the unchanged extensions/multiprovider.ts under Node 24.22.0",
+    "The {version:1,name,description} manifest passed to register_native_command, in registration order",
+    "The {version:1,command,args} request envelope and {version:1,result}|{version:1,error} response envelope",
+    "context/snapshot as the source of hasUI, so a detached UI shows no control and sends no notification",
+    "dialogs/show controls (select, confirm, input, settings) and the validated reply shape; a null or type=cancel reply is a cancellation",
+    "ui/notify text and kind ordering, projected unchanged from Pi's ctx.ui.notify",
+    "Upstream traces for /multilogin, /multilogout, /accounts, /switch-account and /vprovider replayed through the native entry point, compared as whole JSON values",
+    "Cancellation stops a pending dialog and returns the host's cancellation error",
+    "Missing owned-command slots, missing native runtime port, refused registration, unknown command, unsupported version, malformed JSON, non-string args and a short cancellation control"
+  ],
+  "commands": [
+    "node --experimental-transform-types tests/m_native_cmd-reference.ts",
+    "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-multiprovider --locked",
+    "cargo test -p rpi-multiprovider --locked"
+  ],
+  "notTested": [
+    "No loaded-library/RPC run: the registration path here calls the same extern \"C\" callback through a fake PluginApi vtable, not through rpi's extension loader. The native integration lane owns the loaded acceptance.",
+    "The 16 replayed scenarios are the non-mutating subset: they read the session view, provider registry and service snapshot. Store writes, logins, pool-manager edits and session pin entries stay covered by tests/commands.rs and tests/commands_a2.rs.",
+    "Port::mode (ctx.mode) is supplied by the integration owner's CommandHost; this lane reads hasUI from the host but does not force a mode. A wrong Port::mode can still let a TUI-only command run outside the TUI.",
+    "Only Linux execution was performed.",
+    "The Arc-backed callback contexts are released when the owning Commands handle is dropped in the plugin's finish_shutdown hook; if that hook is skipped the runtime threads leak until process exit."
+  ]
+}
