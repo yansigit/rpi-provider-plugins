@@ -14,6 +14,7 @@ pub mod accounts;
 pub mod login;
 pub mod logout;
 pub mod pool_manager;
+pub mod port;
 pub mod settings;
 pub mod switch;
 pub mod vprovider;
