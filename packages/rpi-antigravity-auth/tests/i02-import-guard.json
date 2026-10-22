@@ -1,0 +1,684 @@
+{
+  "status": "I02 package half: imported or foreign vault state carries no custody authority",
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "pi": "1.3.0",
+  "node": "24.22.0",
+  "upstreamHashes": {
+    "antigravity/packages/core/src/common-auth-embedded/pi-slot/slot.js": "13a7d5941b79c6d444cf9dc6f23263cf9237146c7dd5de7d162dbc21e015532c",
+    "antigravity/packages/pi/src/index.ts": "bd04a01ef5c99edd2ac64de41e136bc797991ea38bb3312b0c5a5791a2340e12",
+    "antigravity/packages/pi/src/vault-setup.ts": "64bf98fdb397707be4d1bdd34ef56b89dbd1ebd67a07afd8de7c01e6e418c07e"
+  },
+  "counts": {
+    "custodyCases": 6,
+    "markerCases": 23
+  },
+  "custodyCases": [
+    {
+      "id": "empty",
+      "upstream": {
+        "slot": "empty",
+        "stash": "missing"
+      }
+    },
+    {
+      "id": "login",
+      "upstream": {
+        "slot": "original",
+        "stash": "missing"
+      }
+    },
+    {
+      "id": "placeholder",
+      "upstream": {
+        "slot": "placeholder",
+        "stash": "missing"
+      }
+    },
+    {
+      "id": "lookalike",
+      "upstream": {
+        "slot": "original",
+        "stash": "missing"
+      }
+    },
+    {
+      "id": "entered",
+      "upstream": {
+        "slot": "placeholder",
+        "stash": "valid"
+      }
+    },
+    {
+      "id": "foreign-stash",
+      "upstream": {
+        "slot": "foreign",
+        "stash": "invalid",
+        "error": "invalid-stash"
+      }
+    }
+  ],
+  "markerCases": [
+    {
+      "id": "local-default",
+      "files": {},
+      "custody": {
+        "slot": "empty",
+        "stash": "missing"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "local",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "local-login",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        }
+      },
+      "custody": {
+        "slot": "original",
+        "stash": "missing"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "local",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "local-placeholder-left",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "local"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "active-custody",
+        "freshEnrollment": false,
+        "notice": "The credential slot and vault mode disagree. Restore the saved login or switch the account source before continuing."
+      }
+    },
+    {
+      "id": "local-imported-mode",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "local",
+          "imported": {
+            "source": "pi",
+            "sourcePath": "/home/u/.pi/agent/sessions/a.jsonl",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "sessionVersion": 3
+          }
+        }
+      },
+      "custody": {
+        "slot": "original",
+        "stash": "missing"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "imported-custody",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-valid",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "routeId": "route-1"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "enrollment_state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "approvedName": "antigravity-auth-pi",
+          "tokenGeneration": 2,
+          "updatedAt": 1729000000000
+        },
+        "stash": {
+          "version": 1,
+          "provider": "google"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "custody",
+        "routeId": "route-1",
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "custody-without-route",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "custody",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "custody-no-token",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "stash": {
+          "version": 1,
+          "provider": "google"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "missing-enrollment",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-invalid-token",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "not-hex",
+          "token_generation": 2
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "invalid-enrollment",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-obsolete-generation",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 0
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "obsolete-enrollment",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-invalid-state",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "enrollment_state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "x"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "invalid-enrollment",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-imported-state",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "enrollment_state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "approvedName": "antigravity-auth-pi",
+          "tokenGeneration": 2,
+          "updatedAt": 1729000000000,
+          "imported": {
+            "source": "pi",
+            "sourcePath": "/home/u/.pi/agent/sessions/a.jsonl",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "sessionVersion": 3
+          }
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "imported-custody",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-imported-token",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2,
+          "imported": {
+            "source": "pi",
+            "sourcePath": "/home/u/.pi/agent/sessions/a.jsonl",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "sessionVersion": 3
+          }
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "imported-custody",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-forged-marker",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "approvedName": "antigravity-auth-pi",
+          "tokenGeneration": 2,
+          "updatedAt": 1729000000000,
+          "imported": {
+            "source": "rpi",
+            "sourcePath": "/home/u/.pi/agent/sessions/a.jsonl",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "sessionVersion": 3
+          }
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "forged-custody-origin",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-traversal-marker",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "approvedName": "antigravity-auth-pi",
+          "tokenGeneration": 2,
+          "updatedAt": 1729000000000,
+          "imported": {
+            "source": "pi",
+            "sourcePath": "/home/u/.pi/../../etc/a.jsonl",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "sessionVersion": 3
+          }
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "unsafe-source-path",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-legacy-origin",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_state": {
+          "version": 1,
+          "phase": "approved",
+          "proposedName": "antigravity-auth-pi",
+          "approvedName": "antigravity-auth-pi",
+          "tokenGeneration": 2,
+          "updatedAt": 1729000000000,
+          "origin": "imported"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "imported-custody",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-backup-artifact",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          "pi-enrollment-state.json.bak"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "active-backup",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-import-artifact",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          "sessions/pi-import/a.jsonl"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "imported-location",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-obsolete-mode",
+      "files": {
+        "mode": {
+          "version": 0,
+          "mode": "custody"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "obsolete-vault-mode",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-unknown-mode-key",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody",
+          "modeSource": "pi"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "unknown-vault-mode",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-obsolete-stash",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "stash": {
+          "version": 0,
+          "provider": "google"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "obsolete-custody-record",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-foreign-provider",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "stash": {
+          "version": 1,
+          "provider": "openai"
+        }
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "mismatched-custody",
+        "freshEnrollment": false,
+        "notice": "The credential slot and vault mode disagree. Restore the saved login or switch the account source before continuing."
+      }
+    },
+    {
+      "id": "custody-foreign-slot",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        }
+      },
+      "custody": {
+        "slot": "original",
+        "stash": "missing"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "unsynchronized-custody",
+        "freshEnrollment": false,
+        "notice": "The credential slot and vault mode disagree. Restore the saved login or switch the account source before continuing."
+      }
+    },
+    {
+      "id": "custody-invalid-stash",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        }
+      },
+      "custody": {
+        "slot": "foreign",
+        "stash": "invalid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "mismatched-custody",
+        "freshEnrollment": false,
+        "notice": "The credential slot and vault mode disagree. Restore the saved login or switch the account source before continuing."
+      }
+    }
+  ]
+}

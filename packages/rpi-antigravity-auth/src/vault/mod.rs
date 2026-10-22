@@ -16,6 +16,7 @@ pub mod consumer;
 pub mod custody;
 pub mod file_lease;
 pub mod file_store;
+pub mod import_guard;
 pub mod path;
 pub mod private;
 mod promise;
