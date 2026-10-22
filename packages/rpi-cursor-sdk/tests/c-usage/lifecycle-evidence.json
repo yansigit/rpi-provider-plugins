@@ -1,0 +1,96 @@
+{
+  "status": "pass",
+  "schema": "rpi-cursor-c09-lifecycle-evidence/1",
+  "purpose": "Durable flush/recovery boundary for C09: a crashed writer leaves a torn or complete last frame; the unchanged pinned writers refuse or repair the next append, and intent-then-result cloud sequences survive a reload. The Rust test replays the recorded bytes through the native JournalPort.",
+  "reference": {
+    "pi-cursor-sdk/dist/cursor-durable-fs.js": "cfbce8180d46f6d2d8ddd91d118d222bf5966a5b5b13f9a463005f541dfa90e6",
+    "pi-cursor-sdk/dist/cursor-cloud-lifecycle.js": "62587e86a4c17a486447cf599712281832c53f082614ef28d485e855763c967a"
+  },
+  "injection": {
+    "clock": "Date fixed at 2024-10-15T13:46:40.123Z via inject.cjs.",
+    "paths": "The per-run temporary root is replaced by <root> in every recorded byte."
+  },
+  "cases": [
+    {
+      "name": "usage-empty",
+      "kind": "usage",
+      "operations": 1,
+      "outcomes": [
+        "committed"
+      ]
+    },
+    {
+      "name": "usage-existing-frame",
+      "kind": "usage",
+      "operations": 1,
+      "outcomes": [
+        "committed"
+      ]
+    },
+    {
+      "name": "usage-torn-tail-refused",
+      "kind": "usage",
+      "operations": 1,
+      "outcomes": [
+        "threw: incomplete journal frame"
+      ]
+    },
+    {
+      "name": "usage-no-newline-refused",
+      "kind": "usage",
+      "operations": 1,
+      "outcomes": [
+        "threw: incomplete journal frame"
+      ]
+    },
+    {
+      "name": "cloud-empty",
+      "kind": "cloud",
+      "operations": 1,
+      "outcomes": [
+        "committed"
+      ]
+    },
+    {
+      "name": "cloud-torn-tail-repaired",
+      "kind": "cloud",
+      "operations": 1,
+      "outcomes": [
+        "committed"
+      ]
+    },
+    {
+      "name": "cloud-crash-reload-after-intent",
+      "kind": "cloud",
+      "operations": 2,
+      "outcomes": [
+        "committed",
+        "committed"
+      ]
+    },
+    {
+      "name": "cloud-crash-mid-result-reload",
+      "kind": "cloud",
+      "operations": 2,
+      "outcomes": [
+        "committed",
+        "committed"
+      ]
+    }
+  ],
+  "counts": {
+    "cases": 8,
+    "usage": 4,
+    "cloud": 4,
+    "operations": 10
+  },
+  "rust": "tests/c_usage_reference.rs replays each operation through JournalPort and compares committed/refused outcomes and complete bytes.",
+  "notTested": [
+    "Stop admission, cancellation, MCP/SDK close and worker reaping are Rust owner behaviour with no upstream TypeScript counterpart; tests/worker.rs covers them (crash partial preservation, admitted host drain, one-shot cancellation, capacity).",
+    "Interactive reload/shutdown of the installed DLL is covered by tests/shutdown-evidence.json, not re-run here."
+  ],
+  "commands": [
+    "node tests/c-usage/lifecycle-reference.mjs",
+    "node tests/c-usage/lifecycle-reference.mjs --write"
+  ]
+}
