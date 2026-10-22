@@ -1,0 +1,248 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "cleanup-durability",
+  "description": "Cleanup --yes over awaited session ports: the durable intent is appended before any deletion, the result is appended with journalAppend after an intervening branch move (late response), exact candidate/failed ids are recorded, and the result must not move the newly selected branch.",
+  "rpiOnly": true,
+  "run": {
+    "model": "composer-2",
+    "prompt": "Cleanup durability turn.",
+    "followUps": []
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "first",
+      "expect": {
+        "promptIncludes": "Cleanup durability turn.",
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Cleanup durability answer."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 9,
+            "outputTokens": 4,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Cleanup durability answer."
+      }
+    }
+  ],
+  "rpi": {
+    "faults": {
+      "lateBranch": {}
+    },
+    "expectLateResult": true,
+    "steps": [
+      {
+        "kind": "turn",
+        "prompt": "Cleanup durability turn."
+      },
+      {
+        "kind": "seedCleanupCandidate",
+        "agentId": "agent-stale-0002"
+      },
+      {
+        "kind": "command",
+        "name": "cursor-local-resume-cleanup",
+        "args": "--yes"
+      }
+    ],
+    "expectEntries": [
+      {
+        "customType": "cursor-sdk-agent-lineage",
+        "data": {
+          "version": 1,
+          "runtime": "local",
+          "agentId": "agent-00000000-0000-4000-8000-000000000001",
+          "sessionId": "<session-id>",
+          "sessionFile": "<session-file>",
+          "scopeKey": "<scope-key>",
+          "cwd": "<cwd>",
+          "timestamp": "<iso>"
+        }
+      },
+      {
+        "customType": "cursor-sdk-agent-resume",
+        "data": {
+          "version": 2,
+          "runtime": "local",
+          "agentId": "agent-00000000-0000-4000-8000-000000000001",
+          "scopeKey": "<scope-key>",
+          "sessionFile": "<session-file>",
+          "sessionId": "<session-id>",
+          "cwd": "<cwd>",
+          "poolKey": "<session-file>\u0000<cwd>\u0000{\"id\":\"composer-2\",\"params\":[{\"id\":\"fast\",\"value\":\"true\"}]}\u0000all\u0000{\"autoReview\":false,\"sandboxEnabled\":false}\u0000http1:default\u0000<hash>\u0000bridge:empty",
+          "branchPathHash": "<hash>",
+          "compactionGeneration": 0,
+          "sendState": {
+            "bootstrapped": true,
+            "contextFingerprint": "<fingerprint>",
+            "incrementalSendCount": 0
+          },
+          "createdAt": "<iso>",
+          "storeIdentity": {
+            "version": 1,
+            "stateRoot": "<store-root>"
+          }
+        }
+      },
+      {
+        "customType": "cursor-sdk-agent-resume",
+        "data": {
+          "version": 2,
+          "runtime": "local",
+          "agentId": "agent-00000000-0000-4000-8000-000000000001",
+          "scopeKey": "<scope-key>",
+          "sessionFile": "<session-file>",
+          "sessionId": "<session-id>",
+          "cwd": "<cwd>",
+          "poolKey": "<session-file>\u0000<cwd>\u0000{\"id\":\"composer-2\",\"params\":[{\"id\":\"fast\",\"value\":\"true\"}]}\u0000all\u0000{\"autoReview\":false,\"sandboxEnabled\":false}\u0000http1:default\u0000<hash>\u0000bridge:empty",
+          "branchPathHash": "<hash>",
+          "compactionGeneration": 0,
+          "sendState": {
+            "bootstrapped": true,
+            "contextFingerprint": "<fingerprint>",
+            "incrementalSendCount": 0
+          },
+          "createdAt": "<iso>",
+          "storeIdentity": {
+            "version": 1,
+            "stateRoot": "<store-root>"
+          },
+          "cleanupCandidateAgentIds": [
+            "agent-stale-0002"
+          ]
+        }
+      },
+      {
+        "customType": "cursor-sdk-agent-cleanup",
+        "data": {
+          "action": "delete",
+          "phase": "intent",
+          "runtime": "local",
+          "timestamp": "<iso>",
+          "candidateAgentIds": [
+            "agent-stale-0002"
+          ],
+          "protectedAgentIds": [
+            "agent-00000000-0000-4000-8000-000000000001"
+          ]
+        }
+      },
+      {
+        "customType": "cursor-sdk-agent-cleanup",
+        "data": {
+          "action": "delete",
+          "phase": "result",
+          "runtime": "local",
+          "timestamp": "<iso>",
+          "candidateAgentIds": [
+            "agent-stale-0002"
+          ],
+          "protectedAgentIds": [
+            "agent-00000000-0000-4000-8000-000000000001"
+          ],
+          "deletedAgentIds": [],
+          "failedAgentIds": [
+            {
+              "agentId": "agent-stale-0002",
+              "error": "Recorded Cursor local store identity is not valid for this pi session",
+              "retryable": false
+            }
+          ]
+        }
+      }
+    ],
+    "expectAppendDetails": [
+      {
+        "action": "append",
+        "customType": "cursor-sdk-agent-lineage",
+        "phase": null,
+        "durability": "durable",
+        "entryId": "committed-4",
+        "parentId": "committed-3",
+        "advancedLane": true
+      },
+      {
+        "action": "append",
+        "customType": "cursor-sdk-agent-resume",
+        "phase": null,
+        "durability": "durable",
+        "entryId": "committed-10",
+        "parentId": "assistant-9",
+        "advancedLane": true
+      },
+      {
+        "action": "append",
+        "customType": "cursor-sdk-agent-cleanup",
+        "phase": "intent",
+        "durability": "durable",
+        "entryId": "committed-12",
+        "parentId": "seed-agent-stale-0002",
+        "advancedLane": true
+      },
+      {
+        "action": "journalAppend",
+        "customType": "cursor-sdk-agent-cleanup",
+        "phase": "result",
+        "durability": "durable",
+        "entryId": "committed-13",
+        "parentId": "committed-12",
+        "advancedLane": false
+      }
+    ],
+    "expectNotifications": [
+      {
+        "kind": "error",
+        "text": "Deleted 0 recorded local Cursor SDK agent(s); 1 failed."
+      }
+    ]
+  },
+  "expect": {
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 3,
+      "SqliteLocalAgentStore.dispose": 2,
+      "SqliteLocalAgentStore.open": 2,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 1,
+      "agent.send": 1,
+      "createAgentPlatform": 1
+    },
+    "runs": {
+      "finished": 1
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0
+  }
+}

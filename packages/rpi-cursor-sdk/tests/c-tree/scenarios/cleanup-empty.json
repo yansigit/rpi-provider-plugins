@@ -1,0 +1,37 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "cleanup-empty",
+  "description": "The cleanup command on a session with no recorded local agents. It records an empty dry-run plan without touching the SDK.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "/cursor-local-resume-cleanup",
+    "followUps": []
+  },
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [],
+  "expect": {
+    "exitCode": 0,
+    "sdkCalls": {},
+    "runs": {},
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "violations": 0,
+    "piToolExecutions": {}
+  }
+}

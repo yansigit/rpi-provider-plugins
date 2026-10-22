@@ -1,0 +1,544 @@
+{
+  "status": "pass",
+  "schema": "rpi-cursor-c04-reference-evidence/1",
+  "purpose": "Offline scenario runs of the unchanged Pi 1.3.0 reference and the pinned pi-cursor-sdk@0.5.3 adapter against the fake @cursor/sdk@1.0.37. No Cursor network calls.",
+  "runtime": {
+    "node": "24.22.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "toolchains": {
+    "node": "24.22.0",
+    "rustMinimum": "1.78.0",
+    "rustDefault": "1.95.0",
+    "sdk": "1.0.37"
+  },
+  "reference": {
+    "files": {
+      "@cursor/sdk/package.json": "3c5dd6867664290accd4b6e9045c901e6fc40e5773b1c4a792a8edb01db7ef99",
+      "@earendil-works/pi-coding-agent/package.json": "83c3bb7619f590c213cc96a24216eb29a819a3ef6dc548607cc037ed276e8dc5",
+      "@earendil-works/pi-coding-agent/dist/bundle/cli.js": "e79626f2dd6f94aa45d30f3fa63cd84319a6eefcd150b353cfaf274366926774",
+      "pi-cursor-sdk/package.json": "8ad2dd0f358afa4c8b1c0a9fa1fa8165b36e084ddb871d3ddd4608566c3d161f",
+      "pi-cursor-sdk/dist/index.js": "4680a835ac8cbe3c90555d62529faf4e7e01cddb1359090ffb626b08a62b24b9",
+      "integrated/package-lock.json": "72a0e5eb204b17155a41dfb5c99d8e45caaa98af39d8f2acf92394aae0a39bc8"
+    },
+    "piVersion": "1.3.0",
+    "cursorSdkVersion": "1.0.37",
+    "piCursorSdkVersion": "0.5.3"
+  },
+  "upstream": {
+    "repository": "https://github.com/fitchmultz/pi-cursor-sdk",
+    "revision": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+    "sdk": "1.0.37",
+    "files": {
+      "src/cursor-session-agent-lineage.ts": "d50d97a173a1fe0051a99910ae0b9dbfe01bd01d",
+      "src/cursor-session-agent-resume.ts": "742793eaf2b930c6e6195878bbbe8fecd41a3385",
+      "src/cursor-session-agent-cleanup.ts": "15d2442a519a16eb2953ba3418904293731f3778",
+      "src/cursor-session-store.ts": "cc55ca0ff791ce84eb855b4cb565980db1e94b44",
+      "src/cursor-session-scope.ts": "cf9e0e3e6bfab7cd86ee4b22054e6cc56aab4858",
+      "src/cursor-session-compaction-prep.ts": "ae8eeeff880916c1741f5a54000d2e034fb0288a",
+      "src/cursor-provider-turn-summary.ts": "168508209b3b0a1d488fdc6590caf7648ee90917"
+    }
+  },
+  "fake": {
+    "fake-sdk/sdk.mjs": "de4884154559946599ec24da751a03dc0bb190369dd67ef0d2eeafef2329c2f4",
+    "fake-sdk/hooks.mjs": "852dd2a9857466891cc8333bcf2e95116aac11533cbdf665083b1f254eea104f",
+    "fake-sdk/register.mjs": "20bd210452865950c6825f4961f9fa2348ae86d7bcc5e14652f15f3d416926db",
+    "fake-sdk/sqlite.mjs": "7fcebb18b2e35ec1c45ae2efc6df7456e8c70ec66b9c8b555150063ddebf7dc1",
+    "fake-sdk/fixtures/echo-extension.mjs": "47022b99c3abb78b06c087810c72d44e6343cf5a5c86a9cb53ca09155c791f42",
+    "normalize.mjs": "ec397758cf51fac4c9ebf301aad38973886e88fea12557b03c47eda72830a698",
+    "run-reference.mjs": "4d78c4b7413797f1b9240ec4faef37376ad5e89def28bf031072d20a6bf199fd"
+  },
+  "normalization": {
+    "c04Entries": "sessionId-><session-id>, sessionFile-><session-file>, scopeKey-><scope-key>, cwd-><cwd>, timestamps-><iso>, branchPathHash-><hash>, contextFingerprint-><fingerprint> (Pi carries its system prompt as a leading session message; the native port carries it in context.systemPrompt, so the opaque hash and message count are not comparable), storeIdentity.stateRoot-><store-root>, poolKey environment components (scope/cwd/16-hex store hash) normalized. agentId, cleanup action/phase and candidate/protected/deleted/failed agent ids are compared exactly.",
+    "piJsonStream": "Each JSON line is re-serialized with timestamp, durationMs, executionTime set to 0; UUIDs to <uuid>; ISO-8601 timestamps to <iso>; session-file timestamps to <session-time>; Pi's random 8-hex entry id/parentId/anchorId to <entry>; cursor-replay-<ms>-<n>- to cursor-replay-<n>-<n>-; cursor-pi-bridge run IDs to <run>; pi-sessions/<32-hex store hash> to pi-sessions/<store>; the temporary root to <root>.",
+    "fakeLog": "No normalization: the fake writes no clocks, PIDs or random IDs; only the temporary root is replaced by <root>."
+  },
+  "comparison": "Whole-value comparison of the ordered C04 session entries (cursor-sdk-agent-lineage/resume/cleanup) and of the fake-SDK counters for every reference scenario. rpi-only scenarios are checked by run-rpi.mjs against recorded expectations.",
+  "scenarios": [
+    {
+      "name": "cleanup-dry-run",
+      "scenarioFile": "tests/c-tree/scenarios/cleanup-dry-run.json",
+      "scenarioSha256": "b7a6072ac04cb402b99a75c1461555ff0a01f1512d38dba54c9b0484a7078c0a",
+      "run": {
+        "model": "composer-2",
+        "invocations": [
+          {
+            "prompt": "Cleanup dry-run turn.",
+            "followUps": [
+              "/cursor-local-resume-cleanup"
+            ],
+            "args": [],
+            "extensions": []
+          }
+        ]
+      },
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "observed": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "c04Entries": [
+        {
+          "customType": "cursor-sdk-agent-lineage",
+          "data": {
+            "version": 1,
+            "runtime": "local",
+            "agentId": "agent-00000000-0000-4000-8000-000000000001",
+            "sessionId": "<session-id>",
+            "sessionFile": "<session-file>",
+            "scopeKey": "<scope-key>",
+            "cwd": "<cwd>",
+            "timestamp": "<iso>"
+          }
+        },
+        {
+          "customType": "cursor-sdk-agent-resume",
+          "data": {
+            "version": 2,
+            "runtime": "local",
+            "agentId": "agent-00000000-0000-4000-8000-000000000001",
+            "scopeKey": "<scope-key>",
+            "sessionFile": "<session-file>",
+            "sessionId": "<session-id>",
+            "cwd": "<cwd>",
+            "poolKey": "<session-file>\u0000<cwd>\u0000{\"id\":\"composer-2\",\"params\":[{\"id\":\"fast\",\"value\":\"true\"}]}\u0000all\u0000{\"autoReview\":false,\"sandboxEnabled\":false}\u0000http1:default\u0000<hash>\u0000bridge:empty",
+            "branchPathHash": "<hash>",
+            "compactionGeneration": 0,
+            "sendState": {
+              "bootstrapped": true,
+              "contextFingerprint": "<fingerprint>",
+              "incrementalSendCount": 0
+            },
+            "createdAt": "<iso>",
+            "storeIdentity": {
+              "version": 1,
+              "stateRoot": "<store-root>"
+            }
+          }
+        },
+        {
+          "customType": "cursor-sdk-agent-cleanup",
+          "data": {
+            "action": "dry-run",
+            "runtime": "local",
+            "timestamp": "<iso>",
+            "candidateAgentIds": [],
+            "protectedAgentIds": [
+              "agent-00000000-0000-4000-8000-000000000001"
+            ]
+          }
+        }
+      ],
+      "piEventCounts": {
+        "agent_end": 1,
+        "agent_settled": 1,
+        "agent_start": 1,
+        "entry_appended": 9,
+        "message_end": 3,
+        "message_start": 3,
+        "message_update": 3,
+        "session": 1,
+        "turn_end": 1,
+        "turn_start": 1
+      },
+      "piEventTotal": 24,
+      "fakeLogRecords": 16,
+      "fakeLogSha256": "6a11819ea5951694832b185cacfee06bcee12c4393d2b154b4d82f50ce6dfe20",
+      "normalizedPiSha256": "529b0760796bed01d213264374a7758e2e72f0dff3291d6cca38c6f90fce5522",
+      "stderrLines": 0,
+      "determinism": {
+        "fakeLogIdentical": true,
+        "normalizedPiIdentical": true,
+        "entriesIdentical": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "cleanup-empty",
+      "scenarioFile": "tests/c-tree/scenarios/cleanup-empty.json",
+      "scenarioSha256": "628d5298caca63069ccca8c4bedb00cac3f8342e8a540b16907518e590796f71",
+      "run": {
+        "model": "composer-2",
+        "invocations": [
+          {
+            "prompt": "/cursor-local-resume-cleanup",
+            "followUps": [],
+            "args": [],
+            "extensions": []
+          }
+        ]
+      },
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {},
+        "runs": {},
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "observed": {
+        "exitCode": 0,
+        "sdkCalls": {},
+        "runs": {},
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "c04Entries": [
+        {
+          "customType": "cursor-sdk-agent-cleanup",
+          "data": {
+            "action": "dry-run",
+            "runtime": "local",
+            "timestamp": "<iso>",
+            "candidateAgentIds": []
+          }
+        }
+      ],
+      "piEventCounts": {
+        "entry_appended": 1,
+        "session": 1
+      },
+      "piEventTotal": 2,
+      "fakeLogRecords": 1,
+      "fakeLogSha256": "a93aff0875fc216de5c6b2b28b1bf1b5e5bdd801a8c523a7a023969bcddc9eec",
+      "normalizedPiSha256": "c02d9e889ded27bc44ed5471f6c39eeec34f4dbeaffd4f4f99941e5dd193ffa6",
+      "stderrLines": 0,
+      "determinism": {
+        "fakeLogIdentical": true,
+        "normalizedPiIdentical": true,
+        "entriesIdentical": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "continuity-reuse",
+      "scenarioFile": "tests/c-tree/scenarios/continuity-reuse.json",
+      "scenarioSha256": "9e60e1a12b07a4f5e96b97fe698065313bcd9398a831f8b0f14d4b9aaad72dae",
+      "run": {
+        "model": "composer-2",
+        "invocations": [
+          {
+            "prompt": "Continuity first question.",
+            "followUps": [
+              "Continuity second question."
+            ],
+            "args": [],
+            "extensions": []
+          }
+        ]
+      },
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 7,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 2,
+          "agent.send": 2,
+          "createAgentPlatform": 2
+        },
+        "runs": {
+          "finished": 2
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "observed": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 7,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 2,
+          "agent.send": 2,
+          "createAgentPlatform": 2
+        },
+        "runs": {
+          "finished": 2
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "c04Entries": [
+        {
+          "customType": "cursor-sdk-agent-lineage",
+          "data": {
+            "version": 1,
+            "runtime": "local",
+            "agentId": "agent-00000000-0000-4000-8000-000000000001",
+            "sessionId": "<session-id>",
+            "sessionFile": "<session-file>",
+            "scopeKey": "<scope-key>",
+            "cwd": "<cwd>",
+            "timestamp": "<iso>"
+          }
+        },
+        {
+          "customType": "cursor-sdk-agent-resume",
+          "data": {
+            "version": 2,
+            "runtime": "local",
+            "agentId": "agent-00000000-0000-4000-8000-000000000001",
+            "scopeKey": "<scope-key>",
+            "sessionFile": "<session-file>",
+            "sessionId": "<session-id>",
+            "cwd": "<cwd>",
+            "poolKey": "<session-file>\u0000<cwd>\u0000{\"id\":\"composer-2\",\"params\":[{\"id\":\"fast\",\"value\":\"true\"}]}\u0000all\u0000{\"autoReview\":false,\"sandboxEnabled\":false}\u0000http1:default\u0000<hash>\u0000bridge:empty",
+            "branchPathHash": "<hash>",
+            "compactionGeneration": 0,
+            "sendState": {
+              "bootstrapped": true,
+              "contextFingerprint": "<fingerprint>",
+              "incrementalSendCount": 0
+            },
+            "createdAt": "<iso>",
+            "storeIdentity": {
+              "version": 1,
+              "stateRoot": "<store-root>"
+            }
+          }
+        },
+        {
+          "customType": "cursor-sdk-agent-resume",
+          "data": {
+            "version": 2,
+            "runtime": "local",
+            "agentId": "agent-00000000-0000-4000-8000-000000000001",
+            "scopeKey": "<scope-key>",
+            "sessionFile": "<session-file>",
+            "sessionId": "<session-id>",
+            "cwd": "<cwd>",
+            "poolKey": "<session-file>\u0000<cwd>\u0000{\"id\":\"composer-2\",\"params\":[{\"id\":\"fast\",\"value\":\"true\"}]}\u0000all\u0000{\"autoReview\":false,\"sandboxEnabled\":false}\u0000http1:default\u0000<hash>\u0000bridge:empty",
+            "branchPathHash": "<hash>",
+            "compactionGeneration": 0,
+            "sendState": {
+              "bootstrapped": true,
+              "contextFingerprint": "<fingerprint>",
+              "incrementalSendCount": 1
+            },
+            "createdAt": "<iso>",
+            "storeIdentity": {
+              "version": 1,
+              "stateRoot": "<store-root>"
+            }
+          }
+        }
+      ],
+      "piEventCounts": {
+        "agent_end": 2,
+        "agent_settled": 2,
+        "agent_start": 2,
+        "entry_appended": 15,
+        "message_end": 5,
+        "message_start": 5,
+        "message_update": 6,
+        "session": 1,
+        "turn_end": 2,
+        "turn_start": 2
+      },
+      "piEventTotal": 42,
+      "fakeLogRecords": 28,
+      "fakeLogSha256": "e3d5e0842e0a5e157c4b76e2a0dc4e4aee73e09eee54e8d4cf32b596fc8b9f4a",
+      "normalizedPiSha256": "822f154e18b7618308dddc7ccbc8ce74c35bcf4f7dcb474341aa6fe8b9c995d6",
+      "stderrLines": 0,
+      "determinism": {
+        "fakeLogIdentical": true,
+        "normalizedPiIdentical": true,
+        "entriesIdentical": true
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "continuity-turn",
+      "scenarioFile": "tests/c-tree/scenarios/continuity-turn.json",
+      "scenarioSha256": "4270e62276f1a1de748b70f5c14304c094a8206f787079a9e7ac5956273ad440",
+      "run": {
+        "model": "composer-2",
+        "invocations": [
+          {
+            "prompt": "Branch continuity first turn.",
+            "followUps": [],
+            "args": [],
+            "extensions": []
+          }
+        ]
+      },
+      "expect": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "observed": {
+        "exitCode": 0,
+        "sdkCalls": {
+          "Agent.create": 1,
+          "Agent.messages.list": 3,
+          "SqliteLocalAgentStore.dispose": 1,
+          "SqliteLocalAgentStore.open": 1,
+          "agent.asyncDispose": 1,
+          "agent.getUsage": 1,
+          "agent.send": 1,
+          "createAgentPlatform": 1
+        },
+        "runs": {
+          "finished": 1
+        },
+        "bridgeToolExecutions": 0,
+        "toolExecutions": {},
+        "nativeToolCalls": {},
+        "violations": 0,
+        "piToolExecutions": {}
+      },
+      "c04Entries": [
+        {
+          "customType": "cursor-sdk-agent-lineage",
+          "data": {
+            "version": 1,
+            "runtime": "local",
+            "agentId": "agent-00000000-0000-4000-8000-000000000001",
+            "sessionId": "<session-id>",
+            "sessionFile": "<session-file>",
+            "scopeKey": "<scope-key>",
+            "cwd": "<cwd>",
+            "timestamp": "<iso>"
+          }
+        },
+        {
+          "customType": "cursor-sdk-agent-resume",
+          "data": {
+            "version": 2,
+            "runtime": "local",
+            "agentId": "agent-00000000-0000-4000-8000-000000000001",
+            "scopeKey": "<scope-key>",
+            "sessionFile": "<session-file>",
+            "sessionId": "<session-id>",
+            "cwd": "<cwd>",
+            "poolKey": "<session-file>\u0000<cwd>\u0000{\"id\":\"composer-2\",\"params\":[{\"id\":\"fast\",\"value\":\"true\"}]}\u0000all\u0000{\"autoReview\":false,\"sandboxEnabled\":false}\u0000http1:default\u0000<hash>\u0000bridge:empty",
+            "branchPathHash": "<hash>",
+            "compactionGeneration": 0,
+            "sendState": {
+              "bootstrapped": true,
+              "contextFingerprint": "<fingerprint>",
+              "incrementalSendCount": 0
+            },
+            "createdAt": "<iso>",
+            "storeIdentity": {
+              "version": 1,
+              "stateRoot": "<store-root>"
+            }
+          }
+        }
+      ],
+      "piEventCounts": {
+        "agent_end": 1,
+        "agent_settled": 1,
+        "agent_start": 1,
+        "entry_appended": 8,
+        "message_end": 3,
+        "message_start": 3,
+        "message_update": 3,
+        "session": 1,
+        "turn_end": 1,
+        "turn_start": 1
+      },
+      "piEventTotal": 23,
+      "fakeLogRecords": 16,
+      "fakeLogSha256": "62a7764c260e81e6da53c00cf52e21505e511d306b2475a5a7ffd2bddf9c0f89",
+      "normalizedPiSha256": "6705d71fd21efadf9343595b8c652ec3ed5ec90805b91f25d4c3af194282f7c1",
+      "stderrLines": 0,
+      "determinism": {
+        "fakeLogIdentical": true,
+        "normalizedPiIdentical": true,
+        "entriesIdentical": true
+      },
+      "problems": [],
+      "status": "pass"
+    }
+  ],
+  "counts": {
+    "referenceScenarios": 4,
+    "rpiOnly": 3,
+    "c04Entries": 9
+  },
+  "notTested": [
+    "Pi's built-in /compact command is not dispatched in --print/--mode json, so compaction is exercised rpi-only by run-rpi.mjs.",
+    "Interactive/TUI and RPC modes are not exercised.",
+    "Images, cloud agents, tools/MCP execution and the cursor-usage command are outside C04."
+  ],
+  "commands": [
+    "node tests/c-tree/run-reference.mjs        (check mode)",
+    "node tests/c-tree/run-reference.mjs --write"
+  ]
+}
