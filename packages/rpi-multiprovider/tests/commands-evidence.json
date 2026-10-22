@@ -1,0 +1,51 @@
+{
+  "status": "Command flows /multilogin, /multilogout, /accounts and /switch-account verified against the unchanged upstream extension through Ui and Port fakes; the concrete host adapter, the pool manager screen and live TUI rendering are not covered",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "referenceCommand": "LC_ALL=en_US.UTF-8 node --experimental-transform-types tests/commands-reference.ts [--write]",
+  "checks": {
+    "toolchains": ["1.78.0 with RUSTFLAGS=-Dwarnings", "1.95.0 (default)"],
+    "referenceScenarios": 63,
+    "referenceScenariosByKind": {
+      "command": 59,
+      "commandByCommand": {"multilogin": 28, "multilogout": 10, "accounts": 5, "switch-account": 16},
+      "direct-login": 1,
+      "host-select": 2,
+      "login-dialog": 1
+    },
+    "upstreamMultiloginSpecs": {"total": 4, "covered": 4},
+    "referenceFixtureSha256": "cca87cf6b8988b8d08c0c3e449b3b3bcb09c3f78f5d6770d63de0076d7b42996",
+    "referenceRerunsByteIdentical": 2,
+    "replayTest": "tests/commands.rs::command_flows_match_the_upstream_reference",
+    "localeTimeTest": "tests/commands.rs::locale_time_matches_en_us_utc"
+  },
+  "compared": [
+    "Projected UI trace per scenario: every select, confirm and input control with its reply, and every pool manager call with its methods",
+    "Notifications: text and kind, with the account-file path normalized to $AUTH_PATH on both sides",
+    "Session entries appended by /switch-account, in order, with their data",
+    "Final multiprovider-auth.json text, compared byte for byte, after the scenario's setup and command",
+    "Thrown messages of the command flow",
+    "Login flows: prompts and events in order and the resulting credential or error (multilogin.spec: API-key and OAuth flows)",
+    "Host select outcome and trace, including cancel (multilogin.spec: two cases)",
+    "Login dialog outcome and trace, including select without ctx.ui.select (multilogin.spec: one case)",
+    "A real request driven through the installed provider before /accounts and /switch-account: the failed account's cooldown state and its rendered status line, picker label and switch notification sentence",
+    "Every scripted answer and pool action is consumed by the Rust flow"
+  ],
+  "limits": [
+    "The Rust fake Port takes the service snapshot from the upstream reference, so scheduler snapshot behavior is not re-derived here.",
+    "Initial session pins are replayed from recorded switch-account entries that carry an accountId; pins applied by the real scheduler are not exercised.",
+    "The pool manager screen is a stub boundary (Port::pool_manager) and its edits to the pool buffer are not exercised.",
+    "Login outcomes come from scripted provider logins that the fake Port interprets; real provider login code is not executed.",
+    "Only Linux execution was performed; local-time formatting is UTC only and matches the reference's TZ=UTC."
+  ],
+  "notTested": [
+    "Account-model cooldowns (`modelCooldowns` in the /accounts line): they need a virtual-provider failure, which belongs to the /vprovider lane; the projection is ported but not replayed.",
+    "'No switchable accounts' and 'Could not switch account' branches: ported but not replayed. Stored accounts always keep the upstream account switchable, and a pin fails only if the account disappears after the picker.",
+    "Non-ASCII case folding in provider references and switch labels: Rust to_lowercase may differ from JavaScript for a few code points.",
+    "Account ids longer than 8 UTF-16 code units in duplicate picker labels: the port slices Unicode scalar values, upstream slices code units; real ids (UUIDs, fixture-N) are ASCII.",
+    "Numbers at or above 1e21 in status lines.",
+    "Local time formatting: locale_time assumes UTC. Upstream toLocaleTimeString uses the process timezone; the fixture is generated with TZ=UTC, and no host time-zone source is exposed through Ui/Port.",
+    "Live dialog status panel: progress and waiting text are notifications, not a persistent panel (see docs/presentation-map.md).",
+    "OAuth selector fuzzy ranking: the query is handed to the native select; ranking is the native dialogs contract's responsibility."
+  ]
+}
