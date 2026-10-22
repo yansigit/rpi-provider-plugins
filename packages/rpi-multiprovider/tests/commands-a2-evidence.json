@@ -1,0 +1,64 @@
+{
+  "status": "Pool manager screen, settings-view primitives and the /vprovider command verified against the unchanged upstream pool-manager.ts, settings-ui.ts and the vprovider handler through Ui and Port fakes; live TUI rendering and the concrete host adapter are not covered",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "referenceCommand": "LC_ALL=en_US.UTF-8 node --experimental-transform-types tests/commands-a2-reference.ts [--write]",
+  "checks": {
+    "toolchains": ["1.78.0 with RUSTFLAGS=-Dwarnings", "1.95.0 (default)"],
+    "referenceScenarios": 47,
+    "referenceScenariosByKind": {
+      "pool-screen": 22,
+      "vprovider": 24,
+      "format-ms": 1
+    },
+    "upstreamMultiproviderSpecs": {
+      "total": 0,
+      "covered": 0,
+      "note": "No upstream vitest spec (tests/*.spec.ts) names the pool manager, /vprovider or settings-ui; tests/multilogin.spec.ts only covers the login helpers owned by lane m-cmd-a1. Every scenario is derived from the upstream sources."
+    },
+    "referenceFixtureSha256": "8e529267bf6e1c5f2c19c8b7d24904da6c0a94146af589ce9cccc1eaee4dad8c",
+    "referenceRerunsByteIdentical": 2,
+    "replayTests": {
+      "tests/commands_a2.rs::pool_screen_matches_the_upstream_reference": 22,
+      "tests/commands_a2.rs::vprovider_matches_the_upstream_reference": 24,
+      "tests/commands_a2.rs::format_ms_matches_the_upstream_reference": 1,
+      "tests/commands_a2.rs::projected_controls_are_valid_native_dialogs": {
+        "controls": 255,
+        "replies": 211
+      }
+    },
+    "temporaryCopies": {
+      "src/commands/port.rs": "269dce01b00260aba279364b08ef07fe82eac6691c5c3e566ca004426fc865db (verbatim copy of lane m-cmd-a1's uncommitted port.rs; drop it at merge)",
+      "src/commands/mod.rs": "c1839c857f8471e72bdf5a8b049714dc36020fa750b837b8f47f4fe226d7b2fd (base file plus `pub mod port;`; drop it at merge)"
+    }
+  },
+  "compared": [
+    "Projected UI trace per scenario: every native control with the reply that produced it - settings rows (id, label, value, description, values, submenu, query, selected), select choices with the pre-selected value, input initialValue/trim/integerMin, and confirm controls",
+    "Store requests issued by the pool manager callbacks, in order and in the store's request shape (pool, getScheduler, setPool, account, remove, setScheduler with its clear list)",
+    "reconcile calls and service.updateSchedulerDefaults payloads",
+    "Notifications: text and kind",
+    "The pool buffer after the screen closes (policy, affinity, includeUpstream, upstream) and the returned PoolAction (closed/add/reauth)",
+    "The final multiprovider-auth.json text, compared byte for byte, after the scenario's setup and flow",
+    "The /vprovider editor's settings/input controls, the page errors appended to descriptions, the confirmation control and the notifications",
+    "Every projected control (255) parses through rpi-plugin-sdk's Dialog::parse and every recorded reply (211) answers it, so the H09 native dialog contract accepts the projections",
+    "formatMs over 22 durations including fractional seconds, minutes and hours",
+    "Every scripted native reply is consumed by the Rust flow"
+  ],
+  "limits": [
+    "The pool manager is driven directly through openPoolManager with the /multilogin callback block copied verbatim from extensions/multiprovider.ts; the login loop that calls it (Port::pool_manager) belongs to lane m-cmd-a1 and is not exercised here.",
+    "The /vprovider fixture records the UI trace only: the extension's reconcile performs many store reads that the port abstracts as one call, so store requests are not part of that trace. The store effects are compared through the final multiprovider-auth.json.",
+    "input.answers for these scenarios is the recorded native reply for every control shown (derived from the scripted steps); the independent script is input.steps. The control sequence itself is what is compared.",
+    "Provider logins are never executed: the pool manager scenarios stop at the add/reauth action.",
+    "The concrete host adapter (rpi-plugin-sdk dialogs, the Pi session and service) is not exercised; the port is driven through Ui and Port fakes."
+  ],
+  "notTested": [
+    "Integer input validation errors: the native host enforces trim, ASCII digits, the safe-integer range and integerMin before the extension sees a reply, so upstream's own 'Enter an integer greater than or equal to N.' branch is unreachable in the native flow. The port mirrors the host's rule defensively (settings::integer_reply) but no fixture covers a rejected value.",
+    "The backend 'Set weight' input page is unreachable upstream (the trailing goTo(menu) overrides it). The port keeps the branch; one scenario pins the observable return to the menu.",
+    "Editor weight validation ('Weight must be an integer >= 1.') is unreachable for the same reason.",
+    "Native select search/ranking: the upstream SelectList has no search box, so the select controls are not searchable and the host's ranking is unused.",
+    "A store error raised inside a change (upstream notifies it and still refreshes): no scenario can deterministically make the store reject the screen's own edits, because the port validates labels, weights and scheduler values before it writes. The port implements the notify-and-refresh path.",
+    "Live rendering: theme colors, row alignment, scrolling and the search fuzzy ranking are host concerns; the projection carries plain text and the complete row list with the query.",
+    "Scheduler option values outside the declared lists are only covered for rateLimitCooldownMs (45000 ms), which exercises the pushed option branch; the other five rows use declared options.",
+    "Non-ASCII provider names in the candidate sort: Rust collation is exercised for the ASCII world only (en-US locale pinned)."
+  ]
+}
