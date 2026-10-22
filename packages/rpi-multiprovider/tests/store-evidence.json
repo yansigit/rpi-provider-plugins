@@ -1,17 +1,23 @@
 {
-  "status": "Native account records and file locking verified; credential resolution, native callbacks and command integration pending",
+  "status": "Native account records, add-by-login record creation, file locking and atomic private writes verified; credential resolution, native callbacks and command integration pending",
   "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
   "referenceNode": "24.22.0",
   "checks": {
-    "toolchain": "1.78.0",
+    "toolchain": "1.78.0 (declared minimum, warnings denied) and default 1.95.0, separate target directories",
     "warnings": "denied",
-    "nativePackageTestsPassed": 12,
-    "subprocessEntryReportedIgnored": 1,
+    "nativePackageTestsPassed": 23,
+    "subprocessEntryReportedIgnored": 2,
     "actualConcurrentWriterProcesses": 8,
-    "referenceScenarios": 38,
-    "referenceOperations": 160,
-    "referenceFixtureSha256": "da4d367e7b1eddcac7adb8b6d59c02acc0e4480d82f92f35456f401617b523bd",
-    "antigravityRosterRegressionTestsPassed": 6
+    "actualConcurrentLoginProcesses": 8,
+    "referenceScenarios": 44,
+    "referenceOperations": 188,
+    "referenceFixtureSha256": "db9a69ec35d961ee80f45f13e16e0cf3cd6b94cc38e1451ff1fedce06e6e9ab8",
+    "referenceScriptSha256": "be787a59c0ffa351f6f7c0fd54a494ae4c469b2a66d31b421c6f3e7ebc2a90ea",
+    "upstreamSourceSha256": {
+      "src/auth-store.ts": "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6"
+    },
+    "antigravityRosterRegressionTestsPassed": 6,
+    "mutationChecks": "Dropping the pending-pool policy assignment or the null-enabled fallback each made the matching Rust comparison fail; sources were restored before commit"
   },
   "comparisons": [
     "Ordered public results and validation errors",
@@ -19,29 +25,35 @@
     "Account identity, timestamps and credentials across replacement",
     "Pool preferences, scheduler overrides and virtual template normalization",
     "Unknown fields and source schema quirks",
-    "ICU 78.3 / CLDR 48 virtual-provider ordering"
+    "ICU 78.3 / CLDR 48 virtual-provider ordering",
+    "Add-by-login: the created public record, the pool the first account materializes from the buffered settings, later accounts, OAuth first accounts, empty upstream buffers, null enabled/priority fallbacks and validation refusals, with the exact persisted file after every step"
   ],
   "faultChecks": [
     "Competing processes retain all accounts",
+    "Eight concurrent logins create one pool with all eight accounts and the buffered settings",
     "Cancelled lock waiter leaves the owner lock intact",
     "Stale lock replacement and live lock timeout",
     "Temporary-file failure retains the old file and releases its lock",
-    "An admitted write completes after its waiter is dropped"
+    "An admitted write completes after its waiter is dropped",
+    "A refused add-by-login writes no file and leaks no credential"
   ],
   "limits": [
     "The original atomic account-store writer does not fsync; journal durability is a separate contract.",
     "Malformed JSON error presentation awaits the requested redaction exception.",
     "Provider-owned authentication, OAuth refresh and native credential-store callbacks are not covered by these record tests.",
+    "The host's credential-store callback still exposes only read, lock, replace and remove; the add-by-login action is implemented and verified in the private port but is not yet wired to a host caller (M-NATIVE login).",
     "Native extension loading, commands, session lifecycle, stream wrapping and combined acceptance remain required.",
     "Only Linux execution was performed."
   ],
   "privateTransactionPort": {
-    "testsPassed": 1,
+    "testsPassed": 5,
     "checks": [
       "Provider/account identity binding",
       "Opaque lock identity and idempotent release",
       "Persisted OAuth milliseconds and metadata before acknowledgement",
-      "Refusal of released transactions and disabled accounts"
+      "Refusal of released transactions and disabled accounts",
+      "Add-by-login creates the pending pool record atomically, privately and addressably",
+      "Add-by-login validation and unsafe provider keys are refused without writing"
     ],
     "nativeCallbackIntegration": "pending"
   }

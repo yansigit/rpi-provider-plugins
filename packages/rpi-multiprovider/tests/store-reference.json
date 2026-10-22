@@ -1464,6 +1464,729 @@
       ]
     },
     {
+      "name": "add by login creates the pending pool",
+      "actions": [
+        {
+          "op": "pool"
+        },
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Example 1",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            },
+            "pool": {
+              "policy": "priority",
+              "affinity": false,
+              "includeUpstream": false,
+              "upstream": {
+                "label": " Home ",
+                "weight": 3,
+                "priority": 2.7
+              }
+            }
+          }
+        },
+        {
+          "op": "pool"
+        },
+        {
+          "op": "has"
+        },
+        {
+          "op": "list"
+        }
+      ],
+      "results": [
+        {
+          "result": null,
+          "persisted": null,
+          "mode": null
+        },
+        {
+          "result": {
+            "id": "fixture-1",
+            "label": "Example 1",
+            "authKind": "api-key",
+            "enabled": true,
+            "weight": 1,
+            "priority": 1,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": false,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3,\n        \"priority\": 2\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "providerId": "example",
+            "policy": "priority",
+            "affinity": false,
+            "includeUpstream": false,
+            "upstream": {
+              "label": "Home",
+              "weight": 3,
+              "priority": 2
+            },
+            "accounts": [
+              {
+                "id": "fixture-1",
+                "label": "Example 1",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              }
+            ]
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": false,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3,\n        \"priority\": 2\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": true,
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": false,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3,\n        \"priority\": 2\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": [
+            "example"
+          ],
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": false,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3,\n        \"priority\": 2\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        }
+      ]
+    },
+    {
+      "name": "add by login later accounts keep the pool",
+      "actions": [
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Example 1",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            },
+            "pool": {
+              "policy": "priority",
+              "affinity": true,
+              "includeUpstream": true,
+              "upstream": {
+                "label": "Home",
+                "weight": 3
+              }
+            }
+          }
+        },
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Example 2",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            }
+          }
+        },
+        {
+          "op": "pool"
+        },
+        {
+          "op": "list"
+        },
+        {
+          "op": "has"
+        }
+      ],
+      "results": [
+        {
+          "result": {
+            "id": "fixture-1",
+            "label": "Example 1",
+            "authKind": "api-key",
+            "enabled": true,
+            "weight": 1,
+            "priority": 1,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "id": "fixture-3",
+            "label": "Example 2",
+            "authKind": "api-key",
+            "enabled": true,
+            "weight": 1,
+            "priority": 2,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        },\n        {\n          \"id\": \"fixture-3\",\n          \"label\": \"Example 2\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 2,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "providerId": "example",
+            "policy": "priority",
+            "affinity": true,
+            "includeUpstream": true,
+            "upstream": {
+              "label": "Home",
+              "weight": 3
+            },
+            "accounts": [
+              {
+                "id": "fixture-1",
+                "label": "Example 1",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              },
+              {
+                "id": "fixture-3",
+                "label": "Example 2",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              }
+            ]
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        },\n        {\n          \"id\": \"fixture-3\",\n          \"label\": \"Example 2\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 2,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": [
+            "example"
+          ],
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        },\n        {\n          \"id\": \"fixture-3\",\n          \"label\": \"Example 2\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 2,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": true,
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"priority\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        },\n        {\n          \"id\": \"fixture-3\",\n          \"label\": \"Example 2\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 2,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"label\": \"Home\",\n        \"weight\": 3\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        }
+      ]
+    },
+    {
+      "name": "add by login oauth first account",
+      "actions": [
+        {
+          "op": "pool"
+        },
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "OAuth",
+            "credential": {
+              "type": "oauth",
+              "refresh": "fixture-refresh",
+              "access": "fixture-access",
+              "expires": 1700000061234,
+              "project": "fixture-project"
+            },
+            "pool": {
+              "policy": "round-robin",
+              "affinity": true,
+              "includeUpstream": false,
+              "upstream": {
+                "weight": 4.9
+              }
+            }
+          }
+        },
+        {
+          "op": "pool"
+        },
+        {
+          "op": "has"
+        },
+        {
+          "op": "replace",
+          "credential": {
+            "type": "oauth",
+            "refresh": "fixture-rotated",
+            "access": "fixture-access",
+            "expires": 1800000000123
+          }
+        },
+        {
+          "op": "pool"
+        }
+      ],
+      "results": [
+        {
+          "result": null,
+          "persisted": null,
+          "mode": null
+        },
+        {
+          "result": {
+            "id": "fixture-1",
+            "label": "OAuth",
+            "authKind": "oauth",
+            "enabled": true,
+            "weight": 1,
+            "priority": 1,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"OAuth\",\n          \"authKind\": \"oauth\",\n          \"credential\": {\n            \"type\": \"oauth\",\n            \"refresh\": \"fixture-refresh\",\n            \"access\": \"fixture-access\",\n            \"expires\": 1700000061234,\n            \"project\": \"fixture-project\"\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"weight\": 4\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "providerId": "example",
+            "policy": "round-robin",
+            "affinity": true,
+            "includeUpstream": false,
+            "upstream": {
+              "weight": 4
+            },
+            "accounts": [
+              {
+                "id": "fixture-1",
+                "label": "OAuth",
+                "authKind": "oauth",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              }
+            ]
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"OAuth\",\n          \"authKind\": \"oauth\",\n          \"credential\": {\n            \"type\": \"oauth\",\n            \"refresh\": \"fixture-refresh\",\n            \"access\": \"fixture-access\",\n            \"expires\": 1700000061234,\n            \"project\": \"fixture-project\"\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"weight\": 4\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": true,
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"OAuth\",\n          \"authKind\": \"oauth\",\n          \"credential\": {\n            \"type\": \"oauth\",\n            \"refresh\": \"fixture-refresh\",\n            \"access\": \"fixture-access\",\n            \"expires\": 1700000061234,\n            \"project\": \"fixture-project\"\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"weight\": 4\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "id": "fixture-1",
+            "label": "OAuth",
+            "authKind": "oauth",
+            "enabled": true,
+            "weight": 1,
+            "priority": 1,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"OAuth\",\n          \"authKind\": \"oauth\",\n          \"credential\": {\n            \"type\": \"oauth\",\n            \"refresh\": \"fixture-rotated\",\n            \"access\": \"fixture-access\",\n            \"expires\": 1800000000123\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"weight\": 4\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "providerId": "example",
+            "policy": "round-robin",
+            "affinity": true,
+            "includeUpstream": false,
+            "upstream": {
+              "weight": 4
+            },
+            "accounts": [
+              {
+                "id": "fixture-1",
+                "label": "OAuth",
+                "authKind": "oauth",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              }
+            ]
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": false,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"OAuth\",\n          \"authKind\": \"oauth\",\n          \"credential\": {\n            \"type\": \"oauth\",\n            \"refresh\": \"fixture-rotated\",\n            \"access\": \"fixture-access\",\n            \"expires\": 1800000000123\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ],\n      \"upstream\": {\n        \"weight\": 4\n      }\n    }\n  }\n}\n",
+          "mode": 384
+        }
+      ]
+    },
+    {
+      "name": "add by login empty upstream buffer",
+      "actions": [
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Example 1",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            },
+            "pool": {
+              "policy": "weighted-round-robin",
+              "affinity": true,
+              "includeUpstream": true,
+              "upstream": {}
+            }
+          }
+        },
+        {
+          "op": "pool"
+        },
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Example 2",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            },
+            "pool": {
+              "policy": "round-robin",
+              "affinity": true,
+              "includeUpstream": true,
+              "upstream": {}
+            }
+          }
+        },
+        {
+          "op": "pool"
+        }
+      ],
+      "results": [
+        {
+          "result": {
+            "id": "fixture-1",
+            "label": "Example 1",
+            "authKind": "api-key",
+            "enabled": true,
+            "weight": 1,
+            "priority": 1,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"weighted-round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "providerId": "example",
+            "policy": "weighted-round-robin",
+            "affinity": true,
+            "includeUpstream": true,
+            "accounts": [
+              {
+                "id": "fixture-1",
+                "label": "Example 1",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              }
+            ]
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"weighted-round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "id": "fixture-3",
+            "label": "Example 2",
+            "authKind": "api-key",
+            "enabled": true,
+            "weight": 1,
+            "priority": 2,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        },\n        {\n          \"id\": \"fixture-3\",\n          \"label\": \"Example 2\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 2,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "providerId": "example",
+            "policy": "round-robin",
+            "affinity": true,
+            "includeUpstream": true,
+            "accounts": [
+              {
+                "id": "fixture-1",
+                "label": "Example 1",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              },
+              {
+                "id": "fixture-3",
+                "label": "Example 2",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 2,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              }
+            ]
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Example 1\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        },\n        {\n          \"id\": \"fixture-3\",\n          \"label\": \"Example 2\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 2,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        }
+      ]
+    },
+    {
+      "name": "add by login null enabled and priority fallback",
+      "actions": [
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "First",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            },
+            "enabled": null,
+            "weight": null,
+            "priority": null
+          }
+        },
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Second",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            },
+            "enabled": false,
+            "weight": 2.9,
+            "priority": 3.1
+          }
+        },
+        {
+          "op": "pool"
+        }
+      ],
+      "results": [
+        {
+          "result": {
+            "id": "fixture-1",
+            "label": "First",
+            "authKind": "api-key",
+            "enabled": true,
+            "weight": 1,
+            "priority": 1,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"First\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "id": "fixture-3",
+            "label": "Second",
+            "authKind": "api-key",
+            "enabled": false,
+            "weight": 2,
+            "priority": 3,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"First\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        },\n        {\n          \"id\": \"fixture-3\",\n          \"label\": \"Second\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": false,\n          \"weight\": 2,\n          \"priority\": 3,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "providerId": "example",
+            "policy": "round-robin",
+            "affinity": true,
+            "includeUpstream": true,
+            "accounts": [
+              {
+                "id": "fixture-1",
+                "label": "First",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              },
+              {
+                "id": "fixture-3",
+                "label": "Second",
+                "authKind": "api-key",
+                "enabled": false,
+                "weight": 2,
+                "priority": 3,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              }
+            ]
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"First\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        },\n        {\n          \"id\": \"fixture-3\",\n          \"label\": \"Second\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": false,\n          \"weight\": 2,\n          \"priority\": 3,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        }
+      ]
+    },
+    {
+      "name": "add by login validation",
+      "actions": [
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": " ",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            }
+          }
+        },
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Work",
+            "credential": null
+          }
+        },
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Work",
+            "credential": {
+              "type": "custom"
+            }
+          }
+        },
+        {
+          "op": "add",
+          "provider": "example",
+          "input": {
+            "label": "Fine",
+            "credential": {
+              "type": "api_key",
+              "key": "fixture-secret",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            }
+          }
+        },
+        {
+          "op": "pool"
+        }
+      ],
+      "results": [
+        {
+          "error": {
+            "name": "Error",
+            "message": "multiprovider: account label is required"
+          },
+          "persisted": null,
+          "mode": null
+        },
+        {
+          "error": {
+            "name": "Error",
+            "message": "multiprovider: malformed stored credential"
+          },
+          "persisted": null,
+          "mode": null
+        },
+        {
+          "error": {
+            "name": "Error",
+            "message": "multiprovider: unsupported stored credential type"
+          },
+          "persisted": null,
+          "mode": null
+        },
+        {
+          "result": {
+            "id": "fixture-1",
+            "label": "Fine",
+            "authKind": "api-key",
+            "enabled": true,
+            "weight": 1,
+            "priority": 1,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Fine\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        },
+        {
+          "result": {
+            "providerId": "example",
+            "policy": "round-robin",
+            "affinity": true,
+            "includeUpstream": true,
+            "accounts": [
+              {
+                "id": "fixture-1",
+                "label": "Fine",
+                "authKind": "api-key",
+                "enabled": true,
+                "weight": 1,
+                "priority": 1,
+                "createdAt": "2023-11-14T22:13:20.000Z",
+                "updatedAt": "2023-11-14T22:13:20.000Z"
+              }
+            ]
+          },
+          "persisted": "{\n  \"version\": 1,\n  \"providers\": {\n    \"example\": {\n      \"policy\": \"round-robin\",\n      \"affinity\": true,\n      \"includeUpstream\": true,\n      \"accounts\": [\n        {\n          \"id\": \"fixture-1\",\n          \"label\": \"Fine\",\n          \"authKind\": \"api-key\",\n          \"credential\": {\n            \"type\": \"api_key\",\n            \"key\": \"fixture-secret\",\n            \"env\": {\n              \"ACCOUNT_REGION\": \"west\"\n            }\n          },\n          \"enabled\": true,\n          \"weight\": 1,\n          \"priority\": 1,\n          \"createdAt\": \"2023-11-14T22:13:20.000Z\",\n          \"updatedAt\": \"2023-11-14T22:13:20.000Z\"\n        }\n      ]\n    }\n  }\n}\n",
+          "mode": 384
+        }
+      ]
+    },
+    {
       "name": "load root null",
       "initial": null,
       "actions": [
