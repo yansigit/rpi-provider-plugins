@@ -1,4 +1,11 @@
 //! Private credential transactions for the host's provider-owned auth resolver.
+//!
+//! Besides reading, locking, replacing and removing an existing account, the
+//! port can create the record a completed login produces (`"add"`). That is the
+//! upstream `MultiAuthStore.addAccount` path: the first account of a provider
+//! materializes the pool the pool manager had only buffered, applying the
+//! buffered policy, affinity, includeUpstream and upstream preferences, and the
+//! resulting file is byte-identical to Pi's.
 use super::{cancelled, records, schema, Failure, Lock, Store};
 use crate::services::Error;
 use serde_json::{json, Value};
@@ -49,10 +56,15 @@ impl Port {
             return Err(error("invalid credential store request"));
         }
         let provider = field(&input, "providerId")?.to_owned();
-        let id = field(&input, "accountId")?.to_owned();
         schema::safe_key(&provider, "provider id")?;
+        let action = field(&input, "action")?;
+        // A login-added record has no account identity yet: the store mints one.
+        if action == "add" {
+            return self.add(provider, input["input"].clone(), signal).await;
+        }
+        let id = field(&input, "accountId")?.to_owned();
         schema::safe_key(&id, "account id")?;
-        match field(&input, "action")? {
+        match action {
             "read" => {
                 let store = self.store.clone();
                 blocking(move || {
@@ -131,6 +143,32 @@ impl Port {
             }
             _ => Err(error("unknown credential store operation")),
         }
+    }
+    /// Creates the record a completed login produces. The account is pending
+    /// until this write commits: it takes the store lock, reads the current
+    /// state, runs the same `add` operation the pool manager uses and persists
+    /// atomically. The result is the public account (its credential stays
+    /// private) and the file matches Pi's `addAccount` output byte for byte.
+    async fn add(
+        &self,
+        provider: String,
+        input: Value,
+        signal: CancellationToken,
+    ) -> Result<Value, Failure> {
+        let mut request = json!({"op":"add","provider":provider,"input":input});
+        records::prepare(&mut request)?;
+        let store = self.store.clone();
+        blocking(move || {
+            if signal.is_cancelled() {
+                return Err(cancelled());
+            }
+            let _lock = store.lock(&signal)?;
+            let mut state = store.read()?;
+            let account = records::execute(&mut state, &request, &*store.now, &*store.random_id)?;
+            store.write(&state)?;
+            Ok(result("account", account))
+        })
+        .await
     }
     /// In-progress persistence owns its guard even if the host releases early.
     pub fn release(&self, token: &str) {

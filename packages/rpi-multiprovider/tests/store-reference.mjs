@@ -1,12 +1,22 @@
+// Drives the unchanged multiprovider `MultiAuthStore` (src/auth-store.ts) with
+// injected clock and ids and records every result plus the exact persisted file
+// and mode. Usage:
+//   node tests/store-reference.mjs [--check | --write] [upstream-root]
+// Prints the fixture, compares it with tests/store-reference.json in check mode
+// (default) or replaces that fixture in write mode. Run with LC_ALL=en_US.UTF-8.
 import assert from "node:assert/strict";
 import crypto, { createHash } from "node:crypto";
 import { syncBuiltinESMExports } from "node:module";
 import { mkdtemp, readFile, writeFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-const root = resolve(process.argv[2] ?? "../provider-references/multiprovider");
+const here = dirname(fileURLToPath(import.meta.url));
+const args = process.argv.slice(2);
+const runMode = args.includes("--write") ? "write" : args.includes("--check") ? "check" : "print";
+const root = resolve(args.find(argument => !argument.startsWith("--")) ?? join(here, "../../../../provider-references/multiprovider"));
+const fixturePath = join(here, "store-reference.json");
 // Upstream sorting follows the default locale; the fixture is generated under en-US.
 assert.equal(new Intl.Collator().resolvedOptions().locale, "en-US", "run with LC_ALL=en_US.UTF-8");
 const file = join(root, "src/auth-store.ts");
@@ -23,6 +33,9 @@ syncBuiltinESMExports();
 const { MultiAuthStore } = await import(pathToFileURL(file));
 const credential = { type: "api_key", key: "fixture-secret", env: { ACCOUNT_REGION: "west" } };
 const add = (input = {}, provider = "example") => ({ op: "add", provider, input: { label: "Work", credential, ...input } });
+// The pool manager's buffered settings. `/multilogin` passes all four on the add
+// that creates a pool and omits `pool` once the pool exists.
+const buffer = (settings = {}) => ({ policy: "round-robin", affinity: true, includeUpstream: true, upstream: {}, ...settings });
 const template = { api: "test-api", baseUrl: "https://example.invalid", reasoning: true,
   thinkingLevelMap: { high: "high-effort", off: null }, input: ["text"],
   cost: { input: 1, output: 2, cacheRead: .5, cacheWrite: 0 }, contextWindow: 1000, maxTokens: 100 };
@@ -36,6 +49,49 @@ const cases = [
   { name: "virtual lifecycle", actions: [{ op: "saveVirtual", input: virtual }, { op: "getVirtual", id: "pooled" }, { op: "listVirtual" }, { op: "saveVirtual", input: { ...virtual, models: [{ id: "ultra", label: " Fast ", backends: [{ providerId: "prov-a", modelId: "model-a" }] }] } }, { op: "getVirtual", id: "pooled" }, { op: "removeVirtual", id: "pooled" }, { op: "listVirtual" }, { op: "removeVirtual", id: "pooled" }] },
   { name: "safe keys and missing accounts", actions: [add({}, "__proto__"), add({}, "constructor"), add({}, "prototype"), add({}, "\uFEFF"), add({ label: " " }), add({ credential: null }), add({ credential: { type: "custom" } }), { op: "replace", credential }, { op: "account", input: { label: "x" } }, { op: "setPool", input: {} }, add(), { op: "account", input: { label: " " } }, { op: "replace", credential: { type: "custom" } }] },
   { name: "identity order and whitespace", actions: [add({}, "zeta"), add({}, "alpha"), add({}, "10"), add({}, "2"), { op: "list" }, { op: "pool", provider: "2" }, add({ label: "\uFEFF Label \uFEFF" }, " \u0085 "), { op: "list" }] },
+  // Add-by-login: `/multilogin` runs the provider login, then `addAccount` with
+  // the pool manager's buffered settings when no pool exists yet ("pending
+  // pool"). These cases pin the created record and the exact persisted file.
+  { name: "add by login creates the pending pool", actions: [
+    { op: "pool" },
+    add({ label: "Example 1", pool: buffer({ policy: "priority", affinity: false, includeUpstream: false, upstream: { label: " Home ", weight: 3, priority: 2.7 } }) }),
+    { op: "pool" },
+    { op: "has" },
+    { op: "list" },
+  ] },
+  { name: "add by login later accounts keep the pool", actions: [
+    add({ label: "Example 1", pool: buffer({ policy: "priority", upstream: { label: "Home", weight: 3 } }) }),
+    add({ label: "Example 2" }),
+    { op: "pool" },
+    { op: "list" },
+    { op: "has" },
+  ] },
+  { name: "add by login oauth first account", actions: [
+    { op: "pool" },
+    add({ label: "OAuth", credential: { type: "oauth", refresh: "fixture-refresh", access: "fixture-access", expires: 1700000061234, project: "fixture-project" }, pool: buffer({ includeUpstream: false, upstream: { weight: 4.9 } }) }),
+    { op: "pool" },
+    { op: "has" },
+    { op: "replace", credential: { type: "oauth", refresh: "fixture-rotated", access: "fixture-access", expires: 1800000000123 } },
+    { op: "pool" },
+  ] },
+  { name: "add by login empty upstream buffer", actions: [
+    add({ label: "Example 1", pool: buffer({ policy: "weighted-round-robin" }) }),
+    { op: "pool" },
+    add({ label: "Example 2", pool: buffer() }),
+    { op: "pool" },
+  ] },
+  { name: "add by login null enabled and priority fallback", actions: [
+    add({ label: "First", enabled: null, weight: null, priority: null }),
+    add({ label: "Second", enabled: false, weight: 2.9, priority: 3.1 }),
+    { op: "pool" },
+  ] },
+  { name: "add by login validation", actions: [
+    add({ label: " " }),
+    add({ credential: null }),
+    add({ credential: { type: "custom" } }),
+    add({ label: "Fine" }),
+    { op: "pool" },
+  ] },
 ];
 for (const [name, state] of [
   ["root null", null], ["root number", 7], ["root array", []], ["version", { version: 2, providers: {} }],
@@ -106,4 +162,20 @@ for (const scenario of cases) {
     scenario.results = results;
   } finally { await rm(directory, { recursive: true, force: true }); }
 }
-process.stdout.write(`${JSON.stringify({ reference: "bd97d65a36f541935dc91e33ba15d7910a30f9d7", cases }, null, 2)}\n`);
+const text = `${JSON.stringify({ reference: "bd97d65a36f541935dc91e33ba15d7910a30f9d7", cases }, null, 2)}\n`;
+if (runMode === "write") {
+  await writeFile(fixturePath, text);
+  process.stdout.write(`wrote ${cases.length} cases to ${fixturePath}\n`);
+} else if (runMode === "check") {
+  const expected = await readFile(fixturePath, "utf8");
+  if (expected !== text) {
+    const expectedLines = expected.split("\n");
+    const actualLines = text.split("\n");
+    const index = actualLines.findIndex((line, i) => line !== expectedLines[i]);
+    process.stderr.write(`store-reference.json differs at line ${index + 1}\n`);
+    process.exit(1);
+  }
+  process.stdout.write("store-reference.json matches the regenerated reference\n");
+} else {
+  process.stdout.write(text);
+}
