@@ -1,0 +1,68 @@
+{
+  "status": "Registration, active-account and account-change services verified against unchanged upstream register.ts/announcement.ts through an injected service port; native rpi register_service binding pending",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "service": {
+    "id": "pi-multiprovider",
+    "serviceVersion": 1,
+    "methods": ["providers", "accounts", "getActiveAccount", "resolveActiveAccountAuth"],
+    "topics": ["providerRegistered", "providerUnregistered", "activeAccountChanged"]
+  },
+  "upstreamSha256": {
+    "src/announcement.ts": "fc0bf72467dba7b524146ade4a66c420d546a01e7867b8095c8b7d8b1804ae18",
+    "src/register.ts": "946932988b5884081d0f173b464e1b2d42740849803463bdb8fd9841fcc87449",
+    "src/service.ts": "2eafa61662b3ee75a96a7b07a6ccad62ca600bbb2139a407b81cd9983564a026",
+    "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+    "tests/announcement.spec.ts": "eb7d75aba8b3fd10edd175cb8a9262bd3ed280f1a71a476c44eb356ad55cde1a",
+    "tests/extension-resume.spec.ts": "fb768939799048972fbb4d805fb110a400435c3ce000325cea8df54ced18caac"
+  },
+  "checks": {
+    "rustToolchain": "1.78.0",
+    "warnings": "denied",
+    "defaultToolchain": "1.95.0",
+    "suiteTestsPassed": 14,
+    "crateTestsPassed": 33,
+    "crateTestsIgnored": 1,
+    "registrationCases": 3,
+    "serviceCases": 10,
+    "upstreamAnnouncementSpecCases": 6,
+    "upstreamAnnouncementDifferentialCasesInAnnouncementSuite": 27,
+    "fixtureSha256": "b1116298e878337162f91e008d691bc0d16fb7302b2e2fa3c4bc2be8be56c081",
+    "referenceRunsByteIdentical": 2
+  },
+  "compared": [
+    "register.ts announce timing: one emit per registration call, one per installed session_start handler, in call order",
+    "register.ts event name pi-multiprovider:register and value identity (every emit is the exact integration object)",
+    "Descriptor projection of id/label and optional managementHint/selectionBias, with absent fields staying absent",
+    "Consumer inventory: last value per id at the first registration position; a repeated id is announced again and the session-start replay keeps the value that call supplied",
+    "announcement.ts getActiveAccount: explicit pin, implicit affinity selection, upstream account, stale pin and missing integration",
+    "announcement.ts resolveActiveAccountAuth: stored credential source, bearer header extraction, resolver failure, blank token and upstream-account suppression",
+    "Session context and cancellation signal crossing the service call into the integration",
+    "onActiveAccountChanged fan-out per provider, unsubscribe, and a throwing listener isolated from siblings",
+    "Account inventory whitelist (id/label/authKind) in integration order; unknown provider is null and inventory failure propagates",
+    "Host envelope validation (version, service id, serviceVersion, method type, malformed JSON) with {version:1,error} replies",
+    "Manifest shape, identifier alphabet/limits, method/topic uniqueness and exact manifest fields",
+    "Publication order/sequence for providerRegistered, providerUnregistered and activeAccountChanged; idempotent unregister",
+    "Publication failure propagates while keeping local inventory and notifying in-process listeners first"
+  ],
+  "commands": [
+    "node --experimental-transform-types packages/rpi-multiprovider/tests/m_native_svc-reference.mjs  (twice; byte-identical)",
+    "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-multiprovider --locked",
+    "cargo test -p rpi-multiprovider --locked"
+  ],
+  "notTested": [
+    "The native binary: this package still has no rpi extension entrypoint, so register_service, the extern callback, string ownership and native_request publish are exercised only through the injected Port trait.",
+    "Host subscription lifecycle (subscribe/next/unsubscribe, 64-event/4 MiB bounds, owner unload, backpressure) is host infrastructure and is not re-tested here.",
+    "Real native-library loading, session assembly and Linux/macOS/Windows execution.",
+    "A compatible Fabric consumer (M09) and combined packages.",
+    "The 27-case announcement differential suite already covered by tests/announcement.rs is not duplicated; this suite replays the 6 upstream spec scenarios plus native-only envelope/publication cases.",
+    "Topic payload shapes are the native contract mapping of upstream event values; upstream has no wire equivalent to compare them against."
+  ],
+  "bindingGaps": [
+    "src/native/mod.rs has no plugin register entrypoint (owned by m-native); it must call register_service with manifest_json() and route the callback through NativeServices::respond.",
+    "The service callback is synchronous: the binding must block on respond() on a runtime it owns, copy the returned JSON into an SDK-owned StbString, and honour AuthRequestControl cancellation as a CancellationToken.",
+    "Port::publish must call native_request {port:'services',action:'publish',service,serviceVersion,topic,value} and return the committed sequence; the current Port trait is the only host-facing seam.",
+    "A session context source (MultiProviderServiceContext equivalent: model, modelRegistry/sessionManager lookups) and the integration/base-provider/affinity-key lookups must be wired by the extension; m-native does not exist yet.",
+    "m-native must call register_provider for each registerMultiProvider integration and session_start on each session start; unregister_provider is native-only."
+  ]
+}
