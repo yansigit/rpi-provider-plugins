@@ -1,0 +1,1414 @@
+{
+  "status": "I02 package half: imported history carries no Cursor management authority",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "pi": "1.3.0",
+  "node": "24.22.0",
+  "upstreamHashes": {
+    "cursor/dist/cursor-session-agent-resume.js": "5d8be20b675cc680704b3a7afbb8f002543d3d709bc0f3ac717b0d21bd0b8ef8",
+    "cursor/dist/cursor-session-agent-cleanup.js": "5f70d4b33489ae2d32ea241cbab6434769b726b11bf3823b6ece41c0ce8bcff6",
+    "cursor/dist/cursor-cloud-lifecycle.js": "62587e86a4c17a486447cf599712281832c53f082614ef28d485e855763c967a",
+    "cursor/shared/cursor-cloud-lifecycle-constants.mjs": "b232945db6ac46efca48b1c197012316421d06d83287b4d2ffd5d3e8012382fa",
+    "integrated/node_modules/@earendil-works/pi-coding-agent/dist/core/session-manager.js": "046b6a1109ac3f0ed893bb85bf0648709362fa926a5da75761216cf2fcf9d926"
+  },
+  "counts": {
+    "cases": 38,
+    "resume": 21,
+    "cleanup": 5,
+    "cloud": 12,
+    "refused": 31,
+    "allowed": 7
+  },
+  "cases": [
+    {
+      "id": "resume-native",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": true,
+        "code": null,
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": "agent-abc",
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-crlf",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}\r",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}\r"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": true,
+        "code": null,
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": "agent-abc",
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-imported-header",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":3,\"id\":\"0193aa1b-0000-7000-8000-000000000001\",\"imported\":{\"source\":\"pi\",\"sourcePath\":\"/home/u/.pi/agent/sessions/a.jsonl\",\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"sessionVersion\":3}}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "imported-origin",
+        "origin": "imported",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-imported-location",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/pi-import/0193aa1b-0000-7000-8000-000000000001.abc123456789.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "imported-location",
+        "origin": "imported",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-pi-version",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":3,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "obsolete-session-version",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-future-version",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":5,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "unknown-session-version",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-header-id-traversal",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"../escape\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "../escape",
+        "sessionIdValid": false,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "unsafe-identifier",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-entry-id-traversal",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"../../entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "unsafe-identifier",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-entry-parent-traversal",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":\"../parent\",\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "unsafe-identifier",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-entry-imported",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"imported\":{\"source\":\"pi\"},\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "imported-entry-origin",
+        "origin": "imported",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-entry-data-imported",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"},\"imported\":{\"source\":\"pi\",\"sourcePath\":\"/home/u/.pi/agent/sessions/a.jsonl\",\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"sessionVersion\":3}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "imported-entry-origin",
+        "origin": "imported",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-marker-forged",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":3,\"id\":\"0193aa1b-0000-7000-8000-000000000001\",\"imported\":{\"source\":\"rpi\",\"sourcePath\":\"/home/u/.pi/agent/sessions/a.jsonl\",\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"sessionVersion\":3}}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "imported-origin-forged",
+        "origin": "imported",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-marker-traversal",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":3,\"id\":\"0193aa1b-0000-7000-8000-000000000001\",\"imported\":{\"source\":\"pi\",\"sourcePath\":\"/home/u/.pi/../../etc/a.jsonl\",\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"sessionVersion\":3}}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "unsafe-source-path",
+        "origin": "imported",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-marker-bad-digest",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":3,\"id\":\"0193aa1b-0000-7000-8000-000000000001\",\"imported\":{\"source\":\"pi\",\"sourcePath\":\"/home/u/.pi/agent/sessions/a.jsonl\",\"sha256\":\"abc\",\"sessionVersion\":3}}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "imported-marker-invalid",
+        "origin": "imported",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-marker-future-version",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":3,\"id\":\"0193aa1b-0000-7000-8000-000000000001\",\"imported\":{\"source\":\"pi\",\"sourcePath\":\"/home/u/.pi/agent/sessions/a.jsonl\",\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"sessionVersion\":4}}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "unsupported-imported-version",
+        "origin": "imported",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-legacy-entry",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":1,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 1,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "obsolete-resume-entry",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-rejected-version",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":3,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": false,
+            "version": null,
+            "agentId": null
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "invalid-resume-entry",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-agent-traversal",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-../escape\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": false,
+            "version": null,
+            "agentId": null
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "invalid-resume-entry",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-session-id-mismatch",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000002\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "mismatched-session-identity",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-session-file-mismatch",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000002.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "mismatched-session-identity",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "resume-missing-entry",
+      "authority": "resume",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "resume",
+        "allowed": false,
+        "code": "missing-resume-entry",
+        "origin": "native",
+        "freshAgent": true,
+        "notice": "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.",
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cleanup-native-empty-ledger",
+      "authority": "cleanup",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "cleanup",
+        "allowed": true,
+        "code": null,
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": "agent-abc",
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cleanup-intent-pending",
+      "authority": "cleanup",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-cleanup\",\"data\":{\"action\":\"delete\",\"runtime\":\"local\",\"timestamp\":\"2026-10-01T00:00:00.000Z\",\"candidateAgentIds\":[\"agent-old\"],\"phase\":\"intent\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [
+          {
+            "index": 1,
+            "accepted": true,
+            "action": "delete",
+            "phase": "intent"
+          }
+        ],
+        "cloud": []
+      },
+      "result": {
+        "authority": "cleanup",
+        "allowed": false,
+        "code": "active-custody",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": {
+          "agentId": "agent-old",
+          "action": "delete"
+        }
+      }
+    },
+    {
+      "id": "cleanup-intent-result",
+      "authority": "cleanup",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-cleanup\",\"data\":{\"action\":\"delete\",\"runtime\":\"local\",\"timestamp\":\"2026-10-01T00:00:00.000Z\",\"candidateAgentIds\":[\"agent-old\"],\"phase\":\"intent\"}}",
+        "{\"type\":\"custom\",\"id\":\"entry0003\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-cleanup\",\"data\":{\"action\":\"delete\",\"runtime\":\"local\",\"timestamp\":\"2026-10-01T00:00:01.000Z\",\"candidateAgentIds\":[\"agent-old\"],\"phase\":\"result\",\"deletedAgentIds\":[\"agent-old\"]}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [
+          {
+            "index": 1,
+            "accepted": true,
+            "action": "delete",
+            "phase": "intent"
+          },
+          {
+            "index": 2,
+            "accepted": true,
+            "action": "delete",
+            "phase": "result"
+          }
+        ],
+        "cloud": []
+      },
+      "result": {
+        "authority": "cleanup",
+        "allowed": true,
+        "code": null,
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": "agent-abc",
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cleanup-candidate-traversal",
+      "authority": "cleanup",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-cleanup\",\"data\":{\"action\":\"delete\",\"runtime\":\"local\",\"timestamp\":\"2026-10-01T00:00:00.000Z\",\"candidateAgentIds\":[\"../../agent-old\"],\"phase\":\"intent\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [
+          {
+            "index": 1,
+            "accepted": true,
+            "action": "delete",
+            "phase": "intent"
+          }
+        ],
+        "cloud": []
+      },
+      "result": {
+        "authority": "cleanup",
+        "allowed": false,
+        "code": "unsafe-agent-id",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cleanup-imported-session",
+      "authority": "cleanup",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":3,\"id\":\"0193aa1b-0000-7000-8000-000000000001\",\"imported\":{\"source\":\"pi\",\"sourcePath\":\"/home/u/.pi/agent/sessions/a.jsonl\",\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"sessionVersion\":3}}",
+        "{\"type\":\"custom\",\"id\":\"entry0001\",\"parentId\":null,\"customType\":\"cursor-sdk-agent-resume\",\"data\":{\"version\":2,\"runtime\":\"local\",\"agentId\":\"agent-abc\",\"scopeKey\":\"scope\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"cwd\":\"/p\",\"poolKey\":\"pool\",\"branchPathHash\":\"hash\",\"compactionGeneration\":0,\"sendState\":{\"bootstrapped\":false,\"contextFingerprint\":\"f\",\"incrementalSendCount\":0},\"createdAt\":\"2026-10-01T00:00:00.000Z\",\"storeIdentity\":{\"version\":1,\"stateRoot\":\"/home/u/.cursor/store\"}}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [
+          {
+            "index": 0,
+            "accepted": true,
+            "version": 2,
+            "agentId": "agent-abc"
+          }
+        ],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "cleanup",
+        "allowed": false,
+        "code": "imported-origin",
+        "origin": "imported",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-native-record",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": null
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": true,
+        "code": null,
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-archive-intent-pending",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}",
+        "{\"type\":\"custom\",\"id\":\"entry0003\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"archive_intent\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": "archive"
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "active-custody",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": {
+          "agentId": "bc-00000000-0000-0000-0000-000000000001",
+          "action": "archive"
+        }
+      }
+    },
+    {
+      "id": "cloud-archive-intent-result",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}",
+        "{\"type\":\"custom\",\"id\":\"entry0003\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"archive_intent\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}",
+        "{\"type\":\"custom\",\"id\":\"entry0004\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"archive\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:01.000Z\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": null
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": true,
+        "code": null,
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-delete-result",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}",
+        "{\"type\":\"custom\",\"id\":\"entry0003\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"delete_intent\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}",
+        "{\"type\":\"custom\",\"id\":\"entry0004\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"delete\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:01.000Z\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": true,
+        "code": null,
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-invalid-agent-id",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-00000000000z\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "unsafe-cloud-identifier",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-missing-agent-id",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": []
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "invalid-cloud-entry",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-imported-session",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":3,\"id\":\"0193aa1b-0000-7000-8000-000000000001\",\"imported\":{\"source\":\"pi\",\"sourcePath\":\"/home/u/.pi/agent/sessions/a.jsonl\",\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"sessionVersion\":3}}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": null
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "imported-origin",
+        "origin": "imported",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": null,
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-journal-pending",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [
+        {
+          "name": ".cursor-cloud-lifecycle-0123456789abcdef0123456789abcdef.journal",
+          "text": "{\"version\":1,\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"anchorEntryId\":null,\"action\":\"delete_intent\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}\n"
+        }
+      ],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": null
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "active-custody",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": {
+          "agentId": "bc-00000000-0000-0000-0000-000000000001",
+          "action": "delete"
+        }
+      }
+    },
+    {
+      "id": "cloud-journal-mismatched-session",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [
+        {
+          "name": ".cursor-cloud-lifecycle-0123456789abcdef0123456789abcdef.journal",
+          "text": "{\"version\":1,\"sessionId\":\"0193aa1b-0000-7000-8000-000000000002\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"anchorEntryId\":null,\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}\n"
+        }
+      ],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": null
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "mismatched-custody",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-journal-obsolete-record",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [
+        {
+          "name": ".cursor-cloud-lifecycle-0123456789abcdef0123456789abcdef.journal",
+          "text": "{\"version\":0,\"sessionId\":\"0193aa1b-0000-7000-8000-000000000001\",\"sessionFile\":\"/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl\",\"anchorEntryId\":null,\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}\n"
+        }
+      ],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": null
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "obsolete-custody-record",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-journal-backup",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [
+        {
+          "name": ".cursor-cloud-lifecycle-0123456789abcdef0123456789abcdef.journal.bak",
+          "text": ""
+        }
+      ],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": null
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "active-backup",
+        "origin": "native",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    },
+    {
+      "id": "cloud-import-artifact",
+      "authority": "cloud",
+      "path": "/home/u/.rpi/sessions/0193aa1b-0000-7000-8000-000000000001.jsonl",
+      "lines": [
+        "{\"type\":\"session\",\"version\":4,\"id\":\"0193aa1b-0000-7000-8000-000000000001\"}",
+        "{\"type\":\"custom\",\"id\":\"entry0002\",\"parentId\":null,\"customType\":\"cursor-cloud-lifecycle\",\"data\":{\"action\":\"record\",\"runtime\":\"cloud\",\"agentId\":\"bc-00000000-0000-0000-0000-000000000001\",\"runId\":\"run-1\",\"timestamp\":\"2026-10-01T00:00:00.000Z\"}}"
+      ],
+      "artifacts": [
+        {
+          "name": "session.pi-import.marker",
+          "text": ""
+        }
+      ],
+      "upstream": {
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "sessionIdValid": true,
+        "piCurrentVersion": 3,
+        "resume": [],
+        "cleanup": [],
+        "cloud": [
+          {
+            "agentId": "bc-00000000-0000-0000-0000-000000000001",
+            "pendingAction": null
+          }
+        ]
+      },
+      "result": {
+        "authority": "cloud",
+        "allowed": false,
+        "code": "imported-origin",
+        "origin": "imported",
+        "freshAgent": false,
+        "notice": null,
+        "agentId": null,
+        "sessionId": "0193aa1b-0000-7000-8000-000000000001",
+        "pending": null
+      }
+    }
+  ]
+}

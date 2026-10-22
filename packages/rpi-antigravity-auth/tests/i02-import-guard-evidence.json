@@ -1,0 +1,45 @@
+{
+  "status": "I02 package half complete: imported or foreign vault state never activates Antigravity custody",
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "pi": "1.3.0",
+  "node": "24.22.0",
+  "rust": "1.78.0",
+  "upstreamHashes": {
+    "antigravity/packages/core/src/common-auth-embedded/pi-slot/slot.js": "13a7d5941b79c6d444cf9dc6f23263cf9237146c7dd5de7d162dbc21e015532c",
+    "antigravity/packages/pi/src/index.ts": "bd04a01ef5c99edd2ac64de41e136bc797991ea38bb3312b0c5a5791a2340e12",
+    "antigravity/packages/pi/src/vault-setup.ts": "64bf98fdb397707be4d1bdd34ef56b89dbd1ebd67a07afd8de7c01e6e418c07e"
+  },
+  "fixture": "tests/i02-import-guard.json",
+  "counts": {
+    "custodyCases": 6,
+    "markerCases": 23,
+    "markerRefused": 19,
+    "markerAllowed": 4
+  },
+  "compared": [
+    "Slot and stash classification for empty, original login, exact placeholder, placeholder look-alike, entered custody and a stash copied from another agent, produced by the unchanged pinned Pi slot implementation.",
+    "The complete admission object per marker case: allowed, mode, routeId, code, freshEnrollment and notice.",
+    "Import markers on the mode file, enrollment state, enrollment token and custody stash, including forged source, traversal in sourcePath and unsupported sessionVersion.",
+    "Legacy origin/importedFrom provenance fields.",
+    "Mode record version, unknown keys, local/custody values and route ids.",
+    "Enrollment token shape and token generation, and approved enrollment state schema.",
+    "Custody stash version and provider identity.",
+    "Backup, staging and pi-import artifacts next to the vault files."
+  ],
+  "commands": [
+    "node packages/rpi-antigravity-auth/tests/i02-import-guard-reference.mjs /home/user/Projects/provider-references",
+    "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+    "cargo test -p rpi-antigravity-auth --locked"
+  ],
+  "results": {
+    "referenceCheck": "passed twice, byte-identical",
+    "msrvWarningsDenied": "78 passed, 0 failed, 3 ignored",
+    "defaultToolchain": "78 passed, 0 failed, 3 ignored"
+  },
+  "notTested": [
+    "No Claustrum service, vault operator or network call is used: the guard decides before enrollment and the ceremony remains the caller's path.",
+    "The enrollment ceremony itself (proposal, approval, rotation) is covered by the existing A06/A07 suites, not here.",
+    "Windows private-file layout is compiled by the slot port but only the Linux layout is executed.",
+    "Only the vault directory's owner-visible file set is modelled; ACLs and reparse points are the existing private-file policy's responsibility."
+  ]
+}

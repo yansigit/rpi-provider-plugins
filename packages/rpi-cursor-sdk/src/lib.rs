@@ -1,4 +1,5 @@
 //! Retained Cursor adapter integration. Package parity is tracked in README.md.
+pub mod import_guard;
 pub mod installed;
 pub mod journal;
 mod native;
