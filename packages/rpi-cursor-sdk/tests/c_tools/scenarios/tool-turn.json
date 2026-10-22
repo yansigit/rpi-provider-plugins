@@ -1,0 +1,108 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "tool-turn",
+  "description": "One local Cursor turn that executes one Pi tool through the adapter's MCP bridge and invokes one native Cursor shell tool. Ledger C05/H08: exactly one Cursor native tool, one bridge execution, zero replay executions.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Echo the bridge check text.",
+    "extensions": [
+      "fixtures/echo-extension.mjs"
+    ]
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "bridge-and-native",
+      "expect": {
+        "promptIncludes": "Echo the bridge check text.",
+        "mcpServers": [
+          "pi_tools"
+        ]
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Calling the echo tool."
+          ]
+        },
+        {
+          "op": "mcpCall",
+          "server": "pi_tools",
+          "tool": "pi__fake_echo",
+          "callId": "call-echo-1",
+          "arguments": {
+            "text": "bridge-check"
+          }
+        },
+        {
+          "op": "nativeTool",
+          "callId": "call-shell-1",
+          "toolCall": {
+            "type": "shell",
+            "args": {
+              "command": "echo simulated"
+            },
+            "result": {
+              "status": "success",
+              "value": {
+                "exitCode": 0,
+                "signal": "",
+                "stdout": "simulated\n",
+                "stderr": "",
+                "executionTime": 1
+              }
+            }
+          }
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "The echo tool replied."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 40,
+            "outputTokens": 21,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "The echo tool replied."
+      }
+    }
+  ],
+  "cToolsExpect": {
+    "nativeToolCalls": {
+      "shell": 1
+    },
+    "bridgeToolExecutions": 1,
+    "bridgeToolFailures": 0,
+    "hostToolInvocations": {
+      "bash": 1,
+      "fake_echo": 1
+    },
+    "replayToolExecutions": 0,
+    "violations": 0
+  }
+}

@@ -1,0 +1,522 @@
+{
+  "status": "pass",
+  "schema": "rpi-cursor-c-tools-evidence/1",
+  "purpose": "Differential tool scenarios for ledger C05/H08: unchanged Pi 1.3.0 + pinned pi-cursor-sdk@0.5.3 adapter versus the rpi retained worker (packaged runtime/main.mjs) driven through its real peer protocol, both against the unchanged fake @cursor/sdk@1.0.37. No Cursor network access.",
+  "runtime": {
+    "node": "24.22.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "provenance": {
+    "files": {
+      "@cursor/sdk/package.json": "3c5dd6867664290accd4b6e9045c901e6fc40e5773b1c4a792a8edb01db7ef99",
+      "@earendil-works/pi-coding-agent/package.json": "83c3bb7619f590c213cc96a24216eb29a819a3ef6dc548607cc037ed276e8dc5",
+      "pi-cursor-sdk/package.json": "8ad2dd0f358afa4c8b1c0a9fa1fa8165b36e084ddb871d3ddd4608566c3d161f",
+      "integrated/package-lock.json": "72a0e5eb204b17155a41dfb5c99d8e45caaa98af39d8f2acf92394aae0a39bc8",
+      "rpi-worker/runtime/main.mjs": "f4f4dcc03a83582cbfe7e861ba7dcd50c50fdb17163bffd3f2e0c0e6ba8ad8ad",
+      "rpi-worker/runtime/dist/rpi/runtime.js": "92ce21ba220bd904987cd244fd39c2b8537f99774b1e26e2932fb506e14ae9b3",
+      "rpi-worker/runtime/dist/rpi/tool-surface.js": "bfce496ffd07d3027d851a56db8c750575badf4d04731b4aebefed76489cab4a"
+    },
+    "piVersion": "1.3.0",
+    "cursorSdkVersion": "1.0.37",
+    "piCursorSdkVersion": "0.5.3",
+    "fakeSdkDir": "<home>/Projects/rpi-package--c-fake/packages/rpi-cursor-sdk/tests/fake-sdk",
+    "fake": {
+      "sdk.mjs": "7385a8296888d1c9893b63d2519a5de74cc455852d4a4d16a6929d38c17e28e6",
+      "hooks.mjs": "852dd2a9857466891cc8333bcf2e95116aac11533cbdf665083b1f254eea104f",
+      "register.mjs": "20bd210452865950c6825f4961f9fa2348ae86d7bcc5e14652f15f3d416926db",
+      "sqlite.mjs": "7fcebb18b2e35ec1c45ae2efc6df7456e8c70ec66b9c8b555150063ddebf7dc1",
+      "fixtures/echo-extension.mjs": "47022b99c3abb78b06c087810c72d44e6343cf5a5c86a9cb53ca09155c791f42"
+    }
+  },
+  "normalization": {
+    "referencePiJson": "Timestamps/durations zeroed, UUIDs to <uuid>, ISO times to <iso>, cursor-replay-<ms>-<n>- to cursor-replay-<n>-<n>-, bridge run IDs to cursor-pi-bridge-<run>-t<n>, temporary root to <root>. Used only for the recorded hashes; counts are not normalized.",
+    "fakeLog": "No normalization beyond the temporary root; the fake writes no clocks, PIDs or random IDs. Counts are read from fake-log records, which flush immediately (unlike process_counters, which need a clean exit).",
+    "counts": "nativeToolCalls, bridgeToolExecutions and violations come from fake-log records on both sides. hostToolInvocations are the tool names the host was asked to run (reference: Pi tool_execution_start; candidate: worker toolcall_end events). replayToolExecutions is the number of recorded-activity invocations that performed work (must be zero)."
+  },
+  "scenarios": [
+    {
+      "name": "bridge-failure",
+      "scenarioFile": "tests/c_tools/scenarios/bridge-failure.json",
+      "scenarioSha256": "32d8c55549c93b5d6a3173012875ab33fb36f2f1fe3302ae829ab6520c72ca35",
+      "expect": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "fake_fail": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "reference": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "fake_fail": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "candidate": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "fake_fail": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "determinism": {
+        "reference": true,
+        "candidate": true
+      },
+      "referenceDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 25,
+        "fakeLogSha256": "1576374b183259d0fffc5b3b2de7c06da9f0a8cff069faebdfc0cf4db7dadd17",
+        "normalizedPiSha256": "c83eff83c6502c0901547e1b5b239bec44003e2276fb16b4e6076cb83e04a210",
+        "stderrLines": 0
+      },
+      "candidateDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 24,
+        "fakeLogSha256": "d07802053d20486bc23569065ffecb871225330c5ab58be9ad731c59140f1725",
+        "hostFailures": [],
+        "workerOutputLines": 0,
+        "recordedBindings": {
+          "bash": "builtin",
+          "cursor": "recorded",
+          "edit": "builtin",
+          "find": "builtin",
+          "grep": "builtin",
+          "ls": "builtin",
+          "read": "builtin",
+          "write": "builtin"
+        },
+        "recordedPrefixes": {
+          "bash": "cursor-replay-",
+          "cursor": "cursor-replay-",
+          "edit": "cursor-replay-",
+          "find": "cursor-replay-",
+          "grep": "cursor-replay-",
+          "ls": "cursor-replay-",
+          "read": "cursor-replay-",
+          "write": "cursor-replay-"
+        }
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "bridge-only",
+      "scenarioFile": "tests/c_tools/scenarios/bridge-only.json",
+      "scenarioSha256": "7a17798bb14330cf1966b9236169f327997fbc529e5b4180ea16ac590da96ffc",
+      "expect": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "fake_echo": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "reference": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "fake_echo": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "candidate": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "fake_echo": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "determinism": {
+        "reference": true,
+        "candidate": true
+      },
+      "referenceDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 25,
+        "fakeLogSha256": "f71ce834157065c5cd60146a4c5524c3b17271eef86dc6c7cfc6669656f9832f",
+        "normalizedPiSha256": "108489e55cf07f075f619e84452e7f84c944ba8c039f15bd1318bf5a96eccff1",
+        "stderrLines": 0
+      },
+      "candidateDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 24,
+        "fakeLogSha256": "889907eb39b37ea3ac9f16ef217ba101c8ee211b61f40134878145015ccc5d58",
+        "hostFailures": [],
+        "workerOutputLines": 0,
+        "recordedBindings": {
+          "bash": "builtin",
+          "cursor": "recorded",
+          "edit": "builtin",
+          "find": "builtin",
+          "grep": "builtin",
+          "ls": "builtin",
+          "read": "builtin",
+          "write": "builtin"
+        },
+        "recordedPrefixes": {
+          "bash": "cursor-replay-",
+          "cursor": "cursor-replay-",
+          "edit": "cursor-replay-",
+          "find": "cursor-replay-",
+          "grep": "cursor-replay-",
+          "ls": "cursor-replay-",
+          "read": "cursor-replay-",
+          "write": "cursor-replay-"
+        }
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "incomplete-native",
+      "scenarioFile": "tests/c_tools/scenarios/incomplete-native.json",
+      "scenarioSha256": "5ba86032c3f37f084f14ecf026c48ac05b5c485a130251f1b4b85cee3ba618f2",
+      "expect": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 0,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "reference": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 0,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "candidate": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 0,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "determinism": {
+        "reference": true,
+        "candidate": true
+      },
+      "referenceDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 20,
+        "fakeLogSha256": "89c6c623f78466ffe2e7a3a0e7565ac34de078771aa35885eb4b04a114a4863b",
+        "normalizedPiSha256": "a063f71142894fb32e64e9495baf48aaff31dcac0381d96d174fef76efb04714",
+        "stderrLines": 0
+      },
+      "candidateDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 19,
+        "fakeLogSha256": "c5ccecdb42e0ed580396d8f7867d91fcc83b3d66d43e9e7a34b08a3b67fe58f5",
+        "hostFailures": [],
+        "workerOutputLines": 0,
+        "recordedBindings": {
+          "bash": "builtin",
+          "cursor": "recorded",
+          "edit": "builtin",
+          "find": "builtin",
+          "grep": "builtin",
+          "ls": "builtin",
+          "read": "builtin",
+          "write": "builtin"
+        },
+        "recordedPrefixes": {
+          "bash": "cursor-replay-",
+          "cursor": "cursor-replay-",
+          "edit": "cursor-replay-",
+          "find": "cursor-replay-",
+          "grep": "cursor-replay-",
+          "ls": "cursor-replay-",
+          "read": "cursor-replay-",
+          "write": "cursor-replay-"
+        }
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "native-only",
+      "scenarioFile": "tests/c_tools/scenarios/native-only.json",
+      "scenarioSha256": "a549b99a749206fa6abbf668d1928affd0e4b97a745c82519a29c748ca6dfbbc",
+      "expect": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 0,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "bash": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "reference": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 0,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "bash": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "candidate": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 0,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "bash": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "determinism": {
+        "reference": true,
+        "candidate": true
+      },
+      "referenceDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 23,
+        "fakeLogSha256": "f0891a19568339ea9ade1fd8cf6d83154e27b6819c430a3a1cea978fdae43e70",
+        "normalizedPiSha256": "f98634ea0c453f9df0e6d2117b0eb7c338270a3c253486fe307a74532b2d5416",
+        "stderrLines": 0
+      },
+      "candidateDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 22,
+        "fakeLogSha256": "7bc5479559a1233265b3685e49f9c32b314b712dcd43aaaafc7cd2f2d452c802",
+        "hostFailures": [],
+        "workerOutputLines": 0,
+        "recordedBindings": {
+          "bash": "builtin",
+          "cursor": "recorded",
+          "edit": "builtin",
+          "find": "builtin",
+          "grep": "builtin",
+          "ls": "builtin",
+          "read": "builtin",
+          "write": "builtin"
+        },
+        "recordedPrefixes": {
+          "bash": "cursor-replay-",
+          "cursor": "cursor-replay-",
+          "edit": "cursor-replay-",
+          "find": "cursor-replay-",
+          "grep": "cursor-replay-",
+          "ls": "cursor-replay-",
+          "read": "cursor-replay-",
+          "write": "cursor-replay-"
+        }
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "replay-not-bridgeable",
+      "scenarioFile": "tests/c_tools/scenarios/replay-not-bridgeable.json",
+      "scenarioSha256": "cfdb52a49d0af37076b34c1e3b380be188074a8aa4ad505b2c253d07237f1f20",
+      "expect": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "reference": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "candidate": {
+        "nativeToolCalls": {},
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 1,
+        "hostToolInvocations": {
+          "cursor": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "determinism": {
+        "reference": true,
+        "candidate": true
+      },
+      "referenceDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 24,
+        "fakeLogSha256": "7afe11e89b58d8a990bd29307eb05ccf6923d2994c163cb8d36e09c47123b4f8",
+        "normalizedPiSha256": "2f846b491ba781f07ff025dec71a5ecca4900d9d9559bed9d49316fcaddf7bbd",
+        "stderrLines": 0
+      },
+      "candidateDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 23,
+        "fakeLogSha256": "0be14a0573d338a930a6c7e2778c89b376a9e4b54a7b4a88e62e89851d6cfcb9",
+        "hostFailures": [],
+        "workerOutputLines": 0,
+        "recordedBindings": {
+          "bash": "builtin",
+          "cursor": "recorded",
+          "edit": "builtin",
+          "find": "builtin",
+          "grep": "builtin",
+          "ls": "builtin",
+          "read": "builtin",
+          "write": "builtin"
+        },
+        "recordedPrefixes": {
+          "bash": "cursor-replay-",
+          "cursor": "cursor-replay-",
+          "edit": "cursor-replay-",
+          "find": "cursor-replay-",
+          "grep": "cursor-replay-",
+          "ls": "cursor-replay-",
+          "read": "cursor-replay-",
+          "write": "cursor-replay-"
+        }
+      },
+      "problems": [],
+      "status": "pass"
+    },
+    {
+      "name": "tool-turn",
+      "scenarioFile": "tests/c_tools/scenarios/tool-turn.json",
+      "scenarioSha256": "27394fb144551da3ab69c44278df91464fdea30bdfcaae1e3729914914022e56",
+      "expect": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "bash": 1,
+          "fake_echo": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "reference": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "bash": 1,
+          "fake_echo": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "candidate": {
+        "nativeToolCalls": {
+          "shell": 1
+        },
+        "bridgeToolExecutions": 1,
+        "bridgeToolFailures": 0,
+        "hostToolInvocations": {
+          "bash": 1,
+          "fake_echo": 1
+        },
+        "replayToolExecutions": 0,
+        "violations": 0
+      },
+      "determinism": {
+        "reference": true,
+        "candidate": true
+      },
+      "referenceDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 30,
+        "fakeLogSha256": "69f852be98e5fc6d5a5c17156f34ecf376cd2492471cbb9a2858f9270e9850d6",
+        "normalizedPiSha256": "9f8287e129ecb3e3f400131093ef1d922274a4adc0f66cc4a080b71a51cb279a",
+        "stderrLines": 0
+      },
+      "candidateDetail": {
+        "exitCode": 0,
+        "fakeLogRecords": 29,
+        "fakeLogSha256": "44e354cc2d0a3f62d513565d9a98b9127c2a797d1bb01d4984ce6d975207abce",
+        "hostFailures": [],
+        "workerOutputLines": 0,
+        "recordedBindings": {
+          "bash": "builtin",
+          "cursor": "recorded",
+          "edit": "builtin",
+          "find": "builtin",
+          "grep": "builtin",
+          "ls": "builtin",
+          "read": "builtin",
+          "write": "builtin"
+        },
+        "recordedPrefixes": {
+          "bash": "cursor-replay-",
+          "cursor": "cursor-replay-",
+          "edit": "cursor-replay-",
+          "find": "cursor-replay-",
+          "grep": "cursor-replay-",
+          "ls": "cursor-replay-",
+          "read": "cursor-replay-",
+          "write": "cursor-replay-"
+        }
+      },
+      "problems": [],
+      "status": "pass"
+    }
+  ],
+  "notTested": [
+    "Live Cursor inference, billing and cloud resources.",
+    "The rpi host binary itself is not run; the candidate side drives the packaged worker through a scripted rpi host over the real peer protocol. Real host tool invocation through the host's own hooks/context/cancellation is therefore exercised at the worker boundary, not through the compiled host.",
+    "Interactive/TUI rendering of replay cards and the visual transcript.",
+    "Windows/macOS worker startup."
+  ],
+  "commands": [
+    "cd worker && npm ci --ignore-scripts --no-audit --no-fund && npm run build",
+    "node tests/stage-runtime.mjs",
+    "node tests/c_tools-reference.mjs        (check mode)",
+    "node tests/c_tools-reference.mjs --write"
+  ]
+}

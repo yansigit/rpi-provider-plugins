@@ -1,0 +1,85 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "replay-not-bridgeable",
+  "description": "A direct MCP call to the replay-only activity tool must fail: recorded activity is excluded from bridge exposure and can never be invoked as work. Ledger C05/H08 ownership and inertness.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Try to call the replay-only activity tool.",
+    "extensions": [
+      "fixtures/echo-extension.mjs"
+    ]
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "replay-not-bridgeable",
+      "expect": {
+        "promptIncludes": "Try to call the replay-only activity tool.",
+        "mcpServers": [
+          "pi_tools"
+        ]
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Trying the activity tool."
+          ]
+        },
+        {
+          "op": "mcpCall",
+          "server": "pi_tools",
+          "tool": "pi__cursor",
+          "callId": "call-cursor-1",
+          "arguments": {
+            "activityTitle": "Cursor activity"
+          }
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "The activity tool was not callable."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 28,
+            "outputTokens": 11,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "The activity tool was not callable."
+      }
+    }
+  ],
+  "cToolsExpect": {
+    "nativeToolCalls": {},
+    "bridgeToolExecutions": 1,
+    "bridgeToolFailures": 1,
+    "hostToolInvocations": {
+      "cursor": 1
+    },
+    "replayToolExecutions": 0,
+    "violations": 0
+  }
+}

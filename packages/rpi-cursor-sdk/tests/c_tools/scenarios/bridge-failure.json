@@ -1,0 +1,85 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "bridge-failure",
+  "description": "One turn whose single bridge tool throws. The failure must surface as an MCP tool error on both runtimes, executing the Pi tool exactly once and never replaying recorded activity.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Call the failing bridge tool.",
+    "extensions": [
+      "c_tools/fixtures/failing-extension.mjs"
+    ]
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "bridge-failure",
+      "expect": {
+        "promptIncludes": "Call the failing bridge tool.",
+        "mcpServers": [
+          "pi_tools"
+        ]
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Calling the failing tool."
+          ]
+        },
+        {
+          "op": "mcpCall",
+          "server": "pi_tools",
+          "tool": "pi__fake_fail",
+          "callId": "call-fail-1",
+          "arguments": {
+            "text": "bridge-check"
+          }
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "The failing tool returned an error."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 32,
+            "outputTokens": 14,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "The failing tool returned an error."
+      }
+    }
+  ],
+  "cToolsExpect": {
+    "nativeToolCalls": {},
+    "bridgeToolExecutions": 1,
+    "bridgeToolFailures": 1,
+    "hostToolInvocations": {
+      "fake_fail": 1
+    },
+    "replayToolExecutions": 0,
+    "violations": 0
+  }
+}
