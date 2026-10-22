@@ -8,7 +8,8 @@
 .deploy/
 __pycache__/
 
-# Web frontend build dependencies and test output
+# Web frontend build dependencies, test output, and generated bundle
 packages/rpi-web/frontend/node_modules/
 packages/rpi-web/frontend/test-results/
 packages/rpi-web/frontend/playwright-report/
+packages/rpi-web/assets/
