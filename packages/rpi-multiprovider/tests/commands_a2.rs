@@ -17,6 +17,7 @@ use rpi_multiprovider::commands::settings;
 use rpi_multiprovider::commands::vprovider::{self, CandidateModel, CandidateProvider, VproviderSources};
 use rpi_multiprovider::commands::Ui;
 use rpi_multiprovider::store::{Failure, Store};
+use rpi_plugin_sdk::dialogs::native::Dialog;
 use serde_json::{json, Value};
 use std::collections::{BTreeSet, VecDeque};
 use std::fs;
@@ -546,6 +547,35 @@ fn run_format_ms(scenario: &Value) {
         .map(|value| json!(settings::format_ms(value.as_f64().unwrap())))
         .collect();
     assert_same(name, &json!({"formatted": formatted}), &scenario["expected"]);
+}
+
+/// Every projected control is a valid native dialog and every recorded reply is
+/// a valid answer for it (the H09 host contract).
+#[test]
+fn projected_controls_are_valid_native_dialogs() {
+    let fixture: Value = serde_json::from_str(FIXTURE).unwrap();
+    let mut controls = 0;
+    let mut replies = 0;
+    for scenario in fixture["scenarios"].as_array().unwrap() {
+        let name = scenario["name"].as_str().unwrap();
+        for entry in scenario["expected"]["trace"].as_array().into_iter().flatten() {
+            if entry["control"].is_null() {
+                continue;
+            }
+            let control = &entry["control"];
+            let dialog = Dialog::parse(control)
+                .unwrap_or_else(|error| panic!("{name}: {error}: {control}"));
+            controls += 1;
+            if !entry["reply"].is_null() {
+                dialog
+                    .answer(&entry["reply"])
+                    .unwrap_or_else(|error| panic!("{name}: {error}: {}", entry["reply"]));
+                replies += 1;
+            }
+        }
+    }
+    assert_eq!(controls, 255, "projected controls");
+    assert_eq!(replies, 211, "scripted replies");
 }
 
 #[tokio::test]

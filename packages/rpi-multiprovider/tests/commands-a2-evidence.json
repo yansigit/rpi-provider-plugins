@@ -21,7 +21,11 @@
     "replayTests": {
       "tests/commands_a2.rs::pool_screen_matches_the_upstream_reference": 22,
       "tests/commands_a2.rs::vprovider_matches_the_upstream_reference": 24,
-      "tests/commands_a2.rs::format_ms_matches_the_upstream_reference": 1
+      "tests/commands_a2.rs::format_ms_matches_the_upstream_reference": 1,
+      "tests/commands_a2.rs::projected_controls_are_valid_native_dialogs": {
+        "controls": 255,
+        "replies": 211
+      }
     },
     "temporaryCopies": {
       "src/commands/port.rs": "269dce01b00260aba279364b08ef07fe82eac6691c5c3e566ca004426fc865db (verbatim copy of lane m-cmd-a1's uncommitted port.rs; drop it at merge)",
@@ -36,6 +40,7 @@
     "The pool buffer after the screen closes (policy, affinity, includeUpstream, upstream) and the returned PoolAction (closed/add/reauth)",
     "The final multiprovider-auth.json text, compared byte for byte, after the scenario's setup and flow",
     "The /vprovider editor's settings/input controls, the page errors appended to descriptions, the confirmation control and the notifications",
+    "Every projected control (255) parses through rpi-plugin-sdk's Dialog::parse and every recorded reply (211) answers it, so the H09 native dialog contract accepts the projections",
     "formatMs over 22 durations including fractional seconds, minutes and hours",
     "Every scripted native reply is consumed by the Rust flow"
   ],
