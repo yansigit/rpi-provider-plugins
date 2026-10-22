@@ -1,0 +1,118 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "cloud-create-archive",
+  "description": "Cloud runtime: create a cloud agent with repo, branch and pool environment options, run one turn, list it, archive it, then delete it with explicit confirmation.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Make a small change in the cloud.",
+    "extensions": [],
+    "args": [
+      "--cursor-runtime",
+      "cloud",
+      "--cursor-cloud-ack",
+      "--cursor-cloud-repo",
+      "https://github.com/example-org/sample-repo",
+      "--cursor-cloud-branch",
+      "main",
+      "--cursor-cloud-env-type",
+      "pool",
+      "--cursor-cloud-env-name",
+      "fake-pool"
+    ],
+    "followUps": [
+      "/cursor-cloud list",
+      "/cursor-cloud archive bc-00000000-0000-4000-8000-000000000001",
+      "/cursor-cloud delete bc-00000000-0000-4000-8000-000000000001 --yes"
+    ]
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "account": {
+    "apiKeyName": "fake-cloud-key",
+    "userEmail": "fake-user@example.invalid"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "repositories": [
+    {
+      "url": "https://github.com/example-org/sample-repo"
+    }
+  ],
+  "cloud": {
+    "artifacts": [
+      {
+        "path": "notes/summary.md",
+        "content": "Cloud summary from the fake SDK.\n",
+        "updatedAt": "2026-01-01T00:00:00.000Z"
+      }
+    ]
+  },
+  "turns": [
+    {
+      "name": "cloud-change",
+      "expect": {
+        "promptIncludes": "Make a small change in the cloud.",
+        "modelId": "composer-2"
+      },
+      "prUrl": "https://github.com/example-org/sample-repo/pull/1",
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Cloud change ",
+            "complete."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 30,
+            "outputTokens": 6,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          },
+          "cost": {
+            "rawCostCents": 1,
+            "chargedCents": 1
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Cloud change complete."
+      }
+    }
+  ],
+  "expect": {
+    "exitCode": 0,
+    "sdkCalls": {
+      "Agent.archive": 1,
+      "Agent.create": 1,
+      "Agent.delete": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 1,
+      "agent.listArtifacts": 1,
+      "agent.send": 1
+    },
+    "runs": {
+      "finished": 1
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "piToolExecutions": {},
+    "violations": 0
+  }
+}

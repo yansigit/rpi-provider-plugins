@@ -1,0 +1,60 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "combined-cursor-b",
+  "description": "One local Cursor turn for the combined parity run, account B.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Cursor parity prompt two.",
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "fixture-cursor-b"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "account-b",
+      "expect": {
+        "promptIncludes": "Cursor parity prompt two.",
+        "imageCount": 0,
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "thinking",
+          "chunks": ["Planning the second Cursor reply."]
+        },
+        {
+          "op": "text",
+          "chunks": ["Cursor", " reply two."]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 14,
+            "outputTokens": 10,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Cursor reply two."
+      }
+    }
+  ]
+}

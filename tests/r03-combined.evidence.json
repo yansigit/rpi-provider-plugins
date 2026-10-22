@@ -1,0 +1,128 @@
+{
+  "lane": "R03",
+  "status": "reference combined run passes (7 segments: 5 positive, 2 pinned negatives); candidate run passes for the 4 segments executable at base adc459b; the candidate multiprovider pool/virtual provider is BLOCKED (no rpi_plugin_register yet at this base); transcripts differ at the pinned X-RPC shape level",
+  "reference": {
+    "piCodingAgent": "1.3.0",
+    "piCliSha256": "8189b66abc4f9f431dbb70941dcba690d76d040de1fbfff212886be35a53639d",
+    "antigravity": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+    "antigravityPackage": "@cortexkit/pi-antigravity-auth@3.0.9",
+    "cursor": "f337dc4",
+    "cursorPackage": "pi-cursor-sdk@0.5.3",
+    "cursorSdk": "@cursor/sdk@1.0.37 (vendored scenario fake)",
+    "multiprovider": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+    "multiproviderPackage": "pi-multiprovider@0.11.3",
+    "packageBase": "adc459b",
+    "rpi": "0.7.0 (binary /home/user/Projects/.targets/x-rpc/debug/rpi)"
+  },
+  "upstreamHashes": {
+    "node_modules/@earendil-works/pi-coding-agent/dist/cli.js": "8189b66abc4f9f431dbb",
+    "packages/pi/src/stream.ts": "41f22771dd1dfdb3b6f7",
+    "packages/pi/src/index.ts": "bd04a01ef5c99edd2ac6",
+    "packages/core/src/agy-transport.ts": "ca6d74b8703d8d3f25dc",
+    "cursor/src/cursor-provider-binding.ts": "b5d07ba0a2956949dc7d",
+    "multiprovider/extensions/multiprovider.ts": "086a0d9c4fbc8431e810",
+    "multiprovider/src/lift.ts": "887b91aab53356550444",
+    "multiprovider/src/auth-store.ts": "29916553aa160b3c676a",
+    "multiprovider/src/virtual.ts": "6c38efe1d8bcd180e328"
+  },
+  "toolHashes": {
+    "tools/combined/agy-server.mjs": "fd2bcc209c6d73ac",
+    "tools/combined/run.mjs": "fa0177b3e9f73fb4",
+    "tools/combined/normalize.mjs": "6bee63c0439be855",
+    "tools/combined/preload.mjs": "b3f94413adc2ce79",
+    "tools/combined/stage-rpi.mjs": "c09390c3080bd514",
+    "tools/combined/fake-sdk/sdk.mjs": "35d9202a9cdfff06",
+    "tools/combined/fixtures/expected/combined.diff.json": "cc8c2177851892e5"
+  },
+  "candidateLibraryHashes": {
+    "librpi_antigravity_auth.so": "392f3148a16e825f",
+    "librpi_cursor_sdk.so": "0780ea4900b3325e",
+    "librpi_multiprovider.so": "877645ae2bad0787"
+  },
+  "checks": {
+    "node": "24.22.0",
+    "rustcForCandidateLibs": "1.95.0",
+    "cargoMsrv": "1.78.0",
+    "locale": "en_US.UTF-8",
+    "referenceSegments": 7,
+    "referencePositiveSegments": 5,
+    "referenceNegativeSegments": 2,
+    "candidateSegments": 4,
+    "comparedSegments": 4,
+    "referenceTestPassed": 1,
+    "referenceTestFailed": 0,
+    "differentialTestPassed": 1,
+    "differentialTestFailed": 0,
+    "differentialTestSkipped": 0,
+    "pinRegeneratedRuns": 2,
+    "pinByteIdenticalAcrossRuns": true,
+    "antigravityRequestProjectionsIdentical": 4,
+    "cursorAccountDigestsIdentical": 2,
+    "candidateMultiproviderRegistered": false
+  },
+  "commands": [
+    "source /home/user/Projects/.parity-env.sh && lane_env r03 && export CARGO_BUILD_JOBS=4",
+    "cargo build -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider --locked  # exit 0",
+    "node tools/combined/stage-rpi.mjs --out <work>/libs --antigravity <so> --cursor <so> --multiprovider <so> --runtime <rpi-package>/packages/rpi-cursor-sdk/runtime",
+    "node tools/combined/run.mjs --side pi --work <work>  # exit 0",
+    "node tools/combined/run.mjs --rpi /home/user/Projects/.targets/x-rpc/debug/rpi --rpi-antigravity <so> --rpi-cursor <so> --rpi-multiprovider <so> --work <work>  # exit 0, pinned diff unchanged",
+    "PARITY_RPI_BIN=... PARITY_RPI_ANTIGRAVITY=... PARITY_RPI_CURSOR=... PARITY_RPI_MULTIPROVIDER=... PARITY_RPI_RUNTIME=... node --test tests/r03-combined.test.mjs  # 2 pass, 0 fail, 0 skipped"
+  ],
+  "scenario": {
+    "systemPrompt": "Parity fixed system prompt.",
+    "segments": [
+      "agy-a: google/antigravity-gemini-3.8-flash through a 2-account pool (account A)",
+      "agy-b: same (account B, pool order reversed)",
+      "cursor-a: cursor/composer-2 on the fake SDK (account A)",
+      "cursor-b: same (account B)",
+      "virtual-gemini: parity-virtual/virtual-gemini backed by google",
+      "virtual-composer: parity-virtual/virtual-composer backed by cursor (negative)",
+      "cursor-pooled: cursor/composer-2 with a cursor pool (negative)"
+    ],
+    "antigravityServer": "loopback HTTP CONNECT proxy + TLS (disposable cert for cloudcode-pa.googleapis.com and daily-cloudcode-pa.*); scripted v1internal:loadCodeAssist and v1internal:streamGenerateContent?alt=sse",
+    "cursor": "vendored scenario fake @cursor/sdk@1.0.37; apiKeyDigest = sha256(apiKey)[0:12] proves account rotation"
+  },
+  "compared": [
+    "Complete normalized RPC transcripts per segment (positional, event order included)",
+    "Antigravity stream request projection: method, target, account token digest, project",
+    "Cursor account digest per segment, from the fake SDK's Agent.create record",
+    "Exact assistant reply text for every positive segment",
+    "Negative segments: exact Cursor ownership error and zero Agent.create calls",
+    "Provider catalog registered by each side (google, cursor, parity-virtual)"
+  ],
+  "normalization": {
+    "source": "rpi-package tools/parity-rpc/normalize.mjs (X-RPC lane, commit 5cd2513) — byte-identical copy",
+    "sha256Prefix": "6bee63c0439be855",
+    "newRulesAdded": 0,
+    "rules": [
+      "drop timestamp/durationMs keys at any depth",
+      "replace the segment temp root with <TMP>",
+      "ordinal remap of generated IDs",
+      "Pi extension-UI presentation projection (select/confirm/input/notify)",
+      "numbers compared by value"
+    ],
+    "comparisonPolicy": "Transcripts are NOT normalized beyond the X-RPC allowlist; the observed differences are pinned in fixtures/expected/combined.diff.json instead of being erased."
+  },
+  "divergences": [
+    "rpi emits a ready record; Pi does not.",
+    "Pi emits message_start/message_end for system and user messages; rpi emits only the assistant pair.",
+    "Assistant message objects differ: rpi uses kind/responseId/responseModel/rawStopReason; Pi uses api/provider/model/usage/stopReason. Usage numbers differ.",
+    "message_update: Pi carries top-level usage; rpi carries message/eventType and no top-level usage.",
+    "prompt response data: Pi {disposition:started}; rpi {accepted:true}.",
+    "Pi emits six entry_appended records for pi-cursor-sdk capability notices in the Cursor segments; rpi emits none.",
+    "Extension status/notification records differ in count and position (cursor setStatus, antigravity notify).",
+    "Antigravity request body differs (system prompt text and site; rpi system prompt lacks Pi's <cwd> section and tool prose). The projection (method/path/account/project) matches; bodies are recorded but not compared."
+  ],
+  "blocked": [
+    "rpi multiprovider pool registration and virtual provider: rpi-multiprovider at base adc459b has no rpi_plugin_register export; loading librpi_multiprovider.so registers nothing (M-NATIVE, M-VIRTUAL-B and the H-DELEG host port are unmerged). The harness already writes multiprovider-auth.json (pools + virtuals) into both sides' agent directories, so the candidate catalog gains parity-virtual as soon as the native wrapper lands.",
+    "Pi 1.3.0 + pi-cursor-sdk 0.5.3 cannot be pooled or placed behind a virtual provider: multiprovider/src/lift.ts applyResolvedAuth (and src/virtual.ts) call the backing streamSimple with a new headers object, so cursor-provider-binding.ts cannot find its request-ownership receipt. Both paths fail before the SDK is reached (pinned negative segments)."
+  ],
+  "notTested": [
+    "Antigravity request-body parity (system prompt, contents, generation config) — recorded, not compared",
+    "Cursor tool execution, images, cloud agents, cancellation, retries, compaction",
+    "rpi multiprovider pool/virtual inference (blocked; needs the merged native wrapper and host port)",
+    "Live Antigravity OAuth refresh, project onboarding and vault custody",
+    "Windows/macOS execution",
+    "Rust 1.78 candidate build of the three libs used for this run; they were built with the default 1.95 toolchain. The packages' own 1.78 gates are covered by their lanes."
+  ]
+}

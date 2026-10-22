@@ -1,0 +1,86 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "text-turn",
+  "description": "One local Cursor turn: a thinking block, two streamed text deltas, and turn-end usage. No tools.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Say hello from the fake.",
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "fake"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "greeting",
+      "expect": {
+        "promptIncludes": "Say hello from the fake.",
+        "imageCount": 0,
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "thinking",
+          "chunks": [
+            "Planning a short greeting."
+          ]
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "Hello",
+            ", from the fake Cursor SDK."
+          ]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 12,
+            "outputTokens": 9,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Hello, from the fake Cursor SDK."
+      }
+    }
+  ],
+  "expect": {
+    "exitCode": 0,
+    "sdkCalls": {
+      "Agent.create": 1,
+      "Agent.messages.list": 3,
+      "SqliteLocalAgentStore.dispose": 1,
+      "SqliteLocalAgentStore.open": 1,
+      "agent.asyncDispose": 1,
+      "agent.getUsage": 1,
+      "agent.send": 1,
+      "createAgentPlatform": 1
+    },
+    "runs": {
+      "finished": 1
+    },
+    "bridgeToolExecutions": 0,
+    "toolExecutions": {},
+    "nativeToolCalls": {},
+    "piToolExecutions": {},
+    "violations": 0
+  }
+}

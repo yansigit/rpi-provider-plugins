@@ -1,0 +1,60 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "combined-cursor-virtual",
+  "description": "One local Cursor turn reached through the virtual provider, account A.",
+  "run": {
+    "model": "composer-2",
+    "prompt": "Cursor virtual prompt.",
+    "extensions": []
+  },
+  "auth": {
+    "apiKey": "fixture-cursor-a"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "virtual-composer",
+      "expect": {
+        "promptIncludes": "Cursor virtual prompt.",
+        "imageCount": 0,
+        "mode": "agent",
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "thinking",
+          "chunks": ["Planning the virtual Cursor reply."]
+        },
+        {
+          "op": "text",
+          "chunks": ["Cursor", " virtual reply."]
+        },
+        {
+          "op": "usage",
+          "usage": {
+            "inputTokens": 10,
+            "outputTokens": 7,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0
+          }
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Cursor virtual reply."
+      }
+    }
+  ]
+}
