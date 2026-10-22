@@ -1,0 +1,54 @@
+{
+  "status": "I02 package half complete: imported history never activates Cursor resume, cleanup or cloud authority",
+  "reference": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+  "pi": "1.3.0",
+  "node": "24.22.0",
+  "rust": "1.78.0",
+  "upstreamHashes": {
+    "cursor/dist/cursor-session-agent-resume.js": "5d8be20b675cc680704b3a7afbb8f002543d3d709bc0f3ac717b0d21bd0b8ef8",
+    "cursor/dist/cursor-session-agent-cleanup.js": "5f70d4b33489ae2d32ea241cbab6434769b726b11bf3823b6ece41c0ce8bcff6",
+    "cursor/dist/cursor-cloud-lifecycle.js": "62587e86a4c17a486447cf599712281832c53f082614ef28d485e855763c967a",
+    "cursor/shared/cursor-cloud-lifecycle-constants.mjs": "b232945db6ac46efca48b1c197012316421d06d83287b4d2ffd5d3e8012382fa",
+    "integrated/node_modules/@earendil-works/pi-coding-agent/dist/core/session-manager.js": "046b6a1109ac3f0ed893bb85bf0648709362fa926a5da75761216cf2fcf9d926"
+  },
+  "fixture": "tests/i02-import-guard.json",
+  "counts": {
+    "cases": 38,
+    "resume": 21,
+    "cleanup": 5,
+    "cloud": 12,
+    "refused": 29,
+    "allowed": 9,
+    "upstreamResumeEntries": "every custom resume entry is parsed by the pinned module",
+    "upstreamCleanupEntries": "every custom cleanup entry is parsed by the pinned module's __testUtils",
+    "upstreamCloudProjection": "every case's entries are reduced by readCursorCloudLifecycleAgents"
+  },
+  "compared": [
+    "The complete decision object per case: authority, allowed, code, origin, freshAgent, notice, agentId, sessionId and pending.",
+    "Session id acceptance against Pi 1.3.0 assertValidSessionId, including traversal and separator cases.",
+    "Resume entry acceptance, version and agent id against parseCursorSessionAgentResumeEntryData.",
+    "Cleanup entry acceptance, action and phase against the pinned parseCleanupEntryData.",
+    "Cloud agent records and unresolved pendingAction against readCursorCloudLifecycleAgents.",
+    "Import marker shape: source, absolute .jsonl sourcePath without parent components, 64-hex sha256 and sessionVersion 1..3.",
+    "Header and entry import markers, pi-import path containment, Pi version 3 and future version headers.",
+    "Durable cloud journal frames: version, session identity, anchor id and pending archive/delete intent.",
+    "Backup and staging siblings of the cloud journal block cloud authority."
+  ],
+  "commands": [
+    "node packages/rpi-cursor-sdk/tests/i02-import-guard-reference.mjs /home/user/Projects/provider-references",
+    "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-cursor-sdk --locked",
+    "cargo test -p rpi-cursor-sdk --locked"
+  ],
+  "results": {
+    "referenceCheck": "passed twice, byte-identical",
+    "msrvWarningsDenied": "25 passed, 0 failed, 17 ignored (the pre-existing worker/Node suites stay ignored without a built worker)",
+    "defaultToolchain": "25 passed, 0 failed, 17 ignored"
+  },
+  "notTested": [
+    "No Cursor SDK or network call is made: the guard's decision is the boundary, and the retained adapter still owns dispatch.",
+    "Display sanitization and truncation of cloud ledger strings are not compared; the guard rejects over-long identity fields instead of truncating them, so fixtures avoid display-truncation cases.",
+    "Timestamps whose format is not a fixed-width UTC Z string are ordered by byte comparison; upstream Date.parse ordering for offsets and non-ISO strings is not compared.",
+    "Non-UTC or malformed lifecycle timestamps, and journal frames larger than the fixture cases, are not exercised.",
+    "The rpi v4 session reader itself is not constructed; the guard classifies supplied JSONL text and paths."
+  ]
+}
