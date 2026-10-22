@@ -1,0 +1,20 @@
+[package]
+name = "vault-throwaway-harness"
+version = "0.0.0"
+edition = "2021"
+publish = false
+description = "Throwaway driver: calls rpi's Antigravity vault client against a local CortexKit vault. Fake data only."
+
+# Its own workspace: this crate is a throwaway driver, not a member of rpi-package.
+[workspace]
+
+[[bin]]
+name = "vault-check"
+path = "src/main.rs"
+
+[dependencies]
+rpi-antigravity-auth = { path = "../../../packages/rpi-antigravity-auth" }
+serde_json = "1"
+sha2 = "0.10"
+tokio = { version = "1", features = ["rt", "macros", "sync", "time", "net", "io-util", "fs", "process"] }
+tokio-util = "0.7"
