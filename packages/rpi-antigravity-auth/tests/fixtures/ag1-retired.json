@@ -5,7 +5,25 @@
   "body": "data: {\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"hello\"}]},\"finishReason\":\"STOP\"}]}\n\n",
   "sourceHashes": {
     "packages/pi/src/stream.ts": "41f22771dd1dfdb3b6f72ee02f5a57317193b0a2b210be706042bf26d4af2cf6",
+    "packages/pi/src/convert.ts": "3571053316962aae01fadf47b3cae2a0238b1c49b9d849876e826f7d14c6812f",
     "packages/pi/src/credential-cache.ts": "23fa0f358ca6c60cd8474865b3d72eab3d55c4ec6234255d7a03eecc969614e6"
+  },
+  "distHashes": {
+    "files": {
+      "@cortexkit/antigravity-auth-core/dist/index.js": "fb1bc369c345e164549c79477f30828963cc332dadd51f85c98b3798214c227d",
+      "@earendil-works/pi-ai/dist/index.js": "3939ec196726eb4c44583fc7592a0fc9076f37565103b2a8cae27b04bf2cd91a",
+      "@earendil-works/pi-ai/package.json": "4e9ed07b06a91d844485874c251f312b610d015a4a4fd32c78cde58a7862a3f1"
+    },
+    "trees": {
+      "@cortexkit/antigravity-auth-core/dist": {
+        "files": 118,
+        "sha256": "38f247e8dbd52726d5190a1457b55a04a28cb4e0ff9243ddbfd7d6892ceda924"
+      },
+      "@earendil-works/pi-ai/dist": {
+        "files": 198,
+        "sha256": "fc51a71645ad2a58d0e1370c4532a78ce980c806df444aef3b4b8dafb0de8f63"
+      }
+    }
   },
   "cases": [
     {

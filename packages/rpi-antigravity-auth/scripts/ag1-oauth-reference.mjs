@@ -15,6 +15,7 @@ import { createServer, request as httpRequest } from 'node:http';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { mock } from 'node:test';
+import { pinnedFile, pinnedTree } from './ag1-reference-pins.mjs';
 
 const root = resolve(process.env.RPI_REFERENCE_DIR);
 const integrated = resolve(process.env.RPI_REFERENCE_INTEGRATED);
@@ -25,6 +26,23 @@ assert.equal(
   pin,
 );
 const write = process.argv.includes('--write');
+
+// The upstream `dist` tree is gitignored, so pin the exact build bytes that the
+// fixture was generated from (entry modules plus every other `.js` in the tree).
+const distFiles = {
+  'packages/core/dist/antigravity/oauth.js':
+    '6268943551402fc88430fcbfc165227d38016023ebb5e5afa399559c6328cd4b',
+  'packages/core/dist/auth.js':
+    'f8b8566330251fe78f20600d2a5b1b0a17dc2f993d5288ef7bc2e128b24af4d1',
+  'packages/core/dist/project.js':
+    '4d24b974ac205b74e151fa6e9f13c3043d2c65a5883108dcced88b760fdcef9e',
+};
+const distTrees = {
+  'packages/core/dist': {
+    files: 118,
+    sha256: '38f247e8dbd52726d5190a1457b55a04a28cb4e0ff9243ddbfd7d6892ceda924',
+  },
+};
 
 const crypto = await import('node:crypto');
 const entropy = Buffer.from(Array.from({ length: 32 }, (_, i) => i));
@@ -133,6 +151,26 @@ for (const base of [
     },
   });
 }
+
+// Assert the build bytes before executing them.
+const distHashes = {
+  files: Object.fromEntries(
+    await Promise.all(
+      Object.entries(distFiles).map(async ([file, expected]) => [
+        file,
+        await pinnedFile(root, file, expected),
+      ]),
+    ),
+  ),
+  trees: Object.fromEntries(
+    await Promise.all(
+      Object.entries(distTrees).map(async ([directory, expected]) => [
+        directory,
+        await pinnedTree(join(root, directory), expected),
+      ]),
+    ),
+  ),
+};
 
 const core = await import(pathToFileURL(join(root, 'packages/core/dist/antigravity/oauth.js')).href);
 const helpers = await import(pathToFileURL(join(root, 'packages/core/dist/auth.js')).href);
@@ -300,6 +338,7 @@ const document =
       runtime: process.version,
       clock,
       sourceHashes,
+      distHashes,
       exchange,
       refresh,
       project: projectCases,

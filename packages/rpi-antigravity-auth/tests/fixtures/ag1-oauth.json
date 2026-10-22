@@ -10,6 +10,19 @@
     "packages/core/src/credential-redaction.ts": "9856f179cdcf4882b2bceb0179f24d28fd24c2e0065640e5b2c49c0eed7e8d97",
     "packages/pi/src/credential-cache.ts": "23fa0f358ca6c60cd8474865b3d72eab3d55c4ec6234255d7a03eecc969614e6"
   },
+  "distHashes": {
+    "files": {
+      "packages/core/dist/antigravity/oauth.js": "6268943551402fc88430fcbfc165227d38016023ebb5e5afa399559c6328cd4b",
+      "packages/core/dist/auth.js": "f8b8566330251fe78f20600d2a5b1b0a17dc2f993d5288ef7bc2e128b24af4d1",
+      "packages/core/dist/project.js": "4d24b974ac205b74e151fa6e9f13c3043d2c65a5883108dcced88b760fdcef9e"
+    },
+    "trees": {
+      "packages/core/dist": {
+        "files": 118,
+        "sha256": "38f247e8dbd52726d5190a1457b55a04a28cb4e0ff9243ddbfd7d6892ceda924"
+      }
+    }
+  },
   "exchange": [
     {
       "name": "malformed token body",

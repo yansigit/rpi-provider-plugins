@@ -14,6 +14,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { mock } from 'node:test';
+import { pinnedFile, pinnedTree } from './ag1-reference-pins.mjs';
 
 const root = resolve(process.env.RPI_REFERENCE_DIR);
 const integrated = resolve(process.env.RPI_REFERENCE_INTEGRATED);
@@ -25,7 +26,41 @@ assert.equal(
 );
 const write = process.argv.includes('--write');
 
-const aiRoot = join(integrated, 'node_modules/@earendil-works/pi-ai');
+const modules = join(integrated, 'node_modules');
+const aiRoot = join(modules, '@earendil-works/pi-ai');
+const coreRoot = join(modules, '@cortexkit/antigravity-auth-core');
+
+// Both packages are installed build output (gitignored in their sources), so
+// pin the exact bytes under the entry module and the whole `dist` tree.
+const distHashes = {
+  files: {
+    '@cortexkit/antigravity-auth-core/dist/index.js': await pinnedFile(
+      modules,
+      '@cortexkit/antigravity-auth-core/dist/index.js',
+      'fb1bc369c345e164549c79477f30828963cc332dadd51f85c98b3798214c227d',
+    ),
+    '@earendil-works/pi-ai/dist/index.js': await pinnedFile(
+      modules,
+      '@earendil-works/pi-ai/dist/index.js',
+      '3939ec196726eb4c44583fc7592a0fc9076f37565103b2a8cae27b04bf2cd91a',
+    ),
+    '@earendil-works/pi-ai/package.json': await pinnedFile(
+      modules,
+      '@earendil-works/pi-ai/package.json',
+      '4e9ed07b06a91d844485874c251f312b610d015a4a4fd32c78cde58a7862a3f1',
+    ),
+  },
+  trees: {
+    '@cortexkit/antigravity-auth-core/dist': await pinnedTree(join(coreRoot, 'dist'), {
+      files: 118,
+      sha256: '38f247e8dbd52726d5190a1457b55a04a28cb4e0ff9243ddbfd7d6892ceda924',
+    }),
+    '@earendil-works/pi-ai/dist': await pinnedTree(join(aiRoot, 'dist'), {
+      files: 198,
+      sha256: 'fc51a71645ad2a58d0e1370c4532a78ce980c806df444aef3b4b8dafb0de8f63',
+    }),
+  },
+};
 const manifest = JSON.parse(await readFile(join(aiRoot, 'package.json'), 'utf8'));
 assert.equal(manifest.version, '1.3.0');
 const aiPath = pathToFileURL(join(aiRoot, manifest.exports['.'].import)).href;
@@ -143,7 +178,11 @@ try {
       result: structuredClone(result),
     });
   }
-  const files = ['packages/pi/src/stream.ts', 'packages/pi/src/credential-cache.ts'];
+  const files = [
+    'packages/pi/src/stream.ts',
+    'packages/pi/src/convert.ts',
+    'packages/pi/src/credential-cache.ts',
+  ];
   const sourceHashes = Object.fromEntries(
     await Promise.all(
       files.map(async (file) => [
@@ -154,7 +193,15 @@ try {
   );
   const document =
     JSON.stringify(
-      { reference: pin, host: manifest.version, runtime: process.version, body: text, sourceHashes, cases },
+      {
+        reference: pin,
+        host: manifest.version,
+        runtime: process.version,
+        body: text,
+        sourceHashes,
+        distHashes,
+        cases,
+      },
       null,
       2,
     ) + '\n';
