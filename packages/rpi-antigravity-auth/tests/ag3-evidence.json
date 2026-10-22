@@ -1,0 +1,96 @@
+{
+  "status": "Component differential evidence for the pinned slot-lock faults and the complete /antigravity menu walk; loaded host boundary checked for the existing enrollment scenario; platform execution beyond Linux and live vault acceptance remain pending",
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "referenceNode": "24.22.0",
+  "upstreamSha256": {
+    "packages/core/src/common-auth-embedded/fs/refresh-file-lock.js": "5c52aad573e84e8065dcf06259ecf38345e8b5a2c401029a23d942f28c7a8521",
+    "packages/core/src/common-auth-embedded/pi-slot/slot.js": "13a7d5941b79c6d444cf9dc6f23263cf9237146c7dd5de7d162dbc21e015532c",
+    "packages/core/src/common-auth-embedded/pi-slot/lock.js": "68b0c7c764b88391e466f3b9fa172df176bf21529399606bf84475f3b920db8b",
+    "packages/core/src/common-auth-embedded/fs/private-files.js": "1c8f34202b535d774d8c1a53bd403255f02701760c7378e020756c02c55a97c4",
+    "packages/core/src/common-auth-embedded/fs/atomic-write.js": "80779a8078e673ef68deaa7fdee3a0e1322078521a1f4156c0a595814c374044",
+    "packages/core/src/common-auth-embedded/fs/with-lock.js": "35b4ed6dec77ffcb7850e655a35957da15c14a0fa27b6f3d1d634e243de43456",
+    "packages/pi/src/commands.ts": "c8ccdcd68de52a1136e31c79c8705c314d459d07fb5959d8e12f3a0f8c7ba04f",
+    "packages/pi/src/vault-setup.ts": "64bf98fdb397707be4d1bdd34ef56b89dbd1ebd67a07afd8de7c01e6e418c07e",
+    "packages/core/src/antigravity-command-menu.ts": "ccd51fdc729a79d09f40fa190f30d82020c1b9db00f5249661376f22d6d111d5",
+    "packages/core/src/common-auth-embedded/commands/index.js": "1fbda89803e0ca21bd3e2f4ac01e5303b8858409e63467477ca4d3904bd16c53",
+    "packages/core/src/vault-folder-refusal.ts": "78ceb5cf9accf687de440b1b3e00b31fff23ac24e324831c4e70caceda79b924"
+  },
+  "fixtures": {
+    "tests/ag3-slot-lock.json": {
+      "sha256": "7e133e0c1f9c6be39e26ebd5b03315f89dab765793e9ed3ce198a0ff95fff98b",
+      "leaseCases": 36,
+      "slotCases": 4,
+      "processCases": 1
+    },
+    "tests/ag3-menu.json": {
+      "sha256": "309cc9d3b58e1b1c69eb794faeaa34664cf0fc56031a6a2eedef8e039082d6ca",
+      "menuWalks": 90,
+      "notifyingWalks": 35
+    }
+  },
+  "compared": [
+    "Renewable lease corrupt owner identity: non-string ownerId, boolean/array/object/hex/padded/negative/zero expiresAt, extra fields, symlink and legacy-directory owners",
+    "Eviction-marker corruption: a regular-file marker, a malformed owner file, a foreign owner at fresh and stale ages",
+    "Lease loss and compromise: assert and renewal against a malformed, directory-replaced or removed lease, and a marker stolen during renewal or release",
+    "Cancellation before commit: a lease destroyed while held is not revived, and a released lease is not removed when its marker was stolen",
+    "Credential slot: a second instance restores or refuses after a foreign login, and an interrupted auth or stash rename stays recoverable",
+    "Competing processes: a real child process holds the pinned lease, a contender is refused, the child releases, and a successor acquires the freed path",
+    "Every deterministic /antigravity walk: exact select/confirm/notify UI trace, callback order, confirmation true/false, cancellation at the root, section, entry and item levels, and refusal projection",
+    "Exact informational and error notification strings for use/decline/accept/use-vault/use-local/forget/request-access"
+  ],
+  "approvedException": {
+    "id": "A05-body-read-timeout-cancellation",
+    "recorded": "tests/fixtures/network.json",
+    "behavior": "The original Node 24 body read stays pending after an idle timeout or cancellation; the native transport returns the timeout/cancellation error and releases its request.",
+    "regression": "tests/ag3_cancellation.rs::body_read_timeout_and_cancel_return_the_error_and_release_the_request pins the exact error text and the released socket.",
+    "preserved": true
+  },
+  "checks": [
+    {
+      "command": "node tests/ag3-slot-lock-reference.mjs --write",
+      "status": "passed",
+      "environment": { "RPI_REFERENCE_DIR": "locked Antigravity checkout", "RPI_PRIVATE_TMP": "private scratch" }
+    },
+    {
+      "command": "node tests/ag3-slot-lock-reference.mjs",
+      "status": "passed",
+      "runs": 2,
+      "byteIdentical": true
+    },
+    {
+      "command": "node --experimental-transform-types tests/ag3-menu-reference.ts --write",
+      "status": "passed"
+    },
+    {
+      "command": "node --experimental-transform-types tests/ag3-menu-reference.ts",
+      "status": "passed",
+      "runs": 2,
+      "byteIdentical": true
+    },
+    {
+      "command": "cargo test -p rpi-antigravity-auth --locked",
+      "status": "passed"
+    },
+    {
+      "command": "cargo +1.78.0 test -p rpi-antigravity-auth --locked",
+      "status": "passed"
+    },
+    {
+      "command": "cargo test -p rpi-antigravity-auth --locked --test native_menu -- --ignored",
+      "status": "passed",
+      "note": "Loaded Linux host boundary: proposal, pending approval after menu closure, backup/marker before custody, account controls, cancelled disconnect and confirmed restoration. Requires RPI_TEST_HOST, RPI_TEST_PROVIDER_LIBRARY, RPI_PRIVATE_TMP, RPI_REFERENCE_NODE and RPI_REFERENCE_DIR."
+    },
+    {
+      "command": "python3 scripts/native-vault-menu.py",
+      "status": "passed",
+      "result": { "loadedMenuWalks": 5, "hostSlotInspections": 10, "rawStoreEncodingCases": 4, "eof": "passed", "liveNetwork": false }
+    }
+  ],
+  "notTested": [
+    "The bare Rust credential slot intentionally has no inner Pi mkdir/mtime lock: native rpi runs it under the host credentialStoreLock. Bare-slot scenarios that would trip that lock (for example a read-only auth directory) are therefore not differentially comparable and are excluded.",
+    "The loaded host binary used for the ignored test and the native menu script was built from a sibling host lane's target directory; rebuilding the host is outside this lane.",
+    "Competing-process contention is captured for the pinned renewable lease. Cross-process contention at the native credentialStoreLock boundary (two host processes) is not scripted here.",
+    "macOS and Windows execution was not performed; the slot and lease code cross-checks on Rust 1.78 but only Linux ran.",
+    "Live vault enrollment, custody send and inference are out of scope and were not exercised."
+  ]
+}
