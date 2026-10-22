@@ -7,6 +7,8 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const root = resolve(process.argv[2] ?? "../provider-references/multiprovider");
+// Upstream sorting follows the default locale; the fixture is generated under en-US.
+assert.equal(new Intl.Collator().resolvedOptions().locale, "en-US", "run with LC_ALL=en_US.UTF-8");
 const file = join(root, "src/auth-store.ts");
 assert.equal(createHash("sha256").update(await readFile(file)).digest("hex"), "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6");
 let sequence = 0, now = 1700000000000;

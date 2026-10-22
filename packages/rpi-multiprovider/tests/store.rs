@@ -29,6 +29,9 @@ fn failure(error: Failure) -> Value {
 
 #[tokio::test]
 async fn all_pinned_store_records_and_public_views_match() {
+    // Upstream sorts with the process's default locale; the fixture was
+    // generated under en-US, so pin the same locale for the native collator.
+    std::env::set_var("LC_ALL", "en_US.UTF-8");
     let reference: Value = serde_json::from_str(include_str!("store-reference.json")).unwrap();
     for case in reference["cases"].as_array().unwrap() {
         let root = Scratch(
