@@ -1,0 +1,55 @@
+{
+  "status": "Native multiprovider registration, credential store, wrapper lift, discovery and recorded-pin reconcile verified through the exported ABI and the built cdylib; services, commands, virtual routing and Fabric remain separate lanes",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "upstreamHashes": {
+    "src/auth-store.ts": "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6",
+    "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+    "src/errors.ts": "1e4f189fc4aac4488c84912b29bfc7e78629600ead41ce2924c8d8c3a3bac4b7",
+    "tests/m_native-reference.json": "f83b7a27f8a7bba3921a0f08044b7f9a345f0ea75f0f6736cb87bfd9a3835745"
+  },
+  "checks": {
+    "toolchains": ["1.78.0 (warnings denied)", "1.95.0 (default)"],
+    "rust178PackageTestsPassed": 29,
+    "rust178PackageTestsIgnored": 1,
+    "rust178PackageTestsFailed": 0,
+    "rust195PackageTestsPassed": 29,
+    "rust195PackageTestsIgnored": 1,
+    "rust195PackageTestsFailed": 0,
+    "nativeAbiTests": 10,
+    "loadedLibraryTests": 1,
+    "differentialScenarios": {
+      "credentials": 4,
+      "in-placeReplacements": 1,
+      "malformedCredentialRefusals": 1,
+      "inventoryAccounts": 4
+    },
+    "referenceRunsByteIdentical": 2
+  },
+  "compared": [
+    "The exported rpi_plugin_register entrypoint registers exactly one provider wrapper with no provider list, one private credential store, and awaited SessionStart/BeforeAgentStart/SessionShutdown handlers",
+    "The built cdylib loads through dlopen and registers through the same exported symbol",
+    "Credential read/lock/replace/remove envelopes return the upstream-persisted credential object unchanged, reject a stale lock, release the file lock leaf, and report cancellation as a structured error",
+    "A pooled request resolves one opaque continuation receipt per account, disables delegated provider retries, rotates accounts after the stored threshold, forwards ordered output frames, forwards the private response receipt, and returns the host terminal message",
+    "A provider with no stored pool is delegated once with ambient auth and no account lease",
+    "The stored upstream account delegates ambient auth without a pooled receipt",
+    "Recorded session pins are keyed by execution scope: a child journal decision does not overwrite the parent, child shutdown leaves the parent pinned, and a stale pin falls back to the live pool",
+    "Reconcile re-registers a changed pool without duplicate scheduler registrations and applies scheduler defaults from the store",
+    "Credential-store reads and the scheduler inventory match the upstream MultiAuthStore fixture, including an in-place API-key to OAuth replacement",
+    "Inherited pin planning filters pools that already have a journal decision and keeps decisions whose scheduler or session key is not ready"
+  ],
+  "notCompared": [
+    "No direct use of the SDK register_with_factory helper: the crate takes no rpi-ai dependency (that would require a Cargo.toml dependency and Cargo.lock change, which this lane forbids). The wrapper is registered through the same register_provider_wrapper slot and speaks the identical version-1 resolveAuth/delegate continuation envelopes; a loaded-library test drives the same path.",
+    "Provider re-lift in place is the host's documented behavior (wrappers rebuild from unwrapped bases on catalog publication). The fixture proves one registration and no recursive invocation, not each host publication edge.",
+    "Missing-provider and stale-pin warnings are recorded internally; user-visible notifications belong to the services/commands lanes.",
+    "Managed auth markers, custom affinity keys and request-option sanitization are the M04 managed lane; this lift uses the session id as its only affinity key.",
+    "Fabric compaction failover is not wired here; the host failover hook still returns false (M09).",
+    "Header byte values are converted to a lossy UTF-8 object for classifier input; no agent-visible field carries them.",
+    "Only Linux execution was performed."
+  ],
+  "commands": [
+    "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-multiprovider --locked",
+    "cargo test -p rpi-multiprovider --locked (default toolchain, separate target dir)",
+    "node packages/rpi-multiprovider/tests/m_native_reference.mjs ../provider-references/multiprovider (check mode, twice)"
+  ]
+}

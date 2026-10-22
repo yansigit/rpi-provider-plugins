@@ -1,0 +1,254 @@
+{
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "upstreamHashes": {
+    "auth-store.ts": "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6",
+    "types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+    "errors.ts": "1e4f189fc4aac4488c84912b29bfc7e78629600ead41ce2924c8d8c3a3bac4b7"
+  },
+  "provider": "example",
+  "accounts": [
+    {
+      "id": "account-1",
+      "label": "Work",
+      "authKind": "api-key",
+      "credential": {
+        "type": "api_key",
+        "key": "k-work",
+        "env": {
+          "ACCOUNT_REGION": "west"
+        }
+      }
+    },
+    {
+      "id": "account-3",
+      "label": "Personal",
+      "authKind": "api-key",
+      "credential": {
+        "type": "api_key",
+        "key": "k-personal"
+      }
+    },
+    {
+      "id": "account-5",
+      "label": "OAuth",
+      "authKind": "oauth",
+      "credential": {
+        "type": "oauth",
+        "access": "access-1",
+        "refresh": "refresh-1",
+        "expires": 1700000600000
+      }
+    },
+    {
+      "id": "account-7",
+      "label": "OAuth expired",
+      "authKind": "oauth",
+      "credential": {
+        "type": "oauth",
+        "access": "access-2",
+        "refresh": "refresh-2",
+        "expires": 0
+      }
+    }
+  ],
+  "inventory": [
+    {
+      "id": "account-1",
+      "label": "Work",
+      "authKind": "api-key",
+      "enabled": true,
+      "weight": 1,
+      "priority": 1
+    },
+    {
+      "id": "account-3",
+      "label": "Personal",
+      "authKind": "api-key",
+      "enabled": true,
+      "weight": 1,
+      "priority": 2
+    },
+    {
+      "id": "account-5",
+      "label": "OAuth",
+      "authKind": "oauth",
+      "enabled": true,
+      "weight": 1,
+      "priority": 3
+    },
+    {
+      "id": "account-7",
+      "label": "OAuth expired",
+      "authKind": "oauth",
+      "enabled": true,
+      "weight": 1,
+      "priority": 4
+    }
+  ],
+  "state": {
+    "version": 1,
+    "providers": {
+      "example": {
+        "policy": "round-robin",
+        "affinity": true,
+        "includeUpstream": true,
+        "accounts": [
+          {
+            "id": "account-1",
+            "label": "Work",
+            "authKind": "api-key",
+            "credential": {
+              "type": "api_key",
+              "key": "k-work",
+              "env": {
+                "ACCOUNT_REGION": "west"
+              }
+            },
+            "enabled": true,
+            "weight": 1,
+            "priority": 1,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "id": "account-3",
+            "label": "Personal",
+            "authKind": "api-key",
+            "credential": {
+              "type": "api_key",
+              "key": "k-personal"
+            },
+            "enabled": true,
+            "weight": 1,
+            "priority": 2,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "id": "account-5",
+            "label": "OAuth",
+            "authKind": "oauth",
+            "credential": {
+              "type": "oauth",
+              "access": "access-1",
+              "refresh": "refresh-1",
+              "expires": 1700000600000
+            },
+            "enabled": true,
+            "weight": 1,
+            "priority": 3,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "id": "account-7",
+            "label": "OAuth expired",
+            "authKind": "oauth",
+            "credential": {
+              "type": "oauth",
+              "access": "access-2",
+              "refresh": "refresh-2",
+              "expires": 0
+            },
+            "enabled": true,
+            "weight": 1,
+            "priority": 4,
+            "createdAt": "2023-11-14T22:13:20.000Z",
+            "updatedAt": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    }
+  },
+  "replaced": {
+    "id": "account-1",
+    "account": {
+      "id": "account-1",
+      "label": "Work",
+      "authKind": "oauth",
+      "credential": {
+        "type": "oauth",
+        "access": "replaced-access",
+        "refresh": "replaced-refresh",
+        "expires": 1700000060000
+      }
+    },
+    "state": {
+      "version": 1,
+      "providers": {
+        "example": {
+          "policy": "round-robin",
+          "affinity": true,
+          "includeUpstream": true,
+          "accounts": [
+            {
+              "id": "account-1",
+              "label": "Work",
+              "authKind": "oauth",
+              "credential": {
+                "type": "oauth",
+                "access": "replaced-access",
+                "refresh": "replaced-refresh",
+                "expires": 1700000060000
+              },
+              "enabled": true,
+              "weight": 1,
+              "priority": 1,
+              "createdAt": "2023-11-14T22:13:20.000Z",
+              "updatedAt": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "id": "account-3",
+              "label": "Personal",
+              "authKind": "api-key",
+              "credential": {
+                "type": "api_key",
+                "key": "k-personal"
+              },
+              "enabled": true,
+              "weight": 1,
+              "priority": 2,
+              "createdAt": "2023-11-14T22:13:20.000Z",
+              "updatedAt": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "id": "account-5",
+              "label": "OAuth",
+              "authKind": "oauth",
+              "credential": {
+                "type": "oauth",
+                "access": "access-1",
+                "refresh": "refresh-1",
+                "expires": 1700000600000
+              },
+              "enabled": true,
+              "weight": 1,
+              "priority": 3,
+              "createdAt": "2023-11-14T22:13:20.000Z",
+              "updatedAt": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "id": "account-7",
+              "label": "OAuth expired",
+              "authKind": "oauth",
+              "credential": {
+                "type": "oauth",
+                "access": "access-2",
+                "refresh": "refresh-2",
+                "expires": 0
+              },
+              "enabled": true,
+              "weight": 1,
+              "priority": 4,
+              "createdAt": "2023-11-14T22:13:20.000Z",
+              "updatedAt": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "malformed": {
+    "error": "multiprovider: unsupported stored credential type"
+  }
+}
