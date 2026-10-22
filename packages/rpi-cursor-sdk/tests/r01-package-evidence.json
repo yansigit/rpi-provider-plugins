@@ -1,0 +1,90 @@
+{
+  "status": "pass",
+  "summary": "Cursor runtime staged as sidecar assets with verified checksums; archives contain no @cursor/sdk bytes; scripted host install/uninstall roundtrip passed",
+  "ledger": "R01",
+  "reference": {
+    "cursorAdapterCommit": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
+    "sdk": "@cursor/sdk@1.0.37",
+    "sdkLockfile": "runtime/package-lock.json",
+    "license": "runtime/LICENSE (MIT)"
+  },
+  "assetManifest": {
+    "file": "tests/r01-package-assets.json",
+    "sha256": "df45c6addf843da30a96819ab75901f142d838fd7df46e46d88e0311b2848453",
+    "assets": 21,
+    "entries": 22,
+    "hostEntryLimit": 128,
+    "distFiles": 5,
+    "sharedFiles": 12,
+    "bundled": true
+  },
+  "sdk": {
+    "packages": [
+      {
+        "name": "@cursor/sdk",
+        "version": "1.0.37",
+        "files": 346
+      },
+      {
+        "name": "@cursor/sdk-linux-x64",
+        "version": "1.0.37",
+        "files": 11
+      }
+    ],
+    "uniqueFileHashes": 206,
+    "vendoredInArchive": false,
+    "installStep": "@cursor/sdk is installed from npm into the installed runtime directory after installation"
+  },
+  "checks": {
+    "archiveFormat": "strict: exactly the library plus declared assets",
+    "targets": [
+      "x86_64-pc-windows-msvc",
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-linux-gnu",
+      "x86_64-apple-darwin",
+      "aarch64-apple-darwin"
+    ],
+    "archiveContentsVerified": true,
+    "assetHashesVerified": true,
+    "archiveByteReproducible": true,
+    "noNodeModules": true,
+    "noSdkFileBytes": true,
+    "scriptedInstallUninstall": true,
+    "tamperedArchiveRejected": true,
+    "undeclaredEntryRejected": true,
+    "manifestCheckMode": "node tests/r01-package-reference.mjs",
+    "pathRuleTests": 5,
+    "packagedRuntimeOpensWithExternalDependencies": true,
+    "packagingModuleUnitTests": 20,
+    "fullRetainedDispatcherSuiteAgainstBundle": true,
+    "bundledRuntimeTests": 2
+  },
+  "tools": {
+    "node": "24.22.0",
+    "python": "3.12.3",
+    "rust": [
+      "1.78.0",
+      "1.95.0"
+    ],
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  },
+  "commands": [
+    "node scripts/stage-package-runtime.mjs --out .package",
+    "node tests/r01-package-reference.mjs",
+    "node --test tests/r01-package-runtime.mjs",
+    "python3 tests/r01_package_test.py -v",
+    "RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-cursor-sdk --locked",
+    "cargo test -p rpi-cursor-sdk --locked",
+    "python3 .github/scripts/test_prebuilt_assets.py"
+  ],
+  "notTested": [
+    "hostBinaryInstallUninstall: the host rpi binary is in a read-only reference worktree and prebuilt discovery needs the network; the roundtrip is scripted from the published host semantics",
+    "nativeObjectValidation: fixture libraries are not real target binaries, so host architecture/object checks are not exercised",
+    "realCursorSdkExecution: no npm install or Cursor call was performed; only the lockfile pin and absence of SDK bytes are verified",
+    "npmInstallOffline: the post-install npm ci step needs the npm registry and is documented, not executed",
+    "uninstallNpmTree: the host removes only recorded assets, so a post-install runtime/node_modules is not removed by rpi uninstall",
+    "otherPlatformExecution: archives are built for all five targets but only Linux was exercised",
+    "upgradeReplacingAssets: modeled by the host tests, not executed against this package"
+  ]
+}

@@ -41,6 +41,24 @@
             "path": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+\\.(dll|so|dylib)$" },
             "sha256": { "$ref": "#/$defs/sha256" }
           }
+        },
+        "assets": {
+          "description": "Optional sidecar files installed beside the library. Present, even empty, makes the archive strict: it must contain exactly the library and these files. Components may not start with a dot, no file may have a native library extension, and this repository never vendors node_modules contents.",
+          "type": "array",
+          "maxItems": 127,
+          "items": {
+            "type": "object",
+            "required": ["path", "sha256"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "maxLength": 512,
+                "pattern": "^[A-Za-z0-9_-][A-Za-z0-9_.-]*(/[A-Za-z0-9_-][A-Za-z0-9_.-]*)*$"
+              },
+              "sha256": { "$ref": "#/$defs/sha256" }
+            },
+            "additionalProperties": false
+          }
         }
       }
     }

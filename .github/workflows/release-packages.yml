@@ -57,6 +57,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - name: Install Linux native dependencies
         if: runner.os == 'Linux'
         run: |
@@ -65,6 +68,15 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: backfill-${{ matrix.target }}
+      - name: Stage the Cursor worker runtime assets
+        if: hashFiles('packages/rpi-cursor-sdk/scripts/stage-package-runtime.mjs') != ''
+        working-directory: packages/rpi-cursor-sdk
+        run: |
+          cd worker
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+          cd ..
+          node scripts/stage-package-runtime.mjs
       - name: Build only the requested extension libraries
         env:
           PACKAGE_RELEASES: ${{ inputs.package_releases }}

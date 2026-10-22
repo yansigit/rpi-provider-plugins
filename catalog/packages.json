@@ -218,5 +218,16 @@
     "install": "rpi install rpi-providers --github pi-rust/rpi-package",
     "repository": "https://github.com/pi-rust/rpi-package",
     "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-providers-v0.1.0/rpi-extension.json"
+  },
+  {
+    "name": "rpi-cursor-sdk",
+    "version": "0.1.6",
+    "type": "extension",
+    "tool": null,
+    "inspiredBy": "pi-cursor-sdk / Cursor Agents SDK",
+    "sourceDownloadsPerMonth": null,
+    "install": "rpi install rpi-cursor-sdk --github pi-rust/rpi-package",
+    "repository": "https://github.com/pi-rust/rpi-package",
+    "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-cursor-sdk-v0.1.6/rpi-extension.json"
   }
 ]
