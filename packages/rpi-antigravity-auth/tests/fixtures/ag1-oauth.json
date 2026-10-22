@@ -1,0 +1,2822 @@
+{
+  "reference": "a97f9055017f3c1546afbfe61a19d50b428be3d8",
+  "host": "1.3.0",
+  "runtime": "v24.22.0",
+  "clock": 1784285195116,
+  "sourceHashes": {
+    "packages/core/src/antigravity/oauth.ts": "6b07b6aec1101b56421818ac57dc9874cb9b47d27f6fba8e1e89368c516eee4b",
+    "packages/core/src/project.ts": "8f5eeaf9ee28e28d5c4185d5d0acb549e5d8f24a5f7657e4fdc1a62505808b56",
+    "packages/core/src/auth.ts": "3e5a3d8dd79e629caaf4e7ce3e41cc199b818b9704454e2c25cdcce793fac364",
+    "packages/core/src/credential-redaction.ts": "9856f179cdcf4882b2bceb0179f24d28fd24c2e0065640e5b2c49c0eed7e8d97",
+    "packages/pi/src/credential-cache.ts": "23fa0f358ca6c60cd8474865b3d72eab3d55c4ec6234255d7a03eecc969614e6"
+  },
+  "exchange": [
+    {
+      "name": "malformed token body",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "not json at all"
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "failed",
+        "error": "Unexpected token 'o', \"not json at all\" is not valid JSON"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "truncated token body",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "{\"access_token\":"
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "failed",
+        "error": "Unexpected end of JSON input"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "html token error body",
+      "responses": [
+        {
+          "status": 400,
+          "raw": "<html>denied</html>"
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiIifQ",
+      "project": "",
+      "result": {
+        "type": "failed",
+        "error": "<html>denied</html>"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "malformed userinfo body",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": 1800
+          }
+        },
+        {
+          "status": 200,
+          "raw": "nope"
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "failed",
+        "error": "Unexpected token 'o', \"nope\" is not valid JSON"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+            "method": "GET",
+            "headers": [
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "malformed discovery body",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": 1800
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "email": "fixture@example.test",
+            "name": "Alice"
+          }
+        },
+        {
+          "status": 200,
+          "raw": "load{"
+        },
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": 1800
+          }
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiIifQ",
+      "project": "",
+      "result": {
+        "type": "success",
+        "refresh": "refresh-test|",
+        "access": "access-test",
+        "expires": 1784286995116,
+        "email": "fixture@example.test",
+        "label": "Alice",
+        "projectId": ""
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+            "method": "GET",
+            "headers": [
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 10000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 10000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "malformed discovery then second endpoint",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": 1800
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "email": "fixture@example.test",
+            "name": "Alice"
+          }
+        },
+        {
+          "status": 200,
+          "raw": "load{"
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": {
+              "id": "second-project"
+            }
+          }
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiIifQ",
+      "project": "",
+      "result": {
+        "type": "success",
+        "refresh": "refresh-test|second-project",
+        "access": "access-test",
+        "expires": 1784286995116,
+        "email": "fixture@example.test",
+        "label": "Alice",
+        "projectId": "second-project"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+            "method": "GET",
+            "headers": [
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 10000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 10000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "empty token body",
+      "responses": [
+        {
+          "status": 200,
+          "raw": ""
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "failed",
+        "error": "Unexpected end of JSON input"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "whitespace token body",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "   \n\t"
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "failed",
+        "error": "Unexpected end of JSON input"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry null",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": null
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "email": "fixture@example.test",
+            "name": "Alice"
+          }
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "success",
+        "refresh": "refresh-test|project-one",
+        "access": "access-test",
+        "expires": 1784288795116,
+        "email": "fixture@example.test",
+        "label": "Alice",
+        "projectId": "project-one"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+            "method": "GET",
+            "headers": [
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry \"3600\"",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": "3600"
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "email": "fixture@example.test",
+            "name": "Alice"
+          }
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "success",
+        "refresh": "refresh-test|project-one",
+        "access": "access-test",
+        "expires": 1784288795116,
+        "email": "fixture@example.test",
+        "label": "Alice",
+        "projectId": "project-one"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+            "method": "GET",
+            "headers": [
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry -1",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": -1
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "email": "fixture@example.test",
+            "name": "Alice"
+          }
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "success",
+        "refresh": "refresh-test|project-one",
+        "access": "access-test",
+        "expires": 1784285195116,
+        "email": "fixture@example.test",
+        "label": "Alice",
+        "projectId": "project-one"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+            "method": "GET",
+            "headers": [
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry 0",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": 0
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "email": "fixture@example.test",
+            "name": "Alice"
+          }
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "success",
+        "refresh": "refresh-test|project-one",
+        "access": "access-test",
+        "expires": 1784285195116,
+        "email": "fixture@example.test",
+        "label": "Alice",
+        "projectId": "project-one"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+            "method": "GET",
+            "headers": [
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry 0.25",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "access-test",
+            "refresh_token": "refresh-test",
+            "expires_in": 0.25
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "email": "fixture@example.test",
+            "name": "Alice"
+          }
+        }
+      ],
+      "code": "code +😀",
+      "state": "eyJ2ZXJpZmllciI6IkFBRUNBd1FGQmdjSUNRb0xEQTBPRHhBUkVoTVVGUllYR0JrYUd4d2RIaDgiLCJwcm9qZWN0SWQiOiJwcm9qZWN0LW9uZSJ9",
+      "project": "project-one",
+      "result": {
+        "type": "success",
+        "refresh": "refresh-test|project-one",
+        "access": "access-test",
+        "expires": 1784285195366,
+        "email": "fixture@example.test",
+        "label": "Alice",
+        "projectId": "project-one"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8"
+              ],
+              [
+                "Accept",
+                "*/*"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip, deflate, br"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "body": "client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder&code=code+%2B%F0%9F%98%80&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A51121%2Foauth-callback&code_verifier=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+            "method": "GET",
+            "headers": [
+              [
+                "Authorization",
+                "Bearer access-test"
+              ],
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ]
+            ],
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    }
+  ],
+  "refresh": [
+    {
+      "name": "malformed body",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "invalid"
+        }
+      ],
+      "result": {
+        "error": "Unexpected token 'i', \"invalid\" is not valid JSON"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "truncated body",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "{\"access_token\":"
+        }
+      ],
+      "result": {
+        "error": "Unexpected end of JSON input"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "empty body",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "raw": ""
+        }
+      ],
+      "result": {
+        "error": "Unexpected end of JSON input"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "array body",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "[1,2,3"
+        }
+      ],
+      "result": {
+        "error": "Expected ',' or ']' after array element in JSON at position 6 (line 1 column 7)"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "non-ok malformed",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 500,
+          "statusText": "Oops",
+          "raw": "boom"
+        }
+      ],
+      "result": {
+        "error": "Antigravity token refresh failed (500 Oops) - boom"
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry null",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "next",
+            "expires_in": null
+          }
+        }
+      ],
+      "result": {
+        "value": {
+          "access": "next",
+          "refresh": "refresh",
+          "expires": 1784288795116
+        }
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry \"3600\"",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "next",
+            "expires_in": "3600"
+          }
+        }
+      ],
+      "result": {
+        "value": {
+          "access": "next",
+          "refresh": "refresh",
+          "expires": 1784288795116
+        }
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry -1",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "next",
+            "expires_in": -1
+          }
+        }
+      ],
+      "result": {
+        "value": {
+          "access": "next",
+          "refresh": "refresh",
+          "expires": 1784285195116
+        }
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry 0",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "next",
+            "expires_in": 0
+          }
+        }
+      ],
+      "result": {
+        "value": {
+          "access": "next",
+          "refresh": "refresh",
+          "expires": 1784285195116
+        }
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    },
+    {
+      "name": "expiry 0.25",
+      "packed": "refresh",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "access_token": "next",
+            "expires_in": 0.25
+          }
+        }
+      ],
+      "result": {
+        "value": {
+          "access": "next",
+          "refresh": "refresh",
+          "expires": 1784285195366
+        }
+      },
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://oauth2.googleapis.com/token",
+            "method": "POST",
+            "headers": [
+              [
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+              ]
+            ],
+            "body": "grant_type=refresh_token&refresh_token=refresh&client_id=antigravity-oauth-client-id.invalid&client_secret=antigravity-oauth-client-secret-placeholder",
+            "agy": false,
+            "timeoutMs": 15000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "remaining": 0
+    }
+  ],
+  "project": [
+    {
+      "name": "malformed discovery falls back to next endpoint",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "load{"
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed"
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "malformed discovery then onboarding",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "load{"
+        },
+        {
+          "status": 200,
+          "json": {
+            "allowedTiers": [
+              {
+                "id": "free",
+                "isDefault": true
+              }
+            ]
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "created"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|created",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "created"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "malformed onboard body",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "load{"
+        },
+        {
+          "status": 200,
+          "json": {
+            "allowedTiers": [
+              {
+                "id": "free"
+              }
+            ]
+          }
+        },
+        {
+          "status": 200,
+          "raw": "onboard{"
+        },
+        {
+          "status": 403
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "malformed onboard then second endpoint",
+      "responses": [
+        {
+          "status": 200,
+          "raw": "load{"
+        },
+        {
+          "status": 200,
+          "json": {
+            "allowedTiers": [
+              {
+                "id": "free"
+              }
+            ]
+          }
+        },
+        {
+          "status": 200,
+          "raw": "onboard{"
+        },
+        {
+          "status": 200,
+          "json": {
+            "done": true,
+            "response": {
+              "cloudaicompanionProject": {
+                "id": "second"
+              }
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|second",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "second"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "cache reuse within TTL",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed"
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed"
+          }
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784285195116
+    },
+    {
+      "name": "cache eviction at TTL boundary",
+      "responses": [
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed"
+          }
+        },
+        {
+          "status": 200,
+          "json": {
+            "cloudaicompanionProject": "managed"
+          }
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "advance",
+          "milliseconds": 1799999
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "advance",
+          "milliseconds": 1
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed"
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed"
+          }
+        },
+        {
+          "value": null
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested|managed",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "managed"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "read"
+        }
+      ],
+      "clock": 1784286995116
+    },
+    {
+      "name": "provision failure then cached fallback",
+      "responses": [
+        {
+          "status": 403
+        },
+        {
+          "status": 403
+        },
+        {
+          "status": 403
+        },
+        {
+          "status": 403
+        }
+      ],
+      "operations": [
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        },
+        {
+          "op": "ensure",
+          "auth": {
+            "type": "oauth",
+            "refresh": "refresh|requested",
+            "access": "access",
+            "expires": 1784288795116
+          }
+        }
+      ],
+      "results": [
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        },
+        {
+          "value": {
+            "auth": {
+              "type": "oauth",
+              "refresh": "refresh|requested",
+              "access": "access",
+              "expires": 1784288795116
+            },
+            "effectiveProjectId": "requested"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"metadata\":{\"ideType\":\"ANTIGRAVITY\"}}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        },
+        {
+          "kind": "send",
+          "request": {
+            "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:onboardUser",
+            "method": "POST",
+            "headers": [
+              [
+                "User-Agent",
+                "antigravity/cli/1.3.5 (aidev_client; os_type=linux; arch=amd64; cl=998863838; auth_method=consumer)"
+              ],
+              [
+                "Authorization",
+                "Bearer access"
+              ],
+              [
+                "Content-Type",
+                "application/json"
+              ],
+              [
+                "Accept-Encoding",
+                "gzip"
+              ]
+            ],
+            "body": "{\"tierId\":\"free-tier\"}",
+            "agy": true,
+            "timeoutMs": 180000
+          }
+        }
+      ],
+      "clock": 1784285195116
+    }
+  ],
+  "cache": {
+    "trace": [
+      {
+        "access": "a",
+        "refresh": "one",
+        "values": {
+          "": null,
+          "a": "one",
+          "b": null,
+          "c": null,
+          "d": null,
+          "e": null
+        }
+      },
+      {
+        "access": "b",
+        "refresh": "two",
+        "values": {
+          "": null,
+          "a": "one",
+          "b": "two",
+          "c": null,
+          "d": null,
+          "e": null
+        }
+      },
+      {
+        "access": "c",
+        "refresh": "three",
+        "values": {
+          "": null,
+          "a": "one",
+          "b": "two",
+          "c": "three",
+          "d": null,
+          "e": null
+        }
+      },
+      {
+        "access": "d",
+        "refresh": "four",
+        "values": {
+          "": null,
+          "a": "one",
+          "b": "two",
+          "c": "three",
+          "d": "four",
+          "e": null
+        }
+      },
+      {
+        "access": "a",
+        "refresh": "replace",
+        "values": {
+          "": null,
+          "a": "replace",
+          "b": "two",
+          "c": "three",
+          "d": "four",
+          "e": null
+        }
+      },
+      {
+        "access": "e",
+        "refresh": "five",
+        "values": {
+          "": null,
+          "a": "replace",
+          "b": null,
+          "c": "three",
+          "d": "four",
+          "e": "five"
+        }
+      },
+      {
+        "access": "",
+        "refresh": "ignored",
+        "values": {
+          "": null,
+          "a": "replace",
+          "b": null,
+          "c": "three",
+          "d": "four",
+          "e": "five"
+        }
+      }
+    ]
+  },
+  "redaction": [
+    {
+      "input": "Antigravity OAuth exchange failed: not json at all",
+      "credentials": [],
+      "projects": [],
+      "result": "Antigravity OAuth exchange failed: not json at all"
+    },
+    {
+      "input": "Antigravity OAuth exchange failed: not json at all",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Antigravity OAuth exchange failed: not json at all"
+    },
+    {
+      "input": "Antigravity OAuth exchange failed: not json at all",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Antigravity OAuth exchange failed: not json at all"
+    },
+    {
+      "input": "Antigravity OAuth exchange failed: not json at all",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Antigravity OAuth exchange failed: not json at all"
+    },
+    {
+      "input": "Antigravity OAuth exchange failed: {\"error\":\"invalid_grant\"}",
+      "credentials": [],
+      "projects": [],
+      "result": "Antigravity OAuth exchange failed: {\"error\":\"invalid_grant\"}"
+    },
+    {
+      "input": "Antigravity OAuth exchange failed: {\"error\":\"invalid_grant\"}",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Antigravity OAuth exchange failed: {\"error\":\"invalid_grant\"}"
+    },
+    {
+      "input": "Antigravity OAuth exchange failed: {\"error\":\"invalid_grant\"}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Antigravity OAuth exchange failed: {\"error\":\"invalid_grant\"}"
+    },
+    {
+      "input": "Antigravity OAuth exchange failed: {\"error\":\"invalid_grant\"}",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Antigravity OAuth exchange failed: {\"error\":\"invalid_grant\"}"
+    },
+    {
+      "input": "Antigravity token refresh failed (400 Bad Request) - Bearer opaque-selected-token",
+      "credentials": [],
+      "projects": [],
+      "result": "Antigravity token refresh failed (400 Bad Request) - [credential]"
+    },
+    {
+      "input": "Antigravity token refresh failed (400 Bad Request) - Bearer opaque-selected-token",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Antigravity token refresh failed (400 Bad Request) - [credential]"
+    },
+    {
+      "input": "Antigravity token refresh failed (400 Bad Request) - Bearer opaque-selected-token",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "Antigravity token refresh failed (400 Bad Request) - Bearer [credential]"
+    },
+    {
+      "input": "Antigravity token refresh failed (400 Bad Request) - Bearer opaque-selected-token",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "Antigravity token refresh failed (400 Bad Request) - Bearer [credential]"
+    },
+    {
+      "input": "loadCodeAssist error at https://cloudcode-pa.googleapis.com: Unexpected token 'l', \"load{\" is not valid JSON",
+      "credentials": [],
+      "projects": [],
+      "result": "loadCodeAssist error at https://cloudcode-pa.googleapis.com: Unexpected token 'l', \"load{\" is not valid JSON"
+    },
+    {
+      "input": "loadCodeAssist error at https://cloudcode-pa.googleapis.com: Unexpected token 'l', \"load{\" is not valid JSON",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "loadCodeAssist error at https://cloudcode-pa.googleapis.com: Unexpected token 'l', \"load{\" is not valid JSON"
+    },
+    {
+      "input": "loadCodeAssist error at https://cloudcode-pa.googleapis.com: Unexpected token 'l', \"load{\" is not valid JSON",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "loadCodeAssist error at https://cloudcode-pa.googleapis.com: Unexpected token 'l', \"load{\" is not valid JSON"
+    },
+    {
+      "input": "loadCodeAssist error at https://cloudcode-pa.googleapis.com: Unexpected token 'l', \"load{\" is not valid JSON",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "loadCodeAssist error at https://cloudcode-pa.googleapis.com: Unexpected token 'l', \"load{\" is not valid JSON"
+    },
+    {
+      "input": "project=private-project-123456 failed",
+      "credentials": [],
+      "projects": [],
+      "result": "project=priv****3456 failed"
+    },
+    {
+      "input": "project=private-project-123456 failed",
+      "credentials": [],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project=priv****3456 failed"
+    },
+    {
+      "input": "project=private-project-123456 failed",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [],
+      "result": "project=priv****3456 failed"
+    },
+    {
+      "input": "project=private-project-123456 failed",
+      "credentials": [
+        "opaque-selected-token"
+      ],
+      "projects": [
+        "private-project-123456"
+      ],
+      "result": "project=priv****3456 failed"
+    }
+  ],
+  "expiries": [
+    {
+      "seconds": null,
+      "result": 1784288795116
+    },
+    {
+      "seconds": {},
+      "result": 1784288795116
+    },
+    {
+      "seconds": "1",
+      "result": 1784288795116
+    },
+    {
+      "seconds": -5,
+      "result": 1784285195116
+    },
+    {
+      "seconds": 0,
+      "result": 1784285195116
+    },
+    {
+      "seconds": 1,
+      "result": 1784285196116
+    },
+    {
+      "seconds": 0.25,
+      "result": 1784285195366
+    },
+    {
+      "seconds": 3600,
+      "result": 1784288795116
+    }
+  ]
+}
