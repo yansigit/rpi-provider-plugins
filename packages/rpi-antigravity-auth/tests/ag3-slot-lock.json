@@ -2308,6 +2308,74 @@
     },
     {
       "spec": {
+        "name": "stash parent is a file",
+        "raw": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}",
+        "stashDirFile": true,
+        "steps": [
+          {
+            "op": "enter"
+          },
+          {
+            "op": "inspect"
+          },
+          {
+            "op": "exit"
+          }
+        ]
+      },
+      "results": [
+        {
+          "outcome": {
+            "error": {
+              "name": "PiSlotError",
+              "message": "Pi slot: io",
+              "code": "io"
+            }
+          },
+          "events": [],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        },
+        {
+          "outcome": {
+            "error": {
+              "name": "PiSlotError",
+              "message": "Pi slot: io",
+              "code": "io"
+            }
+          },
+          "events": [],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        },
+        {
+          "outcome": {
+            "error": {
+              "name": "PiSlotError",
+              "message": "Pi slot: io",
+              "code": "io"
+            }
+          },
+          "events": [],
+          "auth": {
+            "kind": "file",
+            "mode": 384,
+            "text": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}"
+          },
+          "stash": null
+        }
+      ]
+    },
+    {
+      "spec": {
         "name": "interrupted auth rename leaves recoverable stash",
         "raw": "{\"google\":{\"key\":\"fixture-original\"},\"other\":{}}",
         "hook": "before-rename-auth",

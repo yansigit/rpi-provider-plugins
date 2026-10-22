@@ -240,7 +240,12 @@ async fn pinned_lease_corrupt_identity_marker_loss_and_cancellation_match_origin
 // ---------------------------------------------------------------------------
 fn slot_snapshot(path: &Path, hash: &str) -> Value {
     match fs::symlink_metadata(path) {
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Value::Null,
+        Err(error)
+            if error.kind() == std::io::ErrorKind::NotFound
+                || error.raw_os_error() == Some(libc::ENOTDIR) =>
+        {
+            Value::Null
+        }
         Err(error) => panic!("{error}"),
         Ok(stat) if stat.is_dir() => json!({"kind":"directory"}),
         Ok(stat) if stat.is_symlink() => json!({"kind":"symlink"}),
@@ -269,6 +274,10 @@ fn pinned_slot_interrupted_commit_and_second_instance_match_original() {
         let stash_dir = dir.join("vault");
         let stash = stash_dir.join("stash.json");
         fs::DirBuilder::new().mode(0o700).create(&stash_dir).unwrap();
+        if spec["stashDirFile"] == true {
+            fs::remove_dir_all(&stash_dir).unwrap();
+            fs::write(&stash_dir, "blocked").unwrap();
+        }
         if let Some(raw) = spec["raw"].as_str() {
             fs::write(&auth, raw).unwrap();
             fs::set_permissions(&auth, fs::Permissions::from_mode(0o600)).unwrap();

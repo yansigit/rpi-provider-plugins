@@ -17,9 +17,9 @@
   },
   "fixtures": {
     "tests/ag3-slot-lock.json": {
-      "sha256": "7e133e0c1f9c6be39e26ebd5b03315f89dab765793e9ed3ce198a0ff95fff98b",
+      "sha256": "def8760a11d51f14b168072236bea2f5e5970d0cf78ba3a0e926b9ab02d41cb1",
       "leaseCases": 36,
-      "slotCases": 4,
+      "slotCases": 5,
       "processCases": 1
     },
     "tests/ag3-menu.json": {
@@ -33,7 +33,7 @@
     "Eviction-marker corruption: a regular-file marker, a malformed owner file, a foreign owner at fresh and stale ages",
     "Lease loss and compromise: assert and renewal against a malformed, directory-replaced or removed lease, and a marker stolen during renewal or release",
     "Cancellation before commit: a lease destroyed while held is not revived, and a released lease is not removed when its marker was stolen",
-    "Credential slot: a second instance restores or refuses after a foreign login, and an interrupted auth or stash rename stays recoverable",
+    "Credential slot: a second instance restores or refuses after a foreign login, an interrupted auth or stash rename stays recoverable, and a stash parent replaced by a file refuses with the original io error",
     "Competing processes: a real child process holds the pinned lease, a contender is refused, the child releases, and a successor acquires the freed path",
     "Every deterministic /antigravity walk: exact select/confirm/notify UI trace, callback order, confirmation true/false, cancellation at the root, section, entry and item levels, and refusal projection",
     "Exact informational and error notification strings for use/decline/accept/use-vault/use-local/forget/request-access"
@@ -88,6 +88,7 @@
   ],
   "notTested": [
     "The bare Rust credential slot intentionally has no inner Pi mkdir/mtime lock: native rpi runs it under the host credentialStoreLock. Bare-slot scenarios that would trip that lock (for example a read-only auth directory) are therefore not differentially comparable and are excluded.",
+    "A lease write failure that propagates a raw filesystem error (for example a read-only lock directory) is not captured: the pinned lock rejects with a raw Node error code while the native port maps it to a private failure, so the error shapes are not equal without an unapproved normalization. Slot write failures are covered instead (a stash parent replaced by a file, and the existing fsync fixture).",
     "The loaded host binary used for the ignored test and the native menu script was built from a sibling host lane's target directory; rebuilding the host is outside this lane.",
     "Competing-process contention is captured for the pinned renewable lease. Cross-process contention at the native credentialStoreLock boundary (two host processes) is not scripted here.",
     "macOS and Windows execution was not performed; the slot and lease code cross-checks on Rust 1.78 but only Linux ran.",

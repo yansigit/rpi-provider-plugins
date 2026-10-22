@@ -192,6 +192,7 @@ for (const spec of leaseSpecs) {
 const slotSpecs = [];
 slotSpecs.push({name:'second instance restores after first enters',raw:'{"google":{"key":"fixture-original"},"other":{}}',steps:[{op:'enter'},{op:'otherInspect'},{op:'otherExit'},{op:'inspect'},{op:'exit'}]});
 slotSpecs.push({name:'second instance conflicts after foreign login',raw:'{"google":{"key":"fixture-original"},"other":{}}',steps:[{op:'enter'},{op:'write',target:'auth',raw:'{"google":{"key":"new login"},"other":{}}'},{op:'otherInspect'},{op:'otherExit'},{op:'inspect'},{op:'exit'}]});
+slotSpecs.push({name:'stash parent is a file',raw:'{"google":{"key":"fixture-original"},"other":{}}',stashDirFile:true,steps:[{op:'enter'},{op:'inspect'},{op:'exit'}]});
 slotSpecs.push({name:'interrupted auth rename leaves recoverable stash',raw:'{"google":{"key":"fixture-original"},"other":{}}',hook:'before-rename-auth',steps:[{op:'enter'},{op:'inspect'},{op:'enter'},{op:'inspect'},{op:'exit'}]});
 slotSpecs.push({name:'interrupted stash rename leaves original auth',raw:'{"google":{"key":"fixture-original"},"other":{}}',hook:'before-rename-stash',steps:[{op:'enter'},{op:'inspect'},{op:'enter'},{op:'exit'}]});
 
@@ -202,6 +203,7 @@ for (const [index,spec] of slotSpecs.entries()) {
   await mkdir(dir,{mode:0o700});
   const paths = {auth:join(dir,'auth.json'),stash:join(dir,'vault','stash.json'),authDir:dir,stashDir:join(dir,'vault')};
   await mkdir(paths.stashDir,{mode:0o700});
+  if (spec.stashDirFile) { await rm(paths.stashDir,{recursive:true,force:true}); await writeFile(paths.stashDir,'blocked',{mode:0o600}); }
   if (spec.raw !== null) await writeFile(paths.auth,spec.raw,{mode:0o600});
   const hash = createHash('sha256').update(JSON.stringify(paths.auth)).digest('hex');
   let fired = false;
@@ -211,7 +213,7 @@ for (const [index,spec] of slotSpecs.entries()) {
     {beforeRename:async (path) => { const name = `before-rename-${path === paths.auth ? 'auth' : 'stash'}`; events.push(name); if (!fired && name === spec.hook) { fired = true; throw Error('injected crash'); } }});
   const slot = make();
   const other = make();
-  const snapshot = async (path) => { try { const stat = await lstat(path); if (stat.isDirectory()) return {kind:'directory'}; if (stat.isSymbolicLink()) return {kind:'symlink'}; const bytes = await readFile(path); const text = bytes.toString('utf8'); return {kind:'file',mode:stat.mode & 0o777,...(Buffer.from(text).equals(bytes) ? {text:text.replaceAll(hash,'<auth-identity>')} : {bytes:[...bytes]})}; } catch (error) { if (error.code === 'ENOENT') return null; throw error; } };
+  const snapshot = async (path) => { try { const stat = await lstat(path); if (stat.isDirectory()) return {kind:'directory'}; if (stat.isSymbolicLink()) return {kind:'symlink'}; const bytes = await readFile(path); const text = bytes.toString('utf8'); return {kind:'file',mode:stat.mode & 0o777,...(Buffer.from(text).equals(bytes) ? {text:text.replaceAll(hash,'<auth-identity>')} : {bytes:[...bytes]})}; } catch (error) { if (error.code === 'ENOENT' || error.code === 'ENOTDIR') return null; throw error; } };
   const results = [];
   for (const action of spec.steps) {
     let outcome = {};
