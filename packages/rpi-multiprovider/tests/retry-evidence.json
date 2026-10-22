@@ -1,0 +1,62 @@
+{
+  "status": "Pi 1.3.0 isRetryableAssistantError and the Fabric failover compaction decision layer ported and differentially verified against the unchanged upstream TypeScript and Pi dist; Fabric execution itself (pi-fabric) remains out of scope",
+  "reference": "bd97d65a36f541935dc91e33ba15d7910a30f9d7",
+  "referenceNode": "24.22.0",
+  "checks": {
+    "toolchain": "1.78.0 (declared minimum, warnings denied) and default 1.95.0",
+    "warnings": "denied",
+    "classifierCases": 91,
+    "failoverCases": 29,
+    "upstreamSpecTests": {
+      "tests/extension-failover.spec.ts": 6,
+      "tests/extension-failover.spec.ts executions": 7,
+      "note": "6 it declarations (one it.each with 2 cases = 7 executions). All 7 are covered: quota two-account rotation, auth rotation, fabric-absent rotation, transient surface+compact, exhausted-once, visible output, aborted run."
+    },
+    "referenceFixtureSha256": "96943f0d461e3c8424bab0a68ab391915553c67ef9a1b5578279614cad61acd7",
+    "referenceScriptSha256": "cd03dca5f6388575dc2169e41c364fbb63942ea365c064cfcc60762ccc5193a2",
+    "upstreamSourceSha256": {
+      "extensions/multiprovider.ts": "086a0d9c4fbc8431e81026e5d689747d1c31dfcdf89c9d180c0bbd7e37c0a267",
+      "extensions/pool-manager.ts": "67873d40ae349d13d0293c1b92fabaeb9f3b531a7242a0424c721ff3e323cbe8",
+      "extensions/settings-ui.ts": "bbbf4fcd97d6c9e0e62180b15ea20adbd15129a63f243f4431ad192ae4a0f782",
+      "src/announcement.ts": "fc0bf72467dba7b524146ade4a66c420d546a01e7867b8095c8b7d8b1804ae18",
+      "src/auth-store.ts": "29916553aa160b3c676ab843891da2b202fadf536fa220980d564b4ed50d48c6",
+      "src/errors.ts": "1e4f189fc4aac4488c84912b29bfc7e78629600ead41ce2924c8d8c3a3bac4b7",
+      "src/index.ts": "90b3b79432e4d556f75b7b8e25fc3fb512cb56293f5263e6b2090465f5cfaa66",
+      "src/lift.ts": "887b91aab533565504449b6094c1a2b076832b0fdc73bfc352e2c46a53ac3695",
+      "src/managed.ts": "5a139118f805ed4825259df761dd5e2fbec515da19d3bc10b9719c9bf30bdeef",
+      "src/multilogin.ts": "f6ce501e18b0fb8550fcfbbe77ace3d06cde9bd5b2ad25b29bc8f2e079c590dc",
+      "src/register.ts": "946932988b5884081d0f173b464e1b2d42740849803463bdb8fd9841fcc87449",
+      "src/service.ts": "2eafa61662b3ee75a96a7b07a6ccad62ca600bbb2139a407b81cd9983564a026",
+      "src/session-pins.ts": "45b1ff1fbfcc6853a717b917aaede404f32fe96a64208c75283a53e954bdc005",
+      "src/types.ts": "aaf5e77ffc5738bfc5ee642a61238793ec0869123ceef12a9650c1384b0d181e",
+      "src/virtual.ts": "6c38efe1d8bcd180e3287b182df592914a1af0a7091f872cd6dc32042575f808",
+      "tests/extension-failover.spec.ts": "66099b172f13b9e8bc8e81ad6c486ab4e6a8922289a8a3519139a92d26aea680",
+      "@earendil-works/pi-ai/dist/utils/retry.js": "cab8af3e38101abc2a7c1c51caa871481c805b3cbe83b9d7267e24857736fc60"
+    },
+    "rustTests": {
+      "classifier_cases_match_the_upstream_reference": "tests/retry.rs (91 cases, complete JSON)",
+      "quota_precedence_and_stop_reason_guards_hold": "tests/retry.rs (direct classifier assertions)",
+      "failover_cases_match_the_upstream_reference": "tests/fabric.rs (29 cases, complete JSON, driven through the real lift::run)",
+      "compaction_guards_that_the_extension_cannot_reach": "tests/fabric.rs (NoContext and NoPool)",
+      "handled_passthrough_and_fabric_availability": "tests/fabric.rs (absent/throwing tool listing, non-retryable and missing message)"
+    },
+    "mutationChecks": "Removing the non-retryable precedence failed both classifier tests; dropping the JavaScript dot rewrite (rate\\nlimit, rate\\rlimit, rate\\u2028limit, rate\\u2029limit) failed the classifier test; changing the debounce window to 0, lowering the enabled-account threshold from 2 to 1, and disabling the retryable guard each failed the failover test. All sources were restored and re-verified before commit."
+  },
+  "compared": [
+    "isRetryableAssistantError for every upstream pattern sample, every documented real-world message, case variants, quota-over-transient precedence, non-error stop reasons, missing and empty errorMessage, and JavaScript dot semantics across \\n, \\r, U+2028 and U+2029 (complete case objects: name, message, result)",
+    "Fabric availability detection: fabric_exec present, absent, and a throwing tool listing (complete expected object per case)",
+    "handleFailover claim decisions with and without fabric, for retryable, quota, auth, empty and missing messages, visible output, and aborted runs, including the external-integration verdict passthrough",
+    "runFailoverCompaction guards: 30 s debounce (10 s, 29.999 s suppressed; exactly 30 s allowed), >=2 enabled accounts (1 enabled and 2-with-1-disabled skip), throwing pool snapshot, missing pool, idle wait then compact, 15 s idle timeout (300 polls), and compaction completion notice versus silent failure",
+    "The complete per-case projection: handled, attempts, event types, compactCalls, notify pairs, accountsQueried and 50 ms poll count, with attempts and events produced by the real ported lift state machine"
+  ],
+  "limits": [
+    "Fabric execution (pi-fabric's deterministic compaction engine) is out of scope; the decision layer stops at ctx.compact() and its onComplete/onError callbacks, which the injected FabricHost models as CompactOutcome.",
+    "The native service binding (Pi ExtensionContext -> FabricHost, and spawning the compaction task) is a later lane. decide_failover is the integration point for lift::Host::failover.",
+    "The second debounce re-check after the idle wait is unreachable in a serialized replay: the initial check requires startedAt - last >= 30 s and the re-check compares a later timestamp against the same value, so it can only fire when a concurrent compaction updates last during the wait. The upstream line is ported verbatim and covered by inspection, not by a scenario.",
+    "Upstream could not reach info.failure.assistantMessage === undefined through the lift: thrown setup errors rotate inline without calling onFailover. That branch is covered by the Rust-only handled_passthrough_and_fabric_availability test (None message) instead.",
+    "A pool with zero enabled accounts never installs a lifted provider, so the >=2 guard is only reachable with 1 or 2-with-1-disabled accounts; the missing-pool branch is covered by the Rust-only guard test.",
+    "JavaScript /i case folding is not identical to the regex crate's Unicode-aware (?i) for characters such as U+212A and U+017F; the classifier corpus is ASCII plus the dot-semantics characters where both agree, and every error string the upstream comments and specs name is ASCII.",
+    "The upstream extension is driven with a scripted ExtensionAPI/ExtensionContext and an injected clock; MultiProviderService.prototype.snapshot is wrapped in memory (never on disk) to observe the pool lookup and to script a throwing snapshot. No real time, network, credential or ~/.pi access occurs.",
+    "Only Linux execution was performed."
+  ]
+}
