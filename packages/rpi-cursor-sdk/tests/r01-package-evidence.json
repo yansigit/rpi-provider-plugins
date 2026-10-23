@@ -1,6 +1,7 @@
 {
   "status": "pass",
   "summary": "Cursor runtime staged as sidecar assets with verified checksums; archives contain no @cursor/sdk bytes; scripted host install/uninstall roundtrip passed",
+  "scope": "Component evidence only; R01 is not complete. See tests/release-safety-evidence.json for continuation verification against integrated input HEAD 3a35fec3b40a938ad96ee153e1bd4f3b86782ba2 and manifest a05d026c738daa7bb84f107625ddbb675a6b1a5d9d8695e3d09f0458fa598cd2.",
   "ledger": "R01",
   "reference": {
     "cursorAdapterCommit": "f337dc4bb7cea936c52e69a7fe08e7e376c8467b",
@@ -10,7 +11,7 @@
   },
   "assetManifest": {
     "file": "tests/r01-package-assets.json",
-    "sha256": "df45c6addf843da30a96819ab75901f142d838fd7df46e46d88e0311b2848453",
+    "sha256": "a05d026c738daa7bb84f107625ddbb675a6b1a5d9d8695e3d09f0458fa598cd2",
     "assets": 21,
     "entries": 22,
     "hostEntryLimit": 128,
@@ -55,11 +56,12 @@
     "manifestCheckMode": "node tests/r01-package-reference.mjs",
     "pathRuleTests": 5,
     "packagedRuntimeOpensWithExternalDependencies": true,
-    "packagingModuleUnitTests": 20,
+    "packagingModuleUnitTests": 21,
     "fullRetainedDispatcherSuiteAgainstBundle": true,
     "bundledRuntimeTests": 2
   },
   "tools": {
+    "qualificationNote": "Rust toolchain entries and Rust test commands below are historical evidence; the integrated refresh did not rerun them. See tests/release-safety-evidence.json.",
     "node": "24.22.0",
     "python": "3.12.3",
     "rust": [
@@ -79,7 +81,7 @@
     "python3 .github/scripts/test_prebuilt_assets.py"
   ],
   "notTested": [
-    "hostBinaryInstallUninstall: the host rpi binary is in a read-only reference worktree and prebuilt discovery needs the network; the roundtrip is scripted from the published host semantics",
+    "hostBinaryInstallUninstall: the actual host binary end-to-end install/uninstall was not run; the roundtrip is scripted from the published host semantics",
     "nativeObjectValidation: fixture libraries are not real target binaries, so host architecture/object checks are not exercised",
     "realCursorSdkExecution: no npm install or Cursor call was performed; only the lockfile pin and absence of SDK bytes are verified",
     "npmInstallOffline: the post-install npm ci step needs the npm registry and is documented, not executed",

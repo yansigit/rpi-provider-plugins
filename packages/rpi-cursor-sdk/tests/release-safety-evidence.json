@@ -1,0 +1,68 @@
+{
+  "status": "partial",
+  "ledger": "R01",
+  "reviewedSourceCommits": [
+    "bbd4fb3",
+    "f3cb6fa"
+  ],
+  "integratedInputHead": "3a35fec3b40a938ad96ee153e1bd4f3b86782ba2",
+  "runtimeRefresh": {
+    "oldManifestSha256": "df45c6addf843da30a96819ab75901f142d838fd7df46e46d88e0311b2848453",
+    "newManifestSha256": "a05d026c738daa7bb84f107625ddbb675a6b1a5d9d8695e3d09f0458fa598cd2",
+    "changedAssets": [
+      "runtime/dist/rpi/runtime.js"
+    ],
+    "referenceAssets": 21,
+    "referenceEntries": 22,
+    "forbiddenSdkFiles": 206,
+    "reproducibleTwice": true
+  },
+  "checks": {
+    "prebuiltAssetPythonTests": {
+      "passed": 21,
+      "failed": 0
+    },
+    "packagePythonTests": {
+      "passed": 11,
+      "failed": 0
+    },
+    "runtimeNodeTests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "referenceCheckRuns": {
+      "passed": 2,
+      "failed": 0
+    }
+  },
+  "commands": [
+    "source /home/user/Projects/.parity-env.sh && cd packages/rpi-cursor-sdk/worker && npm run build",
+    "source /home/user/Projects/.parity-env.sh && node packages/rpi-cursor-sdk/tests/r01-package-reference.mjs",
+    "source /home/user/Projects/.parity-env.sh && node packages/rpi-cursor-sdk/tests/r01-package-reference.mjs --write",
+    "node packages/rpi-cursor-sdk/tests/r01-package-reference.mjs (default check mode, twice; the supplied --check argument is not a documented strict flag)",
+    "python3 .github/scripts/test_prebuilt_assets.py",
+    "python3 -m unittest packages/rpi-cursor-sdk/tests/r01_package_test.py (initial: 10 passed, 1 failed; corrected isolated-fixture regression: 11 passed)",
+    "node --test packages/rpi-cursor-sdk/tests/r01-package-runtime.mjs"
+  ],
+  "tools": {
+    "node": "24.22.0",
+    "python": "3.12.3"
+  },
+  "logs": "/tmp/opencode/integrated-runtime-refresh",
+  "limitations": [
+    "R01 overall remains incomplete; this refresh does not complete release qualification.",
+    "The archive behavior tests use scripted stand-ins; platform archives were not executed on their target platforms.",
+    "Full-bundle sidecars and automatic release tagging remain gaps.",
+    "No full package gates, pinned toolchain suite, paid/live Cursor execution, or macOS/Windows execution was run.",
+    "The original staging regression asserted that ignored generated runtime/shared must be absent and failed against legitimate developer output. It was replaced with a temporary clean-package fixture: stage using the real script and read-only worker/node_modules symlink; verify fixture runtime/shared remains absent, staged shared bytes match tracked worker/shared, and the generated manifest asset paths and shared hashes match normal staging. Source runtime/shared was preserved."
+  ],
+  "notTested": [
+    "R01 overall release qualification remains incomplete.",
+    "Host-binary install/uninstall and upgrade replacing assets were not executed end-to-end; package tests use scripted stand-ins.",
+    "Native object validation was not performed because archives used fixture libraries; non-Linux platform archives were not executed.",
+    "Cursor SDK npm installation/execution and live Cursor calls were not performed; no paid/live run was made.",
+    "Offline npm installation and runtime/node_modules uninstall behavior were not verified.",
+    "Full-bundle sidecars and automatic release tagging remain gaps.",
+    "Full package gates and Rust 1.78.0/1.95.0 gates were not rerun in this refresh; Rust toolchain fields in r01-package-evidence.json are historical."
+  ]
+}

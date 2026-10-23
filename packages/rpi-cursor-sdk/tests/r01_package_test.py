@@ -125,14 +125,51 @@ class CursorPackageTests(unittest.TestCase):
         self.assertEqual(PACKAGE_VERSION, tomllib.loads((REPOSITORY / "Cargo.toml").read_text())["workspace"]["package"]["version"])
 
     def test_staging_sources_shared_assets_from_tracked_worker_directory(self):
-        self.assertFalse((PACKAGE / "runtime" / "shared").exists())
-        self.assertTrue((PACKAGE / "worker" / "shared").is_dir())
-        staged_shared = self.staged / "runtime" / "shared"
-        self.assertTrue(staged_shared.is_dir())
-        self.assertEqual(
-            sorted(path.name for path in staged_shared.iterdir()),
-            sorted(path.name for path in (PACKAGE / "worker" / "shared").iterdir()),
-        )
+        worker = PACKAGE / "worker"
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture = pathlib.Path(temporary) / "package"
+            scripts = fixture / "scripts"
+            fixture_worker = fixture / "worker"
+            scripts.mkdir(parents=True)
+            fixture_worker.mkdir(parents=True)
+            shutil.copy2(PACKAGE / "scripts" / "stage-package-runtime.mjs", scripts)
+            shutil.copy2(worker / "package.json", fixture_worker / "package.json")
+            for source in (worker / "shared", worker / "dist"):
+                destination = fixture_worker / source.relative_to(worker)
+                if source.is_dir():
+                    shutil.copytree(source, destination)
+                else:
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(source, destination)
+            # Read-only dependency lookup only; all script outputs and inputs are isolated copies.
+            (fixture_worker / "node_modules").symlink_to(worker / "node_modules", target_is_directory=True)
+            (fixture / "runtime").mkdir()
+            for name in ("main.mjs", "package.json", "package-lock.json", "LICENSE"):
+                shutil.copy2(PACKAGE / "runtime" / name, fixture / "runtime" / name)
+            staged_output = pathlib.Path(temporary) / "staged"
+            subprocess.run(
+                ["node", str(scripts / "stage-package-runtime.mjs"), "--out", str(staged_output)],
+                cwd=fixture,
+                check=True,
+                capture_output=True,
+            )
+            self.assertFalse((fixture / "runtime" / "shared").exists())
+            tracked_shared = fixture_worker / "shared"
+            staged_shared = staged_output / "runtime" / "shared"
+            self.assertEqual(
+                {path.relative_to(tracked_shared): path.read_bytes() for path in tracked_shared.rglob("*") if path.is_file()},
+                {path.relative_to(staged_shared): path.read_bytes() for path in staged_shared.rglob("*") if path.is_file()},
+            )
+            staged_manifest = json.loads((staged_output / "runtime-assets.json").read_text(encoding="utf-8"))
+            expected_paths = [item["path"] for item in self.manifest["assets"]]
+            self.assertEqual([item["path"] for item in staged_manifest["assets"]], expected_paths)
+            reference_shared = {
+                item["path"]: item["sha256"] for item in self.manifest["assets"] if "/shared/" in item["path"]
+            }
+            fixture_shared = {
+                item["path"]: item["sha256"] for item in staged_manifest["assets"] if "/shared/" in item["path"]
+            }
+            self.assertEqual(fixture_shared, reference_shared)
 
     def test_archives_are_strict_deterministic_sidecar_archives(self):
         for target in TARGETS:
