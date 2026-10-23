@@ -22,12 +22,12 @@ function fixture(id = "session") {
 		] },
 	};
 }
-function host(id = "session") {
+function host(id = "session", path: string | null = "/isolated/sessions.db") {
 	let view = fixture(id);
 	const request = vi.fn<SessionRequest>(async input => {
 		switch (input.action) {
 			case "capture": return { origin: `origin-${id}`, snapshot: structuredClone(view.snapshot) };
-			case "location": return { path: "/isolated/sessions.db" };
+			case "location": return { path };
 			case "view": return structuredClone(view);
 			case "sync": return { durability: "durable" };
 			case "release": return null;
@@ -87,6 +87,36 @@ it("awaits the committed receipt and refreshes from host state without reserving
 	await expect(origin.append("test:entry", undefined)).rejects.toThrow("disk full");
 	expect(h.request.mock.lastCall?.[0]).not.toHaveProperty("data");
 	expect(manager.getLeafId()).toBe("host-issued");
+});
+
+it("compares append receipts at the JSON wire boundary without equating null or missing values", async () => {
+	for (const path of ["/isolated/sessions.sqlite", null]) {
+		const h = host("session", path), origin = await capture(h.request);
+		h.request.mockImplementationOnce(async input => {
+			const data = JSON.parse(JSON.stringify(input.data));
+			const committed = custom("wire-entry", 4, "anchor", data);
+			h.view.snapshot.entries.push(committed); h.view.snapshot.revision = 4; h.view.leafId = committed.id;
+			return JSON.parse(JSON.stringify({ entry: committed, revision: 4, advancedLane: true, durability: path ? "durable" : "ephemeral" }));
+		});
+		expect(await origin.append("test:entry", { outer: { omitted: undefined, value: null } })).toMatchObject({
+			entry: { data: { outer: { value: null } } }, durability: path ? "durable" : "ephemeral",
+		});
+		await origin.release();
+	}
+	for (const receiptData of [null, { outer: { value: null, extra: true } }, "wrong"]) {
+		const h = host(), origin = await capture(h.request);
+		h.request.mockResolvedValueOnce({ entry: custom("bad", 4, "anchor", receiptData), revision: 4, advancedLane: true, durability: "durable" });
+		await expect(origin.append("test:entry", { outer: { omitted: undefined, value: null } })).rejects.toThrow("Invalid native session commit receipt");
+		await origin.release();
+	}
+	const h = host(), origin = await capture(h.request);
+	h.request.mockResolvedValueOnce({ entry: custom("missing", 4, "anchor"), revision: 4, advancedLane: true, durability: "durable" });
+	await expect(origin.append("test:entry", null)).rejects.toThrow("Invalid native session commit receipt");
+	await origin.release();
+	const invalid = await capture(host().request);
+	await expect(invalid.append("test:entry", 1n)).rejects.toThrow("not JSON serializable");
+	await expect(invalid.append("test:entry", { get value() { throw new Error("getter ran"); } })).rejects.toThrow("executable properties");
+	await invalid.release();
 });
 
 it("keeps delayed work on its captured view while the stable manager selects another session", async () => {

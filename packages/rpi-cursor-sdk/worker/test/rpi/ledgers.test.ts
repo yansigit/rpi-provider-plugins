@@ -10,14 +10,25 @@ import { NativeSessionWork, trackNativeSessionWork } from "../../src/rpi/session
 
 const agentId = "bc-00000000-0000-0000-0000-000000000001";
 afterEach(() => cloud.reset());
-async function fixture() {
+async function fixture(path: string | null = "/isolated/sessions.sqlite") {
 	const journals = nativeJournalFixture();
-	const session = await nativeSessionFixture("native", "/isolated/sessions.sqlite", journals.request);
+	const session = await nativeSessionFixture("native", path, journals.request);
 	const pi = createPiHarness();
 	pi.appendEntry.mockImplementation(() => { throw new Error("native ledger must use its captured host origin"); });
 	const ctx = { ...createExtensionTestContext(), cwd: "/tmp/project", sessionManager: session.manager };
 	return { journals, session, pi, ctx };
 }
+
+it("claims usage origins over JSON receipts for persistent and fileless native sessions", async () => {
+	for (const path of ["/isolated/sessions.sqlite", null]) {
+		const { session, pi, ctx } = await fixture(path);
+		const turn = await captureCursorUsageRecorder(pi, ctx).start({ agent: usageAgent(), runtime: "local", model: makeModel(),
+			modelSelection: { id: "test" }, purpose: "normal", resumed: false, newlyCreated: true });
+		expect(session.entries[0]).toMatchObject({ customType: "pi-cursor-sdk:usage-origin-v1" });
+		await turn.recordTerminal({ status: "abandon" });
+		await session.origin.release();
+	}
+});
 function usageAgent() {
 	const getUsage: SDKAgent["getUsage"] = async () => ({
 		usage: { inputTokens: 1, outputTokens: 2, cacheReadTokens: 0, cacheWriteTokens: 0, totalTokens: 3 }, runs: [],
