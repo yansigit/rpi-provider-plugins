@@ -4,10 +4,21 @@ Native port of `monotykamary/pi-multiprovider` at
 `bd97d65a36f541935dc91e33ba15d7910a30f9d7` (0.11.3), targeting this fork's
 native provider contracts and Pi 1.3.0 behavior. Original MIT notice is in `LICENSE`.
 
-Implementation is in progress. The scheduler, account records and session-pin parser/replay are
-implemented; this package does not yet register an installable native extension.
-Native account authentication, stream adapter wiring, virtual providers, commands,
-services, session lifecycle wiring and combined acceptance remain required.
+The package has a loadable native extension entry point, a global provider wrapper,
+and credential-store and lifecycle integration. It registers only `/multilogout`
+and `/accounts`; the other three commands are not registered. This is partial
+integration, not full parity or release completion. Same-provider v1 delegation
+and the actual DLL `/accounts` callback are tested with a fake host vtable (not a
+real rpi host RPC). Native auth still needs the private pending-account,
+persist-first workflow; switch-account still needs awaited journal/announcement
+integration; virtual-provider application and host delegation support remain
+pending. Full cross-provider behavior, virtual/native services, Fabric, managed
+provider integration and end-to-end runtime acceptance remain incomplete.
+
+The three SDK pins are ECC9-aligned with the host; see the
+[SDK cohort record](../../docs/provider-parity-sdk-cohort.json) and
+[native command evidence](tests/m_native_cmd-evidence.json). This does not imply
+release-qualified installation: the SDK-pin change is local and unpublished.
 
 `src/services.rs` retains inventory order, first-account bias, randomized smooth
 weighted selection, least-inflight and priority selection, explicit and implicit
@@ -18,8 +29,9 @@ in-flight count. Public snapshots omit credential references.
 
 `src/pins.rs` parses the original custom-entry and inherited-pin formats. Replay
 defers unknown pools, reports stale/disabled accounts, preserves listener order
-and applies later valid decisions. Host journal append and parent/child lifecycle
-integration are still pending.
+and applies later valid decisions. Native core paths for awaited journal append
+and scoped parent/child lifecycle exist; command-driven writes (including
+`/switch-account`) and complete parent/child acceptance remain pending.
 
 Run the tests from the package workspace:
 
@@ -48,6 +60,7 @@ Node 24 and `tests/store-reference.mjs` from this workspace.
 cover both stream entry paths, private response receipts, retry timing, output
 boundaries, terminal/error precedence and affinity handoff. Native tests also
 release leases when an auth future is dropped or a consumer stops. See
-`tests/lift-evidence.json`; SDK delegation and native library loading remain pending.
+`tests/lift-evidence.json`; native library loading exists, while full SDK delegation
+and final integration remain pending.
 The private `src/store/port.rs` transaction protocol validates account identity
 and acknowledges replacement only after the account file has been replaced.
