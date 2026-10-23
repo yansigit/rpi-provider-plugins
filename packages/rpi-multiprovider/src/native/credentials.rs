@@ -282,7 +282,7 @@ pub extern "C" fn release(lock_id: StbStringRef, context: *mut std::ffi::c_void)
     });
 }
 
-impl Runtime {
+impl super::Shared {
     pub(super) fn store_read(&self, provider: &str, account: &str) -> Result<Value, String> {
         let credential = read(self.store.path(), provider, account)
             .map_err(|failure| failure_text(failure))?

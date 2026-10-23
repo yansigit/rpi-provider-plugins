@@ -1,11 +1,11 @@
 //! Multiprovider command flow: `/multilogout` (upstream `extensions/multiprovider.ts`
 //! `multilogout` handler).
-use super::port::{confirm, notify, select, Port};
+use super::port::{confirm, notify, select, LogoutPort};
 use super::Ui;
 use crate::types::trim;
 use serde_json::{json, Value};
 
-pub async fn multilogout<U: Ui, P: Port>(ui: &U, port: &P, args: &str) -> Result<(), String> {
+pub async fn multilogout<U: Ui, P: LogoutPort>(ui: &U, port: &P, args: &str) -> Result<(), String> {
     if !ui.has_ui() || port.mode() != "tui" {
         return notify(ui, "/multilogout requires Pi interactive mode.", "warning").await;
     }
@@ -39,16 +39,15 @@ pub async fn multilogout<U: Ui, P: Port>(ui: &U, port: &P, args: &str) -> Result
             .cloned()
     };
     if pool.is_none() {
-        let labels: Vec<String> = pools
-            .iter()
-            .map(|candidate| {
-                let id = candidate["providerId"].as_str().unwrap_or("");
-                let name = port
-                    .installed_provider_name(id)
-                    .unwrap_or_else(|| id.to_owned());
-                format!("{name} ({})", accounts(candidate).len())
-            })
-            .collect();
+        let mut labels = Vec::with_capacity(pools.len());
+        for candidate in &pools {
+            let id = candidate["providerId"].as_str().unwrap_or("");
+            let name = port
+                .installed_provider_name(id)
+                .await?
+                .unwrap_or_else(|| id.to_owned());
+            labels.push(format!("{name} ({})", accounts(candidate).len()));
+        }
         let Some(index) = select(ui, "Select provider to remove an account from:", &labels).await?
         else {
             return Ok(());

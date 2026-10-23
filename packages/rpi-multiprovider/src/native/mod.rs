@@ -16,6 +16,7 @@
 //!
 //! A provider with no stored pool is delegated unchanged (ambient auth, no
 //! scheduler lease), so installing multiprovider cannot alter its identity.
+pub mod command_port;
 pub mod commands;
 pub mod credentials;
 pub mod lift;
@@ -55,6 +56,7 @@ const REQUIRED_CAPABILITIES: [&str; 6] = [
     "providers.scopedCallbacks",
     "sessions.view",
 ];
+const COMMAND_CAPABILITIES: [&str; 3] = ["commands.owned", "ui.notifications", "context.snapshot"];
 
 type Inventory = Pin<Box<dyn std::future::Future<Output = Result<Vec<Account>, String>> + Send>>;
 
@@ -83,6 +85,13 @@ pub(super) struct State {
 /// hooks free it only after awaited work has drained.
 pub struct Runtime {
     pub(super) api: PluginApi,
+    pub(super) shared: Arc<Shared>,
+    commands: Mutex<Option<commands::Commands<()>>>,
+}
+
+/// Operational state shared by every native entry point and the future
+/// command runner. It deliberately has no ownership of `Runtime` or Commands.
+pub struct Shared {
     pub(super) context: rpi_plugin_sdk::provider::ProviderContext,
     pub(super) store: Store,
     pub(super) service: Service,
@@ -91,6 +100,13 @@ pub struct Runtime {
     pub(super) stopping: CancellationToken,
     registrations: tokio::sync::Mutex<()>,
     reconcile: tokio::sync::Mutex<()>,
+}
+
+impl std::ops::Deref for Runtime {
+    type Target = Shared;
+    fn deref(&self) -> &Shared {
+        &self.shared
+    }
 }
 
 impl Runtime {
@@ -103,22 +119,27 @@ impl Runtime {
         check_capabilities(api)?;
         Ok(Self {
             api: *api,
-            context: rpi_plugin_sdk::provider::ProviderContext::new(),
-            store: Store::new(PathBuf::from(agent_dir).join(STORE_FILE)),
-            service: Service::new(ServiceOptions::default()),
-            client,
-            state: Mutex::new(State {
-                locks: HashMap::new(),
-                scopes: HashMap::new(),
-                registrations: HashMap::new(),
-                warned_missing: HashSet::new(),
+            commands: Mutex::new(None),
+            shared: Arc::new(Shared {
+                context: rpi_plugin_sdk::provider::ProviderContext::new(),
+                store: Store::new(PathBuf::from(agent_dir).join(STORE_FILE)),
+                service: Service::new(ServiceOptions::default()),
+                client,
+                state: Mutex::new(State {
+                    locks: HashMap::new(),
+                    scopes: HashMap::new(),
+                    registrations: HashMap::new(),
+                    warned_missing: HashSet::new(),
+                }),
+                stopping: CancellationToken::new(),
+                registrations: tokio::sync::Mutex::new(()),
+                reconcile: tokio::sync::Mutex::new(()),
             }),
-            stopping: CancellationToken::new(),
-            registrations: tokio::sync::Mutex::new(()),
-            reconcile: tokio::sync::Mutex::new(()),
         })
     }
+}
 
+impl Shared {
     pub(super) async fn store_request(
         &self,
         request: Value,
@@ -252,7 +273,7 @@ impl Runtime {
 
     /// Reconcile the store, scheduler defaults, registrations and recorded pins
     /// for the current execution scope.
-    async fn reconcile(
+    pub(super) async fn reconcile(
         &self,
         client: &rpi_plugin_sdk::provider::native::Client,
         signal: &CancellationToken,
@@ -625,6 +646,7 @@ fn check_capabilities(api: &PluginApi) -> Result<(), String> {
         .ok_or("invalid native capability response")?;
     let missing: Vec<&str> = REQUIRED_CAPABILITIES
         .iter()
+        .chain(COMMAND_CAPABILITIES.iter())
         .copied()
         .filter(|name| !available.iter().any(|value| value.as_str() == Some(*name)))
         .collect();
@@ -664,6 +686,12 @@ extern "C" fn finish_shutdown(context: *mut c_void) -> i32 {
         let runtime = unsafe { Box::from_raw(context.cast::<Runtime>()) };
         // Session scopes release their origins on session_shutdown; the host
         // also retires this owner's remaining origins when the library unloads.
+        let commands = runtime
+            .commands
+            .lock()
+            .ok()
+            .and_then(|mut commands| commands.take());
+        drop(commands);
         runtime.context.finish_shutdown();
         0
     })
@@ -793,7 +821,7 @@ extern "C" fn invoke(
                 })
                 .filter(|key| !key.is_empty());
             let pool = runtime.pool(&provider_id, &work_signal).await?;
-            if pool.as_ref().is_some_and(Runtime::has_accounts) {
+            if pool.as_ref().is_some_and(Shared::has_accounts) {
                 runtime.ensure_registration(&provider_id).await?;
             }
             let host = NativeHost::new(
@@ -816,7 +844,7 @@ extern "C" fn invoke(
                 kind,
                 signal: work_signal.clone(),
             };
-            let result = if pool.as_ref().is_some_and(Runtime::has_accounts) {
+            let result = if pool.as_ref().is_some_and(Shared::has_accounts) {
                 crate::lift::run(&runtime.service, &host, &lift_request).await
             } else {
                 passthrough(&host, &lift_request).await
@@ -935,6 +963,19 @@ pub fn register(api: &PluginApi) -> i32 {
                 state.cast(),
             ))?;
         }
+        let mut commands = commands::Commands::<()>::with_runner(
+            api,
+            Arc::new(command_port::NativeRunner::new(
+                unsafe { &*state }.shared.clone(),
+            )),
+            unsafe { &*state }.stopping.clone(),
+            vec!["multilogout", "accounts"],
+        )?;
+        commands.register()?;
+        *unsafe { &*state }
+            .commands
+            .lock()
+            .map_err(|_| "multiprovider command owner poisoned".to_owned())? = Some(commands);
         Ok::<_, String>(())
     })();
     match result {
