@@ -10,6 +10,7 @@ export async function nativeSessionFixture(id = "native-session", path: string |
 	const now = 1_729_000_000_123;
 	const snapshot = () => ({ metadata: { id, createdAt: now }, revision, name: null, labels: {}, entries, branches: [{ lane: "main", revision: branchRevision, leafId: activeLeaf }] });
 	const request = vi.fn<SessionRequest>(async input => {
+		input = JSON.parse(JSON.stringify(input)) as Record<string, unknown>;
 		if (input.action === "capture") {
 			const origin = `origin-${id}-${nextOrigin++}`;
 			captures.set(origin, { revision: branchRevision, anchor: activeLeaf });
@@ -31,7 +32,7 @@ export async function nativeSessionFixture(id = "native-session", path: string |
 					...(Object.hasOwn(input, "data") ? { data: input.data } : {}) };
 				entries.push(entry); captured.anchor = entry.id;
 				if (advancedLane) activeLeaf = entry.id;
-				return structuredClone({ entry, revision, advancedLane, durability: path ? "durable" : "ephemeral" });
+				return JSON.parse(JSON.stringify({ entry, revision, advancedLane, durability: path ? "durable" : "ephemeral" }));
 			}
 			case "sync": return { durability: path ? "durable" : "ephemeral" };
 			case "release": captures.delete(String(input.origin)); return null;

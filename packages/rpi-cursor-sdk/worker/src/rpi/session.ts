@@ -38,6 +38,29 @@ function timestamp(value: unknown): string {
 	return new Date(value as number).toISOString();
 }
 
+// Receipts cross a JSON protocol boundary: object properties whose value is
+// undefined disappear, while null and all other JSON values remain distinct.
+function jsonValue(value: unknown): unknown {
+	const inspect = (item: unknown, seen: Set<object>): void => {
+		if (item === null || ["string", "boolean", "number", "undefined"].includes(typeof item)) return;
+		if (typeof item !== "object" || seen.has(item)) throw new Error("Native session data is not JSON serializable");
+		const proto = Object.getPrototypeOf(item);
+		if (proto !== Object.prototype && proto !== Array.prototype && proto !== null) throw new Error("Native session data is not plain JSON");
+		seen.add(item);
+		for (const key of Reflect.ownKeys(item)) {
+			if (typeof key !== "string") throw new Error("Native session data is not plain JSON");
+			const descriptor = Object.getOwnPropertyDescriptor(item, key)!;
+			if (!("value" in descriptor) || key === "toJSON") throw new Error("Native session data contains executable properties");
+			inspect(descriptor.value, seen);
+		}
+		seen.delete(item);
+	};
+	inspect(value, new Set());
+	const encoded = JSON.stringify(value);
+	if (encoded === undefined) throw new Error("Native session data is not JSON serializable");
+	return JSON.parse(encoded) as unknown;
+}
+
 function message(value: unknown): AgentMessage {
 	const raw = object(value);
 	const { kind, ...fields } = raw;
@@ -173,10 +196,11 @@ export class NativeSessionOrigin {
 	}
 	async append(customType: string, data: unknown, journal = false): Promise<{ entry: SessionEntry; durability: "durable" | "ephemeral" }> {
 		const before = this.view();
+		const expectedData = data === undefined ? undefined : jsonValue(data);
 		const receipt = object(await this.request({ action: journal ? "journalAppend" : "append", origin: this.origin,
-			customType, ...(data === undefined ? {} : { data }) }));
+		customType, ...(data === undefined ? {} : { data: jsonValue(expectedData) }) }));
 		const committed = entry(receipt.entry);
-		if (committed.type !== "custom" || committed.customType !== customType || !isDeepStrictEqual(committed.data, data) || before.byId.has(committed.id) ||
+		if (committed.type !== "custom" || committed.customType !== customType || !isDeepStrictEqual(committed.data, expectedData) || before.byId.has(committed.id) ||
 			integer(receipt.revision) <= before.revision || typeof receipt.advancedLane !== "boolean" ||
 			(!journal && receipt.advancedLane !== true) || !["durable", "ephemeral"].includes(String(receipt.durability))) {
 			throw new Error("Invalid native session commit receipt; inspect the journal before retrying");

@@ -1,0 +1,40 @@
+{
+  "status": "Native-session receipt and cursor-safety adapter regression changes reviewed and verified; package parity is not declared complete",
+  "parentCommit": "cd1309568f46b1748976bd0f8f0fe7a18e1fee95",
+  "scope": {
+    "sourceFiles": [
+      {"path": "packages/rpi-cursor-sdk/worker/src/rpi/session.ts", "sha256": "808c0475b722840b36e45821cd6cecfae2ba47651ed9a976cc449d999e0ac17f"},
+      {"path": "packages/rpi-cursor-sdk/worker/test/helpers/native-session.ts", "sha256": "3142ae12661b8718ff88c96b6c8c5a77b25c5a13ab868d19401bcaf0be7caba2"},
+      {"path": "packages/rpi-cursor-sdk/worker/test/rpi/ledgers.test.ts", "sha256": "99ba25beaf19f7a2ac90ba2537c320b3d753723f507275d6bb61ae30e389795d"},
+      {"path": "packages/rpi-cursor-sdk/worker/test/rpi/session.test.ts", "sha256": "3be474a2e8e90b39c8243a5e7bd3f05c3674f0003645d98991279a66185357ab"}
+    ],
+    "testedDiffSha256": "1107077a475680c2dcad901464f1302e7ea5201c4cdc7ef3bf084725e387f6a8",
+    "changedSourceFileCount": 4,
+    "diffBytes": 9845
+  },
+  "platform": "Linux",
+  "runtime": {"node": "24.22.0", "npm": "11.19.1", "environment": {"HOME": "/home/user/.verify-cursor-safety-home.BP9koF", "TMPDIR": "/home/user/.verify-cursor-safety-tmp.1FO44C", "CURSOR_API_KEY": "offline-fixture", "TERM": "xterm-256color"}, "executionContext": "Commands executed after Node 24 activation with private HOME/TMPDIR; no real home or credentials were used."},
+  "tests": {
+    "commands": [
+      {"workingDirectory": "/home/user/Projects/rpi-package--parity-cursor-safety/packages/rpi-cursor-sdk/worker", "command": "npm test -- test/rpi/session.test.ts test/rpi/ledgers.test.ts", "log": "/tmp/opencode/verify-cursor-safety/focused.log"},
+      {"workingDirectory": "/home/user/Projects/rpi-package--parity-cursor-safety/packages/rpi-cursor-sdk/worker", "command": "npm test", "log": "/tmp/opencode/verify-cursor-safety/full.log"},
+      {"workingDirectory": "/home/user/Projects/rpi-package--parity-cursor-safety/packages/rpi-cursor-sdk/worker", "command": "npm run typecheck", "log": "/tmp/opencode/verify-cursor-safety/typecheck.log"},
+      {"workingDirectory": "/home/user/Projects/rpi-package--parity-cursor-safety/packages/rpi-cursor-sdk/worker", "command": "npm run build", "log": "/tmp/opencode/parity-cursor-safety/build-final.log"},
+      {"auxiliaryEvidence": "compiled-module smoke check using an ephemeral script and offline fixture; not a durable, reproducible checked-in command.", "evidence": "/tmp/opencode/verify-cursor-safety/compiled-smoke.log", "scriptSnapshot": "/tmp/opencode/verify-cursor-safety/compiled-smoke.mjs"},
+      {"auxiliaryEvidence": "Skipped-test identification output.", "evidence": "/tmp/opencode/verify-cursor-safety/skip-identification.log"}
+    ],
+    "focused": {"passed": 13, "failed": 0},
+    "full": {"passed": 1717, "failed": 0, "skipped": 2, "files": 173},
+    "typechecks": "all passed",
+    "build": "passed",
+    "compiledModuleSmoke": "passed; fakeSessionRequest JSON roundtrip and compiled module only"
+  },
+  "review": {"reviewer": "Sol", "verdict": "accepted diff; no actionable issue"},
+  "notTested": [
+    "Windows and macOS test execution skipped; verification was Linux-only.",
+    "No compiled Rust host IPC end-to-end test; the smoke test covers fakeSessionRequest JSON roundtrip and compiled module only.",
+    "No live service, network, or paid API tests.",
+    "No upstream differential is claimed: this is a host/adapter regression fix, not evidence of upstream parity."
+  ],
+  "verificationNote": "An ad-hoc temporary test initially used an incorrect null expectation; the verifier script corrected the expectation, and production code was unchanged."
+}
