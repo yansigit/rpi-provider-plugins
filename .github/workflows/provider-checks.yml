@@ -1,0 +1,116 @@
+name: Provider regression checks
+
+on:
+  pull_request:
+    paths:
+      - 'packages/rpi-providers/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - '.github/workflows/provider-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  providers:
+    name: Providers (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/target
+      RUSTFLAGS: '-D warnings'
+      RPI_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Resolve the pinned SDK's host revision
+        id: sdk
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os, pathlib, re, tomllib
+          data = tomllib.loads(pathlib.Path('packages/rpi-providers/Cargo.toml').read_text())
+          dependencies = [data[section][name] for section, name in [
+              ('dependencies', 'rpi-ai'), ('dependencies', 'rpi-plugin-sdk'),
+              ('dev-dependencies', 'rpi-extensions')]]
+          versions = [dependency['version'] for dependency in dependencies]
+          assert len(set(versions)) == 1 and re.fullmatch(r'=[0-9]+\.[0-9]+\.[0-9]+', versions[0])
+          revisions = [dependency.get('rev') for dependency in dependencies]
+          assert len(set(revisions)) == 1
+          if revisions[0]:
+              assert re.fullmatch(r'[0-9a-f]{40}', revisions[0])
+              assert all(dependency.get('git') == 'https://github.com/bigfish1913/pi-rust'
+                         for dependency in dependencies)
+          else:
+              assert all('git' not in dependency for dependency in dependencies)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              print('ref=' + (revisions[0] or 'v' + versions[0][1:]), file=output)
+          PY
+      - name: Check out the matching host
+        uses: actions/checkout@v4
+        with:
+          repository: bigfish1913/pi-rust
+          ref: ${{ steps.sdk.outputs.ref }}
+          path: native-host
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            . -> target
+            native-host -> ../target
+      - name: Check provider formatting
+        run: cargo fmt -p rpi-providers -- --check
+      - name: Build and test the real provider library
+        run: |
+          cargo build -p rpi-providers --locked
+          cargo test -p rpi-providers --locked
+      - name: Build the matching CLI
+        working-directory: native-host
+        run: cargo build -p rpi-cli --locked
+      - name: Verify host authentication, compat defaults and retry through the DLL
+        shell: bash
+        run: |
+          if [[ '${{ runner.os }}' == 'Windows' ]]; then
+            export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi.exe"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/rpi_providers.dll"
+          elif [[ '${{ runner.os }}' == 'macOS' ]]; then
+            export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/librpi_providers.dylib"
+          else
+            export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/librpi_providers.so"
+          fi
+          cargo test -p rpi-providers --test host --locked -- --ignored
+          cargo test -p rpi-providers --test reliability --locked -- --include-ignored
+          cargo test --manifest-path native-host/Cargo.toml -p rpi-cli --test provider_packages --locked reload_updates_the_catalog_endpoint_and_runtime_without_a_restart -- --exact
+      - name: Check out the previous host without lifecycle support
+        uses: actions/checkout@v4
+        with:
+          repository: bigfish1913/pi-rust
+          ref: v0.8.2
+          path: legacy-host
+          persist-credentials: false
+      - name: Verify the new bundle falls back on the previous host
+        shell: bash
+        run: |
+          cargo build --manifest-path legacy-host/Cargo.toml -p rpi-cli --locked
+          if [[ '${{ runner.os }}' == 'Windows' ]]; then
+            export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi.exe"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/rpi_providers.dll"
+          elif [[ '${{ runner.os }}' == 'macOS' ]]; then
+            export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/librpi_providers.dylib"
+          else
+            export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/librpi_providers.so"
+          fi
+          cargo test -p rpi-providers --test host --locked -- --ignored
+          cargo test -p rpi-providers --test reliability --locked host_retries_extension_stalls -- --ignored
