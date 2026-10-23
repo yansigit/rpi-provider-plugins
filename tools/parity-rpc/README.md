@@ -181,11 +181,11 @@ Field-level differences in the same records:
   `assistantMessageEvent` and `eventType` (same three values), and no
   top-level `usage`.
 
-The fake provider sees different requests from the two sides. Pi's system
-prompt has a `<cwd>` section appended, and its user message is a content-part
-array. rpi's system prompt has no `<cwd>` section, and its user message is a
-plain string. Request bodies are recorded in `*.provider-requests.jsonl` but
-are not compared by the runner.
+The test compares each complete captured provider request, including method,
+URL, and every body field. It expects one POST per side, the exact side-specific
+`<cwd>` system-prompt section, content-part user messages, streaming usage
+options, `store: false`, and `max_completion_tokens: 16384` (the host's
+configured token default).
 
 ## Limits
 
@@ -194,7 +194,8 @@ are not compared by the runner.
 - Comparison is positional, so a single inserted record produces a mismatch
   at every later index. This is intentional. Shifted event order is a
   difference.
-- The provider request bodies are not compared. Only their count is.
+- The `prompt-basic` e2e assertion covers complete request bodies for this one
+  scenario; other scenarios and provider APIs remain untested.
 - The preload does not cover `performance.now()`, `Date()` called as a
   function, timers, the `node:crypto` `getRandomValues` export, or entropy taken
   outside the patched APIs.

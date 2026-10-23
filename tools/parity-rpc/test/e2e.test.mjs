@@ -55,6 +55,28 @@ test("prompt-basic runs on real Pi and rpi and pins their known divergences", as
     assert.deepEqual(replyOf(pi), [REPLY]);
     assert.deepEqual(replyOf(rpi), [REPLY]);
 
+    // Compare complete wire bodies: absent provider fields are observable too.
+    for (const side of ["pi", "rpi"]) {
+      const requests = (await readFile(path.join(result.outDir, `${side}.provider-requests.jsonl`), "utf8"))
+        .trim().split("\n").map((line) => JSON.parse(line));
+      assert.equal(requests.length, 1, `${side} should make exactly one provider request`);
+      assert.deepEqual(requests[0], {
+        method: "POST",
+        url: "/v1/chat/completions",
+        body: {
+          model: scenario.provider.model,
+          messages: [
+            { role: "system", content: `${scenario.systemPrompt}\n\n<cwd>\n${path.join(root, "work", side, "cwd")}\n</cwd>` },
+            { role: "user", content: [{ type: "text", text: scenario.steps[0].send.message }] },
+          ],
+          stream: true,
+          stream_options: { include_usage: true },
+          store: false,
+          max_completion_tokens: 16384,
+        },
+      }, `${side} provider request differs`);
+    }
+
     const pinned = {
       identical: result.summary.identical,
       piRecords: result.summary.piRecords,
