@@ -94,6 +94,21 @@ jobs:
       - name: Synchronize package catalog versions
         run: python3 .github/scripts/sync-release-catalog.py
 
+      - name: Install Node.js for the embedded frontend
+        # `packages/rpi-web/assets` is generated and untracked; building it here
+        # keeps the published crate and `cargo install rpi-web` shipping the UI.
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: packages/rpi-web/frontend/package-lock.json
+
+      - name: Build the embedded web frontend
+        working-directory: packages/rpi-web/frontend
+        run: |
+          npm ci
+          npm run build
+
       - name: Test workspace
         run: |
           cargo build -p rpi-providers --locked
