@@ -80,8 +80,14 @@ jobs:
         run: |
           if [[ '${{ runner.os }}' == 'Windows' ]]; then
             export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi.exe"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/rpi_providers.dll"
+          elif [[ '${{ runner.os }}' == 'macOS' ]]; then
+            export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/librpi_providers.dylib"
           else
             export RPI_TEST_CLI="$CARGO_TARGET_DIR/debug/rpi"
+            export RPI_TEST_PROVIDER_LIBRARY="$CARGO_TARGET_DIR/debug/librpi_providers.so"
           fi
           cargo test -p rpi-providers --test host --locked -- --ignored
           cargo test -p rpi-providers --test reliability --locked -- --include-ignored
+          cargo test --manifest-path native-host/Cargo.toml -p rpi-cli --test provider_packages --locked reload_updates_the_catalog_endpoint_and_runtime_without_a_restart -- --exact
