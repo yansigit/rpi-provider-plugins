@@ -2,7 +2,7 @@
 /**
  * Purpose: Stage the distributable Cursor worker runtime and its SHA-256 asset manifest.
  * Responsibilities: Bundle the compiled worker modules into a fixed, small set of files,
- * copy the tracked launcher/lock/license/shared files, and record every archived file.
+ * copy the tracked launcher/lock/license files and worker/shared assets, and record every archived file.
  * Usage: `node scripts/stage-package-runtime.mjs [--out DIR] [--check FILE]`.
  * Invariants: No `node_modules` bytes are copied. Bare package imports stay external, so
  * the proprietary `@cursor/sdk` is installed from npm after installation, never vendored.
@@ -81,7 +81,7 @@ async function copyTracked(outRuntime) {
 		await writeFile(join(outRuntime, name), bytes);
 	}
 	for (const name of COPIED_DIRECTORIES) {
-		const source = join(runtimeRoot, name);
+		const source = join(workerRoot, name);
 		if (!(await lstat(source)).isDirectory()) throw new Error(`expected a directory: ${source}`);
 		await cp(source, join(outRuntime, name), { recursive: true, dereference: false, errorOnExist: true });
 	}
@@ -152,7 +152,7 @@ try {
 	if (options.check !== undefined) {
 		const expected = await readFile(options.check, "utf8");
 		if (expected !== serialized) {
-			fail(`${relative(process.cwd(), options.check)} does not match the staged runtime; regenerate it with --write`);
+			fail(`${relative(process.cwd(), options.check)} does not match the staged runtime; regenerate it with: node tests/r01-package-reference.mjs --write`);
 		}
 	}
 } catch (error) {

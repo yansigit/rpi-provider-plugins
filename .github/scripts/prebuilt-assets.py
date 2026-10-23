@@ -15,6 +15,7 @@ import zipfile
 # Host installer limits: a strict archive may hold at most this many entries.
 MAX_ENTRIES = 128
 MAX_ASSET_BYTES = 128 * 1024 * 1024
+MAX_ARCHIVE_BYTES = 256 * 1024 * 1024
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 TARGETS = {
@@ -63,6 +64,8 @@ def validate_asset_path(value):
             raise ValueError(invalid)
         if pathlib.PurePosixPath(component).suffix.lower() in (".so", ".dylib", ".dll", ".pyd"):
             raise ValueError(f"asset `{value}` has a native library extension and cannot be a sidecar")
+    if paths_conflict(value.lower(), "rpi-extension.json"):
+        raise ValueError(f"asset `{value}` collides with the host distribution manifest")
     if "node_modules" in value.split("/"):
         raise ValueError(f"asset `{value}` vendors installed dependencies; the runtime installs them from npm")
 
@@ -137,12 +140,41 @@ def _tar_entry(archive, name, data):
     archive.addfile(info, io.BytesIO(data))
 
 
+def paths_conflict(left, right):
+    """Match the host's case-folded exact-or-descendant path collision rule."""
+    return left == right or left.startswith(right + "/") or right.startswith(left + "/")
+
+
+class _CountingWriter:
+    """A no-buffer sink for measuring the decompressed TAR stream size."""
+    def __init__(self):
+        self.count = 0
+
+    def write(self, data):
+        self.count += len(data)
+        return len(data)
+
+    def flush(self):
+        pass
+
+
+def tar_stream_size(entries):
+    """Measure tarfile's actual PAX/header/padding/termination output without buffering."""
+    sink = _CountingWriter()
+    with tarfile.open(fileobj=sink, mode="w|", format=tarfile.PAX_FORMAT) as archive:
+        for name, data in entries:
+            _tar_entry(archive, name, data)
+    return sink.count
+
+
 def archive_library(library, destination, assets=None):
     """Write one deterministic flat archive: the library plus the declared sidecars."""
     library_bytes = library.read_bytes()
-    entries = [(library.name, library_bytes)]
-    for item in assets or ():
-        entries.append((item["path"], item["bytes"]))
+    expanded_bytes = len(library_bytes) + sum(len(item["bytes"]) for item in assets or ())
+    entries = [(library.name, library_bytes)] + [(item["path"], item["bytes"]) for item in assets or ()]
+    size_to_check = expanded_bytes if destination.suffix == ".zip" else tar_stream_size(entries)
+    if size_to_check > MAX_ARCHIVE_BYTES:
+        raise ValueError("expanded archive exceeds size limit")
     if destination.suffix == ".zip":
         with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             for name, data in entries:

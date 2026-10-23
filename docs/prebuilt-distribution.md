@@ -103,9 +103,16 @@ Release tag: rpi-goal-v0.1.7
   rpi-goal-0.1.7-aarch64-apple-darwin.tar.gz
 ```
 
-Each package archive is flat and contains only that extension's library. Cargo
-library target names determine file names, including `lib` on Unix; consumers
-must read `library.path` rather than derive it from the package name.
+Each package archive is flat and contains that extension's library and, when
+declared by the package, optional sidecar assets. The manifest's `assets` list
+declares their paths and SHA-256 hashes; when present (including an empty list),
+the archive must contain exactly the library and those assets. Cargo library
+target names determine file names, including `lib` on Unix; consumers must read
+`library.path` rather than derive it from the package name. The host currently
+accepts at most 128 archive entries and 256 MiB expanded total per archive;
+individual sidecars are additionally limited to 128 MiB by the packaging
+pipeline. Sidecars must be safe relative paths and may not collide with the
+host's `rpi-extension.json` manifest.
 
 Example manifest showing one target (real releases include all five):
 
@@ -127,7 +134,10 @@ Example manifest showing one target (real releases include all five):
       "library": {
         "path": "rpi_goal.dll",
         "sha256": "<64 lowercase hexadecimal characters>"
-      }
+      },
+      "assets": [
+        { "path": "runtime/main.mjs", "sha256": "<64 lowercase hexadecimal characters>" }
+      ]
     }
   }
 }

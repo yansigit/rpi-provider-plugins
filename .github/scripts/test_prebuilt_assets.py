@@ -178,6 +178,9 @@ class PrebuiltAssetsTests(unittest.TestCase):
         (self.root / "staging/runtime/main.mjs").write_bytes(b"changed after staging")
         with self.assertRaises(ValueError):
             assets.load_declared_assets(package)
+        for path in ("rpi-extension.json", "RPI-EXTENSION.JSON", "rpi-extension.json/child.js", "RPI-EXTENSION.JSON/child.js"):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, "collides with the host distribution manifest"):
+                assets.validate_asset_path(path)
         package = self.declared_assets(["runtime/node_modules/@cursor/sdk/index.js"])
         with self.assertRaises(ValueError):
             assets.load_declared_assets(package)
@@ -189,6 +192,31 @@ class PrebuiltAssetsTests(unittest.TestCase):
         package = self.declared_assets([f"runtime/file-{index}.js" for index in range(128)])
         with self.assertRaises(ValueError):
             assets.load_declared_assets(package)
+
+    def test_archive_expanded_size_cap_counts_library_and_sidecars(self):
+        library = self.root / "librpi_demo.so"
+        library.write_bytes(b"1234")
+        sidecar = {"path": "runtime.js", "bytes": b"5678", "sha256": hashlib.sha256(b"5678").hexdigest()}
+        archive = self.root / "capped.tar.gz"
+        with mock.patch.object(assets, "MAX_ARCHIVE_BYTES", 8):
+            zip_archive = self.root / "capped.zip"
+            assets.archive_library(library, zip_archive, [sidecar])
+            self.assertEqual(sum((4, 4)), assets.MAX_ARCHIVE_BYTES)
+            # TAR's host-counted decompressed stream includes metadata, block padding,
+            # and end-of-archive records, so payload equality is not sufficient.
+            with self.assertRaisesRegex(ValueError, "expanded archive exceeds size limit"):
+                assets.archive_library(library, archive, [sidecar])
+        measured = assets.tar_stream_size([
+            (library.name, b"12345"), (sidecar["path"], sidecar["bytes"]),
+        ])
+        with mock.patch.object(assets, "MAX_ARCHIVE_BYTES", measured):
+            assets.archive_library(library, archive, [sidecar])
+        with mock.patch.object(assets, "MAX_ARCHIVE_BYTES", measured - 1):
+            with self.assertRaisesRegex(ValueError, "expanded archive exceeds size limit"):
+                assets.archive_library(library, archive, [sidecar])
+            library.write_bytes(b"12345")
+            with self.assertRaisesRegex(ValueError, "expanded archive exceeds size limit"):
+                assets.archive_library(library, archive, [sidecar])
 
     def test_archive_verification_rejects_undeclared_or_tampered_entries(self):
         package = self.declared_assets(["runtime/main.mjs"])

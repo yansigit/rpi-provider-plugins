@@ -16,6 +16,7 @@ import pathlib
 import shutil
 import subprocess
 import tempfile
+import tomllib
 import unittest
 import zipfile
 
@@ -41,6 +42,16 @@ FORMAT = {  # target -> (archive suffix, library name)
     "x86_64-apple-darwin": (".tar.gz", "librpi_cursor_sdk.dylib"),
     "aarch64-apple-darwin": (".tar.gz", "librpi_cursor_sdk.dylib"),
 }
+with (PACKAGE / "Cargo.toml").open("rb") as cargo_manifest:
+    package_metadata = tomllib.load(cargo_manifest)["package"]
+if isinstance(package_metadata.get("version"), dict) and package_metadata["version"].get("workspace") is True:
+    with (REPOSITORY / "Cargo.toml").open("rb") as workspace_manifest:
+        PACKAGE_VERSION = tomllib.load(workspace_manifest)["workspace"]["package"]["version"]
+else:
+    PACKAGE_VERSION = package_metadata.get("version")
+if not isinstance(PACKAGE_VERSION, str) or not PACKAGE_VERSION.strip():
+    raise ValueError("rpi-cursor-sdk Cargo package version must resolve to a non-empty string")
+PACKAGE_TAG = f"rpi-cursor-sdk-v{PACKAGE_VERSION}"
 
 
 def load_packaging():
@@ -94,7 +105,7 @@ class CursorPackageTests(unittest.TestCase):
         directory = pathlib.Path(self.temp.name)
         library = directory / library_name
         library.write_bytes(f"fixture-{target}-library".encode())
-        archive = directory / f"rpi-cursor-sdk-0.1.6-{target}{suffix}"
+        archive = directory / f"rpi-cursor-sdk-{PACKAGE_VERSION}-{target}{suffix}"
         packaging.archive_library(library, archive, self.assets if assets is None else assets)
         return archive, library
 
@@ -106,6 +117,22 @@ class CursorPackageTests(unittest.TestCase):
         committed = json.loads(FIXTURE.read_text(encoding="utf-8"))
         self.assertEqual(committed, self.manifest)
         self.assertEqual([item["sha256"] for item in committed["assets"]], [item["sha256"] for item in self.manifest["assets"]])
+
+    def test_package_version_resolves_to_workspace_version_string(self):
+        self.assertIsInstance(PACKAGE_VERSION, str)
+        self.assertTrue(PACKAGE_VERSION)
+        self.assertNotIn("{", PACKAGE_VERSION)
+        self.assertEqual(PACKAGE_VERSION, tomllib.loads((REPOSITORY / "Cargo.toml").read_text())["workspace"]["package"]["version"])
+
+    def test_staging_sources_shared_assets_from_tracked_worker_directory(self):
+        self.assertFalse((PACKAGE / "runtime" / "shared").exists())
+        self.assertTrue((PACKAGE / "worker" / "shared").is_dir())
+        staged_shared = self.staged / "runtime" / "shared"
+        self.assertTrue(staged_shared.is_dir())
+        self.assertEqual(
+            sorted(path.name for path in staged_shared.iterdir()),
+            sorted(path.name for path in (PACKAGE / "worker" / "shared").iterdir()),
+        )
 
     def test_archives_are_strict_deterministic_sidecar_archives(self):
         for target in TARGETS:
@@ -163,7 +190,7 @@ class CursorPackageTests(unittest.TestCase):
         manifest = self.extension_manifest()
         store = pathlib.Path(self.temp.name) / "agent" / "extensions"
         for target in TARGETS:
-            archive = pathlib.Path(self.temp.name) / f"rpi-cursor-sdk-0.1.6-{target}{FORMAT[target][0]}"
+            archive = pathlib.Path(self.temp.name) / f"rpi-cursor-sdk-{PACKAGE_VERSION}-{target}{FORMAT[target][0]}"
             with self.subTest(target=target):
                 self.install(store, manifest, target, archive)
                 self.assertTrue((store / FORMAT[target][1]).is_file())
@@ -177,7 +204,7 @@ class CursorPackageTests(unittest.TestCase):
         manifest = self.extension_manifest()
         target = "x86_64-unknown-linux-gnu"
         store = pathlib.Path(self.temp.name) / "agent" / "extensions"
-        archive = pathlib.Path(self.temp.name) / f"rpi-cursor-sdk-0.1.6-{target}{FORMAT[target][0]}"
+        archive = pathlib.Path(self.temp.name) / f"rpi-cursor-sdk-{PACKAGE_VERSION}-{target}{FORMAT[target][0]}"
         self.install(store, manifest, target, archive)
         (store / "runtime" / "user.txt").write_bytes(b"user")
         (store / "other").mkdir()
@@ -231,19 +258,19 @@ class CursorPackageTests(unittest.TestCase):
         targets = {}
         for target in TARGETS:
             suffix, _ = FORMAT[target]
-            archive = pathlib.Path(self.temp.name) / f"rpi-cursor-sdk-0.1.6-{target}{suffix}"
+            archive = pathlib.Path(self.temp.name) / f"rpi-cursor-sdk-{PACKAGE_VERSION}-{target}{suffix}"
             if not archive.exists():
                 self.archive(target)
             targets[target] = {
-                "url": f"https://github.com/pi-rust/rpi-package/releases/download/rpi-cursor-sdk-v0.1.6/{archive.name}",
+                "url": f"https://github.com/pi-rust/rpi-package/releases/download/{PACKAGE_TAG}/{archive.name}",
                 "format": "zip" if suffix == ".zip" else "tar.gz",
                 "size": archive.stat().st_size,
                 "sha256": sha256(archive.read_bytes()),
                 "library": {"path": FORMAT[target][1], "sha256": sha256(f"fixture-{target}-library".encode())},
                 "assets": [{"path": item["path"], "sha256": item["sha256"]} for item in self.assets],
             }
-        return {"schema_version": 1, "name": "rpi-cursor-sdk", "version": "0.1.6",
-                "repository": "https://github.com/pi-rust/rpi-package", "tag": "rpi-cursor-sdk-v0.1.6",
+        return {"schema_version": 1, "name": "rpi-cursor-sdk", "version": PACKAGE_VERSION,
+                "repository": "https://github.com/pi-rust/rpi-package", "tag": PACKAGE_TAG,
                 "source_commit": "a" * 40, "sdk": {"version": "0.3.20", "plugin_abi": 4}, "targets": targets}
 
     def install(self, store, manifest, target, archive):
