@@ -15,9 +15,7 @@
 //! (`ctx.mode`) remains part of [`CommandHost`]'s `Port::mode`, which the host
 //! implementation answers from the same snapshot.
 use crate::commands::{
-    accounts,
-    login,
-    logout,
+    accounts, login, logout,
     port::Port,
     switch,
     vprovider::{self, VproviderSources},
@@ -29,13 +27,7 @@ use rpi_plugin_sdk::{
     AuthRequestControl, PluginApi, RegisterProviderAuthFn, StbString, StbStringRef,
 };
 use serde_json::{json, Value};
-use std::{
-    ffi::c_void,
-    future::Future,
-    mem::ManuallyDrop,
-    sync::Arc,
-    time::Duration,
-};
+use std::{ffi::c_void, future::Future, mem::ManuallyDrop, pin::Pin, sync::Arc, time::Duration};
 use tokio_util::sync::CancellationToken;
 
 /// One registered command: Pi's extension command name and description.
@@ -80,9 +72,10 @@ pub trait CommandHost: Port + VproviderSources + Send + Sync {}
 impl<T> CommandHost for T where T: Port + VproviderSources + Send + Sync {}
 
 /// The host state the flows read: whether an interactive UI is attached.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct View {
     pub has_ui: bool,
+    pub mode: String,
 }
 
 /// `ctx.hasUI` from the host's authoritative `context/snapshot`.
@@ -95,6 +88,7 @@ pub async fn view(client: &Client, signal: &CancellationToken) -> Result<View, S
         .await?;
     Ok(View {
         has_ui: snapshot["hasUI"] == true,
+        mode: snapshot["mode"].as_str().unwrap_or("").to_owned(),
     })
 }
 
@@ -118,7 +112,7 @@ pub async fn run<P: CommandHost, U: Ui>(
 /// [`Ui`] over the host's awaited dialogs and ordered notifications. The
 /// invocation signal is the command's own token, so closing the command or the
 /// plugin cancels a pending dialog without affecting other owners.
-struct Dialogs {
+pub struct Dialogs {
     client: Client,
     view: View,
     signal: CancellationToken,
@@ -155,13 +149,45 @@ impl Ui for Dialogs {
     }
 }
 
+impl Dialogs {
+    pub fn mode(&self) -> &str {
+        &self.view.mode
+    }
+}
+
 /// Per-registration command state. No credentials live here: the Port owns the
 /// account store and the client owns only private host leases.
-struct Runtime<P> {
+pub trait Runner: Send + Sync {
+    fn run<'a>(
+        &'a self,
+        client: Client,
+        ui: Dialogs,
+        _signal: CancellationToken,
+        command: String,
+        args: String,
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>>;
+}
+
+struct FullFlowRunner<P>(Arc<P>);
+impl<P: CommandHost + 'static> Runner for FullFlowRunner<P> {
+    fn run<'a>(
+        &'a self,
+        _client: Client,
+        ui: Dialogs,
+        _signal: CancellationToken,
+        command: String,
+        args: String,
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>> {
+        Box::pin(async move { run(&*self.0, &ui, &command, &args).await })
+    }
+}
+
+struct Runtime {
     context: ProviderContext,
-    port: Arc<P>,
+    runner: Arc<dyn Runner>,
     client: Client,
     stopping: CancellationToken,
+    supported: Vec<&'static str>,
 }
 
 /// The registration handle. It owns the callback contexts the host receives and
@@ -172,39 +198,79 @@ struct Runtime<P> {
 /// the registration runtime, so the owning plugin's `finish_shutdown` hook is
 /// the right place to drop it — after the host has stopped admitting commands,
 /// as `commands.owned` requires.
-pub struct Commands<P> {
-    runtime: Arc<Runtime<P>>,
+pub struct Commands<P = ()> {
+    runtime: Arc<Runtime>,
     register_command: RegisterProviderAuthFn,
     contexts: Vec<usize>,
+    marker: std::marker::PhantomData<fn() -> P>,
 }
 
-impl<P: CommandHost + 'static> Commands<P> {
+impl<P> Commands<P> {
     /// Requires the owned-command slot and the native runtime port. Registration
     /// itself is separate so a loader can validate capabilities first.
-    pub fn new(
+    pub fn new(api: &PluginApi, port: Arc<P>, stopping: CancellationToken) -> Result<Self, String>
+    where
+        P: CommandHost + 'static,
+    {
+        Self::with_runner(
+            api,
+            Arc::new(FullFlowRunner(port)),
+            stopping,
+            COMMANDS.iter().map(|c| c.name).collect(),
+        )
+    }
+
+    /// Construct a registration restricted to an explicit subset. Names are
+    /// validated before any host mutation; registration order follows `COMMANDS`.
+    pub fn with_supported(
         api: &PluginApi,
         port: Arc<P>,
         stopping: CancellationToken,
+        supported: Vec<&'static str>,
+    ) -> Result<Self, String>
+    where
+        P: CommandHost + 'static,
+    {
+        Self::with_runner(api, Arc::new(FullFlowRunner(port)), stopping, supported)
+    }
+}
+
+impl<P> Commands<P> {
+    pub fn with_runner(
+        api: &PluginApi,
+        runner: Arc<dyn Runner>,
+        stopping: CancellationToken,
+        supported: Vec<&'static str>,
     ) -> Result<Self, String> {
+        for name in &supported {
+            if !COMMANDS.iter().any(|command| command.name == *name) {
+                return Err(format!("Unsupported Multiprovider command \"{name}\""));
+            }
+        }
         let register_command = api
             .register_native_command
             .ok_or("rpi-multiprovider requires owned native commands; upgrade rpi")?;
         Ok(Self {
             runtime: Arc::new(Runtime {
                 context: ProviderContext::new(),
-                port,
+                runner,
                 client: Client::new(api)?,
                 stopping,
+                supported,
             }),
             register_command,
             contexts: Vec::new(),
+            marker: std::marker::PhantomData,
         })
     }
 
     /// Registers the five commands, in Pi's order. A refused registration aborts
     /// the whole plugin load; there is no partial command surface.
     pub fn register(&mut self) -> Result<(), String> {
-        for command in COMMANDS {
+        for command in COMMANDS
+            .iter()
+            .filter(|c| self.runtime.supported.contains(&c.name))
+        {
             let manifest = json!({
                 "version": 1,
                 "name": command.name,
@@ -214,11 +280,11 @@ impl<P: CommandHost + 'static> Commands<P> {
             // One retained reference per registered command. The callback borrows
             // it through `ManuallyDrop`, and `Drop` releases it when the host has
             // stopped invoking commands.
-            let context = Arc::into_raw(self.runtime.clone()) as *mut Runtime<P> as *mut c_void;
+            let context = Arc::into_raw(self.runtime.clone()) as *mut Runtime as *mut c_void;
             self.contexts.push(context as usize);
             if (self.register_command)(
                 StbStringRef::from_str(&manifest),
-                command_request::<P>,
+                command_request,
                 free_string,
                 context,
             ) != 0
@@ -240,13 +306,13 @@ impl<P> Drop for Commands<P> {
         self.runtime.context.begin_shutdown();
         for context in self.contexts.drain(..) {
             unsafe {
-                drop(Arc::from_raw(context as *const Runtime<P>));
+                drop(Arc::from_raw(context as *const Runtime));
             }
         }
     }
 }
 
-extern "C" fn command_request<P: CommandHost + 'static>(
+extern "C" fn command_request(
     input: StbStringRef,
     control: *const AuthRequestControl,
     out: *mut StbString,
@@ -257,8 +323,8 @@ extern "C" fn command_request<P: CommandHost + 'static>(
             return 2;
         }
         // Borrow the retained registration state; never release it here.
-        let state = ManuallyDrop::new(unsafe { Arc::from_raw(context.cast::<Runtime<P>>()) });
-        let state: &Runtime<P> = &state;
+        let state = ManuallyDrop::new(unsafe { Arc::from_raw(context.cast::<Runtime>()) });
+        let state: &Runtime = &state;
         let result = (|| -> Result<(), String> {
             let value: Value = serde_json::from_str(unsafe { input.as_str() })
                 .map_err(|_| "Invalid Multiprovider command request".to_owned())?;
@@ -268,7 +334,7 @@ extern "C" fn command_request<P: CommandHost + 'static>(
             let command = value["command"]
                 .as_str()
                 .ok_or("Missing Multiprovider command name")?;
-            if !COMMANDS.iter().any(|known| known.name == command) {
+            if !state.supported.contains(&command) {
                 return Err(format!("Unknown Multiprovider command \"{command}\""));
             }
             let args = match value.get("args") {
@@ -288,7 +354,7 @@ extern "C" fn command_request<P: CommandHost + 'static>(
                 return Err("This operation was aborted".into());
             }
             let work_signal = signal.clone();
-            let port = state.port.clone();
+            let runner = state.runner.clone();
             let command = command.to_owned();
             let cancelled = || {
                 unsafe { control.as_ref() }
@@ -300,11 +366,11 @@ extern "C" fn command_request<P: CommandHost + 'static>(
                     return Err("This operation was aborted".into());
                 }
                 let ui = Dialogs {
-                    client,
+                    client: client.clone(),
                     view,
-                    signal: work_signal,
+                    signal: work_signal.clone(),
                 };
-                run(&*port, &ui, &command, &args).await
+                runner.run(client, ui, work_signal, command, args).await
             })?;
             Ok(())
         })();
@@ -321,8 +387,8 @@ extern "C" fn command_request<P: CommandHost + 'static>(
 /// Runs one command on the registration runtime, polling the host control. A
 /// cancellation cancels the command token, so pending dialogs and notifications
 /// stop; the callback returns as soon as the flow unwinds.
-fn execute<P: CommandHost + 'static, T: Send + 'static>(
-    state: &Runtime<P>,
+fn execute<T: Send + 'static>(
+    state: &Runtime,
     signal: &CancellationToken,
     cancelled: &dyn Fn() -> bool,
     work: impl Future<Output = Result<T, String>> + Send + 'static,

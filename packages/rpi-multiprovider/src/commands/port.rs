@@ -154,6 +154,50 @@ pub trait Port: Send + Sync {
     ) -> impl Future<Output = Result<PoolAction, String>> + Send;
 }
 
+/// Narrow ports used by commands that need no provider-auth or model-catalog
+/// operations. Blanket forwarding keeps existing command fakes source-compatible.
+pub trait AccountsPort: Send + Sync {
+    fn reconcile(&self) -> impl Future<Output = Result<(), String>> + Send;
+    fn snapshot(&self) -> impl Future<Output = Result<Value, String>> + Send;
+}
+
+impl<T: Port> AccountsPort for T {
+    fn reconcile(&self) -> impl Future<Output = Result<(), String>> + Send {
+        Port::reconcile(self)
+    }
+    fn snapshot(&self) -> impl Future<Output = Result<Value, String>> + Send {
+        Port::snapshot(self)
+    }
+}
+
+pub trait LogoutPort: Send + Sync {
+    fn mode(&self) -> String;
+    fn store(&self, request: Value) -> impl Future<Output = Result<Value, String>> + Send;
+    fn installed_provider_name(
+        &self,
+        id: &str,
+    ) -> impl Future<Output = Result<Option<String>, String>> + Send;
+    fn reconcile(&self) -> impl Future<Output = Result<(), String>> + Send;
+}
+
+impl<T: Port> LogoutPort for T {
+    fn mode(&self) -> String {
+        Port::mode(self)
+    }
+    fn store(&self, request: Value) -> impl Future<Output = Result<Value, String>> + Send {
+        Port::store(self, request)
+    }
+    fn installed_provider_name(
+        &self,
+        id: &str,
+    ) -> impl Future<Output = Result<Option<String>, String>> + Send {
+        async move { Ok(Port::installed_provider_name(self, id)) }
+    }
+    fn reconcile(&self) -> impl Future<Output = Result<(), String>> + Send {
+        Port::reconcile(self)
+    }
+}
+
 pub const CANCELLED: &str = "Login cancelled";
 
 pub async fn notify<U: Ui>(ui: &U, text: &str, kind: &str) -> Result<(), String> {

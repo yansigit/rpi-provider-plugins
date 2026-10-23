@@ -17,7 +17,7 @@ use std::{
     collections::{HashMap, VecDeque},
     ffi::c_void,
     path::{Path, PathBuf},
-    sync::Mutex,
+    sync::{Arc, Mutex},
 };
 
 thread_local! {
@@ -32,13 +32,16 @@ fn current_fake() -> &'static Fake {
     unsafe { &*(pointer as *mut Fake) }
 }
 
-const CAPABILITIES: [&str; 6] = [
+const CAPABILITIES: [&str; 9] = [
     "json.exactNumbers",
     "context.inspect",
     "context.bootstrap",
     "providers.childCatalogs",
     "providers.scopedCallbacks",
     "sessions.view",
+    "commands.owned",
+    "ui.notifications",
+    "context.snapshot",
 ];
 
 #[derive(Clone)]
@@ -68,6 +71,8 @@ struct Attempt {
 #[derive(Default)]
 struct Fake {
     agent: PathBuf,
+    has_ui: bool,
+    mode: String,
     capabilities: Vec<String>,
     providers: Vec<String>,
     inspect: Mutex<Inspect>,
@@ -89,12 +94,22 @@ struct Fake {
         )>,
     >,
     events: Mutex<Vec<(u64, AuthRequestFn, FreeStringFn, usize)>>,
+    commands: Mutex<Vec<(Value, AuthRequestFn, FreeStringFn, usize)>>,
+    command_requests: Mutex<Vec<Value>>,
+    command_snapshots: Mutex<Vec<Value>>,
+    provider_inspections: std::sync::atomic::AtomicUsize,
+    fail_provider_inspect: std::sync::atomic::AtomicBool,
+    fail_command_on_nth: std::sync::atomic::AtomicUsize,
+    hang_dialog: std::sync::atomic::AtomicBool,
+    dialog_waiting: std::sync::atomic::AtomicBool,
 }
 
 impl Fake {
     fn new(agent: &Path) -> Self {
         Self {
             agent: agent.to_path_buf(),
+            has_ui: true,
+            mode: "tui".into(),
             capabilities: CAPABILITIES.iter().map(|name| (*name).into()).collect(),
             providers: vec!["example".into(), "plain".into()],
             ..Default::default()
@@ -232,17 +247,40 @@ extern "C" fn fake_delegate(
 
 extern "C" fn fake_native_request(
     input: StbStringRef,
-    _: *const AuthRequestControl,
+    control: *const AuthRequestControl,
     out: *mut StbString,
     context: *mut c_void,
 ) -> i32 {
     let fake = unsafe { &*context.cast::<Fake>() };
     let value: Value = serde_json::from_str(unsafe { input.as_str() }).unwrap();
+    if value["port"] == "providers" && value["action"] == "inspect" {
+        fake.provider_inspections
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        if fake
+            .fail_provider_inspect
+            .load(std::sync::atomic::Ordering::SeqCst)
+        {
+            unsafe {
+                *out = StbString::from_string(
+                    json!({"version":1,"error":"provider inspection failed"}).to_string(),
+                );
+            }
+            return 1;
+        }
+    }
     let result = match (value["port"].as_str(), value["action"].as_str()) {
         (Some("context"), Some("bootstrap")) => {
             json!({"cwd":"/tmp","agentDir":fake.agent,"sessionDir":"/tmp/sessions"})
         }
         (Some("capabilities"), Some("inspect")) => json!(fake.capabilities),
+        (Some("context"), Some("snapshot")) => {
+            let snapshot = json!({"hasUI":fake.has_ui,"mode":fake.mode});
+            fake.command_snapshots
+                .lock()
+                .unwrap()
+                .push(snapshot.clone());
+            snapshot
+        }
         (Some("context"), Some("inspect")) => {
             let inspect = fake.inspect.lock().unwrap().clone();
             json!({
@@ -256,6 +294,35 @@ extern "C" fn fake_native_request(
             "revision":1,
             "providers":fake.providers.iter().map(|id| json!({"id":id,"name":id,"builtin":false})).collect::<Vec<_>>(),
         }),
+        (Some("dialogs"), Some("show")) => {
+            fake.command_requests.lock().unwrap().push(value.clone());
+            if fake.hang_dialog.load(std::sync::atomic::Ordering::SeqCst) {
+                fake.dialog_waiting
+                    .store(true, std::sync::atomic::Ordering::SeqCst);
+                while !unsafe { control.as_ref() }
+                    .is_some_and(|control| (control.is_cancelled)(control.user_data) != 0)
+                {
+                    std::thread::sleep(std::time::Duration::from_millis(1));
+                }
+                fake.dialog_waiting
+                    .store(false, std::sync::atomic::Ordering::SeqCst);
+                unsafe {
+                    *out = StbString::from_string(
+                        json!({"version":1,"error":"native dialog request cancelled"}).to_string(),
+                    );
+                }
+                return 1;
+            }
+            match value["ui"]["kind"].as_str() {
+                Some("select") => json!({"type":"select","values":["0"]}),
+                Some("confirm") => json!({"confirmed":true}),
+                _ => Value::Null,
+            }
+        }
+        (Some("ui"), Some("notify")) => {
+            fake.command_requests.lock().unwrap().push(value.clone());
+            Value::Null
+        }
         (Some("sessions"), Some("capture")) => {
             let entries = fake.entries.lock().unwrap().clone();
             json!({"origin":"origin-1","snapshot":{"entries":entries,"branches":[],"revision":1}})
@@ -323,6 +390,28 @@ extern "C" fn fake_register_event(
     0
 }
 
+extern "C" fn fake_register_command(
+    manifest: StbStringRef,
+    handler: AuthRequestFn,
+    free: FreeStringFn,
+    context: *mut c_void,
+) -> i32 {
+    let fake = current_fake();
+    let manifest: Value = serde_json::from_str(unsafe { manifest.as_str() }).unwrap();
+    let mut commands = fake.commands.lock().unwrap();
+    let fail_at = fake
+        .fail_command_on_nth
+        .load(std::sync::atomic::Ordering::SeqCst);
+    if fail_at != 0 && commands.len() + 1 == fail_at {
+        // Model the host's transaction rollback: prior registrations are no
+        // longer callable when this callback returns failure.
+        commands.clear();
+        return 1;
+    }
+    commands.push((manifest, handler, free, context as usize));
+    0
+}
+
 extern "C" fn fake_lifecycle(
     begin: PluginBeginShutdownFn,
     finish: PluginFinishShutdownFn,
@@ -376,7 +465,7 @@ fn plugin_api(pointer: *mut Fake) -> PluginApi {
         register_event_result_handler: Some(fake_register_event),
         register_service: None,
         native_context: Some(fake_capture),
-        register_native_command: None,
+        register_native_command: Some(fake_register_command),
         register_owned_tool_with_wake: None,
     }
 }
@@ -414,6 +503,7 @@ struct Registered {
         usize,
     ),
     events: Vec<(u64, AuthRequestFn, FreeStringFn, usize)>,
+    commands: Vec<(Value, AuthRequestFn, FreeStringFn, usize)>,
 }
 
 fn register(agent: &Path, accounts: Vec<Value>, threshold: Option<f64>) -> Registered {
@@ -431,6 +521,7 @@ fn register(agent: &Path, accounts: Vec<Value>, threshold: Option<f64>) -> Regis
         wrapper: fake_ref.wrapper.lock().unwrap().clone().expect("wrapper"),
         store: fake_ref.store.lock().unwrap().clone().expect("store"),
         events: fake_ref.events.lock().unwrap().clone(),
+        commands: fake_ref.commands.lock().unwrap().clone(),
     }
 }
 
@@ -541,6 +632,16 @@ fn registers_one_identity_preserving_wrapper_store_and_awaited_lifecycle() {
         "the credential store is private to this plugin"
     );
     let tags: Vec<u64> = registered.events.iter().map(|(tag, ..)| *tag).collect();
+    assert_eq!(
+        unsafe { &*registered.fake }
+            .commands
+            .lock()
+            .unwrap()
+            .iter()
+            .map(|(m, ..)| m["name"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        vec!["multilogout", "accounts"]
+    );
     for tag in [
         EventTag::SessionStart,
         EventTag::BeforeAgentStart,
@@ -549,6 +650,329 @@ fn registers_one_identity_preserving_wrapper_store_and_awaited_lifecycle() {
         assert!(tags.contains(&(tag as u64)), "missing event {tag:?}");
     }
     finish(registered.fake);
+}
+
+fn invoke_registered_command(registered: &Registered, name: &str) -> Value {
+    invoke_registered_command_args(registered, name, "")
+}
+
+fn invoke_registered_command_args(registered: &Registered, name: &str, args: &str) -> Value {
+    let (_, callback, free, context) = registered
+        .commands
+        .iter()
+        .find(|(manifest, ..)| manifest["name"] == name)
+        .unwrap();
+    let input = json!({"version":1,"command":name,"args":args}).to_string();
+    let mut out = StbString::empty();
+    assert_eq!(
+        callback(
+            StbStringRef::from_str(&input),
+            std::ptr::null(),
+            &mut out,
+            *context as *mut c_void
+        ),
+        0
+    );
+    let owned = unsafe { OwnedString::from_raw(out, Some(*free)) };
+    serde_json::from_str(&owned.to_string_lossy()).unwrap()
+}
+
+#[test]
+fn exported_plugin_runs_accounts_and_logout_against_live_store_and_scheduler() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .fail_provider_inspect
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    let result = invoke_registered_command(&registered, "accounts");
+    assert!(result.get("error").is_none(), "{result}");
+    assert!(unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["port"] == "ui" && request["action"] == "notify"));
+    // This one providers/inspect call belongs to the required reconciliation's
+    // provider discovery; NativePort construction adds no catalog preflight.
+    assert_eq!(
+        unsafe { &*fake }
+            .provider_inspections
+            .load(std::sync::atomic::Ordering::SeqCst),
+        1
+    );
+    finish(fake);
+
+    let temp = tempfile_dir();
+    let upstream_auth = temp.join("auth.json");
+    std::fs::write(&upstream_auth, r#"{"provider":"unchanged"}"#).unwrap();
+    let registered = register(
+        &temp,
+        vec![account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    let result = invoke_registered_command(&registered, "multilogout");
+    assert!(result.get("error").is_none(), "{result}");
+    let state = std::fs::read_to_string(temp.join("multiprovider-auth.json")).unwrap();
+    assert!(
+        !state.contains("\"id\":\"a\""),
+        "account remains in store: {state}"
+    );
+    let accounts = invoke_registered_command(&registered, "accounts");
+    assert!(accounts.get("error").is_none(), "{accounts}");
+    assert!(unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["action"] == "notify"
+            && request["text"] == "No account pools are configured. Use /multilogin to add one."));
+    assert_eq!(
+        std::fs::read_to_string(upstream_auth).unwrap(),
+        r#"{"provider":"unchanged"}"#
+    );
+    finish(fake);
+}
+
+#[test]
+fn provider_catalog_is_lazy_and_lookup_failures_propagate_only_for_picker() {
+    let temp = tempfile_dir();
+    let registered = register(
+        &temp,
+        vec![account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .fail_provider_inspect
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    unsafe { &mut *fake }.has_ui = false;
+    let no_ui = invoke_registered_command(&registered, "multilogout");
+    assert!(no_ui.get("error").is_none(), "{no_ui}");
+    assert_eq!(
+        unsafe { &*fake }
+            .provider_inspections
+            .load(std::sync::atomic::Ordering::SeqCst),
+        0
+    );
+    unsafe { &mut *fake }.has_ui = true;
+    unsafe { &mut *fake }.mode = "rpc".into();
+    let rpc = invoke_registered_command(&registered, "multilogout");
+    assert!(rpc.get("error").is_none(), "{rpc}");
+    assert_eq!(
+        unsafe { &*fake }
+            .provider_inspections
+            .load(std::sync::atomic::Ordering::SeqCst),
+        0
+    );
+
+    unsafe { &mut *fake }.mode = "tui".into();
+    let before = std::fs::read(temp.join("multiprovider-auth.json")).unwrap();
+    let direct = invoke_registered_command_args(&registered, "multilogout", "example");
+    assert!(direct.get("error").is_none(), "{direct}");
+    assert_eq!(
+        unsafe { &*fake }
+            .provider_inspections
+            .load(std::sync::atomic::Ordering::SeqCst),
+        1
+    );
+    assert_ne!(
+        std::fs::read(temp.join("multiprovider-auth.json")).unwrap(),
+        before
+    );
+    finish(fake);
+
+    let temp = tempfile_dir();
+    let registered = register(
+        &temp,
+        vec![account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .fail_provider_inspect
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    let before = std::fs::read(temp.join("multiprovider-auth.json")).unwrap();
+    let picker = invoke_registered_command(&registered, "multilogout");
+    assert!(
+        picker["error"]
+            .as_str()
+            .is_some_and(|error| error.contains("provider inspection failed")),
+        "{picker}"
+    );
+    assert_eq!(
+        std::fs::read(temp.join("multiprovider-auth.json")).unwrap(),
+        before
+    );
+    assert_eq!(
+        unsafe { &*fake }
+            .provider_inspections
+            .load(std::sync::atomic::Ordering::SeqCst),
+        1
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_logout_pending_dialog_cancels_and_preserves_store() {
+    let temp = tempfile_dir();
+    let registered = register(
+        &temp,
+        vec![account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .hang_dialog
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    let before = std::fs::read(temp.join("multiprovider-auth.json")).unwrap();
+    let (_, callback, free, context) = registered
+        .commands
+        .iter()
+        .find(|(manifest, ..)| manifest["name"] == "multilogout")
+        .unwrap()
+        .clone();
+    let cancelled = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let task_cancel = cancelled.clone();
+    let (send, receive) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let control = AuthRequestControl {
+            struct_size: std::mem::size_of::<AuthRequestControl>() as u32,
+            is_cancelled: command_cancelled,
+            user_data: Arc::as_ptr(&task_cancel).cast_mut().cast(),
+        };
+        let mut out = StbString::empty();
+        let status = callback(
+            StbStringRef::from_str(r#"{"version":1,"command":"multilogout","args":""}"#),
+            &control,
+            &mut out,
+            context as *mut c_void,
+        );
+        let owned = unsafe { OwnedString::from_raw(out, Some(free)) };
+        let reply: Value = serde_json::from_str(&owned.to_string_lossy()).unwrap();
+        let _ = send.send((status, reply));
+    });
+    let start = std::time::Instant::now();
+    while !unsafe { &*fake }
+        .dialog_waiting
+        .load(std::sync::atomic::Ordering::SeqCst)
+    {
+        assert!(
+            start.elapsed() < std::time::Duration::from_secs(5),
+            "logout never reached pending dialog"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(2));
+    }
+    cancelled.store(true, std::sync::atomic::Ordering::SeqCst);
+    let (_, reply) = receive
+        .recv_timeout(std::time::Duration::from_secs(5))
+        .expect("command did not drain after cancellation");
+    assert!(
+        reply["error"]
+            .as_str()
+            .is_some_and(|error| error.contains("cancel")),
+        "{reply}"
+    );
+    assert_eq!(
+        std::fs::read(temp.join("multiprovider-auth.json")).unwrap(),
+        before
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_commands_use_snapshot_mode_and_no_ui_without_mutating_store() {
+    let temp = tempfile_dir();
+    let registered = register(
+        &temp,
+        vec![account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    unsafe { &mut *fake }.mode = "rpc".into();
+    let before = std::fs::read(temp.join("multiprovider-auth.json")).unwrap();
+    let (_, callback, free, context) = registered
+        .commands
+        .iter()
+        .find(|(manifest, ..)| manifest["name"] == "multilogout")
+        .unwrap();
+    let control = AuthRequestControl {
+        struct_size: std::mem::size_of::<AuthRequestControl>() as u32,
+        is_cancelled: cancelled,
+        user_data: std::ptr::null_mut(),
+    };
+    let mut out = StbString::empty();
+    assert_eq!(
+        callback(
+            StbStringRef::from_str(r#"{"version":1,"command":"multilogout","args":""}"#),
+            &control,
+            &mut out,
+            *context as *mut c_void
+        ),
+        0
+    );
+    let reply = unsafe { OwnedString::from_raw(out, Some(*free)) };
+    let reply: Value = serde_json::from_str(&reply.to_string_lossy()).unwrap();
+    assert!(reply["error"].as_str().unwrap().contains("aborted"));
+    assert_eq!(
+        std::fs::read(temp.join("multiprovider-auth.json")).unwrap(),
+        before
+    );
+    let result = invoke_registered_command(&registered, "multilogout");
+    assert_eq!(result["result"], Value::Null);
+    assert_eq!(
+        std::fs::read(temp.join("multiprovider-auth.json")).unwrap(),
+        before
+    );
+    assert!(unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["port"] == "ui" && request["kind"] == "warning"));
+
+    unsafe { &mut *fake }.mode = "tui".into();
+    unsafe { &mut *fake }.has_ui = false;
+    unsafe { &mut *fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .clear();
+    let result = invoke_registered_command(&registered, "accounts");
+    assert_eq!(result["result"], Value::Null);
+    assert!(!unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["port"] == "dialogs" || request["port"] == "ui"));
+    finish(fake);
 }
 
 #[test]
@@ -575,6 +999,30 @@ fn missing_capability_or_slot_refuses_registration() {
     unsafe {
         drop(Box::from_raw(fake));
     }
+}
+
+#[test]
+fn partial_native_command_registration_rolls_back_before_runtime_shutdown() {
+    let temp = tempfile_dir();
+    std::fs::create_dir_all(&*temp).unwrap();
+    write_store(&temp.join("multiprovider-auth.json"), Vec::new(), None);
+    let fake = Box::into_raw(Box::new(Fake::new(&temp)));
+    unsafe { &*fake }
+        .fail_command_on_nth
+        .store(2, std::sync::atomic::Ordering::SeqCst);
+    let api = plugin_api(fake);
+    CURRENT.with(|current| current.set(fake as usize));
+    let status = rpi_multiprovider::native::rpi_plugin_register(&api);
+    CURRENT.with(|current| current.set(0));
+    assert_eq!(
+        status, 1,
+        "failed command registration must reject the extension"
+    );
+    assert!(
+        unsafe { &*fake }.commands.lock().unwrap().is_empty(),
+        "host rollback must retire the first command before context release"
+    );
+    finish(fake);
 }
 
 #[test]
@@ -698,6 +1146,13 @@ extern "C" fn cancelled(_: *mut c_void) -> u8 {
     1
 }
 
+extern "C" fn command_cancelled(data: *mut c_void) -> u8 {
+    u8::from(
+        unsafe { &*data.cast::<std::sync::atomic::AtomicBool>() }
+            .load(std::sync::atomic::Ordering::SeqCst),
+    )
+}
+
 #[test]
 fn pooled_attempts_resolve_receipts_switch_accounts_and_report_status() {
     let temp = tempfile_dir();
@@ -716,6 +1171,30 @@ fn pooled_attempts_resolve_receipts_switch_accounts_and_report_status() {
 
     let (message, emitted) = request(fake, &registered, "example");
     assert_eq!(message["stopReason"], "stop");
+    let command = unsafe { &*fake }
+        .commands
+        .lock()
+        .unwrap()
+        .iter()
+        .find(|(manifest, ..)| manifest["name"] == "accounts")
+        .cloned()
+        .expect("loaded /accounts registration");
+    let mut command_out = StbString::empty();
+    assert_eq!(
+        (command.1)(
+            StbStringRef::from_str(r#"{"version":1,"command":"accounts","args":""}"#),
+            std::ptr::null(),
+            &mut command_out,
+            command.3 as *mut c_void
+        ),
+        0
+    );
+    let command_reply = unsafe { OwnedString::from_raw(command_out, Some(command.2)) };
+    let command_reply: Value = serde_json::from_str(&command_reply.to_string_lossy()).unwrap();
+    assert!(
+        command_reply.get("error").is_none(),
+        "loaded command failed: {command_reply}"
+    );
     assert_eq!(message["content"][0]["text"], "ok");
     assert_eq!(continuation_accounts(fake), vec!["a", "b"]);
     assert_eq!(delegated_accounts(fake), vec!["a", "b"]);
@@ -1041,6 +1520,32 @@ fn tempfile_dir() -> TempDir {
 }
 
 #[cfg(unix)]
+struct LoadedPluginGuard {
+    handle: *mut c_void,
+    fake: *mut Fake,
+    close: unsafe extern "C" fn(*mut c_void) -> i32,
+}
+
+#[cfg(unix)]
+impl Drop for LoadedPluginGuard {
+    fn drop(&mut self) {
+        let hooks = unsafe { &*self.fake }
+            .hooks
+            .lock()
+            .ok()
+            .and_then(|hooks| hooks.clone());
+        if let Some((begin, finish, context)) = hooks {
+            begin(context as *mut c_void);
+            let _ = finish(context as *mut c_void);
+        }
+        unsafe {
+            drop(Box::from_raw(self.fake));
+            (self.close)(self.handle);
+        }
+    }
+}
+
+#[cfg(unix)]
 #[test]
 fn built_library_registers_through_the_exported_symbol() {
     use std::ffi::{c_char, c_int, c_void, CString};
@@ -1103,12 +1608,26 @@ fn built_library_registers_through_the_exported_symbol() {
     )
     .unwrap();
     let fake = Box::into_raw(Box::new(Fake::new(&temp)));
+    let _guard = LoadedPluginGuard {
+        handle,
+        fake,
+        close: dlclose,
+    };
     let api = plugin_api(fake);
     CURRENT.with(|current| current.set(fake as usize));
     let status = unsafe { register(&api) };
     CURRENT.with(|current| current.set(0));
     assert_eq!(status, 0);
     let registered = unsafe { &*fake };
+    let command_registrations = registered.commands.lock().unwrap().clone();
+    assert_eq!(
+        command_registrations
+            .iter()
+            .map(|(manifest, ..)| manifest["name"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        vec!["multilogout", "accounts"],
+        "loaded cdylib must register exactly the supported commands in canonical order"
+    );
     let wrapper = registered.wrapper.lock().unwrap().clone().unwrap();
     unsafe { &*fake }.script("a", vec![success()]);
     let request = json!({
@@ -1133,8 +1652,52 @@ fn built_library_registers_through_the_exported_symbol() {
     let message = unsafe { OwnedString::from_raw(out, Some(wrapper.2)) };
     let message: Value = serde_json::from_str(&message.to_string_lossy()).unwrap();
     assert_eq!(message["stopReason"], "stop");
-    finish(fake);
-    unsafe {
-        dlclose(handle);
-    }
+
+    let (_, command, command_free, command_context) = command_registrations
+        .iter()
+        .find(|(manifest, ..)| manifest["name"] == "accounts")
+        .unwrap();
+    let mut command_out = StbString::empty();
+    assert_eq!(
+        command(
+            StbStringRef::from_str(r#"{"version":1,"command":"accounts","args":""}"#),
+            std::ptr::null(),
+            &mut command_out,
+            *command_context as *mut c_void,
+        ),
+        0,
+        "loaded /accounts callback reports through its response envelope"
+    );
+    let command_reply = unsafe { OwnedString::from_raw(command_out, Some(*command_free)) };
+    let command_reply: Value = serde_json::from_str(&command_reply.to_string_lossy()).unwrap();
+    assert_eq!(command_reply, json!({"version":1,"result":null}));
+    assert_eq!(
+        unsafe { &*fake }
+            .command_snapshots
+            .lock()
+            .unwrap()
+            .last()
+            .cloned(),
+        Some(json!({"hasUI":true,"mode":"tui"})),
+        "loaded /accounts sees invocation UI/mode snapshot"
+    );
+    let account_dialog = unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .find(|request| request["port"] == "dialogs")
+        .cloned()
+        .expect("loaded /accounts must show its account listing");
+    assert_eq!(account_dialog["ui"]["kind"], "select");
+    let choices = account_dialog["ui"]["choices"].as_array().unwrap();
+    assert!(choices.iter().any(|choice| choice["label"]
+        .as_str()
+        .is_some_and(|label| label.contains("example"))));
+    assert!(
+        choices.iter().any(|choice| choice["label"]
+            .as_str()
+            .is_some_and(|label| label.contains("A (api-key)"))),
+        "expected pooled-account line in loaded dialog: {account_dialog}"
+    );
 }

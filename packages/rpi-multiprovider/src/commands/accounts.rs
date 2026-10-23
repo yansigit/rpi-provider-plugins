@@ -1,10 +1,10 @@
 //! Multiprovider command flow: `/accounts` (upstream `extensions/multiprovider.ts`
 //! `accounts` handler and `statusLines`).
-use super::port::{js_number, locale_time, notify, select, Port};
+use super::port::{js_number, locale_time, notify, select, AccountsPort};
 use super::Ui;
 use serde_json::Value;
 
-pub async fn accounts<U: Ui, P: Port>(ui: &U, port: &P) -> Result<(), String> {
+pub async fn accounts<U: Ui, P: AccountsPort>(ui: &U, port: &P) -> Result<(), String> {
     port.reconcile().await?;
     let snapshot = port.snapshot().await?;
     let providers = snapshot["providers"]

@@ -10,11 +10,12 @@
 //! notifications and error are compared with the fixture the unchanged upstream
 //! extension produced.
 use rpi_multiprovider::commands::port::{
-    AuthMethod, AuthStatus, LoginInteraction, PoolAction, PoolBuffer, PoolMethod, Port, ProviderInfo,
-    RuntimeView, SelectedModel,
+    AuthMethod, AuthStatus, LoginInteraction, PoolAction, PoolBuffer, PoolMethod, Port,
+    ProviderInfo, RuntimeView, SelectedModel,
 };
 use rpi_multiprovider::commands::vprovider::{CandidateModel, CandidateProvider, VproviderSources};
-use rpi_multiprovider::native::commands::{self, COMMANDS};
+use rpi_multiprovider::commands::Ui;
+use rpi_multiprovider::native::commands::{self, Dialogs, Runner, COMMANDS};
 use rpi_plugin_sdk::{
     callbacks::free_string, AuthRequestControl, AuthRequestFn, FreeStringFn, PluginApi, StbString,
     StbStringRef,
@@ -23,12 +24,41 @@ use serde_json::{json, Value};
 use std::{
     collections::{BTreeSet, VecDeque},
     ffi::c_void,
+    future::Future,
+    pin::Pin,
     sync::{
         atomic::{AtomicBool, Ordering},
         mpsc, Arc, Mutex,
     },
     time::{Duration, Instant},
 };
+
+struct ProbeRunner(Arc<Mutex<Vec<Value>>>);
+impl Runner for ProbeRunner {
+    fn run<'a>(
+        &'a self,
+        client: rpi_plugin_sdk::provider::native::Client,
+        ui: Dialogs,
+        signal: CancellationToken,
+        command: String,
+        args: String,
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'a>> {
+        let seen = self.0.clone();
+        Box::pin(async move {
+            let result = client
+                .request(
+                    json!({"port":"context","action":"snapshot"}),
+                    signal.clone(),
+                )
+                .await?;
+            seen.lock()
+                .unwrap()
+                .push(json!({"command":command,"args":args,
+                "hasUI":ui.has_ui(),"cancelled":signal.is_cancelled(),"snapshot":result}));
+            Ok(())
+        })
+    }
+}
 use tokio_util::sync::CancellationToken;
 
 const COMMANDS_FIXTURE: &str = include_str!("commands-reference.json");
@@ -173,7 +203,9 @@ static FAIL_REGISTRATION: AtomicBool = AtomicBool::new(false);
 static SERIAL: Mutex<()> = Mutex::new(());
 
 fn serial() -> std::sync::MutexGuard<'static, ()> {
-    SERIAL.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    SERIAL
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner())
 }
 
 extern "C" fn host_register_native_command(
@@ -301,11 +333,13 @@ struct FakePort {
 }
 
 fn method(value: Option<&Value>) -> Option<AuthMethod> {
-    value.filter(|value| value.is_object()).map(|value| AuthMethod {
-        name: value["name"].as_str().unwrap_or("").to_owned(),
-        login_label: value["loginLabel"].as_str().map(str::to_owned),
-        login: !value["login"].is_null(),
-    })
+    value
+        .filter(|value| value.is_object())
+        .map(|value| AuthMethod {
+            name: value["name"].as_str().unwrap_or("").to_owned(),
+            login_label: value["loginLabel"].as_str().map(str::to_owned),
+            login: !value["login"].is_null(),
+        })
 }
 
 impl FakePort {
@@ -328,7 +362,8 @@ impl FakePort {
             providers,
             runtime: (!input["runtime"].is_null()).then(|| input["runtime"].clone()),
             model,
-            snapshot: (!input["serviceSnapshot"].is_null()).then(|| input["serviceSnapshot"].clone()),
+            snapshot: (!input["serviceSnapshot"].is_null())
+                .then(|| input["serviceSnapshot"].clone()),
             mode: input["mode"].as_str().unwrap_or("").to_owned(),
         }
     }
@@ -353,7 +388,10 @@ impl Port for FakePort {
     fn store_path(&self) -> String {
         String::new()
     }
-    fn store(&self, request: Value) -> impl std::future::Future<Output = Result<Value, String>> + Send {
+    fn store(
+        &self,
+        request: Value,
+    ) -> impl std::future::Future<Output = Result<Value, String>> + Send {
         async move {
             match request["op"].as_str() {
                 Some("list") | Some("listVirtual") => Ok(json!([])),
@@ -603,7 +641,11 @@ fn native_commands_match_the_upstream_manifests() {
     let host = Host::new(true, "tui", vec![]);
     let (_handle, registrations) = register(
         &host,
-        FakePort::from(&json!({"providers":[],"runtime":null}), &json!({}), &json!({})),
+        FakePort::from(
+            &json!({"providers":[],"runtime":null}),
+            &json!({}),
+            &json!({}),
+        ),
     );
     assert_eq!(registrations.len(), COMMANDS.len());
     for (index, command) in COMMANDS.iter().enumerate() {
@@ -648,7 +690,10 @@ fn native_command_flows_match_the_upstream_fixtures() {
         match scenario["expected"]["error"].as_str() {
             Some(error) => assert_eq!(output["error"], error, "{name}: error"),
             None => {
-                assert!(output.get("error").is_none(), "{name}: unexpected error {output}");
+                assert!(
+                    output.get("error").is_none(),
+                    "{name}: unexpected error {output}"
+                );
                 assert_eq!(output["result"], Value::Null, "{name}: result");
             }
         }
@@ -662,11 +707,7 @@ fn native_dialog_cancel_type_is_a_cancel() {
     let name = "multilogin provider selector cancel";
     let scenario = scenario(&fixture, name);
     let input = &scenario["input"];
-    let host = Host::new(
-        true,
-        "tui",
-        vec![json!({"type":"cancel"})],
-    );
+    let host = Host::new(true, "tui", vec![json!({"type":"cancel"})]);
     let port = FakePort::from(input, &fixture["world"], &Value::Null);
     let (_handle, registrations) = register(&host, port);
     let registration = registration_for(&registrations, "multilogin");
@@ -694,10 +735,19 @@ fn native_command_envelope_rejects_bad_requests() {
     let registration = registration_for(&registrations, "accounts");
     let cancelled = AtomicBool::new(false);
     for (request, message) in [
-        (json!({"version":2,"command":"accounts"}), "Unsupported Multiprovider command version"),
+        (
+            json!({"version":2,"command":"accounts"}),
+            "Unsupported Multiprovider command version",
+        ),
         (json!({"version":1}), "Missing Multiprovider command name"),
-        (json!({"version":1,"command":"nope"}), "Unknown Multiprovider command \"nope\""),
-        (json!({"version":1,"command":"accounts","args":7}), "Invalid Multiprovider command arguments"),
+        (
+            json!({"version":1,"command":"nope"}),
+            "Unknown Multiprovider command \"nope\"",
+        ),
+        (
+            json!({"version":1,"command":"accounts","args":7}),
+            "Invalid Multiprovider command arguments",
+        ),
     ] {
         let output = invoke(registration, &request, &cancelled);
         assert_eq!(output["error"], message, "{request}");
@@ -822,7 +872,11 @@ fn a_detached_ui_shows_no_controls_and_sends_no_notifications() {
         &AtomicBool::new(false),
     );
     assert!(output.get("error").is_none(), "{output}");
-    assert!(host.calls.lock().unwrap().is_empty(), "{:?}", host.calls.lock().unwrap());
+    assert!(
+        host.calls.lock().unwrap().is_empty(),
+        "{:?}",
+        host.calls.lock().unwrap()
+    );
     // Only the authoritative view query reaches the host.
     assert_eq!(host.requests.lock().unwrap().len(), 1);
     assert_eq!(host.requests.lock().unwrap()[0]["action"], "snapshot");
@@ -860,7 +914,9 @@ fn cancellation_stops_a_pending_dialog() {
     let output = receive
         .recv_timeout(Duration::from_secs(10))
         .expect("cancellation did not stop the command");
-    let error = output["error"].as_str().unwrap_or_else(|| panic!("{output}"));
+    let error = output["error"]
+        .as_str()
+        .unwrap_or_else(|| panic!("{output}"));
     assert!(error.contains("cancel"), "{error}");
     assert!(host
         .calls
@@ -877,7 +933,94 @@ fn the_reference_check_is_part_of_the_gate() {
     // test keeps the documented regeneration command honest when the Rust
     // suite runs without Node (the reference check is run separately).
     let fixture: Value = serde_json::from_str(MANIFEST_FIXTURE).unwrap();
-    assert_eq!(fixture["reference"]["upstream"], "bd97d65a36f541935dc91e33ba15d7910a30f9d7");
+    assert_eq!(
+        fixture["reference"]["upstream"],
+        "bd97d65a36f541935dc91e33ba15d7910a30f9d7"
+    );
     assert_eq!(fixture["reference"]["pi"], "1.3.0");
     assert_eq!(fixture["pinned"].as_object().unwrap().len(), 14);
+}
+
+#[test]
+fn custom_runner_subset_registers_in_canonical_order_and_receives_scoped_invocation() {
+    let _serial = serial();
+    REGISTRATIONS.lock().unwrap().clear();
+    let host = Host::new(true, "tui", vec![]);
+    let api = api(&host as *const Host as *mut Host);
+    let observed = Arc::new(Mutex::new(Vec::new()));
+    let mut handle = commands::Commands::<()>::with_runner(
+        &api,
+        Arc::new(ProbeRunner(observed.clone())),
+        CancellationToken::new(),
+        vec!["accounts", "multilogout"],
+    )
+    .unwrap();
+    handle.register().unwrap();
+    let registrations = REGISTRATIONS.lock().unwrap();
+    assert_eq!(
+        registrations
+            .iter()
+            .map(|r| r.manifest["name"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        vec!["multilogout", "accounts"]
+    );
+    let accounts = registrations
+        .iter()
+        .find(|r| r.manifest["name"] == "accounts")
+        .unwrap();
+    let output = invoke(
+        accounts,
+        &json!({"version":1,"command":"accounts","args":"hello"}),
+        &AtomicBool::new(false),
+    );
+    assert_eq!(output["result"], Value::Null);
+    assert_eq!(
+        observed.lock().unwrap()[0],
+        json!({"command":"accounts","args":"hello",
+        "hasUI":true,"cancelled":false,"snapshot":{"hasUI":true,"mode":"tui"}})
+    );
+    assert_eq!(
+        host.requests.lock().unwrap().len(),
+        2,
+        "callback captures invocation snapshot and scoped runner request"
+    );
+}
+
+#[test]
+fn unsupported_subset_is_refused_before_registration_and_unadvertised_dispatch_before_host_calls() {
+    let _serial = serial();
+    REGISTRATIONS.lock().unwrap().clear();
+    let host = Host::new(true, "tui", vec![]);
+    let api = api(&host as *const Host as *mut Host);
+    let observed = Arc::new(Mutex::new(Vec::new()));
+    assert!(commands::Commands::<()>::with_runner(
+        &api,
+        Arc::new(ProbeRunner(observed.clone())),
+        CancellationToken::new(),
+        vec!["made-up"]
+    )
+    .is_err());
+    assert!(REGISTRATIONS.lock().unwrap().is_empty());
+
+    let mut handle = commands::Commands::<()>::with_runner(
+        &api,
+        Arc::new(ProbeRunner(observed.clone())),
+        CancellationToken::new(),
+        vec!["accounts"],
+    )
+    .unwrap();
+    handle.register().unwrap();
+    let registration = REGISTRATIONS.lock().unwrap()[0].clone();
+    let calls_before = host.requests.lock().unwrap().len();
+    let output = invoke(
+        &registration,
+        &json!({"version":1,"command":"multilogin","args":""}),
+        &AtomicBool::new(false),
+    );
+    assert!(output["error"]
+        .as_str()
+        .unwrap()
+        .contains("Unknown Multiprovider command"));
+    assert_eq!(host.requests.lock().unwrap().len(), calls_before);
+    assert!(observed.lock().unwrap().is_empty());
 }
