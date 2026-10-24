@@ -12,6 +12,7 @@ use super::Ui;
 use crate::types::trim;
 use crate::virtual_provider::capture_virtual_model_template;
 use serde_json::{json, Value};
+use std::future::Future;
 
 /// One model of a provider the editor can use as a backing model.
 #[derive(Clone, Debug, PartialEq)]
@@ -38,6 +39,29 @@ pub trait VproviderSources: Send + Sync {
     fn providers_with_models(&self) -> Vec<CandidateProvider>;
     /// `ctx.modelRegistry.getProvider(id) !== undefined`.
     fn provider_registered(&self, id: &str) -> bool;
+}
+
+/// Minimal apply surface: native virtual editing does not acquire unrelated
+/// login/switch authority merely to reuse the ported editor.
+pub trait VproviderPort: Send + Sync {
+    fn mode(&self) -> String;
+    fn is_virtual_provider(&self, id: &str) -> bool;
+    fn store(&self, request: Value) -> impl Future<Output = Result<Value, String>> + Send;
+    fn reconcile(&self) -> impl Future<Output = Result<(), String>> + Send;
+}
+impl<T: Port> VproviderPort for T {
+    fn mode(&self) -> String {
+        Port::mode(self)
+    }
+    fn is_virtual_provider(&self, id: &str) -> bool {
+        Port::is_virtual_provider(self, id)
+    }
+    fn store(&self, request: Value) -> impl Future<Output = Result<Value, String>> + Send {
+        Port::store(self, request)
+    }
+    fn reconcile(&self) -> impl Future<Output = Result<(), String>> + Send {
+        Port::reconcile(self)
+    }
 }
 
 /// `VirtualEditorOutcome`.
@@ -86,7 +110,11 @@ struct Editor {
 
 impl Editor {
     fn new(stored: Vec<Value>, candidates: Vec<CandidateProvider>, draft: Option<Value>) -> Self {
-        let page = if draft.is_none() { EditorPage::Root } else { EditorPage::Menu };
+        let page = if draft.is_none() {
+            EditorPage::Root
+        } else {
+            EditorPage::Menu
+        };
         Self {
             stored,
             candidates,
@@ -230,7 +258,10 @@ async fn run_editor<U: Ui, F: Fn(&str) -> bool>(
                     separator_item("sep-top"),
                 ];
                 for (index, backend) in editor.backends().iter().enumerate() {
-                    items.push(menu_item(format!("backend-{index}"), backend_label(index, backend)));
+                    items.push(menu_item(
+                        format!("backend-{index}"),
+                        backend_label(index, backend),
+                    ));
                 }
                 items.push(separator_item("sep-bottom"));
                 items.push(menu_item("save", "Save and apply"));
@@ -274,7 +305,8 @@ async fn run_editor<U: Ui, F: Fn(&str) -> bool>(
                         // existed; live resolution still wins at runtime.
                         for index in 0..editor.backends().len() {
                             let backend = editor.backends()[index].clone();
-                            if backend["enabled"] == json!(false) || !backend["template"].is_null() {
+                            if backend["enabled"] == json!(false) || !backend["template"].is_null()
+                            {
                                 continue;
                             }
                             let provider_id = backend["providerId"].as_str().unwrap_or("");
@@ -307,11 +339,17 @@ async fn run_editor<U: Ui, F: Fn(&str) -> bool>(
                 let items: Vec<SettingItem> = editor
                     .candidates
                     .iter()
-                    .map(|provider| menu_item(provider.id.clone(), format!("{} ({})", provider.name, provider.id)))
+                    .map(|provider| {
+                        menu_item(
+                            provider.id.clone(),
+                            format!("{} ({})", provider.name, provider.id),
+                        )
+                    })
                     .collect();
                 let control = settings::settings_control(
                     "Backing provider",
-                    &editor.with_error("Type to search · Enter picks the provider · Esc goes back."),
+                    &editor
+                        .with_error("Type to search · Enter picks the provider · Esc goes back."),
                     &items,
                     "",
                     first_selected(&items),
@@ -455,7 +493,8 @@ async fn run_editor<U: Ui, F: Fn(&str) -> bool>(
                 match purpose {
                     InputPurpose::ProviderId => {
                         if !valid_virtual_id(&value) || !available(&value) {
-                            editor.page_error = "Provider id is invalid or already registered.".to_owned();
+                            editor.page_error =
+                                "Provider id is invalid or already registered.".to_owned();
                             editor.input_initial = value;
                             continue;
                         }
@@ -487,12 +526,13 @@ async fn run_editor<U: Ui, F: Fn(&str) -> bool>(
                     }
                     InputPurpose::Weight => {
                         let parsed = settings::js_number_parse(&value);
-                        let exists = editor
-                            .model()["backends"]
+                        let exists = editor.model()["backends"]
                             .as_array()
                             .map(|backends| editor.active_backend < backends.len())
                             .unwrap_or(false);
-                        if !(parsed.fract() == 0.0 && parsed.is_finite() && parsed >= 1.0) || !exists {
+                        if !(parsed.fract() == 0.0 && parsed.is_finite() && parsed >= 1.0)
+                            || !exists
+                        {
                             editor.page_error = "Weight must be an integer ≥ 1.".to_owned();
                             editor.input_initial = value;
                             continue;
@@ -509,7 +549,9 @@ async fn run_editor<U: Ui, F: Fn(&str) -> bool>(
 
 /// `uniqueProviders(...).filter(...)`, sorted by provider name with Node's
 /// collation (upstream `localeCompare`).
-fn candidates<P: Port + VproviderSources>(port: &P) -> Result<Vec<CandidateProvider>, String> {
+fn candidates<P: VproviderPort + VproviderSources>(
+    port: &P,
+) -> Result<Vec<CandidateProvider>, String> {
     let mut providers: Vec<CandidateProvider> = port
         .providers_with_models()
         .into_iter()
@@ -522,7 +564,7 @@ fn candidates<P: Port + VproviderSources>(port: &P) -> Result<Vec<CandidateProvi
 
 /// `pi.registerCommand('vprovider', ...)`: create, edit or remove virtual
 /// providers that map one model across provider models.
-pub async fn vprovider<U: Ui, P: Port + VproviderSources>(
+pub async fn vprovider<U: Ui, P: VproviderPort + VproviderSources>(
     ui: &U,
     port: &P,
     args: &str,

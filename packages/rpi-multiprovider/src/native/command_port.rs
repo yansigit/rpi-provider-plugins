@@ -94,6 +94,59 @@ impl LogoutPort for NativePort {
     }
 }
 
+struct VirtualPort {
+    port: NativePort,
+    catalog: Value,
+    virtual_ids: Vec<String>,
+}
+impl crate::commands::vprovider::VproviderPort for VirtualPort {
+    fn mode(&self) -> String {
+        self.port.mode.clone()
+    }
+    fn is_virtual_provider(&self, id: &str) -> bool {
+        self.virtual_ids.iter().any(|value| value == id)
+    }
+    fn store(&self, request: Value) -> impl Future<Output = Result<Value, String>> + Send {
+        self.port
+            .shared
+            .store_request(request, self.port.signal.clone())
+    }
+    fn reconcile(&self) -> impl Future<Output = Result<(), String>> + Send {
+        self.port
+            .shared
+            .reconcile(&self.port.client, &self.port.signal, false)
+    }
+}
+impl crate::commands::vprovider::VproviderSources for VirtualPort {
+    fn provider_registered(&self, id: &str) -> bool {
+        self.catalog["providers"]
+            .as_array()
+            .is_some_and(|providers| providers.iter().any(|provider| provider["id"] == id))
+    }
+    fn providers_with_models(&self) -> Vec<crate::commands::vprovider::CandidateProvider> {
+        use crate::commands::vprovider::{CandidateModel, CandidateProvider};
+        self.catalog["providers"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .map(|provider| CandidateProvider {
+                id: provider["id"].as_str().unwrap_or_default().into(),
+                name: provider["name"].as_str().unwrap_or_default().into(),
+                models: provider["models"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .map(|model| CandidateModel {
+                        id: model["id"].as_str().unwrap_or_default().into(),
+                        name: model["name"].as_str().unwrap_or_default().into(),
+                        model: model.clone(),
+                    })
+                    .collect(),
+            })
+            .collect()
+    }
+}
+
 impl Runner for NativeRunner {
     fn run<'a>(
         &'a self,
@@ -109,6 +162,35 @@ impl Runner for NativeRunner {
             match command.as_str() {
                 "accounts" => crate::commands::accounts::accounts(&ui, &port).await,
                 "multilogout" => crate::commands::logout::multilogout(&ui, &port, &args).await,
+                "vprovider" => {
+                    let catalog = port
+                        .client
+                        .request(
+                            json!({"port":"providers","action":"inspect"}),
+                            port.signal.clone(),
+                        )
+                        .await?;
+                    let configs = port
+                        .shared
+                        .store_request(json!({"op":"listVirtual"}), port.signal.clone())
+                        .await?;
+                    let virtual_ids = configs
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .filter_map(|config| config["id"].as_str().map(str::to_owned))
+                        .collect();
+                    crate::commands::vprovider::vprovider(
+                        &ui,
+                        &VirtualPort {
+                            port,
+                            catalog,
+                            virtual_ids,
+                        },
+                        &args,
+                    )
+                    .await
+                }
                 _ => Err(format!("Unknown Multiprovider command \"{command}\"")),
             }
         })
