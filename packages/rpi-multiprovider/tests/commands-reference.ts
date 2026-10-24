@@ -518,7 +518,10 @@ async function runCommand(scenario) {
       registerProvider(provider) { registry.providers.set(provider.id, provider) },
       unregisterProvider(id) { registry.providers.delete(id) },
       registerCommand(name, options) { commands.set(name, options) },
-      appendEntry(customType, data) { appended.push({ customType, data: clone(data) }) },
+      appendEntry(customType, data) {
+        if (scenario.journalError !== undefined) throw new Error(scenario.journalError)
+        appended.push({ customType, data: clone(data) })
+      },
       getAllTools: () => [],
     }
     const entries = clone(scenario.entries ?? [])
@@ -594,6 +597,7 @@ async function runCommand(scenario) {
         stream: scenario.stream ?? null,
         runtime: scenario.runtime === undefined ? DEFAULT_RUNTIME : scenario.runtime,
         providers: scenario.providers ?? ALL,
+        ...(scenario.journalError === undefined ? {} : { journalError: scenario.journalError }),
       },
       expected: { trace, notifications, entries: appended, authFile, error },
     }
@@ -725,9 +729,11 @@ command('switch-account proceeds in non-TUI mode with UI', { command: 'switch-ac
 command('switch-account without a selected model', { command: 'switch-account', args: '', model: null })
 command('switch-account reports a provider without pools', { command: 'switch-account', args: '', model: { provider: 'gamma', id: 'gamma-1', name: 'Gamma 1' } })
 command('switch-account exact match pins the account', { command: 'switch-account', args: 'work', model: ACCOUNTS_MODEL, setup: ALPHA_POOL })
+command('switch-account selected journal failure stops success UI', { command: 'switch-account', args: 'work', model: ACCOUNTS_MODEL, setup: ALPHA_POOL, journalError: 'journal commit refused' })
 command('switch-account unique prefix pins the account', { command: 'switch-account', args: 'te', model: ACCOUNTS_MODEL, setup: ALPHA_POOL })
 command('switch-account ambiguous prefix asks for a choice', { command: 'switch-account', args: 'te', model: ACCOUNTS_MODEL, setup: [...ALPHA_POOL, { op: 'add', provider: 'alpha', input: { label: 'Tenant', credential: { type: 'api_key', key: 'sk-tenant' } } }], answers: [SELECT(1)] })
 command('switch-account auto keyword clears the pin', { command: 'switch-account', args: 'auto', model: ACCOUNTS_MODEL, setup: ALPHA_POOL })
+command('switch-account automatic journal failure stops success UI', { command: 'switch-account', args: 'auto', model: ACCOUNTS_MODEL, setup: ALPHA_POOL, journalError: 'journal commit refused' })
 command('switch-account automatic reports an already automatic session', { command: 'switch-account', args: 'automatic', model: ACCOUNTS_MODEL, setup: [...ALPHA_POOL, { op: 'setPool', provider: 'alpha', input: { affinity: false } }] })
 command('switch-account unmatched reference falls back to the selector', { command: 'switch-account', args: 'zzz', model: ACCOUNTS_MODEL, setup: ALPHA_POOL, answers: [SELECT(0)] })
 command('switch-account selector cancel', { command: 'switch-account', args: '', model: ACCOUNTS_MODEL, setup: ALPHA_POOL, answers: [null] })

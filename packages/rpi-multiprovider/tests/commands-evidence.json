@@ -5,16 +5,16 @@
   "referenceCommand": "LC_ALL=en_US.UTF-8 node --experimental-transform-types tests/commands-reference.ts [--write]",
   "checks": {
     "toolchains": ["1.78.0 with RUSTFLAGS=-Dwarnings", "1.95.0 (default)"],
-    "referenceScenarios": 63,
+    "referenceScenarios": 65,
     "referenceScenariosByKind": {
-      "command": 59,
-      "commandByCommand": {"multilogin": 28, "multilogout": 10, "accounts": 5, "switch-account": 16},
+      "command": 61,
+      "commandByCommand": {"multilogin": 28, "multilogout": 10, "accounts": 5, "switch-account": 18},
       "direct-login": 1,
       "host-select": 2,
       "login-dialog": 1
     },
     "upstreamMultiloginSpecs": {"total": 4, "covered": 4},
-    "referenceFixtureSha256": "cca87cf6b8988b8d08c0c3e449b3b3bcb09c3f78f5d6770d63de0076d7b42996",
+    "referenceFixtureSha256": "bc66d0cd6719303beb3ceccf7dbc5e11146f37cab9fda64e06afc8fe3675278d",
     "referenceRerunsByteIdentical": 2,
     "replayTest": "tests/commands.rs::command_flows_match_the_upstream_reference",
     "localeTimeTest": "tests/commands.rs::locale_time_matches_en_us_utc"
@@ -23,6 +23,7 @@
     "Projected UI trace per scenario: every select, confirm and input control with its reply, and every pool manager call with its methods",
     "Notifications: text and kind, with the account-file path normalized to $AUTH_PATH on both sides",
     "Session entries appended by /switch-account, in order, with their data",
+    "Journal commit failures for selected-account and automatic switches: exact upstream thrown message, no appended entry and no success notification; native async journal acknowledgement is awaited before announcements",
     "Final multiprovider-auth.json text, compared byte for byte, after the scenario's setup and command",
     "Thrown messages of the command flow",
     "Login flows: prompts and events in order and the resulting credential or error (multilogin.spec: API-key and OAuth flows)",

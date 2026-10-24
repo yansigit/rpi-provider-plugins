@@ -135,7 +135,14 @@ pub trait Port: Send + Sync {
         &self,
         pool: &str,
     ) -> impl Future<Output = Result<(), String>> + Send;
-    fn append_entry(&self, custom_type: &str, data: Value);
+    /// Commits the session journal entry before announcements or success UI.
+    /// Native `sessions/journalAppend` is awaited and may fail; discarding that
+    /// acknowledgement would claim a switch that cannot survive restoration.
+    fn append_entry(
+        &self,
+        custom_type: &str,
+        data: Value,
+    ) -> impl Future<Output = Result<(), String>> + Send;
     /// Runs the provider's login for `auth_type` through the host and returns
     /// the credential. Failures are reported as the message of the thrown error.
     fn login<I: LoginInteraction>(

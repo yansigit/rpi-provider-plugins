@@ -496,7 +496,13 @@ impl Port for FakePort {
     ) -> impl std::future::Future<Output = Result<(), String>> + Send {
         async { Err("unscripted announcement".into()) }
     }
-    fn append_entry(&self, _: &str, _: Value) {}
+    fn append_entry(
+        &self,
+        _: &str,
+        _: Value,
+    ) -> impl Future<Output = Result<(), String>> + Send {
+        async { Ok(()) }
+    }
     fn login<I: LoginInteraction>(
         &self,
         _: &ProviderInfo,

@@ -367,14 +367,32 @@ impl Port for FakePort {
         &self,
         _pool: &str,
     ) -> impl Future<Output = Result<(), String>> + Send {
-        async { Ok(()) }
+        async move {
+            if self.run.world["journalError"].is_string() {
+                return Err("announcement attempted after journal failure".into());
+            }
+            Ok(())
+        }
     }
-    fn append_entry(&self, custom_type: &str, data: Value) {
-        self.run
-            .entries
-            .lock()
-            .unwrap()
-            .push(json!({"customType": custom_type, "data": data}));
+    fn append_entry(
+        &self,
+        custom_type: &str,
+        data: Value,
+    ) -> impl Future<Output = Result<(), String>> + Send {
+        async move {
+            // The host acknowledgement is asynchronous, not a fire-and-forget
+            // callback. Keep the recording inside the future to test polling.
+            tokio::task::yield_now().await;
+            if let Some(error) = self.run.world["journalError"].as_str() {
+                return Err(error.to_owned());
+            }
+            self.run
+                .entries
+                .lock()
+                .unwrap()
+                .push(json!({"customType": custom_type, "data": data}));
+            Ok(())
+        }
     }
     fn login<I: LoginInteraction>(
         &self,
@@ -468,6 +486,8 @@ fn assert_same(path: &str, actual: &Value, expected: &Value) {
 async fn run_command(world: &Value, scenario: &Value) {
     let name = scenario["name"].as_str().unwrap();
     let input = &scenario["input"];
+    let mut world = world.clone();
+    world["journalError"] = input["journalError"].clone();
     let root = Scratch(std::env::temp_dir().join(format!(
         "rpi-multiprovider-commands-{}",
         uuid::Uuid::new_v4()
@@ -774,6 +794,30 @@ async fn command_flows_match_the_upstream_reference() {
             other => panic!("unknown scenario kind {other}"),
         }
     }
+}
+
+async fn switch_journal_failure(scenario_name: &str) {
+    let reference: Value = serde_json::from_str(include_str!("commands-reference.json")).unwrap();
+    let world = reference["world"].clone();
+    let scenario = reference["scenarios"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|scenario| scenario["name"] == scenario_name)
+        .unwrap();
+    // Expected errors, entries and UI come from executing the unchanged TS
+    // extension with a throwing appendEntry, never from hand-written traces.
+    run_command(&world, scenario).await;
+}
+
+#[tokio::test]
+async fn switch_selected_account_awaits_journal_failure_before_announcement() {
+    switch_journal_failure("switch-account selected journal failure stops success UI").await;
+}
+
+#[tokio::test]
+async fn switch_automatic_awaits_journal_failure_before_announcement() {
+    switch_journal_failure("switch-account automatic journal failure stops success UI").await;
 }
 
 #[test]
