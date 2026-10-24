@@ -1,212 +1,347 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "status": "scoped-pass",
-  "scope": "Mechanical SDK cohort pin alignment for the 3 Linux packages, with selected offline Rust/Node/native-load evidence. Not full workspace or G1/G2 acceptance.",
-  "reviewedInput": {
-    "lane": "lane/parity-sdk-pin",
-    "worktree": "/home/user/Projects/rpi-package--parity-sdk-pin",
-    "baseHead": "e8253676b6e8fbefb73d788768399427dad2f16f",
-    "baseHeadLength": 40,
-    "hostTarget": "ecc9c2ecca20a867c1d5b43df7180599a0593218",
-    "hostTargetLength": 40,
-    "hostTargetType": "commit",
-    "sourceFiles": [
-      {"path":"packages/rpi-antigravity-auth/Cargo.toml","sha256":"b93df715a6798585f9f8933c29194ab59f513a2c0ff4d1cba9f9f6b22fe73881"},
-      {"path":"packages/rpi-multiprovider/Cargo.toml","sha256":"c41b9b1fec553d47b19ed936434086a8b82d8dbe04f12e61b67d77d7ccb19d97"},
-      {"path":"packages/rpi-cursor-sdk/Cargo.toml","sha256":"b71e16bf20a00eef3e6d751be05c57d2a6a313b921a9adbcd9cc2a9f1a5dd3e4"},
-      {"path":"Cargo.lock","sha256":"3de5a94d484d18233a85827edebb311edcdfd65caf1e119a9456d2a3284745f2"}
-    ],
-    "sourceDiffSha256": "5a39289525c72deadffff72f4536c2d5075b4465fab5a08eb41336190c06a55b",
-    "workspaceCargoTomlSha256": "7e1a0c0f009f04e991f68efd3ea32a093d2fe4790ecd1a0d1faa18a9698a7650",
-    "workspaceSdkPin": "rpi-plugin-sdk = { version = \"=0.3.20\" }",
-    "legacyCf4241Occurrences": 6
-  },
+  "scope": "Offline provider cohort only; no live services, full workspace, or G1/G2 acceptance claimed.",
+  "hostTarget": "7dfadb0720bed6d624ea39b383e64b3753469206",
+  "packageBase": "5b5416cad5dc569fe1d473a381b144b791b036eb",
+  "lane": "lane/stream-api-migration",
+  "worktree": "/home/user/Projects/rpi-package--stream-api-migration",
+  "generator": ".github/scripts/refresh-provider-parity-evidence.py",
   "pinResolution": {
-    "oldRev": "1347dbe2fb89e7f0405c1dc6978e1e17a1c6ff64",
-    "newRev": "ecc9c2ecca20a867c1d5b43df7180599a0593218",
-    "replacements": [
-      {"path":"packages/rpi-antigravity-auth/Cargo.toml","oldCount":0,"newCount":1},
-      {"path":"packages/rpi-multiprovider/Cargo.toml","oldCount":0,"newCount":1},
-      {"path":"packages/rpi-cursor-sdk/Cargo.toml","oldCount":0,"newCount":1}
-    ],
-    "lock": {
-      "changedSourceLines": 3,
-      "removedSourceLines": 3,
-      "addedSourceLines": 3,
-      "cohortEntries": [
-        {"name":"rpi-ai","version":"0.7.0"},
-        {"name":"rpi-plugin-sdk","version":"0.7.0"},
-        {"name":"rpi-telemetry","version":"0.7.0"}
-      ],
-      "semanticEquivalenceAfterSourceNormalization": true,
-      "registryVersionsChanged": false,
-      "rpiAgentSourceChanged": false
+    "registryVersionsChanged": false,
+    "hostCrates": [
+      {
+        "name": "rpi-ai",
+        "version": "0.8.4",
+        "source": "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
+      },
+      {
+        "name": "rpi-plugin-sdk",
+        "version": "0.8.4",
+        "source": "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
+      },
+      {
+        "name": "rpi-telemetry",
+        "version": "0.8.4",
+        "source": "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
+      }
+    ]
+  },
+  "packageFiles": {
+    "files": 1000,
+    "sha256": "197e2589eca22f47eb437781c51884b7f745ebad147659243066fd3d6ffd0e8f"
+  },
+  "pinFiles": [
+    {
+      "path": "/home/user/Projects/rpi-package--stream-api-migration/packages/rpi-antigravity-auth/Cargo.toml",
+      "bytes": 2560,
+      "sha256": "45d67348eb9a65850296581ec9fd6e3c2b7ed73a78ce2395effbb3eca3759bbb"
+    },
+    {
+      "path": "/home/user/Projects/rpi-package--stream-api-migration/packages/rpi-cursor-sdk/Cargo.toml",
+      "bytes": 1186,
+      "sha256": "bf12fa879110eb93599a9c8bbcdff68dbf9a3916f2e6ee2f1b37cbd994107305"
+    },
+    {
+      "path": "/home/user/Projects/rpi-package--stream-api-migration/packages/rpi-multiprovider/Cargo.toml",
+      "bytes": 978,
+      "sha256": "f52cbcaaef8ef4cdb8b7cd43434dfc5eb467d2bc0dd6ca908f6fbc9a4a8fd1ba"
+    },
+    {
+      "path": "/home/user/Projects/rpi-package--stream-api-migration/Cargo.lock",
+      "bytes": 114490,
+      "sha256": "df5547e21f241c136466b105b85d53c2844b261018fc39bdc522fe54c53d1dff"
     }
-  },
-  "sdkContract": {
-    "version": "0.7.0",
-    "abiVersion": 4,
-    "eventTagCount": 39,
-    "latestEventTag": "SessionTreeFailed",
-    "latestEventTagDiscriminant": 38,
-    "appendOnly": true,
-    "isIdle": 26,
-    "crossProviderDelegationV2": false,
-    "fullV2Meaning": "cross-provider delegation protocol version 2; not legacy plugin ABI version 2"
-  },
+  ],
   "toolchains": {
-    "rust178": {
-      "targetDir": "/home/user/Projects/.targets/parity-sdk-pin-178",
-      "sourceCheckout": "/home/user/.cargo/git/checkouts/pi-rust-81c7759b3b39ca16/ecc9c2e",
-      "sourceCheckoutHead": "ecc9c2ecca20a867c1d5b43df7180599a0593218",
-      "commonEnv": {
-        "CARGO_HOME": "/home/user/.cargo",
-        "RUSTUP_HOME": "/home/user/.rustup",
-        "RUSTUP_AUTO_INSTALL": "0",
-        "CARGO_NET_OFFLINE": "true",
-        "HOME": "/home/user/.verify-sdk-pin-home",
-        "TMPDIR": "/home/user/.verify-sdk-pin-tmp",
-        "RPI_PRIVATE_TMP": "/home/user/.verify-sdk-pin-tmp",
-        "CARGO_BUILD_JOBS": "4"
+    "1.78.0": {
+      "tests": {
+        "rpi-antigravity-auth": {
+          "passed": 97,
+          "failed": 0,
+          "ignored": 5
+        },
+        "rpi-cursor-sdk": {
+          "passed": 62,
+          "failed": 0,
+          "ignored": 17
+        },
+        "rpi-multiprovider": {
+          "passed": 78,
+          "failed": 0,
+          "ignored": 2
+        }
       },
-      "rustflags": "-Dwarnings (present in 1.78 target fingerprints)"
-    },
-    "rust195": {
-      "targetDir": "/home/user/Projects/.targets/parity-sdk-pin-195",
-      "sourceCheckout": "/home/user/.cargo/git/checkouts/pi-rust-96414b53477e8afb/ecc9c2e",
-      "sourceCheckoutHead": "ecc9c2ecca20a867c1d5b43df7180599a0593218",
-      "commonEnv": {
-        "CARGO_HOME": "/home/user/.cargo",
-        "RUSTUP_HOME": "/home/user/.rustup",
-        "RUSTUP_AUTO_INSTALL": "0",
-        "CARGO_NET_OFFLINE": "true",
-        "HOME": "/home/user/.verify-sdk-pin-home",
-        "TMPDIR": "/home/user/.verify-sdk-pin-tmp",
-        "RPI_PRIVATE_TMP": "/home/user/.verify-sdk-pin-tmp",
-        "CARGO_BUILD_JOBS": "4"
-      },
-      "rustflags": "none (empty rustflags in 1.95 target fingerprints)"
-    },
-    "node": "v24.22.0"
-  },
-  "commands": [
-    {"id":"rust178-tests","toolchain":"rustc 1.78.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-178","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4","CARGO_TARGET_DIR":"/home/user/Projects/.targets/parity-sdk-pin-178","RUSTFLAGS":"-Dwarnings"},"command":"cargo +1.78.0 test -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider --locked --offline","exitCode":0,"result":"233 passed, 0 failed, 24 ignored","log":{"path":"/tmp/opencode/verify-sdk-pin/test-178.log","sha256":"9e90b3d1a71a331bc01c92214c2b87e27b4659b5905754d5bb4e64deeead05f2","bytes":45847}},
-    {"id":"rust195-tests","toolchain":"rustc 1.95.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-195","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4","CARGO_TARGET_DIR":"/home/user/Projects/.targets/parity-sdk-pin-195"},"command":"cargo +1.95.0 test -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider --locked --offline","exitCode":0,"result":"233 passed, 0 failed, 24 ignored","log":{"path":"/tmp/opencode/verify-sdk-pin/test-195.log","sha256":"fa8df19498797db3a79bbbe23eb2c28715643f3618c610ba8fe3153e9c90af5d","bytes":45847}},
-    {"id":"cdylib178-build","toolchain":"rustc 1.78.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-178","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4","CARGO_TARGET_DIR":"/home/user/Projects/.targets/parity-sdk-pin-178","RUSTFLAGS":"-Dwarnings"},"command":"cargo +1.78.0 build -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider --lib --locked --offline","exitCode":0,"result":"3 cdylibs built","log":{"path":"/tmp/opencode/verify-sdk-pin/build-cdylib-178.log","sha256":"40b327ebbc47a4e06a9e44465af43d03f323311b16519ecbd49b1bb28b7cb2ef","bytes":4804}},
-    {"id":"mp-native-load","toolchain":"rustc 1.78.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-178","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4","RPI_TEST_MULTIPROVIDER_LIBRARY":"/home/user/Projects/.targets/parity-sdk-pin-178/debug/librpi_multiprovider.so","CARGO_TARGET_DIR":"/home/user/Projects/.targets/parity-sdk-pin-178","RUSTFLAGS":"-Dwarnings"},"command":"cargo +1.78.0 test -p rpi-multiprovider --test m_native built_library_registers_through_the_exported_symbol --locked --offline -- --exact --nocapture","exitCode":0,"result":"1 actual dlopen test passed, 14 filtered; invoked accounts; registered commands multilogout+accounts","log":{"path":"/tmp/opencode/verify-sdk-pin/mp-native-load-178.log","sha256":"31ca991b1624aeae874b99df243cd148262a149496b3421308f8c23503140bce","bytes":2095}},
-    {"id":"mp-native-full","toolchain":"rustc 1.78.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-178","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4","RPI_TEST_MULTIPROVIDER_LIBRARY":"/home/user/Projects/.targets/parity-sdk-pin-178/debug/librpi_multiprovider.so","CARGO_TARGET_DIR":"/home/user/Projects/.targets/parity-sdk-pin-178","RUSTFLAGS":"-Dwarnings"},"command":"cargo +1.78.0 test -p rpi-multiprovider --test m_native --locked --offline","exitCode":0,"result":"15 passed, 0 failed; STATIC suite covers entrypoint accounts/multilogout; this run does not itself prove loaded logout callback","log":{"path":"/tmp/opencode/verify-sdk-pin/mp-native-full-178.log","sha256":"c1726cb4157fbd0180c485d8352120f78a2b0e5f6ca248c72809e592d8b13293","bytes":2015}},
-    {"id":"ag-r02-load","toolchain":"rustc 1.78.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-178","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4","RPI_TEST_ANTIGRAVITY_LIBRARY":"/home/user/Projects/.targets/parity-sdk-pin-178/debug/librpi_antigravity_auth.so","CARGO_TARGET_DIR":"/home/user/Projects/.targets/parity-sdk-pin-178","RUSTFLAGS":"-Dwarnings"},"command":"cargo +1.78.0 test -p rpi-cursor-sdk --test r02_native_loading --locked --offline","exitCode":0,"result":"1 passed; AG registration branch passed; Cursor/legacy branches skipped","log":{"path":"/tmp/opencode/verify-sdk-pin/cursor-r02-ag-load-178.log","sha256":"ae5fe76363f436d0316ae8846582c47184e29ddbf111baaeabcfce3f7b7d0014","bytes":1396}},
-    {"id":"ag-r02-skip-proof","toolchain":"rustc 1.78.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-178","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4","CARGO_TARGET_DIR":"/home/user/Projects/.targets/parity-sdk-pin-178","RUSTFLAGS":"-Dwarnings"},"command":"cargo +1.78.0 test -p rpi-cursor-sdk --test r02_native_loading --locked --offline","exitCode":0,"result":"1 passed; all provider libraries skipped (unset RPI_TEST_*)","log":{"path":"/tmp/opencode/verify-sdk-pin/cursor-r02-skip-proof.log","sha256":"3287cd1606fc6d901d89a0d86606924bcb0fee211773785bfee30b56ea3206bf","bytes":2125}},
-    {"id":"mp-node-63","toolchain":"node v24.22.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin/packages/rpi-multiprovider","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4"},"command":"node --experimental-transform-types tests/commands-reference.ts","exitCode":0,"result":"63 scenarios byte-identical","log":{"path":"/tmp/opencode/verify-sdk-pin/node-commands-63.log","sha256":"b2c6636046f2275b5a2936524a42ca74195aec6bc13262748395ca9936c6e0b0","bytes":211}},
-    {"id":"mp-node-47","toolchain":"node v24.22.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin/packages/rpi-multiprovider","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4"},"command":"node --experimental-transform-types tests/commands-a2-reference.ts","exitCode":0,"result":"47 scenarios byte-identical","log":{"path":"/tmp/opencode/verify-sdk-pin/node-commands-a2-47.log","sha256":"f0ef333a7fe27e3bcc1e08472a84b4be26f4d82b0dab524d4656c0a5bbf5c93a","bytes":211}},
-    {"id":"metadata-178-full","toolchain":"rustc 1.78.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-178","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4"},"command":"cargo +1.78.0 metadata --offline --format-version 1","exitCode":101,"result":"failed to download aes 0.8.4; outside selected Linux cohort (im-message/voice)","log":{"path":"/tmp/opencode/verify-sdk-pin/metadata-178-full.log","sha256":"88c0cf8a3221fc9debfa462ed5c03afa91137fca133f3abaa4c7321a9766b582","bytes":117}},
-    {"id":"fetch-178","toolchain":"rustc 1.78.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-178","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4"},"command":"cargo +1.78.0 fetch --offline --locked","exitCode":101,"result":"failed to download wasip2 1.0.4+wasi-0.2.12 (WASI target)","log":{"path":"/tmp/opencode/verify-sdk-pin/fetch-178.log","sha256":"61b030bdbf0595b079b64c42e6de9f70ea52833f020355901c8ffd78ee663a85","bytes":132}},
-    {"id":"metadata-195-full","toolchain":"rustc 1.95.0","cwd":"/home/user/Projects/rpi-package--parity-sdk-pin","targetDir":"/home/user/Projects/.targets/parity-sdk-pin-195","env":{"CARGO_HOME":"/home/user/.cargo","RUSTUP_HOME":"/home/user/.rustup","RUSTUP_AUTO_INSTALL":"0","CARGO_NET_OFFLINE":"true","HOME":"/home/user/.verify-sdk-pin-home","TMPDIR":"/home/user/.verify-sdk-pin-tmp","RPI_PRIVATE_TMP":"/home/user/.verify-sdk-pin-tmp","CARGO_BUILD_JOBS":"4"},"command":"cargo metadata --offline --format-version 1","exitCode":101,"result":"failed to download cesu8 1.1.0 (Android voice path)","log":{"path":"/tmp/opencode/verify-sdk-pin/metadata-195-full.log","sha256":"0e13577aafc9190ad7fa11d8346d0a9ca8766e8c253bfc17763faa74db420d53","bytes":119}}
-  ],
-  "results": {
-    "selectedRustTests": {
-      "rust178": {
-        "passed": 233,
-        "failed": 0,
-        "ignored": 24
-      },
-      "rust195": {
-        "passed": 233,
-        "failed": 0,
-        "ignored": 24
+      "rustflags": "-Dwarnings",
+      "sdkCheckout": "/home/user/.cargo/git/checkouts/pi-rust-81c7759b3b39ca16/7dfadb0",
+      "sdkCheckoutHead": "7dfadb0720bed6d624ea39b383e64b3753469206",
+      "sdkSources": [
+        {
+          "name": "rpi-ai",
+          "files": 43,
+          "sha256": "75fcc8ff259d3bdc16d850a5d49035a8fdd8d8d73e9a90ea03085c88f91c9e75"
+        },
+        {
+          "name": "rpi-plugin-sdk",
+          "files": 17,
+          "sha256": "d7ac5d410d7c64773de043be5e67edf5d7d4677f904dad95b9f0c6a995bb21e5"
+        },
+        {
+          "name": "rpi-telemetry",
+          "files": 8,
+          "sha256": "5f5cdf4422d24182e415ff858332e1cf451489e74c7b2c9a53619c2ee609e056"
+        }
+      ],
+      "compilerArtifactPackageIds": [
+        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-ai@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-plugin-sdk@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-telemetry@0.8.4"
+      ],
+      "cdylibs": [
+        {
+          "path": "/home/user/Projects/.targets/verify-integrated-package-178/debug/librpi_antigravity_auth.so",
+          "bytes": 185527912,
+          "sha256": "f44a83f3194e115f2cf4a0f3085f53c8eaf945bfddb8af2c2552b8818d820e92"
+        },
+        {
+          "path": "/home/user/Projects/.targets/verify-integrated-package-178/debug/librpi_cursor_sdk.so",
+          "bytes": 109343952,
+          "sha256": "6abb80ab2b50a6a3bb1a5e2ee04dc120ad002ec6dc38ef7dda783b594a772fa4"
+        },
+        {
+          "path": "/home/user/Projects/.targets/verify-integrated-package-178/debug/librpi_multiprovider.so",
+          "bytes": 122071384,
+          "sha256": "9547669a3ad2a6f227a3a3e5f0f946fb48e8ff4b3d625e1cc66fb39e43a147b2"
+        }
+      ],
+      "nativeLoading": {
+        "multiproviderTests": 15,
+        "antigravityRegistrationTests": 1,
+        "cursorAndLegacyLoading": "not run (RPI_TEST_* library variables unset)"
       }
     },
-    "cdylibs178": [
-      {"name":"librpi_antigravity_auth.so","path":"/home/user/Projects/.targets/parity-sdk-pin-178/debug/librpi_antigravity_auth.so","bytes":185432496,"sha256":"6d13afaa1ca221a266883a45cbb0544e28a7cc99000226ab9cafff2252560cdd"},
-      {"name":"librpi_cursor_sdk.so","path":"/home/user/Projects/.targets/parity-sdk-pin-178/debug/librpi_cursor_sdk.so","bytes":109258464,"sha256":"60f347f43a6a94817a7250be23533cc68700ddede8b15279d44888c48722c5b3"},
-      {"name":"librpi_multiprovider.so","path":"/home/user/Projects/.targets/parity-sdk-pin-178/debug/librpi_multiprovider.so","bytes":121962536,"sha256":"839054e544f581f9e1b81c4a836b224cc6527fbf5f8dca6e4246d888ce502ada"}
-    ],
-    "mpNative": {
-      "fullSuite": {
-        "passed": 15,
-        "failed": 0,
-        "coverage": "STATIC entrypoint accounts + multilogout tests"
+    "1.95.0": {
+      "tests": {
+        "rpi-antigravity-auth": {
+          "passed": 97,
+          "failed": 0,
+          "ignored": 5
+        },
+        "rpi-cursor-sdk": {
+          "passed": 62,
+          "failed": 0,
+          "ignored": 17
+        },
+        "rpi-multiprovider": {
+          "passed": 78,
+          "failed": 0,
+          "ignored": 2
+        }
       },
-      "actualDlopenTests": 1,
-      "actualDlopenFiltered": 14,
-      "actualDlopenCommandInvocations": 1,
-      "dlopenCommandsInvoked": ["accounts"],
-      "actualDlopenRegisteredCommands": ["multilogout", "accounts"],
-      "commandCount": 2,
-      "commandCountNote": "command count, not a test count"
-    },
-    "agR02": {
-      "registrationBranch": "passed",
-      "withEnv": "RPI_TEST_ANTIGRAVITY_LIBRARY",
-      "cursorBranch": "skipped",
-      "legacyBranch": "skipped"
-    },
-    "mpNode": {
-      "commandsReference": 63,
-      "commandsA2Reference": 47,
-      "fresh": true
-    },
-    "compilerEvidence": {
-      "sourceRevisionInBuildLogs": "ecc9c2ecca20a867c1d5b43df7180599a0593218",
-      "old1347Occurrences": 0,
-      "ecc9Occurrences": {
-        "test-178": 3,
-        "test-195": 3,
-        "build-cdylib-178": 3,
-        "mp-native-load-178": 3,
-        "mp-native-full-178": 2,
-        "cursor-r02-ag-load-178": 3
+      "rustflags": "",
+      "sdkCheckout": "/home/user/.cargo/git/checkouts/pi-rust-96414b53477e8afb/7dfadb0",
+      "sdkCheckoutHead": "7dfadb0720bed6d624ea39b383e64b3753469206",
+      "sdkSources": [
+        {
+          "name": "rpi-ai",
+          "files": 43,
+          "sha256": "75fcc8ff259d3bdc16d850a5d49035a8fdd8d8d73e9a90ea03085c88f91c9e75"
+        },
+        {
+          "name": "rpi-plugin-sdk",
+          "files": 17,
+          "sha256": "d7ac5d410d7c64773de043be5e67edf5d7d4677f904dad95b9f0c6a995bb21e5"
+        },
+        {
+          "name": "rpi-telemetry",
+          "files": 8,
+          "sha256": "5f5cdf4422d24182e415ff858332e1cf451489e74c7b2c9a53619c2ee609e056"
+        }
+      ],
+      "compilerArtifactPackageIds": [
+        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-ai@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-plugin-sdk@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-telemetry@0.8.4"
+      ],
+      "cdylibs": [
+        {
+          "path": "/home/user/Projects/.targets/verify-integrated-package-195/debug/librpi_antigravity_auth.so",
+          "bytes": 179362016,
+          "sha256": "734b3542167283fcd7e47e238f67e10db032bd764b9ac1d0bf4d224950d3d485"
+        },
+        {
+          "path": "/home/user/Projects/.targets/verify-integrated-package-195/debug/librpi_cursor_sdk.so",
+          "bytes": 105596656,
+          "sha256": "7bf1ebaa04816f68215a10b5bea919c9071b2b8d33076a0876847dfe7075e92f"
+        },
+        {
+          "path": "/home/user/Projects/.targets/verify-integrated-package-195/debug/librpi_multiprovider.so",
+          "bytes": 117525040,
+          "sha256": "fc0252358a9cc582bb8313ed01b1b7f7b49950e55f5e865bf176e420be00c17a"
+        }
+      ],
+      "nativeLoading": {
+        "multiproviderTests": 15,
+        "antigravityRegistrationTests": 1,
+        "cursorAndLegacyLoading": "not run (RPI_TEST_* library variables unset)"
       }
     }
   },
-  "cacheProvenance": {
-    "method": "git --git-dir=<approved-db> fetch --no-tags --recurse-submodules=no /home/user/Projects/pi-rust <ECC9>:refs/commit/<ECC9>",
-    "sourceHostRepo": "/home/user/Projects/pi-rust",
-    "dbs": [
-      "/home/user/.cargo/git/db/pi-rust-81c7759b3b39ca16",
-      "/home/user/.cargo/git/db/pi-rust-96414b53477e8afb"
-    ],
-    "db81c7ConfigShaNote": "CONFIG_SHA is sha256 of `git config --list`, not a file config content hash. It was unchanged before/after.",
-    "legacyDbsUntouched": [
-      "/home/user/.cargo/git/db/pi-rust-6e3b074bbc17c43c",
-      "/home/user/.cargo/git/db/pi-rust-ba8012a5f17fe953"
-    ],
-    "remotesOrSettingsChanged": false,
-    "externalDownloads": false,
-    "cacheCopy": false,
-    "secretsRead": false
-  },
-  "knownBlockers": [
-    {"id":"full-metadata-178","reason":"offline registry cache lacks aes 0.8.4","scope":"required by out-of-cohort Linux packages (im-message/voice); selected 3 cohort packages compiled without it","log":{"path":"/tmp/opencode/verify-sdk-pin/metadata-178-full.log","sha256":"88c0cf8a3221fc9debfa462ed5c03afa91137fca133f3abaa4c7321a9766b582","bytes":117}},
-    {"id":"full-fetch-178","reason":"offline registry cache lacks wasip2 1.0.4+wasi-0.2.12","scope":"WASI target","log":{"path":"/tmp/opencode/verify-sdk-pin/fetch-178.log","sha256":"61b030bdbf0595b079b64c42e6de9f70ea52833f020355901c8ffd78ee663a85","bytes":132}},
-    {"id":"full-metadata-195","reason":"offline registry cache lacks cesu8 1.1.0","scope":"Android voice path","log":{"path":"/tmp/opencode/verify-sdk-pin/metadata-195-full.log","sha256":"0e13577aafc9190ad7fa11d8346d0a9ca8766e8c253bfc17763faa74db420d53","bytes":119}}
+  "mutations": [
+    {
+      "test": "cancellation_while_in_synchronous_c_emit_propagates_host_rejection",
+      "mutation": "Invert the real C emit nonzero-return rejection condition",
+      "result": "failed as expected; mutation reverted"
+    },
+    {
+      "test": "private_receipt_precedes_start_and_never_leaks_into_public_events_or_result",
+      "mutation": "Emit start before the private response receipt",
+      "result": "failed as expected; mutation reverted"
+    },
+    {
+      "test": "blocked_downstream_preserves_idle_timeout_and_disabled_timeout_cancellation",
+      "mutation": "Remove Output::wait around the bounded body-channel send",
+      "result": "failed as expected; mutation reverted"
+    },
+    {
+      "test": "slow_body_consumer_over_four_mib_is_ordered_and_lossless_with_idle_disabled",
+      "mutation": "Reverse bytes in every body-channel send",
+      "result": "failed as expected; mutation reverted"
+    },
+    {
+      "test": "slow consumer drains over 64 events and 4 MiB without loss and retains emission-time partial snapshots",
+      "mutation": "Replace the actual WorkerPeer encoded partial text with stale",
+      "result": "failed as expected; mutation reverted"
+    }
   ],
-  "notTested": [
-    "Full workspace metadata/fetch remains unverified and cache-blocked; no external download, cache copy, or configuration fallback was used.",
-    "Cargo 1.95 cdylib ABI load was not tested; load evidence is Rust 1.78 only.",
-    "Current SDK Cursor loaded branch was not executed because Cursor runtime assets are absent.",
-    "Real compiled rpi host RPC was not covered; native proof uses a fake vtable.",
-    "macOS and Windows execution were not tested.",
-    "Node Cursor and Antigravity source-proof checks were not re-run; retained source proof is not fresh evidence.",
-    "Full R02, live services, import/mutation paths, and G1/G2 acceptance are not claimed."
+  "cursorIpc": {
+    "node": "24.22.0",
+    "passed": 8,
+    "failed": 0,
+    "ignored": 0,
+    "newTestEvents": 131,
+    "partialTextBytesPerEvent": 70000
+  },
+  "regeneration": {
+    "referenceFixturesByteIdenticalTwice": true,
+    "fixtureHashes": [
+      "cca87cf6b8988b8d08c0c3e449b3b3bcb09c3f78f5d6770d63de0076d7b42996  packages/rpi-multiprovider/tests/commands-reference.json",
+      "8e529267bf6e1c5f2c19c8b7d24904da6c0a94146af589ce9cccc1eaee4dad8c  packages/rpi-multiprovider/tests/commands-a2-reference.json",
+      "a05d026c738daa7bb84f107625ddbb675a6b1a5d9d8695e3d09f0458fa598cd2  packages/rpi-cursor-sdk/tests/r01-package-assets.json"
+    ],
+    "cohortReportCheck": "Regenerate --write twice and cmp the outputs; no timestamps or output-file self-hash."
+  },
+  "approvedExceptions": [
+    "Antigravity body-idle timeout/cancel may fire while downstream is blocked.",
+    "Cursor encodes partial snapshots at emission time, before its synchronous credit wait."
+  ],
+  "limitations": [
+    "24 ignored Rust tests predate this change; none added or newly ignored.",
+    "The real host typed stream queue and extension C callback adapter are not linked by these package harnesses. New tests exercise the actual package C emit sink, TLS body channel, and Cursor IPC credit adapter instead.",
+    "Native loading uses existing fake-vtable tests, not a full host process; Cursor/legacy loading branches were not requested via environment.",
+    "No host source changes were needed; direct host queue coverage remains a host follow-up needed, not a demonstrated host defect.",
+    "Domain evidence files outside this refreshed cohort report remain historical; only the named reference fixtures were freshly regenerated."
   ],
   "logs": [
-    {"path":"/tmp/opencode/verify-sdk-pin/env.sh","sha256":"ac3dea27a7b2a7740bad3fc2f36b7f2acf031529d19fa11b5ea9e3b75f3645ec","bytes":344},
-    {"path":"/tmp/opencode/verify-sdk-pin/test-178.log","sha256":"9e90b3d1a71a331bc01c92214c2b87e27b4659b5905754d5bb4e64deeead05f2","bytes":45847},
-    {"path":"/tmp/opencode/verify-sdk-pin/test-195.log","sha256":"fa8df19498797db3a79bbbe23eb2c28715643f3618c610ba8fe3153e9c90af5d","bytes":45847},
-    {"path":"/tmp/opencode/verify-sdk-pin/build-cdylib-178.log","sha256":"40b327ebbc47a4e06a9e44465af43d03f323311b16519ecbd49b1bb28b7cb2ef","bytes":4804},
-    {"path":"/tmp/opencode/verify-sdk-pin/mp-native-load-178.log","sha256":"31ca991b1624aeae874b99df243cd148262a149496b3421308f8c23503140bce","bytes":2095},
-    {"path":"/tmp/opencode/verify-sdk-pin/mp-native-full-178.log","sha256":"c1726cb4157fbd0180c485d8352120f78a2b0e5f6ca248c72809e592d8b13293","bytes":2015},
-    {"path":"/tmp/opencode/verify-sdk-pin/cursor-r02-ag-load-178.log","sha256":"ae5fe76363f436d0316ae8846582c47184e29ddbf111baaeabcfce3f7b7d0014","bytes":1396},
-    {"path":"/tmp/opencode/verify-sdk-pin/cursor-r02-skip-proof.log","sha256":"3287cd1606fc6d901d89a0d86606924bcb0fee211773785bfee30b56ea3206bf","bytes":2125},
-    {"path":"/tmp/opencode/verify-sdk-pin/node-commands-63.log","sha256":"b2c6636046f2275b5a2936524a42ca74195aec6bc13262748395ca9936c6e0b0","bytes":211},
-    {"path":"/tmp/opencode/verify-sdk-pin/node-commands-a2-47.log","sha256":"f0ef333a7fe27e3bcc1e08472a84b4be26f4d82b0dab524d4656c0a5bbf5c93a","bytes":211},
-    {"path":"/tmp/opencode/verify-sdk-pin/metadata-178-full.log","sha256":"88c0cf8a3221fc9debfa462ed5c03afa91137fca133f3abaa4c7321a9766b582","bytes":117},
-    {"path":"/tmp/opencode/verify-sdk-pin/fetch-178.log","sha256":"61b030bdbf0595b079b64c42e6de9f70ea52833f020355901c8ffd78ee663a85","bytes":132},
-    {"path":"/tmp/opencode/verify-sdk-pin/metadata-195-full.log","sha256":"0e13577aafc9190ad7fa11d8346d0a9ca8766e8c253bfc17763faa74db420d53","bytes":119}
-  ],
-  "notes": {
-    "noFullV2": "fullV2 means cross-provider delegation protocol version 2 only; SDK plugin ABI remains 4.",
-    "noBuildByWriter": "This doc adds no build/test execution; it records verifier artifacts."
-  }
+    {
+      "path": "/tmp/pkg-repin/test-178-final.log",
+      "bytes": 39549,
+      "sha256": "018a141002feb91ca323d3689537ee137a678388099976ed043f76d5f63c0f9b"
+    },
+    {
+      "path": "/tmp/pkg-repin/test-195-final.log",
+      "bytes": 39549,
+      "sha256": "e6ee31ae6ef609e3622d4f35058d1f90915720e9b4b78ff148f19c2716fe3bb5"
+    },
+    {
+      "path": "/tmp/pkg-repin/build-cdylib-178.log",
+      "bytes": 922,
+      "sha256": "63e0732d840cde63f70674c33392d6dd893b790eb02ece5083fdfb0411771436"
+    },
+    {
+      "path": "/tmp/pkg-repin/artifacts-178.jsonl",
+      "bytes": 217031,
+      "sha256": "37160440cb02d5c87ec4330eca747efe913c197c3c16e6abebaf7ff3ce3b99b0"
+    },
+    {
+      "path": "/tmp/pkg-repin/mp-native-178.log",
+      "bytes": 1809,
+      "sha256": "b0770d921f8c0f833a4cbdb4098d6b59d4476a2ed9a386e69d1d408768147b83"
+    },
+    {
+      "path": "/tmp/pkg-repin/r02-native-178.log",
+      "bytes": 1134,
+      "sha256": "4fe5cd2c72afba237a0207fdc6766308d41f41d314284eeb95f440a9a107759f"
+    },
+    {
+      "path": "/tmp/pkg-repin/build-cdylib-195.log",
+      "bytes": 1159,
+      "sha256": "8d2c4352ef450a63cdf5ef7bcab9ae397545eef3090f6093d5806745f435113c"
+    },
+    {
+      "path": "/tmp/pkg-repin/artifacts-195.jsonl",
+      "bytes": 216912,
+      "sha256": "0a6f4b411fa557fc13fc5a42e4afc24496eaf5d0c64c76b56629af6d449e46ec"
+    },
+    {
+      "path": "/tmp/pkg-repin/mp-native-195.log",
+      "bytes": 1809,
+      "sha256": "eda4e043c7511ff9684aa66c877aea3c7a5ee0b88f0118c9de0b5e78e6c1a4e6"
+    },
+    {
+      "path": "/tmp/pkg-repin/r02-native-195.log",
+      "bytes": 1134,
+      "sha256": "1a6b33f500027b4e931fc51059dc1dc3d48aca3d2153d0d4ed12a79a9c6f4b54"
+    },
+    {
+      "path": "/tmp/pkg-repin/mutate-c-emit.log",
+      "bytes": 1196,
+      "sha256": "9be3cb14650aee8d4501c6babfa9bf8403bf212a5364bcc5023eb750878c5247"
+    },
+    {
+      "path": "/tmp/pkg-repin/mutate-receipt.log",
+      "bytes": 1110,
+      "sha256": "efec2deab74d5bb60e75e737fa2ee3ed0c8d9d546050a9c563fc5d04539a2d66"
+    },
+    {
+      "path": "/tmp/pkg-repin/mutate-blocked-idle.log",
+      "bytes": 1095,
+      "sha256": "e55ba7138fb5c71f2f49d043378560f0c4e1afb2ab49727f271f5526dd0b422f"
+    },
+    {
+      "path": "/tmp/pkg-repin/mutate-body-order.log",
+      "bytes": 47834528,
+      "sha256": "fab6f0e0a3a8c0ad7fdbca7fc15ee88a04f100294e0d8b0b79ec16f738d03087"
+    },
+    {
+      "path": "/tmp/pkg-repin/mutate-cursor-snapshot.log",
+      "bytes": 21046,
+      "sha256": "eaa9ac48cc751552618162b96e36cc7748e66b55c5bbf6741ff1e6664066c813"
+    },
+    {
+      "path": "/tmp/pkg-repin/cursor-node24-final.log",
+      "bytes": 927,
+      "sha256": "478d459e8a7355a02e37eaf8a6d4a6d0f37c458942d7d701d3259ed0399f148e"
+    },
+    {
+      "path": "/tmp/pkg-repin/reference-mp-1.log",
+      "bytes": 396,
+      "sha256": "438aecb4103679fd363f65c38f2d9ae38dd65e4f010dc7bed6e6f14062ec6d53"
+    },
+    {
+      "path": "/tmp/pkg-repin/reference-mp-2.log",
+      "bytes": 396,
+      "sha256": "8fd09f190dd5302db45ca02bfbc48ff84496a43a888989025dc849cccf26a41c"
+    },
+    {
+      "path": "/tmp/pkg-repin/reference-cursor-1.log",
+      "bytes": 1216,
+      "sha256": "31c06c599c86680e5d20d13095f0cb6bbd71bd0e678823034dc4b5cae7a53087"
+    },
+    {
+      "path": "/tmp/pkg-repin/reference-cursor-2.log",
+      "bytes": 1216,
+      "sha256": "31c06c599c86680e5d20d13095f0cb6bbd71bd0e678823034dc4b5cae7a53087"
+    }
+  ]
 }
