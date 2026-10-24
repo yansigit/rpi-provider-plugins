@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "status": "scoped-pass-with-open-host-limitations",
+  "host": "8014e36cfc9923d404a76044ba0595dc4edc98e7",
+  "base": "10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53",
+  "lane": "lane/m-virtual-b2",
+  "registryVersionsChanged": false,
+  "sourceSha256": "5db259dc67262fa0e87edc1d10d2c3a6ec6da90220cf868a80af61ef9facf95d",
+  "toolchains": {
+    "1.78.0": {
+      "rustflags": "-Dwarnings",
+      "cohort": {
+        "rpi-antigravity-auth": {
+          "passed": 97,
+          "failed": 0,
+          "ignored": 5
+        },
+        "rpi-cursor-sdk": {
+          "passed": 62,
+          "failed": 0,
+          "ignored": 17
+        },
+        "rpi-multiprovider": {
+          "passed": 89,
+          "failed": 0,
+          "ignored": 2
+        }
+      },
+      "explicitNativeAbiTests": 21,
+      "realHostTests": 5,
+      "antigravityLoadingGate": 1,
+      "sdkPackageIds": [
+        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-ai@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-plugin-sdk@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-telemetry@0.8.4"
+      ],
+      "cdylibs": [
+        {
+          "path": "/home/user/Projects/.targets/m-virtual-b2-178/debug/librpi_antigravity_auth.so",
+          "bytes": 185818048,
+          "sha256": "199f6453b96d6752f0a442d4bfd15d69454b6dbdde25db10630e0d905a0a5a9b"
+        },
+        {
+          "path": "/home/user/Projects/.targets/m-virtual-b2-178/debug/librpi_cursor_sdk.so",
+          "bytes": 109720040,
+          "sha256": "10661d19870e05369115482702106a49e1f1eadead7b6d9cd4c1869dbd38a10c"
+        },
+        {
+          "path": "/home/user/Projects/.targets/m-virtual-b2-178/debug/librpi_multiprovider.so",
+          "bytes": 127499728,
+          "sha256": "8c6fb3b2f61986200dff25ea53b1dbf38cad27e6cd3a1a9c2fba7f5d58343298"
+        }
+      ],
+      "realHost": "Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains."
+    },
+    "1.95.0": {
+      "rustflags": "",
+      "cohort": {
+        "rpi-antigravity-auth": {
+          "passed": 97,
+          "failed": 0,
+          "ignored": 5
+        },
+        "rpi-cursor-sdk": {
+          "passed": 62,
+          "failed": 0,
+          "ignored": 17
+        },
+        "rpi-multiprovider": {
+          "passed": 89,
+          "failed": 0,
+          "ignored": 2
+        }
+      },
+      "explicitNativeAbiTests": 21,
+      "realHostTests": 5,
+      "antigravityLoadingGate": 1,
+      "sdkPackageIds": [
+        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-ai@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-plugin-sdk@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-telemetry@0.8.4"
+      ],
+      "cdylibs": [
+        {
+          "path": "/home/user/Projects/.targets/m-virtual-b2-195/debug/librpi_antigravity_auth.so",
+          "bytes": 179483040,
+          "sha256": "5973cd4474f43c5e94ce50375f7ae0f5f8e5c5510ecab85c9b7e79aa107ef270"
+        },
+        {
+          "path": "/home/user/Projects/.targets/m-virtual-b2-195/debug/librpi_cursor_sdk.so",
+          "bytes": 105583056,
+          "sha256": "dcbd26234b98ab28f2b41d605e7b385b2365c942bb14d71d77d7adc753e25dc7"
+        },
+        {
+          "path": "/home/user/Projects/.targets/m-virtual-b2-195/debug/librpi_multiprovider.so",
+          "bytes": 122521544,
+          "sha256": "3512387790ebf8249abb87f9509759016c10c11bf10b2cff4d435f171b4f3660"
+        }
+      ],
+      "realHost": "Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains."
+    }
+  },
+  "mutations": [
+    {
+      "guard": "v2",
+      "test": "virtual_native_unsupported_v2_never_downgrades",
+      "result": "killed (exit 101); mutation reverted"
+    },
+    {
+      "guard": "release",
+      "test": "virtual_native_failover_releases_every_target_and_receipt",
+      "result": "killed (exit 101); mutation reverted"
+    },
+    {
+      "guard": "identity",
+      "test": "virtual_native_failover_releases_every_target_and_receipt",
+      "result": "killed (exit 101); mutation reverted"
+    },
+    {
+      "guard": "terminal",
+      "test": "virtual_native_missing_terminal_fails_and_releases",
+      "result": "killed (exit 101); mutation reverted"
+    }
+  ],
+  "differentialFixtures": {
+    "virtual": {
+      "cases": 70,
+      "path": "/home/user/Projects/rpi-package--m-virtual-b2/packages/rpi-multiprovider/tests/virtual-reference.json",
+      "bytes": 947645,
+      "sha256": "78ecaac8489c6c43d0e2f6c43ea0e6d5cf51611f93a9b4d57ce9d4c8847aaebe"
+    },
+    "lift": {
+      "cases": 96,
+      "path": "/home/user/Projects/rpi-package--m-virtual-b2/packages/rpi-multiprovider/tests/lift-reference.json",
+      "bytes": 789422,
+      "sha256": "b332491a07556046800419c1c80647260cdff74b5db05165257a48508747ed7d"
+    }
+  },
+  "node24Ipc": {
+    "passed": 8,
+    "failed": 0
+  },
+  "regeneration": "virtual/lift/command/Cursor fixture outputs byte-identical twice; report is regenerated twice and checked",
+  "ledger": {
+    "M06": "Native owned catalog binding, publication acknowledgement, healing/deletion/re-registration, global wrapper and command binding proven by ABI tests; existing service lane unchanged.",
+    "M07": "Virtual template/backend effects bound; real host target pool and backend failover proven; 70 upstream differential scenarios retained.",
+    "M08": "Reuses existing retry state machines (96 lift scenarios); native ordered effects, missing terminal, fail-closed v2 and real host guards proven. Successful release after host cancellation is NOT proven: host rejects cleanup after epoch revocation.",
+    "M09": "PARTIAL: explicit service capability and absent-service inline fallback; successful compact/notice and cancellation/drain proven at native ABI seam; real host proves scoped service negotiation and delayed-work shutdown. Successful POST-TURN real-host compaction is NOT proven (invocation lease expires)."
+  },
+  "limitations": [
+    "24 inherited ignored cohort tests; no new ignores or assertion weakening.",
+    "Real-host cancellation rejects releaseAuth/releaseTarget with inactive provider continuation; test requires exactly one cleanup attempt per handle and this exact error, not successful release.",
+    "Host invocation native leases are cancelled when their callback returns. scope_lifetime permits inspection/shutdown only, not service calls. Root registration leases have identity null and are not a safe substitute for selected execution scope. No root fallback is implemented.",
+    "No real Fabric extension, live auth/network, host typed-queue load, or full-workspace gate claimed. r02 runs the requested AG library branch; its pre-existing Cursor/legacy branches skip. Linux only.",
+    "Older evidence JSON files remain historical and are not promoted by this report. Host ledger was not edited (read-only constraint)."
+  ],
+  "logs": [
+    {
+      "path": "/tmp/m-virtual-b2/logs/artifacts-178.jsonl",
+      "bytes": 210553,
+      "sha256": "b036152760039171a641aaca4d773fd33d8ddb782033fd81969334efb31e4a04"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/artifacts-178.log",
+      "bytes": 412,
+      "sha256": "82efb374b08470c6429bf983683d111b870fc95972ea662d66a5d2e24ab9be59"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/test-178.log",
+      "bytes": 39832,
+      "sha256": "f7062bf82e1b2512e16b071b07cf9e5110aeb5679f3c80d09216d2508f8fc23e"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/native-178.log",
+      "bytes": 2537,
+      "sha256": "4b872ec99cd9ff151e08a1ab391afe2dc5a473ef13a8c4aef170f3e500ef602c"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/r02-178.log",
+      "bytes": 1392,
+      "sha256": "b3296da4a641d12cbb68adfc231967b05efce6f352ebf262c264dd6b80e3d06f"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/artifacts-195.jsonl",
+      "bytes": 210434,
+      "sha256": "c0040b8c512c61b93ec4f960409b21fdf7ae9f30f54ab7a4201e7355f0372f3f"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/artifacts-195.log",
+      "bytes": 412,
+      "sha256": "1a617544aac97489567d77ceaabbf044894a8879e2be9d60322e38a006f7f05a"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/test-195.log",
+      "bytes": 39832,
+      "sha256": "6c0f516ecf8618fe0bb20843ba7fca14d57cc257e9cbfb3e0d52355399c3d75b"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/native-195.log",
+      "bytes": 2537,
+      "sha256": "1efb6fc6e92c70ad6bb7502c94d114c82ac55c938d6becb8e16defdc15cb600e"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/r02-195.log",
+      "bytes": 1392,
+      "sha256": "023847dd2208461352fa03639a2c55e2b5df548f3be60bfe2322f694139a379a"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/mutate-v2.log",
+      "bytes": 998,
+      "sha256": "40b130b38bb5dffc3be5d6f752616e52b3996121fdff54fca5f5584148829bcb"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/mutate-release.log",
+      "bytes": 1043,
+      "sha256": "f43a7c7bcf97179a64744afdcd20a97734cdd2e082d659f5bcf581779a8de5d2"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/mutate-identity.log",
+      "bytes": 1017,
+      "sha256": "5a803ce738ac222c2741160344b6a5846553f24f1da93b5d9831fd3625075836"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/mutate-terminal.log",
+      "bytes": 1052,
+      "sha256": "35207d5d1572dbd545c2dcbe27be4a9a0a6ae6a63468ff93131a7f462737a91b"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/cursor-node24.log",
+      "bytes": 926,
+      "sha256": "d31acf8f5fd346d019c3c6351c1f515eb28969f970dcbe33d6435715d6964f6d"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/fixtures-1.sha256",
+      "bytes": 610,
+      "sha256": "8e0d926fb44afa0f60c58ee8d68c1edc9fd26dbd6c6615b28bff52a8ab9c2f34"
+    },
+    {
+      "path": "/tmp/m-virtual-b2/logs/fixtures-2.sha256",
+      "bytes": 610,
+      "sha256": "8e0d926fb44afa0f60c58ee8d68c1edc9fd26dbd6c6615b28bff52a8ab9c2f34"
+    }
+  ]
+}

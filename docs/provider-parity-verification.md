@@ -1,8 +1,15 @@
 # Reconciled-host provider cohort verification
 
-`provider-parity-sdk-cohort.json` is the current, generated cohort report. Its
-predecessor (commit `9c59416`) remains historical evidence in Git. Other packages'
-older domain-evidence reports have **not** been relabelled as current results.
+**Host 8014e36 / M-VIRTUAL-B update:** current scoped package-binding results,
+rebuilt cdylib hashes, both-toolchain gates and explicit open host limitations are
+in [`evidence/m-virtual-b2.md`](evidence/m-virtual-b2.md) and its deterministic
+JSON report. M09 real post-turn compaction remains partial. The host ledger is
+read-only and was not edited.
+
+The `provider-parity-sdk-cohort.json` report and the rest of this page record the
+historical host-7dfadb0 cohort (commit `10515f5`); they have not been relabelled as
+8014e36 results. Its predecessor (commit `9c59416`) remains historical evidence in
+Git. Other packages' older domain-evidence reports are likewise unchanged.
 
 Scope: `rpi-antigravity-auth`, `rpi-cursor-sdk`, `rpi-multiprovider`, pinned together
 to host `7dfadb0720bed6d624ea39b383e64b3753469206` (SDK workspace 0.8.4).
