@@ -64,7 +64,7 @@ def cohort(path):
             for key, value in zip(('passed', 'failed', 'ignored'), match.groups()):
                 counts[current][key] += int(value)
     assert text.count('Doc-tests') == 3
-    assert [counts[name]['passed'] for name in PACKAGES] == [97, 62, 96]
+    assert [counts[name]['passed'] for name in PACKAGES] == [97, 62, 97]
     assert [counts[name]['ignored'] for name in PACKAGES] == [5, 17, 2]
     return counts
 
@@ -123,6 +123,14 @@ def report(logs):
         text = (logs / f'mutate-{stem}.log').read_text()
         assert f'test {test} ... FAILED' in text and expected in text
         mutations.append({'guard': stem, 'test': test, 'result': 'killed (exit 101); mutation reverted'})
+    cancellation_test = 'native::fabric::tests::cancellation_between_context_and_clock_releases_without_poisoning'
+    text = (logs / 'mutate-cancel-clock.log').read_text()
+    assert f'test {cancellation_test} ... FAILED' in text
+    assert 'cancellation is not a timestamp' in text and 'Some(9223372036854775807)' in text
+    mutations.append({'guard': 'cancel-clock', 'test': cancellation_test,
+        'result': 'killed (exit 101); mutation reverted; saturating arithmetic retained'})
+    for short in ('178', '195'):
+        assert f'test {cancellation_test} ... ok' in (logs / f'test-{short}.log').read_text()
     for stem in ('reclaim', 'selected'):
         assert results((logs / f'host-{stem}.log').read_text()) == [(1, 0, 0)]
     assert 'cancelled_auth_and_stopped_consumers_release_the_lease_without_penalty ... ok' in (logs / 'test-195.log').read_text()
@@ -145,7 +153,7 @@ def report(logs):
         'real-host-178.log', 'real-host-195.log', 'fresh-dll-178.log', 'fresh-dll-195.log',
         'stale-dll.log', 'missing-dll.log']
     log_names += [f'mutate-lease-{stem}.log' for stem in ('acquire', 'signal', 'busy')]
-    log_names += ['host-build.log', 'host-reclaim.log', 'host-selected.log']
+    log_names += ['host-build.log', 'host-reclaim.log', 'host-selected.log', 'mutate-cancel-clock.log']
     return {'schemaVersion': 3, 'status': 'provider-gates-pass-scope-lease-and-layered-cancel-cleanup-proven', 'host': HOST, 'base': BASE,
         'reviewedCommit': '916fb385bf499be2607c133a4e382d634d648cac', 'registryVersionsChanged': False,
         'sourceSha256': hashlib.sha256(''.join(rows).encode()).hexdigest(), 'toolchains': toolchains,
@@ -156,7 +164,7 @@ def report(logs):
             'strictClippy': 'inherited failures on 1.78 and 1.95; 1.95 baseline comparison has identical library diagnostic counts',
             'compatClippy': '1.95 all-targets passes with only -A clippy::not_unsafe_ptr_arg_deref; existing warnings remain'},
 
-        'regeneration': 'virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures and pre-inherited-fix mutation logs historical; portable report checked twice',
+        'regeneration': 'virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures, earlier mutations and complementary host tests historical; cancellation-clock mutation and both-toolchain package gates rerun; portable report checked twice',
         'ledger': {
             'M06': 'Native owned catalog binding, publication acknowledgement, healing/deletion/re-registration, global wrapper and command binding proven by ABI tests; existing service lane unchanged.',
             'M07': 'Virtual template/backend effects bound; real host target pool and backend failover proven; 70 upstream differential scenarios retained.',

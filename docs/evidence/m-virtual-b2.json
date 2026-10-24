@@ -5,7 +5,7 @@
   "base": "10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53",
   "reviewedCommit": "916fb385bf499be2607c133a4e382d634d648cac",
   "registryVersionsChanged": false,
-  "sourceSha256": "b09a9c237b5f2c1ea396406869c67c35afcc22c8201358a7a095c58950936da3",
+  "sourceSha256": "26659618deb071e51f27f437800fc131396f4052513430435a53739aadf7d6bb",
   "toolchains": {
     "1.78.0": {
       "rustflags": "-Dwarnings",
@@ -21,7 +21,7 @@
           "ignored": 17
         },
         "rpi-multiprovider": {
-          "passed": 96,
+          "passed": 97,
           "failed": 0,
           "ignored": 2
         }
@@ -61,7 +61,7 @@
           "ignored": 17
         },
         "rpi-multiprovider": {
-          "passed": 96,
+          "passed": 97,
           "failed": 0,
           "ignored": 2
         }
@@ -143,6 +143,11 @@
       "guard": "lease-busy",
       "test": "real_dll_post_turn_busy_is_skipped",
       "result": "killed (exit 101); mutation reverted"
+    },
+    {
+      "guard": "cancel-clock",
+      "test": "native::fabric::tests::cancellation_between_context_and_clock_releases_without_poisoning",
+      "result": "killed (exit 101); mutation reverted; saturating arithmetic retained"
     }
   ],
   "differentialFixtures": {
@@ -170,7 +175,7 @@
     "strictClippy": "inherited failures on 1.78 and 1.95; 1.95 baseline comparison has identical library diagnostic counts",
     "compatClippy": "1.95 all-targets passes with only -A clippy::not_unsafe_ptr_arg_deref; existing warnings remain"
   },
-  "regeneration": "virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures and pre-inherited-fix mutation logs historical; portable report checked twice",
+  "regeneration": "virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures, earlier mutations and complementary host tests historical; cancellation-clock mutation and both-toolchain package gates rerun; portable report checked twice",
   "ledger": {
     "M06": "Native owned catalog binding, publication acknowledgement, healing/deletion/re-registration, global wrapper and command binding proven by ABI tests; existing service lane unchanged.",
     "M07": "Virtual template/backend effects bound; real host target pool and backend failover proven; 70 upstream differential scenarios retained.",
@@ -226,6 +231,7 @@
     "mutate-lease-busy.log",
     "host-build.log",
     "host-reclaim.log",
-    "host-selected.log"
+    "host-selected.log",
+    "mutate-cancel-clock.log"
   ]
 }

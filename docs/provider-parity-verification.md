@@ -1,7 +1,7 @@
 # Reconciled-host provider cohort verification
 
 **Host 229ce5a / M-VIRTUAL-B scope-lease update:** current scoped package-binding
-results and both-toolchain gates (255 passed / 0 failed / 24 inherited ignored)
+results and both-toolchain gates (256 passed / 0 failed / 24 inherited ignored)
 are in [`evidence/m-virtual-b2.md`](evidence/m-virtual-b2.md) and its deterministic
 JSON report. M09 real post-turn compaction and layered M08 cancel cleanup are
 proven there, with package/host test boundaries and notice-channel qualifications

@@ -46,7 +46,8 @@ Scope-lease adoption (starting at `6fbaecd`):
 - `6f3448b`: acquire the narrow grant before callback completion, scope-own and
   drain delayed work, cancel invocation-local tokens at completion, and strengthen
   package-DLL and pool-drain regressions.
-- Latest gate logs and optional binary provenance: `/tmp/m-virtual-b2-lease/`.
+- Latest cancellation follow-up gates and optional binary provenance:
+  `/tmp/m-virtual-b2-cancel/`; earlier lease evidence: `/tmp/m-virtual-b2-lease/`.
   The Markdown/JSON pair and both differential fixtures were checked byte-identical
   across two regenerations. Prior mutation/IPC/missing-stale evidence is historical,
   explicitly distinguished from the three new lease mutations.
@@ -109,13 +110,38 @@ authority, so retaining a UI client would violate the contract. This is a compat
 | Offline provider cdylib build | pass | pass |
 | Antigravity cohort | 97 passed / 0 failed / 5 inherited ignored | same |
 | Cursor cohort | 62 / 0 / 17 inherited ignored | same |
-| Multiprovider cohort | 96 / 0 / 2 inherited ignored | same |
-| Total cohort | **255 / 0 / 24 inherited ignored** | **same** |
+| Multiprovider cohort | 97 / 0 / 2 inherited ignored | same |
+| Total cohort | **256 / 0 / 24 inherited ignored** | **same** |
 | Explicit MP native ABI tests | 25 / 0 / 0 | 25 / 0 / 0 |
 | Actual-host MP DLL acceptance | 8 / 0 / 0 | 8 / 0 / 0 |
 | Explicit Antigravity loading branch | 1 / 0 / 0 | 1 / 0 / 0 |
 
 The explicit native tests are included in cohort counts, not additional tests.
+
+### Cancellation clock follow-up (no host re-pin)
+
+`FabricHost::now_ms` now returns `Option<i64>`: cancellation is `None`, never
+`i64::MAX`. Compaction returns `Cancelled` at clock reads and uses saturating
+deadline/debounce arithmetic as defense in depth. The worker drops the state
+lock before explicitly releasing its lease, including this cancellation path.
+
+The deterministic native unit test
+`cancellation_between_context_and_clock_releases_without_poisoning` cancels
+immediately after the successful context check, before the initial clock read.
+It joins the real worker without panic, checks the mutex is unpoisoned and the
+debounce state unchanged, observes explicit lease release while retaining a
+lease clone (excluding last-clone RAII cleanup), then compacts successfully with
+a fresh signal/lease using the same state. It passes on both toolchains.
+Restoring the old cancellation sentinel as `Some(i64::MAX)` fails the regression
+with `cancellation is not a timestamp` (exit 101), even with saturating arithmetic
+retained; the mutation was reverted before the final gates.
+
+Both package cohorts, native ABI gates, eight real-host tests per toolchain
+with freshly rebuilt DLLs, and 70/96 differential fixtures were rerun offline.
+The differential outputs were regenerated twice byte-identically. Earlier
+mutation, Node IPC and complementary host-source test logs remain historical;
+no host pin, host source or registry dependency was changed. Verify this follow-up
+with `python3 .github/scripts/refresh-m-virtual-b2-evidence.py --logs /tmp/m-virtual-b2-cancel/logs`.
 All three doctest suites completed. No new ignores, passing artifact skips or
 weakened assertions were introduced in the new acceptance suite. The existing
 `r02_native_loading` harness explicitly executes the requested AG library branch;

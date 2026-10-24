@@ -39,8 +39,8 @@ impl FabricHost for Fabric {
             _ => Ok(Vec::new()),
         }
     }
-    fn now_ms(&self) -> i64 {
-        self.clock.load(Ordering::SeqCst)
+    fn now_ms(&self) -> Option<i64> {
+        Some(self.clock.load(Ordering::SeqCst))
     }
     fn is_idle(&self) -> bool {
         let mut idle = self.idle.lock().unwrap();
@@ -289,8 +289,8 @@ async fn compaction_guards_that_the_extension_cannot_reach() {
         fn tool_names(&self) -> Result<Vec<String>, String> {
             Ok(vec!["fabric_exec".to_owned()])
         }
-        fn now_ms(&self) -> i64 {
-            1_700_000_000_000
+        fn now_ms(&self) -> Option<i64> {
+            Some(1_700_000_000_000)
         }
         fn is_idle(&self) -> bool {
             true
@@ -331,8 +331,8 @@ async fn handled_passthrough_and_fabric_availability() {
                 _ => Ok(vec!["read".to_owned()]),
             }
         }
-        fn now_ms(&self) -> i64 {
-            0
+        fn now_ms(&self) -> Option<i64> {
+            Some(0)
         }
         fn is_idle(&self) -> bool {
             true

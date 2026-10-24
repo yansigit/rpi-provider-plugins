@@ -13,6 +13,10 @@ use std::{
 };
 use tokio_util::sync::CancellationToken;
 
+#[cfg(test)]
+#[path = "fabric_tests.rs"]
+mod tests;
+
 pub const CAPABILITY: &str = "multiprovider.failoverCompaction.v1";
 #[derive(Default)]
 pub(super) struct Tasks(Mutex<HashMap<Option<String>, Scope>>);
@@ -124,16 +128,13 @@ impl Tasks {
             accounts,
             signal: scope.signal.clone(),
             handle: tokio::runtime::Handle::current(),
+            #[cfg(test)]
+            cancel_after_context: false,
         };
         let state = scope.state.clone();
         let provider = info.provider_id.to_owned();
         scope.tasks.push(std::thread::spawn(move || {
-            let handle = host.handle.clone();
-            let mut state = state.lock().unwrap();
-            if !host.signal.is_cancelled() {
-                handle.block_on(run_compaction(&host, &mut state, &provider));
-            }
-            let _ = handle.block_on(host.lease.release());
+            host.run(&state, &provider);
         }));
         Ok(true)
     }
@@ -151,6 +152,22 @@ struct Binding {
     accounts: Option<usize>,
     signal: CancellationToken,
     handle: tokio::runtime::Handle,
+    #[cfg(test)]
+    cancel_after_context: bool,
+}
+impl Binding {
+    fn run(&self, state: &Mutex<CompactionState>, provider: &str) {
+        {
+            let mut state = state.lock().unwrap();
+            if !self.signal.is_cancelled() {
+                self.handle
+                    .block_on(run_compaction(self, &mut state, provider));
+            }
+        }
+        // Including cancellation between has_context and the first clock read.
+        // Release explicitly, with a fresh release signal, outside the state lock.
+        let _ = self.handle.block_on(self.lease.release());
+    }
 }
 #[async_trait]
 impl FabricHost for Binding {
@@ -158,16 +175,24 @@ impl FabricHost for Binding {
         Ok(vec![FABRIC_EXEC_TOOL.into()])
     }
     fn has_context(&self) -> bool {
-        !self.signal.is_cancelled()
-    }
-    fn now_ms(&self) -> i64 {
-        if self.signal.is_cancelled() {
-            return i64::MAX;
+        let has_context = !self.signal.is_cancelled();
+        #[cfg(test)]
+        if self.cancel_after_context {
+            self.signal.cancel();
         }
-        std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_millis() as i64
+        has_context
+    }
+    fn now_ms(&self) -> Option<i64> {
+        if self.signal.is_cancelled() {
+            return None;
+        }
+        Some(
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis()
+                .min(i64::MAX as u128) as i64,
+        )
     }
     fn is_idle(&self) -> bool {
         if self.signal.is_cancelled() {

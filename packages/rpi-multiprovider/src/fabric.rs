@@ -48,8 +48,8 @@ pub trait FabricHost: Send + Sync {
     /// `pi.getAllTools().map(tool => tool.name)`; an error models the upstream
     /// `try`/`catch` that makes a throwing tool listing count as unavailable.
     fn tool_names(&self) -> Result<Vec<String>, String>;
-    /// `Date.now()` in milliseconds.
-    fn now_ms(&self) -> i64;
+    /// `Date.now()` in milliseconds, or `None` when cancelled.
+    fn now_ms(&self) -> Option<i64>;
     /// `ctx.isIdle()`.
     fn is_idle(&self) -> bool;
     /// The `setTimeout(resolve, 50)` inside the idle wait.
@@ -76,6 +76,7 @@ pub struct CompactionState {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CompactionOutcome {
     NoContext,
+    Cancelled,
     Debounced,
     NoPool,
     SnapshotError,
@@ -166,8 +167,10 @@ pub async fn run_compaction<H: FabricHost + ?Sized>(
     if !host.has_context() {
         return CompactionOutcome::NoContext;
     }
-    let started_at = host.now_ms();
-    if started_at - state.last_failover_compact_at < FAILOVER_COMPACT_DEBOUNCE_MS {
+    let Some(started_at) = host.now_ms() else {
+        return CompactionOutcome::Cancelled;
+    };
+    if started_at.saturating_sub(state.last_failover_compact_at) < FAILOVER_COMPACT_DEBOUNCE_MS {
         return CompactionOutcome::Debounced;
     }
     match host.enabled_accounts(provider_id).await {
@@ -178,16 +181,25 @@ pub async fn run_compaction<H: FabricHost + ?Sized>(
     }
     // Wait out the failing run so compaction never aborts an active stream;
     // ctx.compact() aborts the current run as its first step.
-    let deadline = started_at + FAILOVER_COMPACT_IDLE_TIMEOUT_MS;
-    while !host.is_idle() && host.now_ms() < deadline {
+    let deadline = started_at.saturating_add(FAILOVER_COMPACT_IDLE_TIMEOUT_MS);
+    while !host.is_idle() {
+        let Some(now) = host.now_ms() else {
+            return CompactionOutcome::Cancelled;
+        };
+        if now >= deadline {
+            break;
+        }
         host.sleep_ms(FAILOVER_COMPACT_POLL_MS).await;
     }
+    let Some(now) = host.now_ms() else {
+        return CompactionOutcome::Cancelled;
+    };
     if !host.is_idle()
-        || host.now_ms() - state.last_failover_compact_at < FAILOVER_COMPACT_DEBOUNCE_MS
+        || now.saturating_sub(state.last_failover_compact_at) < FAILOVER_COMPACT_DEBOUNCE_MS
     {
         return CompactionOutcome::NotIdle;
     }
-    state.last_failover_compact_at = host.now_ms();
+    state.last_failover_compact_at = now;
     if host.compact() == CompactOutcome::Complete {
         host.notify(FAILOVER_COMPACTED_NOTICE, "info");
     }
