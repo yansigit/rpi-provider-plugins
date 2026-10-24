@@ -20,6 +20,9 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+include!("m_virtual_native_cases.rs.inc");
+include!("m_virtual_services_cases.rs.inc");
+
 thread_local! {
     static CURRENT: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
 }
@@ -102,6 +105,15 @@ struct Fake {
     fail_command_on_nth: std::sync::atomic::AtomicUsize,
     hang_dialog: std::sync::atomic::AtomicBool,
     dialog_waiting: std::sync::atomic::AtomicBool,
+    catalog: Mutex<Option<Value>>,
+    publications: Mutex<Vec<Value>>,
+    fail_publication: std::sync::atomic::AtomicBool,
+    v2: std::sync::atomic::AtomicBool,
+    fail_first_virtual_attempt: std::sync::atomic::AtomicBool,
+    fabric_capable: std::sync::atomic::AtomicBool,
+    fabric_idle: std::sync::atomic::AtomicBool,
+    fabric_calls: Mutex<Vec<Value>>,
+    fabric_wake: std::sync::Condvar,
 }
 
 impl Fake {
@@ -198,6 +210,27 @@ extern "C" fn fake_continuation(
     let fake = unsafe { &*context.cast::<Fake>() };
     let value: Value = serde_json::from_str(unsafe { input.as_str() }).unwrap();
     fake.continuations.lock().unwrap().push(value.clone());
+    let result = match value["action"].as_str() {
+        Some("releaseAuth" | "releaseTarget") => {
+            Some(json!({"version":value["version"],"released":true}))
+        }
+        Some("capabilities") => Some(
+            json!({"version":1,"delegationVersions":if fake.v2.load(std::sync::atomic::Ordering::SeqCst) {vec![1,2]} else {vec![1]},"opaqueTargets":true,"ambientReceipts":true,"epochRevocation":true}),
+        ),
+        Some("resolveTarget") => Some(
+            json!({"version":2,"target":format!("target:{}",value["provider"].as_str().unwrap()),"model":{"provider":value["provider"],"id":value["model"]}}),
+        ),
+        Some("auth.resolveAmbient") => Some(
+            json!({"version":2,"receipt":format!("receipt:{}",value["provider"].as_str().unwrap())}),
+        ),
+        _ => None,
+    };
+    if let Some(result) = result {
+        unsafe {
+            *out = StbString::from_string(result.to_string());
+        }
+        return 0;
+    }
     let receipt = format!("receipt:{}", value["accountId"].as_str().unwrap());
     unsafe {
         *out = StbString::from_string(json!({"version":1,"receipt":receipt}).to_string());
@@ -225,13 +258,20 @@ extern "C" fn fake_delegate(
     let mut record = request.clone();
     record["account"] = json!(account);
     fake.delegates.lock().unwrap().push(record);
-    let attempt = fake
-        .scripts
-        .lock()
-        .unwrap()
-        .get_mut(&account)
-        .and_then(|attempts| attempts.pop_front())
-        .unwrap_or_else(|| success());
+    let attempt = if request["version"] == 2
+        && fake
+            .fail_first_virtual_attempt
+            .swap(false, std::sync::atomic::Ordering::SeqCst)
+    {
+        failure("network error", None)
+    } else {
+        fake.scripts
+            .lock()
+            .unwrap()
+            .get_mut(&account)
+            .and_then(|attempts| attempts.pop_front())
+            .unwrap_or_else(|| success())
+    };
     if let Some(emit) = emit {
         for frame in attempt.frames {
             if emit(StbString::from_string(frame.to_string()), data) != 0 {
@@ -273,6 +313,19 @@ extern "C" fn fake_native_request(
             json!({"cwd":"/tmp","agentDir":fake.agent,"sessionDir":"/tmp/sessions"})
         }
         (Some("capabilities"), Some("inspect")) => json!(fake.capabilities),
+        (Some("services"), Some("list")) => if fake.fabric_capable.load(std::sync::atomic::Ordering::SeqCst) {
+            json!([{"id":"pi-fabric","serviceVersion":1,"methods":["capabilities","isIdle","compact"]}])
+        } else { json!([]) },
+        (Some("services"), Some("call")) => {
+            fake.fabric_calls.lock().unwrap().push(value.clone());
+            fake.fabric_wake.notify_all();
+            match value["method"].as_str() {
+                Some("capabilities") => json!(["multiprovider.failoverCompaction.v1"]),
+                Some("isIdle") => json!({"isIdle":fake.fabric_idle.load(std::sync::atomic::Ordering::SeqCst)}),
+                Some("compact") => json!({"outcome":"complete"}),
+                _ => panic!("unexpected Fabric method: {value}"),
+            }
+        },
         (Some("context"), Some("snapshot")) => {
             let snapshot = json!({"hasUI":fake.has_ui,"mode":fake.mode});
             fake.command_snapshots
@@ -290,10 +343,22 @@ extern "C" fn fake_native_request(
                 "closing":false
             })
         }
-        (Some("providers"), Some("inspect")) => json!({
+        (Some("providers"), Some("inspect")) => fake.catalog.lock().unwrap().clone().unwrap_or_else(|| json!({
             "revision":1,
             "providers":fake.providers.iter().map(|id| json!({"id":id,"name":id,"builtin":false})).collect::<Vec<_>>(),
-        }),
+        })),
+        (Some("providers"), Some("register" | "publish" | "unregister")) => {
+            fake.publications.lock().unwrap().push(value.clone());
+            if fake.fail_publication.load(std::sync::atomic::Ordering::SeqCst) {
+                unsafe { *out = StbString::from_string(json!({"version":1,"error":"publication refused"}).to_string()); }
+                return 1;
+            }
+            let mut catalog = fake.catalog.lock().unwrap();
+            let providers = catalog.as_mut().unwrap()["providers"].as_array_mut().unwrap();
+            providers.retain(|provider| provider["id"] != value["providerId"]);
+            if value["action"] != "unregister" { providers.push(json!({"id":value["providerId"],"models":value["models"]})); }
+            json!({"revision":2})
+        },
         (Some("dialogs"), Some("show")) => {
             fake.command_requests.lock().unwrap().push(value.clone());
             if fake.hang_dialog.load(std::sync::atomic::Ordering::SeqCst) {
@@ -431,6 +496,23 @@ extern "C" fn unused_runtime_action(
     1
 }
 
+extern "C" fn fake_declare(raw: StbStringRef) -> i32 {
+    let manifest: Value = serde_json::from_str(unsafe { raw.as_str() }).unwrap();
+    assert_eq!(manifest["providers"][0]["id"], "multiprovider-virtual-base");
+    assert_eq!(manifest["providers"][0]["models"], json!([]));
+    0
+}
+extern "C" fn fake_register_base(
+    id: StbStringRef,
+    _: StbStringRef,
+    _: StbStringRef,
+    _: rpi_plugin_sdk::ProviderStreamRequestFn,
+    _: FreeStringFn,
+    _: *mut c_void,
+) -> i32 {
+    assert_eq!(unsafe { id.as_str() }, "multiprovider-virtual-base");
+    0
+}
 fn plugin_api(pointer: *mut Fake) -> PluginApi {
     PluginApi {
         abi_version: rpi_plugin_sdk::RPI_PLUGIN_ABI_VERSION_UNIFIED,
@@ -449,10 +531,10 @@ fn plugin_api(pointer: *mut Fake) -> PluginApi {
         runtime_action: unused_runtime_action,
         dispatch_event: None,
         user_data: pointer.cast(),
-        declare: None,
+        declare: Some(fake_declare),
         register_before_agent_start: None,
         register_oauth_provider: None,
-        register_streaming_provider: None,
+        register_streaming_provider: Some(fake_register_base),
         register_tool_with_wake: None,
         register_plugin_lifecycle: Some(fake_lifecycle),
         register_provider_auth: None,
@@ -531,7 +613,7 @@ fn request(fake: *mut Fake, registered: &Registered, provider: &str) -> (Value, 
     let request = json!({
         "model":{"id":"probe-model","provider":provider,"api":"faux","baseUrl":"https://example.invalid"},
         "context":{"messages":[]},
-        "options":{"streamKind":"streamSimple"},
+        "options":{"streamKind":"streamSimple","apiKey":"source-secret","headers":{"authorization":"source-secret"},"env":{"SOURCE_SECRET":"source-secret"},"identity":{"sessionId":"forged"}},
         "__rpiContinuation":{"version":1,"id":"continuation-1","generation":"generation-1"}
     });
     let mut out = StbString::empty();
@@ -584,13 +666,22 @@ fn emit_event(registered: &Registered, tag: EventTag) {
 }
 
 fn continuation_accounts(fake: *mut Fake) -> Vec<String> {
-    unsafe { &*fake }
-        .continuations
-        .lock()
-        .unwrap()
+    let requests = unsafe { &*fake }.continuations.lock().unwrap();
+    let resolved: Vec<_> = requests
         .iter()
+        .filter(|request| request["action"] == "resolveAuth")
         .map(|request| request["accountId"].as_str().unwrap().to_owned())
-        .collect()
+        .collect();
+    for account in &resolved {
+        assert!(
+            requests
+                .iter()
+                .any(|request| request["action"] == "releaseAuth"
+                    && request["receipt"] == format!("receipt:{account}")),
+            "receipt was not released: {account}"
+        );
+    }
+    resolved
 }
 
 fn delegated_accounts(fake: *mut Fake) -> Vec<String> {
@@ -640,7 +731,7 @@ fn registers_one_identity_preserving_wrapper_store_and_awaited_lifecycle() {
             .iter()
             .map(|(m, ..)| m["name"].as_str().unwrap())
             .collect::<Vec<_>>(),
-        vec!["multilogout", "accounts"]
+        vec!["multilogout", "accounts", "vprovider"]
     );
     for tag in [
         EventTag::SessionStart,
@@ -1625,7 +1716,7 @@ fn built_library_registers_through_the_exported_symbol() {
             .iter()
             .map(|(manifest, ..)| manifest["name"].as_str().unwrap())
             .collect::<Vec<_>>(),
-        vec!["multilogout", "accounts"],
+        vec!["multilogout", "accounts", "vprovider"],
         "loaded cdylib must register exactly the supported commands in canonical order"
     );
     let wrapper = registered.wrapper.lock().unwrap().clone().unwrap();
