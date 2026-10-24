@@ -85,6 +85,35 @@ test("an oversized event consumes the byte budget exclusively; completion does n
 	assert.equal((await peer.take(f => f.kind === "reply")).lastEvent, 2);
 });
 
+test("slow consumer drains over 64 events and 4 MiB without loss and retains emission-time partial snapshots", { timeout: 15_000 }, async t => {
+	const peer = await start(t);
+	const count = EVENT_CAPACITY * 2 + 3;
+	const bytes = 70_000;
+	assert(count * bytes > PAYLOAD_BYTES);
+	peer.send({ id: "h1", kind: "request", method: "nativeBurst", input: { count, bytes, snapshots: true } });
+	await delay(150); // withhold credit until the real synchronous IPC producer blocks
+	let receivedBytes = 0;
+	for (let i = 0; i < count; i++) {
+		const frame = await peer.take(f => f.id === "h1" && f.kind === "event");
+		assert.equal(frame.sequence, i + 1);
+		assert.equal(frame.event.type, "text_delta");
+		assert.equal(frame.event.delta, String(i));
+		assert.equal(frame.event.partial.content[0].text, `${i}:` + "x".repeat(bytes));
+		receivedBytes += encodeFrame(frame).length - 4;
+		if (i % 16 === 0) await delay(5);
+		peer.send({ id: "h1", kind: "credit", sequence: frame.sequence });
+	}
+	const terminal = await peer.take(f => f.id === "h1" && f.kind === "event");
+	assert.equal(terminal.sequence, count + 1);
+	assert.equal(terminal.event.type, "done");
+	assert.equal(terminal.event.message.content[0].text, `${count - 1}:` + "x".repeat(bytes));
+	const reply = await peer.take(f => f.id === "h1" && f.kind === "reply");
+	assert.equal(reply.lastEvent, count + 1);
+	assert.deepEqual(reply.result, { count, reason: "stop", cleanup: true });
+	assert(receivedBytes > PAYLOAD_BYTES);
+	peer.send({ id: "h1", kind: "credit", sequence: terminal.sequence });
+});
+
 test("wrong-generation and duplicate-credit traffic disconnects instead of minting capacity", { timeout: 10_000 }, async t => {
 	for (const violation of ["generation", "credit"]) {
 		const peer = await start(t);

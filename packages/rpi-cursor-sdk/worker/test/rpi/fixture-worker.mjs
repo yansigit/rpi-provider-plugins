@@ -34,7 +34,10 @@ const peer = new WorkerPeer(config, async (method, input, call) => {
 			const stream = new NativeMessageStream(call.emit);
 			let count = 0;
 			try {
-				for (; count < input.count; count++) stream.push({ type: "text_delta", contentIndex: 0, delta: String(count), partial });
+				for (; count < input.count; count++) {
+					if (input.snapshots) partial.content[0].text = `${count}:` + "x".repeat(input.bytes ?? 0);
+					stream.push({ type: "text_delta", contentIndex: 0, delta: String(count), partial });
+				}
 				stream.push({ type: "done", reason: "stop", message: partial });
 			} catch {
 				partial.stopReason = "aborted";
