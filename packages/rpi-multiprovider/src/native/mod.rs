@@ -1029,6 +1029,9 @@ extern "C" fn invoke(
         };
         let result = runtime.context.run(&signal, work);
         let aborted = signal.is_cancelled() || cancelled();
+        // Invocation-local work ends here even on ordinary callback completion.
+        // Post-turn services must use their independently scope-owned signal.
+        signal.cancel();
         let message = match result {
             Ok(Ok(message)) => message,
             Ok(Err(error)) => error_message(&request, &error, aborted),

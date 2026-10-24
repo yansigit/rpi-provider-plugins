@@ -9,6 +9,45 @@ use std::{
     sync::OnceLock,
 };
 static CONTINUATION: OnceLock<sdk::AuthRequestFn> = OnceLock::new();
+static NATIVE: OnceLock<sdk::AuthRequestFn> = OnceLock::new();
+extern "C" fn native(
+    input: StbStringRef,
+    control: *const sdk::AuthRequestControl,
+    out: *mut StbString,
+    data: *mut c_void,
+) -> i32 {
+    let request: Value = serde_json::from_str(unsafe { input.as_str() }).unwrap();
+    let rc = NATIVE.get().unwrap()(input, control, out, data);
+    if request["port"] == "capabilities"
+        && std::env::var("VIRTUAL_FABRIC").as_deref() == Ok("absent")
+        && rc == 0
+    {
+        let mut response: Value =
+            serde_json::from_str(&unsafe { (*out).to_string_lossy() }).unwrap();
+        response["result"]
+            .as_array_mut()
+            .unwrap()
+            .retain(|v| v != "services.scopeLease.v1");
+        // Original output belongs to the host allocator.
+        unsafe {
+            HOST_FREE.get().unwrap()(*out);
+        }
+        unsafe {
+            *out = StbString::from_string(response.to_string());
+        }
+    }
+    if request["port"] == "serviceLeases" {
+        let response: Value = serde_json::from_str(&unsafe { (*out).to_string_lossy() }).unwrap();
+        let mut file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(std::env::var_os("VIRTUAL_AUDIT").unwrap())
+            .unwrap();
+        writeln!(file, "{}", json!({"port":"serviceLeases","action":request["action"],"method":request["method"],"status":rc,"error":response["error"]})).unwrap();
+    }
+    rc
+}
+static HOST_FREE: OnceLock<sdk::FreeStringFn> = OnceLock::new();
 #[link(name = "dl")]
 extern "C" {
     fn dlopen(path: *const i8, flags: i32) -> *mut c_void;
@@ -42,6 +81,8 @@ extern "C" fn continuation(
     result
 }
 sdk::export_plugin!(|api: &PluginApi| {
+    NATIVE.set(api.native_request.unwrap()).unwrap();
+    HOST_FREE.set(api.free_string).unwrap();
     CONTINUATION
         .set(api.provider_continuation.unwrap())
         .unwrap();
@@ -54,6 +95,7 @@ sdk::export_plugin!(|api: &PluginApi| {
         let register: extern "C" fn(*const PluginApi) -> i32 = std::mem::transmute(symbol);
         let mut forwarded = *api;
         forwarded.provider_continuation = Some(continuation);
+        forwarded.native_request = Some(native);
         register(&forwarded)
     }
 });

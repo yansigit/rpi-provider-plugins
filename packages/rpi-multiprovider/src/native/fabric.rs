@@ -1,11 +1,10 @@
 //! Optional native Fabric contract. A tool name is not authority: discovery
 //! requires pi-fabric v1 and an explicit failover-compaction capability receipt.
-//! Every call uses the invocation's scoped client, never the session client.
-//! Host 8014e36 revokes ordinary invocation leases after the stream returns;
-//! post-turn successful compaction therefore remains a host capability gap.
+//! Acquire narrow selected-scope authority before callback return. Workers retain
+//! only that lease, never an invocation or registration client.
 use crate::{fabric::*, lift::Failover, services::Service};
 use async_trait::async_trait;
-use rpi_plugin_sdk::provider::native::Client;
+use rpi_plugin_sdk::provider::native::{Client, ScopeServiceLease};
 use serde_json::{json, Value};
 use std::{
     collections::HashMap,
@@ -85,6 +84,22 @@ impl Tasks {
         {
             return Ok(false);
         }
+        let Ok(lease) = client
+            .scope_service_lease("pi-fabric", 1, &["isIdle", "compact"], signal.clone())
+            .await
+        else {
+            // Old hosts must keep inline failover; ordinary service calls are
+            // not safe after the provider callback returns.
+            return Ok(false);
+        };
+        let accounts = service.snapshot().await.ok().and_then(|snapshot| {
+            snapshot["providers"]
+                .as_array()?
+                .iter()
+                .find(|pool| pool["id"] == info.provider_id)?["accounts"]
+                .as_array()
+                .map(|accounts| accounts.iter().filter(|a| a["enabled"] == true).count())
+        });
         let mut scopes = self.0.lock().unwrap();
         let scope = scopes.entry(scope).or_insert_with(|| Scope {
             signal: stopping.child_token(),
@@ -94,7 +109,7 @@ impl Tasks {
         if scope.signal.is_cancelled() {
             return Ok(false);
         }
-        // Reap completed workers without dropping a still-running scoped client.
+        // Reap completed workers before scheduling another scope-owned lease.
         let mut live = Vec::new();
         for task in scope.tasks.drain(..) {
             if task.is_finished() {
@@ -105,8 +120,8 @@ impl Tasks {
         }
         scope.tasks = live;
         let host = Binding {
-            client: client.clone(),
-            service: service.clone(),
+            lease,
+            accounts,
             signal: scope.signal.clone(),
             handle: tokio::runtime::Handle::current(),
         };
@@ -118,6 +133,7 @@ impl Tasks {
             if !host.signal.is_cancelled() {
                 handle.block_on(run_compaction(&host, &mut state, &provider));
             }
+            let _ = handle.block_on(host.lease.release());
         }));
         Ok(true)
     }
@@ -131,8 +147,8 @@ async fn call(
     client.request(json!({"port":"services","action":"call","service":"pi-fabric", "serviceVersion":1,"method":method,"input":input}), signal).await
 }
 struct Binding {
-    client: Client,
-    service: Service,
+    lease: ScopeServiceLease,
+    accounts: Option<usize>,
     signal: CancellationToken,
     handle: tokio::runtime::Handle,
 }
@@ -159,46 +175,39 @@ impl FabricHost for Binding {
         }
         tokio::task::block_in_place(|| {
             self.handle
-                .block_on(call(&self.client, "isIdle", json!({}), self.signal.clone()))
+                .block_on(self.lease.call("isIdle", json!({}), self.signal.clone()))
         })
         .is_ok_and(|value| value["isIdle"] == true)
     }
     async fn sleep_ms(&self, ms: u64) {
         tokio::select! { _ = self.signal.cancelled() => {}, _ = tokio::time::sleep(std::time::Duration::from_millis(ms)) => {} }
     }
-    async fn enabled_accounts(&self, provider: &str) -> Result<Option<usize>, String> {
-        let snapshot = self.service.snapshot().await.map_err(|e| e.to_string())?;
-        Ok(snapshot["providers"]
-            .as_array()
-            .and_then(|pools| pools.iter().find(|pool| pool["id"] == provider))
-            .map(|pool| {
-                pool["accounts"].as_array().map_or(0, |accounts| {
-                    accounts.iter().filter(|a| a["enabled"] == true).count()
-                })
-            }))
+    async fn enabled_accounts(&self, _: &str) -> Result<Option<usize>, String> {
+        Ok(self.accounts)
     }
     fn compact(&self) -> CompactOutcome {
         if self.signal.is_cancelled() {
             return CompactOutcome::Error;
         }
         match tokio::task::block_in_place(|| {
-            self.handle.block_on(call(
-                &self.client,
-                "compact",
-                json!({}),
-                self.signal.clone(),
-            ))
+            self.handle
+                .block_on(self.lease.call("compact", json!({}), self.signal.clone()))
         }) {
             Ok(value) if value["outcome"] == "complete" => CompactOutcome::Complete,
+            // IsIdle is not a reservation: a newer prompt may win admission.
+            Err(error) if error == "selected execution scope is busy" => CompactOutcome::Skipped,
+            Err(error) => {
+                if !self.signal.is_cancelled() {
+                    eprintln!("multiprovider: failover compaction failed: {error}");
+                }
+                CompactOutcome::Error
+            }
             _ => CompactOutcome::Error,
         }
     }
-    fn notify(&self, message: &str, level: &str) {
-        let _ = tokio::task::block_in_place(|| {
-            self.handle.block_on(self.client.request(
-                json!({"port":"ui","action":"notify","message":message,"level":level}),
-                self.signal.clone(),
-            ))
-        });
+    fn notify(&self, message: &str, _: &str) {
+        // The narrow lease cannot send UI requests. Preserve the TS notice on
+        // the diagnostic channel without retaining expired UI authority.
+        eprintln!("{message}");
     }
 }

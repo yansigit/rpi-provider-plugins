@@ -312,11 +312,22 @@ extern "C" fn fake_native_request(
         (Some("context"), Some("bootstrap")) => {
             json!({"cwd":"/tmp","agentDir":fake.agent,"sessionDir":"/tmp/sessions"})
         }
-        (Some("capabilities"), Some("inspect")) => json!(fake.capabilities),
+        (Some("capabilities"), Some("inspect")) => {
+            let mut capabilities = fake.capabilities.clone();
+            if fake.fabric_capable.load(std::sync::atomic::Ordering::SeqCst) {
+                capabilities.push("services.scopeLease.v1".into());
+            }
+            json!(capabilities)
+        },
+        (Some("serviceLeases"), Some("acquire")) => json!({"lease":"fabric-lease"}),
+        (Some("serviceLeases"), Some("release")) => {
+            fake.fabric_calls.lock().unwrap().push(value.clone());
+            Value::Null
+        },
         (Some("services"), Some("list")) => if fake.fabric_capable.load(std::sync::atomic::Ordering::SeqCst) {
             json!([{"id":"pi-fabric","serviceVersion":1,"methods":["capabilities","isIdle","compact"]}])
         } else { json!([]) },
-        (Some("services"), Some("call")) => {
+        (Some("services"), Some("call")) | (Some("serviceLeases"), Some("call")) => {
             fake.fabric_calls.lock().unwrap().push(value.clone());
             fake.fabric_wake.notify_all();
             match value["method"].as_str() {

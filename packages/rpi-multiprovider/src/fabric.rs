@@ -32,6 +32,8 @@ pub const FAILOVER_COMPACTED_NOTICE: &str =
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CompactOutcome {
     Complete,
+    /// A newer run won idle-only admission; no error or notice is surfaced.
+    Skipped,
     Error,
 }
 
@@ -109,14 +111,23 @@ pub fn decide<H: FabricHost + ?Sized>(
     handled: bool,
 ) -> Decision {
     if !is_fabric_compaction_available(host) {
-        return Decision { handled, compaction: false };
+        return Decision {
+            handled,
+            compaction: false,
+        };
     }
     // Compaction surfaces the failure and relies on Pi to restart the turn.
     // Quota/auth failures are not host-retryable, so keep rotating inline.
     if failure.map(is_retryable_assistant_error) != Some(true) {
-        return Decision { handled, compaction: false };
+        return Decision {
+            handled,
+            compaction: false,
+        };
     }
-    Decision { handled: true, compaction: true }
+    Decision {
+        handled: true,
+        compaction: true,
+    }
 }
 
 /// Extracts the assistant message from a lift failure for [`decide`].
@@ -171,7 +182,8 @@ pub async fn run_compaction<H: FabricHost + ?Sized>(
     while !host.is_idle() && host.now_ms() < deadline {
         host.sleep_ms(FAILOVER_COMPACT_POLL_MS).await;
     }
-    if !host.is_idle() || host.now_ms() - state.last_failover_compact_at < FAILOVER_COMPACT_DEBOUNCE_MS
+    if !host.is_idle()
+        || host.now_ms() - state.last_failover_compact_at < FAILOVER_COMPACT_DEBOUNCE_MS
     {
         return CompactionOutcome::NotIdle;
     }

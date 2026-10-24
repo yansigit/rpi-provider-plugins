@@ -74,7 +74,12 @@ extern "C" fn stream(
             .as_str()
             .unwrap_or_default()
             .starts_with("pool")
-            && attempt == 0;
+            && attempt
+                == if std::env::var("VIRTUAL_FABRIC").as_deref() == Ok("complete") {
+                    2
+                } else {
+                    0
+                };
         unsafe {
             *out = StbString::from_string(
                 terminal(
@@ -92,6 +97,7 @@ extern "C" fn stream(
         0
     })
 }
+static API: std::sync::Mutex<Option<PluginApi>> = std::sync::Mutex::new(None);
 extern "C" fn fabric(
     input: StbStringRef,
     _: *const sdk::AuthRequestControl,
@@ -124,10 +130,70 @@ extern "C" fn fabric(
                 .unwrap();
                 json!(["multiprovider.failoverCompaction.v1"])
             }
-            // Real-host lifecycle case keeps the failed execution busy until
-            // session shutdown; ABI tests separately prove successful compact.
-            Some("isIdle") => json!({"isIdle":false}),
-            Some("compact") => panic!("shutdown must cancel delayed compaction before idle"),
+            Some("isIdle") if std::env::var("VIRTUAL_FABRIC").as_deref() == Ok("shutdown") => {
+                json!({"isIdle":false})
+            }
+            Some("isIdle") | Some("compact") => {
+                // Hold the worker until the harness observed agent_end, which
+                // proves the package provider callback has returned.
+                let go = std::env::var_os("VIRTUAL_GO").unwrap();
+                let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+                while !std::path::Path::new(&go).exists() {
+                    assert!(
+                        std::time::Instant::now() < deadline,
+                        "post-turn worker not released"
+                    );
+                    std::thread::sleep(std::time::Duration::from_millis(5));
+                }
+                if request["method"] == "compact"
+                    && std::env::var("VIRTUAL_FABRIC").as_deref() == Ok("busy")
+                {
+                    unsafe {
+                        *out = StbString::from_string(
+                            json!({"version":1,"error":"selected execution scope is busy"})
+                                .to_string(),
+                        );
+                    }
+                    return 0;
+                }
+                let api = API.lock().unwrap().unwrap();
+                let mut response = StbString::empty();
+                let action = if request["method"] == "isIdle" {
+                    sdk::RuntimeActionId::IsIdle
+                } else {
+                    sdk::RuntimeActionId::Compact
+                };
+                let rc = (api.runtime_action)(
+                    action.into(),
+                    StbStringRef::from_str("{}"),
+                    &mut response,
+                    api.user_data,
+                );
+                let response = unsafe {
+                    sdk::callbacks::OwnedString::from_raw(response, Some(api.free_string))
+                };
+                let response: Value = serde_json::from_str(&response.to_string_lossy()).unwrap();
+                writeln!(file, "{}", json!({"method":"result","action":request["method"],"status":rc,"result":response})).unwrap();
+                if rc != 0 {
+                    unsafe {
+                        *out = StbString::from_string(
+                            json!({"version":1,"error":response["error"]}).to_string(),
+                        );
+                    }
+                    return 0;
+                }
+                if request["method"] == "compact" {
+                    assert!(
+                        response["outcome"]
+                            .as_str()
+                            .is_some_and(|outcome| outcome.starts_with("Completed {")),
+                        "host compaction failed: {response}"
+                    );
+                    json!({"outcome":"complete"})
+                } else {
+                    response
+                }
+            }
             _ => panic!("unknown Fabric method"),
         };
         unsafe {
@@ -137,7 +203,8 @@ extern "C" fn fabric(
     })
 }
 sdk::export_plugin!(|api: &PluginApi| {
-    if std::env::var("VIRTUAL_FABRIC").as_deref() == Ok("1") {
+    *API.lock().unwrap() = Some(*api);
+    if std::env::var("VIRTUAL_FABRIC").as_deref() != Ok("off") {
         assert_eq!(api.register_service.unwrap()(StbStringRef::from_str(&json!({"version":1,"id":"pi-fabric","serviceVersion":1,"methods":["capabilities","isIdle","compact"],"topics":[]}).to_string()), fabric, sdk::callbacks::free_string, std::ptr::null_mut()), 0);
     }
     let providers: Vec<_> = ["fixture-red", "fixture-blue"].iter().map(|id| json!({"id":id,

@@ -103,12 +103,21 @@ fn run(virtuals: Value, pool: bool) -> std::process::Output {
     run_mode(virtuals, pool, false, false)
 }
 fn run_mode(virtuals: Value, pool: bool, cancel: bool, fabric: bool) -> std::process::Output {
+    run_fabric(
+        virtuals,
+        pool,
+        cancel,
+        if fabric { "shutdown" } else { "off" },
+    )
+}
+fn run_fabric(virtuals: Value, pool: bool, cancel: bool, mode: &str) -> std::process::Output {
+    let fabric = mode != "off";
     let temp = isolated_home();
     let agent = temp.path().join("agent");
     std::fs::create_dir(&agent).unwrap();
     std::fs::write(
         agent.join("settings.json"),
-        r#"{"retry":{"enabled":false}}"#,
+        r#"{"retry":{"enabled":false},"compaction":{"enabled":false,"keepRecentTokens":1}}"#,
     )
     .unwrap();
     std::fs::write(agent.join("auth.json"), json!({"virtual-a":{"type":"api_key","key":"source-secret"},
@@ -167,7 +176,8 @@ fn run_mode(virtuals: Value, pool: bool, cancel: bool, fabric: bool) -> std::pro
         .env("VIRTUAL_AUDIT", temp.path().join("audit.jsonl"))
         .env("VIRTUAL_TRACE", temp.path().join("attempts.jsonl"))
         .env("VIRTUAL_SERVICE", temp.path().join("services.jsonl"))
-        .env("VIRTUAL_FABRIC", if fabric { "1" } else { "0" })
+        .env("VIRTUAL_FABRIC", mode)
+        .env("VIRTUAL_GO", temp.path().join("go"))
         .env("VIRTUAL_PACKAGE_DLL", library)
         .env("VIRTUAL_READY", temp.path().join("ready.sock"))
         .current_dir(temp.path())
@@ -223,6 +233,21 @@ fn run_mode(virtuals: Value, pool: bool, cancel: bool, fabric: bool) -> std::pro
             output
         }));
         let stdin = child.stdin.as_mut().unwrap();
+        if mode == "complete" {
+            for _ in 0..2 {
+                writeln!(stdin, "{}", json!({"type":"prompt","message":"warmup selected transcript with meaningful history"})).unwrap();
+                stdin.flush().unwrap();
+                loop {
+                    let line = receiver
+                        .recv_timeout(std::time::Duration::from_secs(15))
+                        .unwrap();
+                    let event: Value = serde_json::from_str(&line).unwrap();
+                    if event["type"] == "agent_settled" {
+                        break;
+                    }
+                }
+            }
+        }
         writeln!(stdin, "{}", json!({"type":"prompt","message":"hello"})).unwrap();
         stdin.flush().unwrap();
         let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
@@ -258,6 +283,28 @@ fn run_mode(virtuals: Value, pool: bool, cancel: bool, fabric: bool) -> std::pro
             let event: Value = serde_json::from_str(&line).unwrap();
             if event["type"] == "agent_end" {
                 break;
+            }
+        }
+        if fabric && mode != "shutdown" {
+            std::fs::write(temp.path().join("go"), "callback returned").unwrap();
+            if mode != "absent" {
+                let deadline = std::time::Instant::now() + std::time::Duration::from_secs(12);
+                loop {
+                    let audit = std::fs::read_to_string(temp.path().join("audit.jsonl"))
+                        .unwrap_or_default();
+                    if audit
+                        .lines()
+                        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+                        .any(|call| call["port"] == "serviceLeases" && call["action"] == "release")
+                    {
+                        break;
+                    }
+                    assert!(
+                        std::time::Instant::now() < deadline,
+                        "lease worker did not drain: {audit}"
+                    );
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                }
             }
         }
     }
@@ -312,12 +359,19 @@ fn run_mode(virtuals: Value, pool: bool, cancel: bool, fabric: bool) -> std::pro
                 "each handle needs exactly one release attempt: {event}: {audit:?}"
             );
             if cancel {
-                // Host 8014e36 revokes the entire continuation before package
-                // cancellation cleanup. Require the exact rejection, not an
-                // arbitrary failed release. Successful post-cancel release is
-                // a host limitation recorded in the lane evidence.
-                assert_eq!(releases[0]["status"], 1);
-                assert_eq!(releases[0]["error"], "inactive provider continuation");
+                // 229ce5a reclaims host tables at cancellation, so release
+                // may race revocation; only documented outcomes are accepted.
+                if releases[0]["status"] != 0 {
+                    assert!(
+                        [
+                            "inactive provider continuation",
+                            "delegation epoch revoked",
+                            "expired provider continuation"
+                        ]
+                        .contains(&releases[0]["error"].as_str().unwrap()),
+                        "{audit:?}"
+                    );
+                }
             } else {
                 assert_eq!(releases[0]["status"], 0, "release must succeed: {audit:?}");
             }
@@ -345,16 +399,102 @@ fn run_mode(virtuals: Value, pool: bool, cancel: bool, fabric: bool) -> std::pro
             services.iter().any(|call| call["method"] == "capabilities"),
             "compatible service must be negotiated: {services:?}: {text}"
         );
-        assert!(
-            !services.iter().any(|call| call["method"] == "compact"),
-            "shutdown must cancel delayed compaction"
-        );
+        if mode == "shutdown" {
+            assert!(
+                audit.iter().any(|call| call["port"] == "serviceLeases"
+                    && call["action"] == "acquire"
+                    && call["status"] == 0),
+                "shutdown must own a worker lease: {audit:?}"
+            );
+            assert_eq!(
+                audit
+                    .iter()
+                    .filter(|call| call["port"] == "serviceLeases" && call["action"] == "release")
+                    .count(),
+                1,
+                "shutdown drains and releases: {audit:?}"
+            );
+        }
+        if mode == "shutdown" || mode == "absent" {
+            assert!(
+                !services.iter().any(|call| call["method"] == "compact"),
+                "no compaction: {services:?}"
+            );
+        } else {
+            assert!(
+                services.iter().any(|call| call["method"] == "compact"),
+                "post-turn compact missing: {services:?}: {text}"
+            );
+            assert!(audit.iter().any(|call| call["port"] == "serviceLeases"
+                && call["action"] == "acquire"
+                && call["status"] == 0));
+            assert_eq!(
+                audit
+                    .iter()
+                    .filter(|call| call["port"] == "serviceLeases" && call["action"] == "release")
+                    .count(),
+                1
+            );
+            if mode == "busy" {
+                assert!(
+                    !text.contains("failover compaction failed"),
+                    "busy is normal lost admission: {text}"
+                );
+                assert!(
+                    !text.contains("compacted session context"),
+                    "busy must not claim success: {text}"
+                );
+            } else {
+                assert!(
+                    services.iter().any(|call| call["method"] == "result"
+                        && call["action"] == "compact"
+                        && call["status"] == 0),
+                    "real compaction must succeed: {services:?}: {text}"
+                );
+            }
+        }
+        if mode == "complete" {
+            fn transcripts(dir: &Path, found: &mut Vec<(PathBuf, Vec<Value>)>) {
+                for entry in std::fs::read_dir(dir).unwrap() {
+                    let path = entry.unwrap().path();
+                    if path.is_dir() {
+                        transcripts(&path, found);
+                    } else if path.extension().is_some_and(|ext| ext == "jsonl") {
+                        let entries = std::fs::read_to_string(&path)
+                            .unwrap()
+                            .lines()
+                            .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+                            .collect::<Vec<_>>();
+                        if entries.iter().any(|entry| entry["type"] == "compaction") {
+                            found.push((path, entries));
+                        }
+                    }
+                }
+            }
+            let mut compacted = Vec::new();
+            transcripts(temp.path(), &mut compacted);
+            assert_eq!(
+                compacted.len(),
+                1,
+                "only selected transcript may compact: {compacted:?}"
+            );
+            let selected = services[0]["identity"]["sessionId"].as_str().unwrap();
+            assert!(
+                compacted[0].0.to_string_lossy().contains(selected),
+                "compaction escaped selected session: {compacted:?}"
+            );
+            assert!(
+                text.contains("multiprovider: compacted session context before account failover"),
+                "{services:?}: {text}"
+            );
+        }
         let session = &services[0]["identity"]["sessionId"];
         assert!(
             services
                 .iter()
+                .filter(|call| call["method"] != "result")
                 .all(|call| &call["identity"]["sessionId"] == session),
-            "service calls must remain in the selected execution scope"
+            "service calls must remain selected"
         );
     }
     if result.status.success() && !pool && !cancel && !fabric {
@@ -461,4 +601,40 @@ fn real_dll_virtual_cycle_rejection_surfaces() {
             || text.contains("provider wrapper instance reentry"),
         "{text}"
     );
+}
+
+#[test]
+fn real_dll_post_turn_scope_lease_compacts() {
+    let output = run_fabric(
+        json!({"virtual-a":config("virtual-a", &["fixture-red","fixture-blue"])}),
+        false,
+        false,
+        "complete",
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+#[test]
+fn real_dll_post_turn_busy_is_skipped() {
+    let output = run_fabric(
+        json!({"virtual-a":config("virtual-a", &["fixture-red","fixture-blue"])}),
+        false,
+        false,
+        "busy",
+    );
+    assert!(output.status.success());
+}
+#[test]
+fn real_dll_absent_scope_lease_rotates_inline() {
+    let output = run_fabric(
+        json!({"virtual-a":config("virtual-a", &["fixture-red","fixture-blue"])}),
+        false,
+        false,
+        "absent",
+    );
+    assert!(output.status.success());
+    assert!(String::from_utf8_lossy(&output.stdout).contains("executed:fixture-blue"));
 }

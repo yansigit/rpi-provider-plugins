@@ -239,6 +239,17 @@ async fn cancelled_auth_and_stopped_consumers_release_the_lease_without_penalty(
                 }),
             })
             .unwrap();
+        let baseline = service.snapshot().await.unwrap();
+        let in_flight = |snapshot: &Value| -> Vec<u64> {
+            snapshot["providers"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .flat_map(|pool| pool["accounts"].as_array().unwrap())
+                .map(|account| account["inFlight"].as_u64().unwrap())
+                .collect()
+        };
+        assert!(in_flight(&baseline).iter().all(|count| *count == 0));
         let host = Arc::new(StoppedHost {
             entered: tokio::sync::Notify::new(),
             hold_auth,
@@ -275,7 +286,10 @@ async fn cancelled_auth_and_stopped_consumers_release_the_lease_without_penalty(
             task.await.unwrap().unwrap();
             assert_eq!(host.emitted.load(Ordering::SeqCst), 1);
         }
+        // Await above is the producer drain barrier, not merely cancellation
+        // acknowledgement. Every pool/account must recover its exact baseline.
         let snapshot = service.snapshot().await.unwrap();
+        assert_eq!(in_flight(&snapshot), in_flight(&baseline));
         let account = &snapshot["providers"][0]["accounts"][0];
         assert_eq!(account["inFlight"], 0);
         assert_eq!(account["consecutiveFailures"], 0);

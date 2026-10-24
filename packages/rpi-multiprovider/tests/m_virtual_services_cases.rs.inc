@@ -39,16 +39,9 @@ fn virtual_native_capable_service_compacts_and_shutdown_drains() {
             .count(),
         1
     );
-    assert!(calls
-        .iter()
-        .all(|call| call["service"] == "pi-fabric" && call["serviceVersion"] == 1));
-    assert!(fake
-        .command_requests
-        .lock()
-        .unwrap()
-        .iter()
-        .any(|call| call["message"]
-            == "multiprovider: compacted session context before account failover"));
+    assert!(calls.iter().filter(|call| call["method"] == "isIdle" || call["method"] == "compact")
+        .all(|call| call["port"] == "serviceLeases" && call["lease"] == "fabric-lease"));
+    assert_eq!(calls.iter().filter(|call| call["action"] == "release").count(), 1);
     assert_eq!(released_targets(fake).len(), 1);
     assert_eq!(released_receipts(fake).len(), 1);
 }
