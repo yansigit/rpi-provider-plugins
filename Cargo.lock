@@ -2558,8 +2558,8 @@ dependencies = [
 
 [[package]]
 name = "rpi-ai"
-version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=ecc9c2ecca20a867c1d5b43df7180599a0593218#ecc9c2ecca20a867c1d5b43df7180599a0593218"
+version = "0.8.4"
+source = "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -2569,7 +2569,7 @@ dependencies = [
  "jsonschema",
  "regex",
  "reqwest 0.12.28",
- "rpi-telemetry 0.7.0",
+ "rpi-telemetry 0.8.4",
  "schemars",
  "serde",
  "serde_json",
@@ -2603,7 +2603,7 @@ dependencies = [
  "regex",
  "reqwest 0.12.28",
  "rpi-node-collation",
- "rpi-plugin-sdk 0.7.0",
+ "rpi-plugin-sdk 0.8.4",
  "serde",
  "serde_json",
  "sha2",
@@ -2643,7 +2643,7 @@ dependencies = [
  "fs2",
  "getrandom 0.2.17",
  "libc",
- "rpi-plugin-sdk 0.7.0",
+ "rpi-plugin-sdk 0.8.4",
  "serde",
  "serde_json",
  "sha2",
@@ -2735,7 +2735,7 @@ dependencies = [
  "indexmap 2.11.4",
  "regex",
  "rpi-node-collation",
- "rpi-plugin-sdk 0.7.0",
+ "rpi-plugin-sdk 0.8.4",
  "serde",
  "serde_json",
  "tokio",
@@ -2818,12 +2818,12 @@ dependencies = [
 
 [[package]]
 name = "rpi-plugin-sdk"
-version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=ecc9c2ecca20a867c1d5b43df7180599a0593218#ecc9c2ecca20a867c1d5b43df7180599a0593218"
+version = "0.8.4"
+source = "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
 dependencies = [
  "async-trait",
  "reqwest 0.12.28",
- "rpi-ai 0.7.0",
+ "rpi-ai 0.8.4",
  "serde",
  "serde_json",
  "tokio",
@@ -2899,8 +2899,8 @@ dependencies = [
 
 [[package]]
 name = "rpi-telemetry"
-version = "0.7.0"
-source = "git+https://github.com/yansigit/pi-rust?rev=ecc9c2ecca20a867c1d5b43df7180599a0593218#ecc9c2ecca20a867c1d5b43df7180599a0593218"
+version = "0.8.4"
+source = "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
 dependencies = [
  "async-trait",
  "serde",
