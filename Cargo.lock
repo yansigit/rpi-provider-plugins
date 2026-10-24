@@ -2392,6 +2392,7 @@ dependencies = [
 name = "rpi-acp"
 version = "0.1.14"
 dependencies = [
+ "rpi-extcore",
  "rpi-plugin-sdk 0.3.20",
  "serde",
  "serde_json",
@@ -2468,6 +2469,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpi-extcore"
+version = "0.1.0"
+dependencies = [
+ "futures-util",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "rpi-extensions"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2496,6 +2509,22 @@ dependencies = [
  "rpi-plugin-sdk 0.3.20",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "rpi-http"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "futures-util",
+ "reqwest 0.12.28",
+ "rpi-extcore",
+ "serde",
+ "serde_json",
+ "sha2",
+ "subtle",
+ "tokio",
+ "uuid",
 ]
 
 [[package]]
@@ -2715,12 +2744,11 @@ name = "rpi-web"
 version = "0.1.7"
 dependencies = [
  "axum",
- "futures-util",
+ "rpi-extcore",
+ "rpi-http",
  "rpi-plugin-sdk 0.3.20",
  "serde",
  "serde_json",
- "sha2",
- "subtle",
  "tokio",
  "tower-http",
  "uuid",
