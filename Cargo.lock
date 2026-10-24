@@ -2559,7 +2559,7 @@ dependencies = [
 [[package]]
 name = "rpi-ai"
 version = "0.8.4"
-source = "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#8014e36cfc9923d404a76044ba0595dc4edc98e7"
+source = "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#229ce5a7d40983ade3eefbda3523c82152a04362"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -2820,7 +2820,7 @@ dependencies = [
 [[package]]
 name = "rpi-plugin-sdk"
 version = "0.8.4"
-source = "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#8014e36cfc9923d404a76044ba0595dc4edc98e7"
+source = "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#229ce5a7d40983ade3eefbda3523c82152a04362"
 dependencies = [
  "async-trait",
  "reqwest 0.12.28",
@@ -2901,7 +2901,7 @@ dependencies = [
 [[package]]
 name = "rpi-telemetry"
 version = "0.8.4"
-source = "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#8014e36cfc9923d404a76044ba0595dc4edc98e7"
+source = "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#229ce5a7d40983ade3eefbda3523c82152a04362"
 dependencies = [
  "async-trait",
  "serde",
