@@ -741,6 +741,8 @@ command('switch-account selector marks the current pin', { command: 'switch-acco
 command('switch-account labels and pins a cooled-down account', { command: 'switch-account', args: '', model: ACCOUNTS_MODEL, setup: COOLDOWN_SETUP, stream: COOLDOWN, answers: [SELECT(2)] })
 command('switch-account disabled account is refused', { command: 'switch-account', args: 'disabled', model: ACCOUNTS_MODEL, setup: [...ALPHA_POOL, { op: 'add', provider: 'alpha', input: { label: 'Disabled Acct', enabled: false, credential: { type: 'api_key', key: 'sk-off' } } }] })
 command('switch-account excludes the upstream account while unconfigured', { command: 'switch-account', args: '', model: ACCOUNTS_MODEL, setup: ALPHA_POOL, runtime: { providers: ALL, auth: { alpha: { configured: false } }, oauth: {} }, answers: [SELECT(1)] })
+command('switch-account offers the upstream account while configured', { command: 'switch-account', args: '', model: ACCOUNTS_MODEL, setup: ALPHA_POOL, runtime: { providers: ALL, auth: { alpha: { configured: true } }, oauth: {} }, answers: [SELECT(1)] })
+command('switch-account reports an unknown model provider without pools', { command: 'switch-account', args: '', model: { provider: 'zeta', id: 'zeta-1', name: 'Zeta 1' } })
 command('switch-account virtual pool id is the scheduler id', { command: 'switch-account', args: '', model: { provider: 'vp', id: 'model', name: 'Model' }, setup: [{ op: 'saveVirtual', input: VIRTUAL }, ...ALPHA_POOL], answers: [SELECT(1)] })
 
 // Direct flows and the login-dialog host, from the upstream multilogin spec.

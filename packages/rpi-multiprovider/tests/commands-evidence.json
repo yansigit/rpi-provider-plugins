@@ -5,16 +5,16 @@
   "referenceCommand": "LC_ALL=en_US.UTF-8 node --experimental-transform-types tests/commands-reference.ts [--write]",
   "checks": {
     "toolchains": ["1.78.0 with RUSTFLAGS=-Dwarnings", "1.95.0 (default)"],
-    "referenceScenarios": 65,
+    "referenceScenarios": 67,
     "referenceScenariosByKind": {
-      "command": 61,
-      "commandByCommand": {"multilogin": 28, "multilogout": 10, "accounts": 5, "switch-account": 18},
+      "command": 63,
+      "commandByCommand": {"multilogin": 28, "multilogout": 10, "accounts": 5, "switch-account": 20},
       "direct-login": 1,
       "host-select": 2,
       "login-dialog": 1
     },
     "upstreamMultiloginSpecs": {"total": 4, "covered": 4},
-    "referenceFixtureSha256": "bc66d0cd6719303beb3ceccf7dbc5e11146f37cab9fda64e06afc8fe3675278d",
+    "referenceFixtureSha256": "2693d866878be41c9d8794a42b3255076e25c1c1993d2c94b",
     "referenceRerunsByteIdentical": 2,
     "replayTest": "tests/commands.rs::command_flows_match_the_upstream_reference",
     "localeTimeTest": "tests/commands.rs::locale_time_matches_en_us_utc"
