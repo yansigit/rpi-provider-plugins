@@ -130,13 +130,28 @@ fn run_mode(virtuals: Value, pool: bool, cancel: bool, fabric: bool) -> std::pro
     let library = std::env::var_os("RPI_TEST_MULTIPROVIDER_LIBRARY")
         .map(PathBuf::from)
         .unwrap_or_else(|| {
-            debug.join(format!(
+            debug.join("deps").join(format!(
                 "{}rpi_multiprovider{}",
                 std::env::consts::DLL_PREFIX,
                 std::env::consts::DLL_SUFFIX
             ))
         });
-    assert!(library.is_file(), "build rpi-multiprovider cdylib first");
+    let dll_time = library
+        .metadata()
+        .unwrap_or_else(|error| panic!("required fresh DLL {}: {error}", library.display()))
+        .modified()
+        .unwrap();
+    let test_time = std::env::current_exe()
+        .unwrap()
+        .metadata()
+        .unwrap()
+        .modified()
+        .unwrap();
+    assert!(
+        dll_time >= test_time,
+        "stale DLL {}: rebuild rpi-multiprovider after compiling this test binary",
+        library.display()
+    );
     let ready = std::os::unix::net::UnixListener::bind(temp.path().join("ready.sock")).unwrap();
     ready.set_nonblocking(true).unwrap();
     let mut command = Command::new("timeout");
