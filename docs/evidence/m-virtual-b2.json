@@ -1,11 +1,11 @@
 {
-  "schemaVersion": 2,
-  "status": "provider-gates-pass-with-inherited-lint-and-host-limitations",
-  "host": "8014e36cfc9923d404a76044ba0595dc4edc98e7",
+  "schemaVersion": 3,
+  "status": "provider-gates-pass-scope-lease-and-layered-cancel-cleanup-proven",
+  "host": "229ce5a7d40983ade3eefbda3523c82152a04362",
   "base": "10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53",
   "reviewedCommit": "916fb385bf499be2607c133a4e382d634d648cac",
   "registryVersionsChanged": false,
-  "sourceSha256": "3a4b5bfa6cc502fc9589b3e6ce3deee71af34dac62745ecd9c34fc621d7d71bd",
+  "sourceSha256": "b09a9c237b5f2c1ea396406869c67c35afcc22c8201358a7a095c58950936da3",
   "toolchains": {
     "1.78.0": {
       "rustflags": "-Dwarnings",
@@ -21,18 +21,18 @@
           "ignored": 17
         },
         "rpi-multiprovider": {
-          "passed": 93,
+          "passed": 96,
           "failed": 0,
           "ignored": 2
         }
       },
       "explicitNativeAbiTests": 25,
-      "realHostTests": 5,
+      "realHostTests": 8,
       "antigravityLoadingGate": 1,
       "sdkPackageIds": [
-        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-ai@0.8.4",
-        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-plugin-sdk@0.8.4",
-        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-telemetry@0.8.4"
+        "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#rpi-ai@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#rpi-plugin-sdk@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#rpi-telemetry@0.8.4"
       ],
       "cdylibs": [
         {
@@ -45,7 +45,7 @@
           "path": "target/1.78.0/debug/librpi_multiprovider.so"
         }
       ],
-      "realHost": "Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail."
+      "realHost": "Pinned 229ce5a host built with Rust 1.95; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail."
     },
     "1.95.0": {
       "rustflags": "",
@@ -61,18 +61,18 @@
           "ignored": 17
         },
         "rpi-multiprovider": {
-          "passed": 93,
+          "passed": 96,
           "failed": 0,
           "ignored": 2
         }
       },
       "explicitNativeAbiTests": 25,
-      "realHostTests": 5,
+      "realHostTests": 8,
       "antigravityLoadingGate": 1,
       "sdkPackageIds": [
-        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-ai@0.8.4",
-        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-plugin-sdk@0.8.4",
-        "git+https://github.com/yansigit/pi-rust?rev=8014e36cfc9923d404a76044ba0595dc4edc98e7#rpi-telemetry@0.8.4"
+        "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#rpi-ai@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#rpi-plugin-sdk@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=229ce5a7d40983ade3eefbda3523c82152a04362#rpi-telemetry@0.8.4"
       ],
       "cdylibs": [
         {
@@ -85,7 +85,7 @@
           "path": "target/1.95.0/debug/librpi_multiprovider.so"
         }
       ],
-      "realHost": "Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail."
+      "realHost": "Pinned 229ce5a host built with Rust 1.95; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail."
     }
   },
   "mutations": [
@@ -128,6 +128,21 @@
       "guard": "inherited",
       "test": "virtual_native_inherited_pins_restore_journal_and_preserve_parent",
       "result": "killed (exit 101); mutation reverted"
+    },
+    {
+      "guard": "lease-acquire",
+      "test": "real_dll_post_turn_scope_lease_compacts",
+      "result": "killed (exit 101); mutation reverted"
+    },
+    {
+      "guard": "lease-signal",
+      "test": "real_dll_post_turn_scope_lease_compacts",
+      "result": "killed (exit 101); mutation reverted"
+    },
+    {
+      "guard": "lease-busy",
+      "test": "real_dll_post_turn_busy_is_skipped",
+      "result": "killed (exit 101); mutation reverted"
     }
   ],
   "differentialFixtures": {
@@ -159,14 +174,22 @@
   "ledger": {
     "M06": "Native owned catalog binding, publication acknowledgement, healing/deletion/re-registration, global wrapper and command binding proven by ABI tests; existing service lane unchanged.",
     "M07": "Virtual template/backend effects bound; real host target pool and backend failover proven; 70 upstream differential scenarios retained.",
-    "M08": "Reuses existing retry state machines (96 lift scenarios); native ordered effects, missing terminal, fail-closed v2 and real host guards proven. Successful release after host cancellation is NOT proven: host rejects cleanup after epoch revocation.",
-    "M09": "PARTIAL: explicit service capability and absent-service inline fallback; successful compact/notice and cancellation/drain proven at native ABI seam; real host proves scoped service negotiation and delayed-work shutdown. Successful POST-TURN real-host compaction is NOT proven (invocation lease expires)."
+    "M08": "Cancellation contract proven in layers: package DLL attempts exactly one release per handle and accepts only success/documented revocation errors; pinned host loaded_cancel_reclaims_tables_before_blocked_callback_and_library_drain proves table reclamation before producer drain and final ownership drain; package lift test compares every account inFlight with baseline after producer drain. Successful post-revocation release RPCs are neither required nor claimed.",
+    "M09": "POST-TURN real-host package compaction proven: pi-fabric v1 + Fabric capability + services.scopeLease.v1; narrow lease acquired before callback return, worker signal, actual host IsIdle/Compact after agent_end, exactly one persisted compaction in selected session, TS notice on diagnostics, busy skip, absent capability inline failover, shutdown release/drain. Pinned host test separately proves child/main isolation and real busy admission."
+  },
+  "layeredHostProofs": {
+    "cancelReclamation": "loaded_cancel_reclaims_tables_before_blocked_callback_and_library_drain",
+    "scopeIsolationAndBusy": "loaded_scope_service_compaction_after_callback_is_selected_idle_only_and_revocable",
+    "toolchain": "1.95.0",
+    "passed": 2,
+    "failed": 0
   },
   "limitations": [
     "24 inherited ignored cohort tests; no new ignores or assertion weakening.",
     "Strict clippy and whole-workspace fmt have inherited baseline failures; see formatAndLint and Markdown qualification.",
-    "Real-host cancellation rejects releaseAuth/releaseTarget with inactive provider continuation; test requires exactly one cleanup attempt per handle and this exact error, not successful release.",
-    "Host invocation native leases are cancelled when their callback returns. scope_lifetime permits inspection/shutdown only, not service calls. Root registration leases have identity null and are not a safe substitute for selected execution scope. No root fallback is implemented.",
+    "Cancellation release RPCs may succeed or return inactive provider continuation / delegation epoch revoked / expired provider continuation. Host tables are checked in the pinned host loaded test, not via an invented package introspection port.",
+    "Package real-host transcript test selects main; child/main isolation and actual competing-run busy admission are complementary pinned-host loaded-library tests. Package busy handling injects the exact service error.",
+    "ScopeServiceLease grants no UI authority. The exact TS success notice is emitted on stderr, not through an expired invocation UI client. No root fallback is implemented.",
     "No real Fabric extension, live auth/network, host typed-queue load, or full-workspace gate claimed. r02 runs the requested AG library branch; its pre-existing Cursor/legacy branches skip. Linux only.",
     "Older evidence JSON files remain historical and are not promoted by this report. Host ledger was not edited (read-only constraint)."
   ],
@@ -197,6 +220,12 @@
     "fresh-dll-178.log",
     "fresh-dll-195.log",
     "stale-dll.log",
-    "missing-dll.log"
+    "missing-dll.log",
+    "mutate-lease-acquire.log",
+    "mutate-lease-signal.log",
+    "mutate-lease-busy.log",
+    "host-build.log",
+    "host-reclaim.log",
+    "host-selected.log"
   ]
 }

@@ -1,6 +1,6 @@
 # M-VIRTUAL-B — native host-v2 virtual binding
 
-Status: **provider build/test gates pass; inherited strict lint/format failures and M09 real post-turn compaction remain open**.
+Status: **provider build/test gates pass; M09 post-turn compaction and layered M08 cancel cleanup proven. Inherited strict lint/format debt remains**.
 This report supersedes only the M06–M09 package-binding evidence; it does not
 promote historical reports or edit the read-only host ledger. Machine-readable
 hashes, SDK identities, counts and limitations: [`m-virtual-b2.json`](m-virtual-b2.json).
@@ -11,10 +11,10 @@ hashes, SDK identities, counts and limitations: [`m-virtual-b2.json`](m-virtual-
   based on `10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53`.
   Checkout location and branch are local provenance, not portable evidence.
 - All three provider packages use host
-  `8014e36cfc9923d404a76044ba0595dc4edc98e7`, unchanged Git URL. Cargo's existing
+  `229ce5a7d40983ade3eefbda3523c82152a04362`, unchanged Git URL. Cargo's existing
   URL cache was seeded from the local read-only host repository, not the network.
 - Registry dependency versions/checksums are byte-for-byte equivalent to the base
-  lockfile. The pin-only provider cohort compiled on Rust 1.78 before binding work.
+  lockfile. The re-pinned complete provider cohort compiled on Rust 1.78.0 and 1.95.0.
 - No host source changes; no old-lane changes, push, external requests, live
   credentials, or `~/.pi` / `~/.rpi` access. All test HOME/private TMP directories
   are isolated mode 0700. Fixture credentials are synthetic.
@@ -38,6 +38,18 @@ Latest re-review fixes (baseline `7f2c169`):
   supported but missing DLLs or DLLs older than the test executable fail loudly.
   Negative missing/stale checks both exited 101; both toolchains' five host cases
   then passed against freshly rebuilt DLLs. No artifact-skip path exists.
+
+Scope-lease adoption (starting at `6fbaecd`):
+
+- `6756edd`: pin all three providers to local host 229ce5a; only host-source
+  lock entries changed (`rpi-ai`, `rpi-plugin-sdk`, `rpi-telemetry`).
+- `6f3448b`: acquire the narrow grant before callback completion, scope-own and
+  drain delayed work, cancel invocation-local tokens at completion, and strengthen
+  package-DLL and pool-drain regressions.
+- Latest gate logs and optional binary provenance: `/tmp/m-virtual-b2-lease/`.
+  The Markdown/JSON pair and both differential fixtures were checked byte-identical
+  across two regenerations. Prior mutation/IPC/missing-stale evidence is historical,
+  explicitly distinguished from the three new lease mutations.
 
 ## Binding decisions
 
@@ -75,12 +87,20 @@ session error before delegation.
 
 The optional compaction adapter requires service `pi-fabric` version 1 **and**
 explicit capability `multiprovider.failoverCompaction.v1`; a `fabric_exec` tool
-name alone grants nothing. Calls use the selected invocation's native client.
-Absent/incompatible service means ordinary inline failover. Per-scope workers
-reuse the existing compaction policy, are cancelled on scope/session shutdown,
-and are joined before runtime destruction. No root registration-client fallback
-is used for delayed child work. This is a compatible fixture contract, not a
-claim that a production Fabric extension is available.
+name alone grants nothing. The host must also advertise `services.scopeLease.v1`.
+The selected invocation acquires `scope_service_lease("pi-fabric", 1,
+&["isIdle", "compact"], invocation_signal)` before returning. Workers keep only
+this narrow lease, a non-authority account-count snapshot and their scope-owned
+cancellation signal, never an invocation client. Invocation signals are cancelled
+on callback completion; completed invocation signals cannot drive delayed calls.
+Absent/incompatible service or lease capability means ordinary inline failover.
+Quota/auth non-host-retryable failures still rotate inline. The existing 50ms idle
+poll, 15s deadline and 30s debounce remain. Busy is normal lost admission and emits
+neither error nor success notice. Workers release on completion/cancel and are
+cancelled/joined on shutdown. No root registration-client fallback is used.
+The exact TS success notice is emitted on stderr: the narrow lease grants no UI
+authority, so retaining a UI client would violate the contract. This is a compatible
+`pi-fabric` v1 fixture service, not a claim that a production Fabric extension is available.
 
 ## Gates (both package toolchains)
 
@@ -89,10 +109,10 @@ claim that a production Fabric extension is available.
 | Offline provider cdylib build | pass | pass |
 | Antigravity cohort | 97 passed / 0 failed / 5 inherited ignored | same |
 | Cursor cohort | 62 / 0 / 17 inherited ignored | same |
-| Multiprovider cohort | 93 / 0 / 2 inherited ignored | same |
-| Total cohort | **252 / 0 / 24 inherited ignored** | **same** |
+| Multiprovider cohort | 96 / 0 / 2 inherited ignored | same |
+| Total cohort | **255 / 0 / 24 inherited ignored** | **same** |
 | Explicit MP native ABI tests | 25 / 0 / 0 | 25 / 0 / 0 |
-| Actual-host MP DLL acceptance | 5 / 0 / 0 | 5 / 0 / 0 |
+| Actual-host MP DLL acceptance | 8 / 0 / 0 | 8 / 0 / 0 |
 | Explicit Antigravity loading branch | 1 / 0 / 0 | 1 / 0 / 0 |
 
 The explicit native tests are included in cohort counts, not additional tests.
@@ -102,10 +122,15 @@ weakened assertions were introduced in the new acceptance suite. The existing
 its unrelated legacy-provider and Cursor-library branches still report their
 pre-existing skips. Historical Cursor IPC evidence remains **8/8 on Node 24.22.0**
 (not rerun for these native-only fixes).
-Both MP cdylibs are loaded into the real host built from pinned 8014e36 with Rust
-1.78 (same host executable for both package toolchains), using independently
-compiled fixture target/service DLLs, isolated agent directories and local socket
-synchronization. No sleeps are used as readiness synchronization.
+Both MP cdylibs are loaded into the real host built from pinned 229ce5a with Rust
+1.95 in the read-only host worktree, using its separate target directory
+`/home/user/Projects/.targets/h-scope-lease-195`. The same host executable serves
+both package toolchains. Fixture target/service DLLs are independently compiled;
+isolated agent directories, local sockets and bounded marker waits synchronize
+post-turn work. All Cargo commands ran in the foreground with `timeout 270`.
+Two complementary pinned-host loaded-library tests also passed (Rust 1.95):
+`loaded_cancel_reclaims_tables_before_blocked_callback_and_library_drain` and
+`loaded_scope_service_compaction_after_callback_is_selected_idle_only_and_revocable`.
 
 Native virtual ABI regression names (10):
 
@@ -120,19 +145,35 @@ Native virtual ABI regression names (10):
 - `virtual_native_missing_session_identity_fails_explicitly`
 - `virtual_native_inherited_pins_restore_journal_and_preserve_parent`
 
-New actual-host acceptance names (5):
+Actual-host acceptance names (8):
 
 - `real_dll_cross_provider_dispatch_and_backend_failover`
 - `real_dll_cross_provider_dispatch_reaches_target_pool`
 - `real_dll_cancellation_attempts_release_after_host_revocation`
 - `real_dll_virtual_cycle_rejection_surfaces`
 - `real_dll_capable_fabric_shutdown_cancels_delayed_compaction`
+- `real_dll_post_turn_scope_lease_compacts`
+- `real_dll_post_turn_busy_is_skipped`
+- `real_dll_absent_scope_lease_rotates_inline`
+
+The success case seeds two real turns, surfaces the third turn's network error,
+then opens the service barrier only after `agent_end`. The service forwards to
+actual host IsIdle/Compact. The test requires a completed host compaction, one
+persisted compaction entry in the selected session file, the TS notice, and exactly
+one lease release. Busy is injected at the package service seam; the complementary
+host test exercises real competing-run admission and child/main transcript isolation.
+The package transcript case selects main, not a child; these evidence layers are
+kept distinct rather than claiming a package child transcript replay.
 
 The loader fixture audits actual continuation operations, opaque handle values,
 target-auth requests and release results; the target fixture requires its own
 synthetic credential and proves that no source identity/options crossed over.
-The cancellation test requires one release attempt per actual handle and checks
-the exact host revocation error; it does **not** claim the host accepted releases.
+The cancellation test requires one release attempt per actual handle and accepts
+success or only `inactive provider continuation`, `delegation epoch revoked`, or
+`expired provider continuation`. It does **not** require successful post-revocation
+RPCs. Host-table reclamation is independently asserted in the pinned-host test;
+the package lift regression now compares every pool/account's `inFlight` with its
+pre-run baseline after awaiting producer drain (not just cancellation acknowledgement).
 
 Existing upstream differential tests are preserved unchanged: 70 virtual and
 96 lift scenarios cover backend/account traces, failover order, errors, terminal
@@ -144,10 +185,13 @@ presentation or import-storage exceptions.
 
 ### Mutation checks
 
-The first seven mutations below are historical evidence from prior passes.
-This re-review pass reverted inherited seeding only: the new ABI regression failed
-with automatic `target:example` / account `a` instead of inherited `target:plain`
-/ account `b` (exit 101). Seeding was restored before both toolchains' passing gates.
+The eight prior mutations below remain historical evidence. This lease-adoption
+pass additionally killed all three requested real-DLL mutations (exit 101 each),
+restored them, and reran both complete toolchain gates. The invocation-signal
+mutation initially survived because callback completion did not cancel the local
+token; callback teardown now explicitly cancels it, and the restored mutation was
+then killed by missing post-turn compact. This teardown fix does not cancel the
+independent scope worker.
 
 | Guard mutated | Regression |
 |---|---|
@@ -158,7 +202,10 @@ with automatic `target:example` / account `a` instead of inherited `target:plain
 | F1: read fallback identity from the descriptor-free envelope | `virtual_native_missing_terminal_fails_and_releases` (typed deserialization fails) |
 | F2: route virtual pins back to the ordinary service | `virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown` (selected backend differs) |
 | F3: accept empty affinity | `virtual_native_missing_session_identity_fails_explicitly` (exact error absent) |
-| Revert inherited pending seeding | `virtual_native_inherited_pins_restore_journal_and_preserve_parent` (backend/account differ) |
+| Revert inherited pending seeding (historical) | `virtual_native_inherited_pins_restore_journal_and_preserve_parent` (backend/account differ) |
+| Omit lease acquisition and fall back inline | `real_dll_post_turn_scope_lease_compacts` (worker lease/release absent) |
+| Retain completed invocation signal for delayed calls | `real_dll_post_turn_scope_lease_compacts` (post-turn compact missing) |
+| Treat busy as a reported compaction error | `real_dll_post_turn_busy_is_skipped` (busy diagnostic surfaced) |
 
 Portable JSON indexes logical log names. Optional local provenance records absolute
 paths, artifact sizes and SHA-256 hashes separately; it is not committed or used
@@ -186,34 +233,23 @@ only `-A clippy::not_unsafe_ptr_arg_deref` completes (existing warnings remain).
 These failures are not represented as clean strict lint gates; no unrelated lint
 fixes or source-level lint allowances were added.
 
-## Ledger qualification and remaining host limitations
+## Ledger qualification and remaining gaps
 
 | Row | Package evidence now established | Not established |
 |---|---|---|
 | M06 | Owned registration, ack/healing/delete/re-register, native command binding, global wrapper and real DLL dispatch | No promotion of unrelated service-lane or typed-queue evidence |
 | M07 | Template/model effects, backend failover, target wrappers and target pool selection; upstream differential traces | Exhaustive real-host weighted/nested catalog combinations are not separately replayed |
-| M08 | Existing stream/retry machines reused; exact errors, native attempt/terminal effects, secure target/auth separation; successful exit/retry release and cycle rejection in real host | **Successful cancellation cleanup RPCs**: host revokes their continuation before package cleanup |
-| M09 | Native explicit capability, absent-service inline fallback; successful compact/notice and cancel/drain at ABI seam; real-host scoped capability negotiation and delayed-work shutdown | **Successful real post-turn compaction**: ordinary invocation native lease expires after stream callback returns |
+| M08 | **Cancel contract proven in layers**: real package DLL release attempts accept only documented revocation outcomes; pinned-host loaded test asserts table reclamation before blocked callback drain and final continuation/library drain; package lift asserts all account `inFlight` values return to baseline after producer drain | Successful RPC release after revocation is not required or claimed; package DLL has no host-table introspection port |
+| M09 | **Post-turn compaction proven**: real package DLL acquires narrow scope lease, surfaces failure, performs actual host compaction after callback return, persists selected-session compaction and emits notice; busy skip, absent-capability inline rotation, shutdown cancel/release/drain; host loaded test separately proves child/main isolation and actual busy admission | No production Fabric extension or package child-transcript replay; notice is diagnostic output, not UI |
 
-Two concrete host observations must not be mistaken for package-side proof:
-
-1. Cancellation cleanup calls return exactly
-   `inactive provider continuation` after host epoch revocation. The package
-   attempts every release with a fresh cancellation token; there is no surviving
-   target/receipt authority. The host may invalidate handles itself, but package
-   tests do not inspect its internal maps or claim successful post-revocation RPCs.
-2. A delayed service worker cannot keep using its invocation native client after
-   the stream callback returns. The host `scope_lifetime` seam permits inspection
-   and shutdown waiting, **not** service calls. The root registration lease has
-   `identity: null`, so using it would launder selected-scope work; that approach
-   was rejected. Production post-turn compaction requires an explicit durable
-   scope-bound service/scheduling authority or compatible service-owned task API.
-   No such host change was made or assumed here. M09 remains partial.
-
-These are limitations of current lease/cancellation semantics, not demonstrated
-host memory-safety bugs. No host-side fix is included. Linux acceptance only;
-no real Fabric extension, live provider, typed bounded queue load or full-workspace
-Rust-1.78 gate is claimed.
+Host 229ce5a includes cancellation reclamation f5002d7 and scope-service leases.
+Host tables are not inferred from rejected cleanup RPCs: the complementary loaded
+host test explicitly checks `(false, 0, 1, 1)` → `(true, 0, 0, 0)` while the foreign
+callback is blocked, then final disappearance after producer/library drain.
+Ordinary invocation clients and `scope_lifetime` remain unsuitable for delayed
+service authority. Only the new grant is retained; no root fallback was added.
+No host source was edited. Linux acceptance only; no real Fabric extension, live
+provider, typed bounded queue load or full-workspace Rust-1.78 gate is claimed.
 
 ## Reproduce offline
 
@@ -231,7 +267,7 @@ export HOME=/tmp/m-virtual-b2/home TMPDIR=/tmp/m-virtual-b2/tmp
 export RPI_PRIVATE_TMP=$TMPDIR
 export RUSTUP_HOME="${PREPARED_RUSTUP_HOME:?}" CARGO_HOME="${PREPARED_CARGO_HOME:?}"
 export RUSTUP_AUTO_INSTALL=0 CARGO_NET_OFFLINE=true CARGO_BUILD_JOBS=6
-export RPI_TEST_HOST="${PARITY_TARGETS:?}/m-virtual-b2-178/debug/rpi"
+export RPI_TEST_HOST="${PARITY_TARGETS:?}/h-scope-lease-195/debug/rpi"
 # Run once with tc=178/version=1.78.0/RUSTFLAGS=-Dwarnings, then
 # with tc=195/version=1.95.0 and RUSTFLAGS unset:
 export CARGO_TARGET_DIR=$PARITY_TARGETS/m-virtual-b2-$tc
@@ -262,7 +298,7 @@ timeout 270 cargo +$version rustc --locked --offline -p rpi-multiprovider --lib 
 # Extract the EXACT executable Cargo just ran; never glob an older test executable.
 exe=$(python3 -c 'import re,sys; print(re.search(r"Running tests/m_virtual_loaded.rs \\(([^)]+)\\)",open(sys.argv[1]).read())[1])' /tmp/m-virtual-b2/logs/test-$tc.log)
 timeout 270 "$exe" --nocapture > /tmp/m-virtual-b2/logs/real-host-$tc.log 2>&1; echo exit=$?
-# Include these five actual results in cohort/native totals (not skipped coverage).
+# Include these eight actual results in cohort/native totals (not skipped coverage).
 for kind in test native; do
   python3 -c 'import pathlib,sys; p=pathlib.Path(sys.argv[1]); p.write_text(p.read_text()+pathlib.Path(sys.argv[2]).read_text())' \
     /tmp/m-virtual-b2/logs/$kind-$tc.log /tmp/m-virtual-b2/logs/real-host-$tc.log

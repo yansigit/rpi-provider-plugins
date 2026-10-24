@@ -1,10 +1,11 @@
 # Reconciled-host provider cohort verification
 
-**Host 8014e36 / M-VIRTUAL-B update:** current scoped package-binding results,
-rebuilt cdylib hashes, both-toolchain gates and explicit open host limitations are
-in [`evidence/m-virtual-b2.md`](evidence/m-virtual-b2.md) and its deterministic
-JSON report. M09 real post-turn compaction remains partial. The host ledger is
-read-only and was not edited.
+**Host 229ce5a / M-VIRTUAL-B scope-lease update:** current scoped package-binding
+results and both-toolchain gates (255 passed / 0 failed / 24 inherited ignored)
+are in [`evidence/m-virtual-b2.md`](evidence/m-virtual-b2.md) and its deterministic
+JSON report. M09 real post-turn compaction and layered M08 cancel cleanup are
+proven there, with package/host test boundaries and notice-channel qualifications
+explicit. The host ledger is read-only and was not edited.
 
 The `provider-parity-sdk-cohort.json` report and the rest of this page record the
 historical host-7dfadb0 cohort (commit `10515f5`); they have not been relabelled as

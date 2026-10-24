@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PACKAGES = ('rpi-antigravity-auth', 'rpi-cursor-sdk', 'rpi-multiprovider')
 HOST_CRATES = ('rpi-ai', 'rpi-plugin-sdk', 'rpi-telemetry')
 BASE = '10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53'
-HOST = '8014e36cfc9923d404a76044ba0595dc4edc98e7'
+HOST = '229ce5a7d40983ade3eefbda3523c82152a04362'
 
 
 def git(*args):
@@ -64,7 +64,7 @@ def cohort(path):
             for key, value in zip(('passed', 'failed', 'ignored'), match.groups()):
                 counts[current][key] += int(value)
     assert text.count('Doc-tests') == 3
-    assert [counts[name]['passed'] for name in PACKAGES] == [97, 62, 93]
+    assert [counts[name]['passed'] for name in PACKAGES] == [97, 62, 96]
     assert [counts[name]['ignored'] for name in PACKAGES] == [5, 17, 2]
     return counts
 
@@ -94,13 +94,13 @@ def report(logs):
             assert library.is_file()
             libraries.append({'path': f'target/{version}/debug/{library.name}'})
         native = (logs / f'native-{short}.log').read_text()
-        assert results(native) == [(25, 0, 0), (5, 0, 0)]
-        assert results((logs / f'real-host-{short}.log').read_text()) == [(5, 0, 0)]
+        assert results(native) == [(25, 0, 0), (8, 0, 0)]
+        assert results((logs / f'real-host-{short}.log').read_text()) == [(8, 0, 0)]
         assert results((logs / f'r02-{short}.log').read_text()) == [(1, 0, 0)]
         toolchains[version] = {'rustflags': '-Dwarnings' if short == '178' else '', 'cohort': cohort(logs / f'test-{short}.log'),
-            'explicitNativeAbiTests': 25, 'realHostTests': 5, 'antigravityLoadingGate': 1,
+            'explicitNativeAbiTests': 25, 'realHostTests': 8, 'antigravityLoadingGate': 1,
             'sdkPackageIds': sorted(a['package_id'] for a in sdk_artifacts), 'cdylibs': libraries,
-            'realHost': 'Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail.'}
+            'realHost': 'Pinned 229ce5a host built with Rust 1.95; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail.'}
     mutations = []
     for stem, test, expected in [
         ('v2', 'virtual_native_unsupported_v2_never_downgrades', 'host lacks secure delegation v2'),
@@ -115,6 +115,17 @@ def report(logs):
         text = (logs / f'mutate-{stem}.log').read_text()
         assert f'test {test} ... FAILED' in text and expected in text
         mutations.append({'guard': stem, 'test': test, 'result': 'killed (exit 101); mutation reverted'})
+    for stem, test, expected in [
+        ('lease-acquire', 'real_dll_post_turn_scope_lease_compacts', 'lease worker did not drain'),
+        ('lease-signal', 'real_dll_post_turn_scope_lease_compacts', 'post-turn compact missing'),
+        ('lease-busy', 'real_dll_post_turn_busy_is_skipped', 'busy is normal lost admission'),
+    ]:
+        text = (logs / f'mutate-{stem}.log').read_text()
+        assert f'test {test} ... FAILED' in text and expected in text
+        mutations.append({'guard': stem, 'test': test, 'result': 'killed (exit 101); mutation reverted'})
+    for stem in ('reclaim', 'selected'):
+        assert results((logs / f'host-{stem}.log').read_text()) == [(1, 0, 0)]
+    assert 'cancelled_auth_and_stopped_consumers_release_the_lease_without_penalty ... ok' in (logs / 'test-195.log').read_text()
     for stem, expected in [('stale', 'stale DLL'), ('missing', 'required fresh DLL')]:
         text = (logs / f'{stem}-dll.log').read_text()
         assert 'test result: FAILED' in text and expected in text
@@ -133,7 +144,9 @@ def report(logs):
     log_names += ['cursor-node24.log', 'fixtures-1.sha256', 'fixtures-2.sha256',
         'real-host-178.log', 'real-host-195.log', 'fresh-dll-178.log', 'fresh-dll-195.log',
         'stale-dll.log', 'missing-dll.log']
-    return {'schemaVersion': 2, 'status': 'provider-gates-pass-with-inherited-lint-and-host-limitations', 'host': HOST, 'base': BASE,
+    log_names += [f'mutate-lease-{stem}.log' for stem in ('acquire', 'signal', 'busy')]
+    log_names += ['host-build.log', 'host-reclaim.log', 'host-selected.log']
+    return {'schemaVersion': 3, 'status': 'provider-gates-pass-scope-lease-and-layered-cancel-cleanup-proven', 'host': HOST, 'base': BASE,
         'reviewedCommit': '916fb385bf499be2607c133a4e382d634d648cac', 'registryVersionsChanged': False,
         'sourceSha256': hashlib.sha256(''.join(rows).encode()).hexdigest(), 'toolchains': toolchains,
         'mutations': mutations, 'differentialFixtures': fixtures, 'node24Ipc': {'passed': 8, 'failed': 0, 'evidence': 'historical; not rerun for native review fixes'},
@@ -147,12 +160,16 @@ def report(logs):
         'ledger': {
             'M06': 'Native owned catalog binding, publication acknowledgement, healing/deletion/re-registration, global wrapper and command binding proven by ABI tests; existing service lane unchanged.',
             'M07': 'Virtual template/backend effects bound; real host target pool and backend failover proven; 70 upstream differential scenarios retained.',
-            'M08': 'Reuses existing retry state machines (96 lift scenarios); native ordered effects, missing terminal, fail-closed v2 and real host guards proven. Successful release after host cancellation is NOT proven: host rejects cleanup after epoch revocation.',
-            'M09': 'PARTIAL: explicit service capability and absent-service inline fallback; successful compact/notice and cancellation/drain proven at native ABI seam; real host proves scoped service negotiation and delayed-work shutdown. Successful POST-TURN real-host compaction is NOT proven (invocation lease expires).'},
+            'M08': 'Cancellation contract proven in layers: package DLL attempts exactly one release per handle and accepts only success/documented revocation errors; pinned host loaded_cancel_reclaims_tables_before_blocked_callback_and_library_drain proves table reclamation before producer drain and final ownership drain; package lift test compares every account inFlight with baseline after producer drain. Successful post-revocation release RPCs are neither required nor claimed.',
+            'M09': 'POST-TURN real-host package compaction proven: pi-fabric v1 + Fabric capability + services.scopeLease.v1; narrow lease acquired before callback return, worker signal, actual host IsIdle/Compact after agent_end, exactly one persisted compaction in selected session, TS notice on diagnostics, busy skip, absent capability inline failover, shutdown release/drain. Pinned host test separately proves child/main isolation and real busy admission.'},
+        'layeredHostProofs': {'cancelReclamation': 'loaded_cancel_reclaims_tables_before_blocked_callback_and_library_drain',
+            'scopeIsolationAndBusy': 'loaded_scope_service_compaction_after_callback_is_selected_idle_only_and_revocable',
+            'toolchain': '1.95.0', 'passed': 2, 'failed': 0},
         'limitations': ['24 inherited ignored cohort tests; no new ignores or assertion weakening.',
             'Strict clippy and whole-workspace fmt have inherited baseline failures; see formatAndLint and Markdown qualification.',
-            'Real-host cancellation rejects releaseAuth/releaseTarget with inactive provider continuation; test requires exactly one cleanup attempt per handle and this exact error, not successful release.',
-            'Host invocation native leases are cancelled when their callback returns. scope_lifetime permits inspection/shutdown only, not service calls. Root registration leases have identity null and are not a safe substitute for selected execution scope. No root fallback is implemented.',
+            'Cancellation release RPCs may succeed or return inactive provider continuation / delegation epoch revoked / expired provider continuation. Host tables are checked in the pinned host loaded test, not via an invented package introspection port.',
+            'Package real-host transcript test selects main; child/main isolation and actual competing-run busy admission are complementary pinned-host loaded-library tests. Package busy handling injects the exact service error.',
+            'ScopeServiceLease grants no UI authority. The exact TS success notice is emitted on stderr, not through an expired invocation UI client. No root fallback is implemented.',
             'No real Fabric extension, live auth/network, host typed-queue load, or full-workspace gate claimed. r02 runs the requested AG library branch; its pre-existing Cursor/legacy branches skip. Linux only.',
             'Older evidence JSON files remain historical and are not promoted by this report. Host ledger was not edited (read-only constraint).'],
         'logs': log_names}
