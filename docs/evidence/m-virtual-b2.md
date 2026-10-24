@@ -11,7 +11,7 @@ hashes, SDK identities, counts and limitations: [`m-virtual-b2.json`](m-virtual-
   based on `10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53`.
   Checkout location and branch are local provenance, not portable evidence.
 - All three provider packages use host
-  `229ce5a7d40983ade3eefbda3523c82152a04362`, unchanged Git URL. Cargo's existing
+  `e9c052653975c1d648092ab52e817a0b2f4b575c`, unchanged Git URL. Cargo's existing
   URL cache was seeded from the local read-only host repository, not the network.
 - Registry dependency versions/checksums are byte-for-byte equivalent to the base
   lockfile. The re-pinned complete provider cohort compiled on Rust 1.78.0 and 1.95.0.
@@ -51,6 +51,27 @@ Scope-lease adoption (starting at `6fbaecd`):
   The Markdown/JSON pair and both differential fixtures were checked byte-identical
   across two regenerations. Prior mutation/IPC/missing-stale evidence is historical,
   explicitly distinguished from the three new lease mutations.
+
+## Final host re-pin
+
+- `daad9a9`: re-pin all three providers from 229ce5a to final host
+  `e9c052653975c1d648092ab52e817a0b2f4b575c` using local-only Cargo Git cache
+  imports. Only the three host-source lock entries changed; registry entries and
+  every other lockfile field are unchanged.
+- Built the host with Rust 1.95 in a new detached checkout
+  `/home/user/Projects/pi-rust--host-e9c0526`, target
+  `/home/user/Projects/.targets/host-e9c0526-195`. No host-source edits.
+- Rebuilt all provider cdylibs on 1.78.0 (`-Dwarnings`) and 1.95.0. Per toolchain:
+  **256 passed / 0 failed / 24 ignored**, including **8 real-host DLL tests**
+  against that new host with DLLs rebuilt after the exact test executables;
+  **25 native ABI tests** and **1 explicit AG loading test** passed.
+- Regenerated the **70 virtual / 96 lift** fixtures twice byte-identically,
+  unchanged from the tracked fixtures. Regenerated portable evidence twice and
+  verified freshness after commit. Logs and separate local provenance:
+  `/tmp/m-virtual-b2-final/`; isolated HOME/TMP and parent are mode 0700.
+- Earlier mutation, missing/stale negative, Node IPC and complementary host-test
+  logs remain historical, copied from `/tmp/m-virtual-b2-cancel/logs`; they were
+  not rerun for this pin-only change. No new package behavior or coverage claims.
 
 ## Binding decisions
 
@@ -148,7 +169,7 @@ weakened assertions were introduced in the new acceptance suite. The existing
 its unrelated legacy-provider and Cursor-library branches still report their
 pre-existing skips. Historical Cursor IPC evidence remains **8/8 on Node 24.22.0**
 (not rerun for these native-only fixes).
-Both MP cdylibs are loaded into the real host built from pinned 229ce5a with Rust
+Both MP cdylibs are loaded into the real host built from pinned e9c0526 with Rust
 1.95 in the read-only host worktree, using its separate target directory
 `/home/user/Projects/.targets/h-scope-lease-195`. The same host executable serves
 both package toolchains. Fixture target/service DLLs are independently compiled;
@@ -268,7 +289,7 @@ fixes or source-level lint allowances were added.
 | M08 | **Cancel contract proven in layers**: real package DLL release attempts accept only documented revocation outcomes; pinned-host loaded test asserts table reclamation before blocked callback drain and final continuation/library drain; package lift asserts all account `inFlight` values return to baseline after producer drain | Successful RPC release after revocation is not required or claimed; package DLL has no host-table introspection port |
 | M09 | **Post-turn compaction proven**: real package DLL acquires narrow scope lease, surfaces failure, performs actual host compaction after callback return, persists selected-session compaction and emits notice; busy skip, absent-capability inline rotation, shutdown cancel/release/drain; host loaded test separately proves child/main isolation and actual busy admission | No production Fabric extension or package child-transcript replay; notice is diagnostic output, not UI |
 
-Host 229ce5a includes cancellation reclamation f5002d7 and scope-service leases.
+Host e9c0526 includes cancellation reclamation f5002d7 and scope-service leases.
 Host tables are not inferred from rejected cleanup RPCs: the complementary loaded
 host test explicitly checks `(false, 0, 1, 1)` → `(true, 0, 0, 0)` while the foreign
 callback is blocked, then final disappearance after producer/library drain.
@@ -293,7 +314,7 @@ export HOME=/tmp/m-virtual-b2/home TMPDIR=/tmp/m-virtual-b2/tmp
 export RPI_PRIVATE_TMP=$TMPDIR
 export RUSTUP_HOME="${PREPARED_RUSTUP_HOME:?}" CARGO_HOME="${PREPARED_CARGO_HOME:?}"
 export RUSTUP_AUTO_INSTALL=0 CARGO_NET_OFFLINE=true CARGO_BUILD_JOBS=6
-export RPI_TEST_HOST="${PARITY_TARGETS:?}/h-scope-lease-195/debug/rpi"
+export RPI_TEST_HOST="${PARITY_TARGETS:?}/host-e9c0526-195/debug/rpi"
 # Run once with tc=178/version=1.78.0/RUSTFLAGS=-Dwarnings, then
 # with tc=195/version=1.95.0 and RUSTFLAGS unset:
 export CARGO_TARGET_DIR=$PARITY_TARGETS/m-virtual-b2-$tc
