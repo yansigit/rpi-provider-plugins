@@ -270,6 +270,135 @@ fn virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown() {
 }
 
 #[test]
+fn virtual_native_inherited_pins_restore_journal_and_preserve_parent() {
+    // Re-exec only this ABI case so the process environment cannot race other
+    // lifecycle tests. The pins enter through the real capture-session path.
+    const CHILD: &str = "RPI_TEST_INHERITED_PINS_CHILD";
+    if std::env::var_os(CHILD).is_none() {
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", "virtual_native_inherited_pins_restore_journal_and_preserve_parent", "--nocapture"])
+            .env(CHILD, "1")
+            .env("PI_MULTIPROVIDER_SESSION_PINS", json!([
+                {"pool":"virtual-native::probe-model","accountId":"plain::probe-model","label":"Plain"},
+                {"pool":"example","accountId":"b","label":"B"}
+            ]).to_string())
+            .output().unwrap();
+        assert!(
+            output.status.success(),
+            "{}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        return;
+    }
+    let temp = tempfile_dir();
+    let registered = virtual_setup(&temp);
+    let fake = unsafe { &*registered.fake };
+    write_store(
+        &temp.join("multiprovider-auth.json"),
+        vec![
+            account("a", "A", json!({"type":"api_key","key":"k-a"}), true),
+            account("b", "B", json!({"type":"api_key","key":"k-b"}), true),
+        ],
+        Some(1.0),
+    );
+    virtual_store(&temp, Some(virtual_config()));
+    let store_path = temp.join("multiprovider-auth.json");
+    let store = std::fs::read(&store_path).unwrap();
+    let recorded = |key: &str| {
+        vec![
+            json!({"type":"custom","customType":"pi-multiprovider:switch-account","data":{"pool":"virtual-native::probe-model","key":key,"accountId":"example::probe-model"}}),
+            json!({"type":"custom","customType":"pi-multiprovider:switch-account","data":{"pool":"example","key":key,"accountId":"a"}}),
+        ]
+    };
+    fake.script("a", vec![success(); 8]);
+    fake.script("b", vec![success(); 8]);
+    let selected = || {
+        fake.delegates.lock().unwrap().clear();
+        let (message, _) = request(registered.fake, &registered, "virtual-native");
+        assert_eq!(message["stopReason"], "stop", "{message}");
+        let target = fake.delegates.lock().unwrap()[0]["target"].clone();
+        fake.continuations.lock().unwrap().clear();
+        let (message, _) = request(registered.fake, &registered, "example");
+        assert_eq!(message["stopReason"], "stop", "{message}");
+        (target, continuation_accounts(registered.fake))
+    };
+    *fake.entries.lock().unwrap() = recorded("session-parent");
+    emit_event(&registered, EventTag::SessionStart);
+    assert_eq!(selected(), (json!("target:example"), vec!["a".to_owned()]));
+    assert!(
+        fake.appended.lock().unwrap().is_empty(),
+        "recorded pools override inherited pins"
+    );
+
+    fake.inspect(Inspect {
+        child: true,
+        scope_id: Some("inherited-child".into()),
+        session_id: String::new(),
+    });
+    fake.entries.lock().unwrap().clear();
+    std::fs::write(
+        &store_path,
+        json!({"version":1,"providers":{},"virtuals":{}}).to_string(),
+    )
+    .unwrap();
+    emit_event(&registered, EventTag::SessionStart);
+    assert!(
+        fake.appended.lock().unwrap().is_empty(),
+        "missing schedulers stay pending"
+    );
+    std::fs::write(&store_path, &store).unwrap();
+    emit_event(&registered, EventTag::BeforeAgentStart);
+    assert!(
+        fake.appended.lock().unwrap().is_empty(),
+        "missing identity stays pending"
+    );
+    fake.inspect(Inspect {
+        child: true,
+        scope_id: Some("inherited-child".into()),
+        session_id: "session-child".into(),
+    });
+    emit_event(&registered, EventTag::BeforeAgentStart);
+    assert_eq!(selected(), (json!("target:plain"), vec!["b".to_owned()]));
+    let appended = fake.appended.lock().unwrap().clone();
+    assert_eq!(
+        appended.len(),
+        2,
+        "both inherited decisions must be journalled: {appended:?}"
+    );
+    for (pool, account) in [
+        ("virtual-native::probe-model", "plain::probe-model"),
+        ("example", "b"),
+    ] {
+        assert!(
+            appended.iter().any(|entry| entry["pool"] == pool
+                && entry["accountId"] == account
+                && entry["key"] == "session-child"),
+            "{appended:?}"
+        );
+    }
+    emit_event(&registered, EventTag::BeforeAgentStart);
+    assert_eq!(
+        fake.appended.lock().unwrap().len(),
+        2,
+        "do not append twice"
+    );
+    *fake.entries.lock().unwrap() = recorded("session-child");
+    emit_event(&registered, EventTag::SessionStart);
+    assert_eq!(selected(), (json!("target:example"), vec!["a".to_owned()]));
+    assert_eq!(
+        fake.appended.lock().unwrap().len(),
+        2,
+        "recorded pins win in the child too"
+    );
+    emit_event(&registered, EventTag::SessionShutdown);
+    fake.inspect(Inspect::default());
+    emit_event(&registered, EventTag::BeforeAgentStart);
+    assert_eq!(selected(), (json!("target:example"), vec!["a".to_owned()]));
+    finish(registered.fake);
+}
+
+#[test]
 fn virtual_native_missing_session_identity_fails_explicitly() {
     let temp = tempfile_dir();
     let registered = virtual_setup(&temp);

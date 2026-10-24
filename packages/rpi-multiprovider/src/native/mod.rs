@@ -416,8 +416,8 @@ impl Shared {
             let scope = state.scopes.entry(scope_id).or_default();
             scope.pending = pins.clone();
             scope.pins = pins;
+            scope.pending_inherited = inherited.clone();
             scope.inherited = inherited;
-            scope.pending_inherited = Vec::new();
             scope.origin = value["origin"].as_str().map(str::to_owned);
         }
     }
