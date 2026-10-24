@@ -159,6 +159,57 @@ async fn driver_matches_all_original_requests_events_and_results() {
     }
 }
 #[tokio::test(start_paused = true)]
+async fn private_receipt_precedes_start_and_never_leaks_into_public_events_or_result() {
+    let fixture: Value = serde_json::from_str(include_str!("fixtures/stream.json")).unwrap();
+    let case = fixture["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["status"] == 200 && case["events"][0]["type"] == "start")
+        .unwrap();
+    for private in [true, false] {
+        let sessions = Mutex::new(SessionStore::new(String::new()));
+        let source = ScriptedSource {
+            case,
+            sessions: &sessions,
+            ids: Mutex::new(serde_json::from_value(case["ids"].clone()).unwrap()),
+            dropped: Arc::new(AtomicBool::new(false)),
+            delay: 0,
+            hang: false,
+        };
+        let mut sink = Events::default();
+        let result = driver::run(
+            &source,
+            &case["model"],
+            &case["context"],
+            &case["options"],
+            CancellationToken::new(),
+            private,
+            &mut sink,
+        )
+        .await;
+        if private {
+            assert_eq!(sink.0[0]["type"], "response");
+            assert_eq!(sink.0[1]["type"], "start");
+            assert_eq!(
+                sink.0.remove(0)["response"]["headers"],
+                json!([["fixture", b"private".to_vec()]])
+            );
+        } else {
+            assert_eq!(sink.0[0]["type"], "start");
+        }
+        assert!(sink.0.iter().all(|event| event["type"] != "response"));
+        assert_eq!(json!(sink.0), case["events"]);
+        assert_eq!(result, case["result"]);
+        let public = serde_json::to_string(&(sink.0, result)).unwrap();
+        assert!(!public.contains("headers"));
+        assert!(!public.contains("fixture-access"));
+        assert!(!public.contains("fixture-project"));
+        assert!(!public.contains("[112,114,105,118,97,116,101]"));
+    }
+}
+
+#[tokio::test(start_paused = true)]
 async fn absolute_deadline_cancellation_priority_and_accepted_headers() {
     let caller = CancellationToken::new();
     let deadline = Deadline::new(caller.clone());

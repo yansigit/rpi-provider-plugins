@@ -345,6 +345,115 @@ async fn malformed_nonprogressing_chunk_yields_to_timeout_after_eof() {
     server.await.unwrap();
 }
 
+// Deliberately stop calling Body::next: the producer is blocked on its
+// bounded channel, not merely waiting for the server to send another byte.
+#[tokio::test]
+async fn blocked_downstream_preserves_idle_timeout_and_disabled_timeout_cancellation() {
+    for idle_ms in [100, 0] {
+        let (client, acceptor) = tls();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = tokio::spawn(async move {
+            let (socket, _) = listener.accept().await.unwrap();
+            let mut socket = acceptor.accept(socket).await.unwrap();
+            head(&mut socket).await;
+            socket.read_u8().await.unwrap();
+            socket.write_all(b"HTTP/1.1 200 OK\r\n\r\n").await.unwrap();
+            socket.write_all(&vec![b'x'; 128 * 1024]).await.unwrap();
+            let _ = socket.read_to_end(&mut Vec::new()).await;
+        });
+        let mut opts = options();
+        opts.idle_timeout_ms = idle_ms;
+        let signal = opts.signal.clone();
+        let mut response = client
+            .fetch(
+                &format!("https://localhost:{}/", address.port()),
+                None,
+                &[],
+                b"x",
+                opts,
+            )
+            .await
+            .unwrap();
+        tokio::time::sleep(Duration::from_millis(300)).await;
+        if idle_ms == 0 {
+            assert!(
+                !server.is_finished(),
+                "disabled idle timeout must leave a blocked producer alive"
+            );
+            signal.cancel();
+        }
+        // The producer must close the TLS socket BEFORE downstream resumes.
+        tokio::time::timeout(Duration::from_secs(2), server)
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            response.body.next().await.unwrap_err(),
+            if idle_ms == 0 {
+                "The operation was aborted"
+            } else {
+                "Antigravity response stalled: no data for 100ms"
+            }
+        );
+        assert!(response.body.next().await.unwrap().is_none());
+    }
+}
+
+#[tokio::test]
+async fn slow_body_consumer_over_four_mib_is_ordered_and_lossless_with_idle_disabled() {
+    let (client, acceptor) = tls();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let expected: Vec<u8> = (0..5 * 1024 * 1024).map(|i| (i % 251) as u8).collect();
+    let payload = expected.clone();
+    let server = tokio::spawn(async move {
+        let (socket, _) = listener.accept().await.unwrap();
+        let mut socket = acceptor.accept(socket).await.unwrap();
+        head(&mut socket).await;
+        socket.read_u8().await.unwrap();
+        socket
+            .write_all(
+                format!(
+                    "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n",
+                    payload.len()
+                )
+                .as_bytes(),
+            )
+            .await
+            .unwrap();
+        socket.write_all(&payload).await.unwrap();
+        socket.shutdown().await.unwrap();
+    });
+    let mut opts = options();
+    opts.idle_timeout_ms = 0;
+    let mut response = client
+        .fetch(
+            &format!("https://localhost:{}/", address.port()),
+            None,
+            &[],
+            b"x",
+            opts,
+        )
+        .await
+        .unwrap();
+    tokio::time::sleep(Duration::from_millis(150)).await;
+    let mut actual = Vec::new();
+    let mut chunks = 0;
+    tokio::time::timeout(Duration::from_secs(10), async {
+        while let Some(bytes) = response.body.next().await.unwrap() {
+            actual.extend(bytes);
+            chunks += 1;
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    assert!(chunks > 64);
+    assert_eq!(actual, expected);
+    server.await.unwrap();
+}
+
 #[path = "common/tls.rs"]
 mod tls_fixture;
 use tls_fixture::tls;

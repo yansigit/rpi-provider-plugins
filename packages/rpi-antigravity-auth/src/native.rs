@@ -476,6 +476,10 @@ async fn poll_cancel<T>(
         tokio::select! {biased; value=&mut work=>return value, _=timer.tick()=>{}}
     }
 }
+#[cfg(test)]
+#[path = "native_stream_tests.rs"]
+mod stream_tests;
+
 struct Sink {
     emit: Option<ProviderStreamEmitFn>,
     context: usize,
