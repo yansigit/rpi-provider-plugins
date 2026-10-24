@@ -84,6 +84,7 @@ pub struct NativeHost {
     /// Options copied from the wrapper request, minus reserved/private fields.
     provider_options: Map<String, Value>,
     disable_provider_retries: bool,
+    model: Value,
 }
 
 impl NativeHost {
@@ -112,7 +113,13 @@ impl NativeHost {
             services: None,
             provider_options,
             disable_provider_retries,
+            model: Value::Null,
         }
+    }
+
+    pub(super) fn with_model(mut self, model: Value) -> Self {
+        self.model = model;
+        self
     }
 
     fn cancelled(&self) -> bool {
@@ -206,7 +213,7 @@ impl NativeHost {
         let signal = self.signal.clone();
         let provider = attempt.provider_id;
         let model = attempt.model["id"].as_str().unwrap_or_default().to_owned();
-        let guard = tokio::task::spawn_blocking(move || {
+        let (guard, model) = tokio::task::spawn_blocking(move || {
             let capabilities = operation(
                 api,
                 &descriptor,
@@ -259,7 +266,7 @@ impl NativeHost {
             if guard.receipt.is_none() {
                 return Err("missing account authentication receipt".into());
             }
-            Ok(guard)
+            Ok((guard, target["model"].clone()))
         })
         .await
         .map_err(|_| "target authentication task stopped".to_owned())??;
@@ -280,12 +287,13 @@ impl NativeHost {
         options.insert("maxRetries".into(), json!(0));
         let request = json!({"version":2,"continuation":self.descriptor,"target":guard.target,
             "authReceipt":guard.receipt,"context":attempt.context,"options":options});
-        self.spawn_attempt(request, Some(guard))
+        self.spawn_attempt(request, model, Some(guard))
     }
 
     fn spawn_attempt(
         &self,
         request: Value,
+        model: Value,
         target: Option<TargetGuard>,
     ) -> Result<AttemptStream, String> {
         *self.response.lock().unwrap() = None;
@@ -304,6 +312,7 @@ impl NativeHost {
             sink,
             api: self.api,
             request,
+            model,
             signal: self.signal.clone(),
             cancelled: Arc::clone(&self.cancelled),
             _target: target,
@@ -557,6 +566,7 @@ struct Attempt {
     sink: Sink,
     api: PluginApi,
     request: Value,
+    model: Value,
     signal: CancellationToken,
     cancelled: Arc<dyn Fn() -> bool + Send + Sync>,
     _target: Option<TargetGuard>,
@@ -612,7 +622,12 @@ impl Attempt {
                 json!({"type":"done","reason":terminal_reason(&message),"message":message})
             }
             (_, Some(message)) => json!({"type":"error","reason":"error","error":message}),
-            _ => json!({"type":"error","reason":"error","error":failure_message(request)}),
+            _ => {
+                let diagnostic = out.to_string_lossy();
+                let diagnostic =
+                    (status != 0 && !diagnostic.trim().is_empty()).then_some(diagnostic.as_ref());
+                json!({"type":"error","reason":"error","error":failure_message(&self.model, diagnostic)})
+            }
         };
         if let Some(message) = event.get("message").or_else(|| event.get("error")) {
             *sink.terminal.lock().unwrap() = Some(message.clone());
@@ -669,7 +684,7 @@ impl Host for NativeHost {
         if let Auth::Receipt(receipt) = auth {
             request["authReceipt"] = json!(receipt);
         }
-        self.spawn_attempt(request, None)
+        self.spawn_attempt(request, self.model.clone(), None)
     }
 
     fn response(&self) -> Option<Response> {
@@ -704,8 +719,7 @@ fn terminal_reason(message: &Value) -> &'static str {
     }
 }
 
-fn failure_message(request: &Value) -> Value {
-    let model = &request["model"];
+fn failure_message(model: &Value, diagnostic: Option<&str>) -> Value {
     json!({
         "role":"assistant",
         "content":[],
@@ -715,7 +729,7 @@ fn failure_message(request: &Value) -> Value {
         "usage":{"input":0,"output":0,"cacheRead":0,"cacheWrite":0,"totalTokens":0,
             "cost":{"input":0,"output":0,"cacheRead":0,"cacheWrite":0,"total":0}},
         "stopReason":"error",
-        "errorMessage":"Provider stream ended without a terminal event",
+        "errorMessage":diagnostic.unwrap_or("Provider stream ended without a terminal event"),
         "timestamp":0
     })
 }

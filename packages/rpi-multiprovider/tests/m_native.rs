@@ -218,7 +218,7 @@ extern "C" fn fake_continuation(
             json!({"version":1,"delegationVersions":if fake.v2.load(std::sync::atomic::Ordering::SeqCst) {vec![1,2]} else {vec![1]},"opaqueTargets":true,"ambientReceipts":true,"epochRevocation":true}),
         ),
         Some("resolveTarget") => Some(
-            json!({"version":2,"target":format!("target:{}",value["provider"].as_str().unwrap()),"model":{"provider":value["provider"],"id":value["model"]}}),
+            json!({"version":2,"target":format!("target:{}",value["provider"].as_str().unwrap()),"model":{"provider":value["provider"],"id":value["model"],"api":"faux"}}),
         ),
         Some("auth.resolveAmbient") => Some(
             json!({"version":2,"receipt":format!("receipt:{}",value["provider"].as_str().unwrap())}),

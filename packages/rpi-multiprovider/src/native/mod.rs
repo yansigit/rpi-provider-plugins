@@ -932,6 +932,7 @@ extern "C" fn invoke(
                 options,
                 true,
             )
+            .with_model(work_request["model"].clone())
             .with_services(
                 runtime.shared.clone(),
                 scope_id.clone(),

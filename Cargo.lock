@@ -2734,6 +2734,7 @@ dependencies = [
  "getrandom 0.2.17",
  "indexmap 2.11.4",
  "regex",
+ "rpi-ai 0.8.4",
  "rpi-node-collation",
  "rpi-plugin-sdk 0.8.4",
  "serde",

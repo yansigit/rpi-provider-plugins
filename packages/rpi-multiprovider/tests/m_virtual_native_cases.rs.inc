@@ -98,6 +98,21 @@ fn virtual_native_unsupported_v2_never_downgrades() {
 }
 #[test]
 fn virtual_native_missing_terminal_fails_and_releases() {
+    virtual_missing_terminal(
+        0,
+        Value::Null,
+        "Provider stream ended without a terminal event",
+    );
+}
+#[test]
+fn virtual_native_transport_failure_preserves_diagnostic_and_identity() {
+    virtual_missing_terminal(
+        1,
+        json!("delegation transport refused"),
+        "\"delegation transport refused\"",
+    );
+}
+fn virtual_missing_terminal(status: i32, output: Value, diagnostic: &str) {
     let temp = tempfile_dir();
     let registered = virtual_setup(&temp);
     let fake = unsafe { &*registered.fake };
@@ -107,16 +122,21 @@ fn virtual_native_missing_terminal_fails_and_releases() {
             provider,
             vec![Attempt {
                 frames: vec![],
-                message: Value::Null,
-                status: 0,
+                message: output.clone(),
+                status,
             }],
         );
     }
     let (message, _) = request(registered.fake, &registered, "virtual-native");
-    assert_eq!(
-        message["errorMessage"],
-        "Provider stream ended without a terminal event"
-    );
+    let _: rpi_ai::AssistantMessage = serde_json::from_value(message.clone())
+        .expect("fallback must be a real typed assistant message");
+    assert_eq!(message["api"], "faux");
+    assert_eq!(message["model"], "probe-model");
+    assert!(matches!(
+        message["provider"].as_str(),
+        Some("example" | "plain")
+    ));
+    assert_eq!(message["errorMessage"], diagnostic);
     let attempts = fake.delegates.lock().unwrap();
     assert_eq!(attempts.len(), 1, "missing-terminal error is nonretryable");
     let target = attempts[0]["target"].as_str().unwrap();

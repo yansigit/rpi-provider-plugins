@@ -27,4 +27,5 @@ tokio.workspace = true
 tokio-util = { version = "0.7", features = ["rt"] }
 
 [dev-dependencies]
+rpi-ai = { git = "https://github.com/yansigit/pi-rust", rev = "8014e36cfc9923d404a76044ba0595dc4edc98e7", default-features = false }
 tokio = { workspace = true, features = ["macros"] }
