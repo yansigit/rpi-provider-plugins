@@ -11,14 +11,16 @@
 //! unwrapped base. The host rebuilds those chains on every catalog publication,
 //! which is what Pi's `install()` gets from lifting the current provider once and
 //! from `isLiftOf()` recognizing its own composed copy. This module never wraps
-//! another registration's wrapper, never registers an alias provider, and never
-//! copies a provider object.
+//! another registration's wrapper or copies a provider object. Virtual aliases
+//! are owned catalog entries backed by a fail-closed base; only this wrapper
+//! has the continuation authority needed to dispatch them.
 //!
 //! A provider with no stored pool is delegated unchanged (ambient auth, no
 //! scheduler lease), so installing multiprovider cannot alter its identity.
 pub mod command_port;
 pub mod commands;
 pub mod credentials;
+mod fabric;
 pub mod lift;
 pub mod services;
 pub mod virtuals;
@@ -100,6 +102,8 @@ pub struct Shared {
     pub(super) stopping: CancellationToken,
     registrations: tokio::sync::Mutex<()>,
     reconcile: tokio::sync::Mutex<()>,
+    virtuals: tokio::sync::Mutex<HashMap<Option<String>, virtuals::Catalog>>,
+    compactions: fabric::Tasks,
 }
 
 impl std::ops::Deref for Runtime {
@@ -134,6 +138,8 @@ impl Runtime {
                 stopping: CancellationToken::new(),
                 registrations: tokio::sync::Mutex::new(()),
                 reconcile: tokio::sync::Mutex::new(()),
+                virtuals: tokio::sync::Mutex::new(HashMap::new()),
+                compactions: fabric::Tasks::default(),
             }),
         })
     }
@@ -351,6 +357,8 @@ impl Shared {
             self.ensure_registration(provider).await?;
         }
 
+        self.reconcile_virtuals(client, scope_id.clone(), signal)
+            .await?;
         self.apply_pins(scope_id, signal).await;
         Ok(())
     }
@@ -600,7 +608,11 @@ fn inventory(store: &Store, provider: &str) -> Result<Vec<Account>, String> {
     Ok(accounts)
 }
 
-fn sync_request(api: &PluginApi, request: Value) -> Result<Value, String> {
+fn sync_request(api: &PluginApi, mut request: Value) -> Result<Value, String> {
+    request
+        .as_object_mut()
+        .ok_or("native request must be an object")?
+        .insert("version".into(), 1.into());
     let Some(call) = api.native_request else {
         return Err("host lacks native runtime ports".into());
     };
@@ -660,6 +672,65 @@ fn check_capabilities(api: &PluginApi) -> Result<(), String> {
     }
 }
 
+/// An alias base has no continuation and must never execute a backend itself.
+extern "C" fn virtual_base(
+    request: StbStringRef,
+    _: Option<rpi_plugin_sdk::ProviderStreamEmitFn>,
+    _: *mut c_void,
+    _: *const rpi_plugin_sdk::ProviderStreamControl,
+    _: Option<rpi_plugin_sdk::ProviderStreamCompletionFn>,
+    _: *mut c_void,
+    out: *mut StbString,
+    _: *mut c_void,
+) -> i32 {
+    rpi_plugin_sdk::guard_or(1, || {
+        if out.is_null() {
+            return 2;
+        }
+        let Ok(request) = serde_json::from_str::<Value>(unsafe { request.as_str() }) else {
+            return 2;
+        };
+        unsafe {
+            *out = StbString::from_string(
+                error_message(&request, "multiprovider: session not ready", false).to_string(),
+            );
+        }
+        0
+    })
+}
+
+fn register_virtual_base(api: &PluginApi, state: *mut c_void) -> Result<(), String> {
+    let id = virtuals::IMPLEMENTATION_ID;
+    let declare = api
+        .declare
+        .ok_or("multiprovider requires native provider declarations")?;
+    let register = api
+        .register_streaming_provider
+        .ok_or("multiprovider requires native streaming providers")?;
+    let status = declare(StbStringRef::from_str(
+        &json!({"providers":[{"id":id,"models":[],"requiresAuth":false}]}).to_string(),
+    ));
+    if status != 0 {
+        return Err(format!(
+            "multiprovider virtual base declaration failed ({status})"
+        ));
+    }
+    let status = register(
+        StbStringRef::from_str(id),
+        StbStringRef::from_str(""),
+        StbStringRef::from_str("openai-completions"),
+        virtual_base,
+        rpi_plugin_sdk::callbacks::free_string,
+        state,
+    );
+    if status != 0 {
+        return Err(format!(
+            "multiprovider virtual base registration failed ({status})"
+        ));
+    }
+    Ok(())
+}
+
 fn wrapper_manifest() -> Value {
     json!({"version":1,"id":WRAPPER_ID})
 }
@@ -692,6 +763,7 @@ extern "C" fn finish_shutdown(context: *mut c_void) -> i32 {
             .ok()
             .and_then(|mut commands| commands.take());
         drop(commands);
+        runtime.compactions.drain(None);
         runtime.context.finish_shutdown();
         0
     })
@@ -722,8 +794,10 @@ extern "C" fn event(
         }
         let tag = value["tag"].as_u64().unwrap_or_default();
         let signal = runtime.stopping.child_token();
+        let client = rpi_plugin_sdk::provider::native::Client::new(&runtime.api)
+            .and_then(|client| client.scoped());
         let result = runtime.context.run(&signal, async {
-            let client = runtime.scoped().await?;
+            let client = client?;
             match tag {
                 x if x == EventTag::SessionStart as u64 => {
                     runtime.reconcile(&client, &signal, true).await
@@ -734,6 +808,14 @@ extern "C" fn event(
                 x if x == EventTag::SessionShutdown as u64 => {
                     let info = runtime.inspect(&client, &signal).await?;
                     let scope_id = info["scopeId"].as_str().map(str::to_owned);
+                    let shared = runtime.shared.clone();
+                    let cleanup_scope = scope_id.clone();
+                    tokio::task::spawn_blocking(move || {
+                        shared.compactions.drain(Some(&cleanup_scope))
+                    })
+                    .await
+                    .map_err(|e| e.to_string())?;
+                    runtime.virtuals.lock().await.remove(&scope_id);
                     runtime.release_session(scope_id).await;
                     Ok(())
                 }
@@ -804,8 +886,13 @@ extern "C" fn invoke(
         };
         let work_cancelled = Arc::clone(&cancelled);
         let work_signal = signal.clone();
+        let work_request = request.clone();
+        // Capture on the foreign callback thread. Re-capturing the startup
+        // lease on a worker loses the selected session and child authority.
+        let client = rpi_plugin_sdk::provider::native::Client::new(&runtime.api)
+            .and_then(|client| client.scoped());
         let work = async move {
-            let client = runtime.scoped().await?;
+            let client = client?;
             let info = runtime.inspect(&client, &work_signal).await?;
             let scope_id = info["scopeId"].as_str().map(str::to_owned);
             let affinity_key = runtime
@@ -820,6 +907,17 @@ extern "C" fn invoke(
                         .or_else(|| info["identity"]["sessionId"].as_str().map(str::to_owned))
                 })
                 .filter(|key| !key.is_empty());
+            let virtual_config = runtime
+                .virtuals
+                .lock()
+                .await
+                .get(&scope_id)
+                .and_then(|catalog| {
+                    catalog
+                        .configs
+                        .get(&provider_id)
+                        .map(|config| (config.clone(), catalog.service.clone()))
+                });
             let pool = runtime.pool(&provider_id, &work_signal).await?;
             if pool.as_ref().is_some_and(Shared::has_accounts) {
                 runtime.ensure_registration(&provider_id).await?;
@@ -833,6 +931,15 @@ extern "C" fn invoke(
                 data,
                 options,
                 true,
+            )
+            .with_services(
+                runtime.shared.clone(),
+                scope_id.clone(),
+                client.clone(),
+                virtual_config
+                    .as_ref()
+                    .map(|(_, service)| service.clone())
+                    .unwrap_or_else(|| runtime.service.clone()),
             );
             let lift_request = crate::lift::Request {
                 provider_id: provider_id.clone(),
@@ -844,6 +951,44 @@ extern "C" fn invoke(
                 kind,
                 signal: work_signal.clone(),
             };
+            if let Some((config, service)) = virtual_config {
+                let catalog = client
+                    .request(
+                        json!({"port":"providers","action":"inspect"}),
+                        work_signal.clone(),
+                    )
+                    .await?;
+                let virtual_host = Arc::new(virtuals::NativeVirtualHost {
+                    host,
+                    catalog,
+                    affinity: lift_request.affinity_key.clone().unwrap_or_default(),
+                });
+                let provider = crate::virtual_provider::VirtualProvider::new(
+                    service,
+                    config,
+                    virtual_host.clone(),
+                    None,
+                );
+                provider
+                    .open(
+                        kind,
+                        &work_request["model"],
+                        work_request["context"].clone(),
+                        work_request["options"]
+                            .as_object()
+                            .cloned()
+                            .unwrap_or_default(),
+                        work_signal.clone(),
+                        false,
+                    )
+                    .drive()
+                    .await;
+                virtual_host.host.finish().await;
+                return virtual_host
+                    .host
+                    .terminal()
+                    .ok_or_else(|| "Provider stream ended without a terminal event".to_owned());
+            }
             let result = if pool.as_ref().is_some_and(Shared::has_accounts) {
                 crate::lift::run(&runtime.service, &host, &lift_request).await
             } else {
@@ -938,6 +1083,20 @@ pub fn register(api: &PluginApi) -> i32 {
                 Err("multiprovider native registration failed".to_owned())
             }
         };
+        register_virtual_base(api, state.cast())?;
+        for (id, models) in unsafe { &*state }.initial_virtuals()? {
+            check(api.declare.unwrap()(StbStringRef::from_str(
+                &json!({"providers":[{"id":id,"models":models,"requiresAuth":false}]}).to_string(),
+            )))?;
+            check(api.register_streaming_provider.unwrap()(
+                StbStringRef::from_str(&id),
+                StbStringRef::from_str(""),
+                StbStringRef::from_str("openai-completions"),
+                virtual_base,
+                rpi_plugin_sdk::callbacks::free_string,
+                state.cast(),
+            ))?;
+        }
         check(wrapper(
             StbStringRef::from_str(&wrapper_manifest().to_string()),
             invoke,
@@ -969,7 +1128,7 @@ pub fn register(api: &PluginApi) -> i32 {
                 unsafe { &*state }.shared.clone(),
             )),
             unsafe { &*state }.stopping.clone(),
-            vec!["multilogout", "accounts"],
+            vec!["multilogout", "accounts", "vprovider"],
         )?;
         commands.register()?;
         *unsafe { &*state }

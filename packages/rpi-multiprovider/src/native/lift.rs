@@ -5,18 +5,18 @@
 //!
 //! * [`NativeHost::resolve`] turns one pooled account into the host's opaque
 //!   authentication receipt through the private wrapper continuation port.
-//! * [`NativeHost::start`] delegates one physical attempt to the unwrapped
-//!   provider and streams its frames back in emission order.
+//! * [`NativeHost::start`] delegates a same-provider account attempt; virtual
+//!   attempts use opaque v2 targets and ambient receipts through target wrappers.
+//!   Both paths stream frames in emission order.
 //! * [`NativeHost::response`] reports the private response receipt of that
 //!   physical attempt (status and lossless headers), never an agent event.
 //! * [`NativeHost::emit`] forwards ordered frames to the caller.
 //!
-//! The continuation protocol is the one the SDK's `register_with_factory`
-//! wrapper factory drives (`resolveAuth` / delegated `version:1` streams). It is
-//! spoken directly here because this crate must not take a direct `rpi-ai`
-//! dependency: the accounting crate pins its SDK revision and forbids lockfile
-//! changes in this lane. Wire payloads remain exactly the published version-1
-//! envelopes.
+//! Same-provider account attempts retain the host v1 continuation protocol;
+//! cross-provider attempts negotiate secure v2 and never downgrade. The raw
+//! envelopes are the SDK's versioned protocol and avoid a direct rpi-ai type
+//! dependency in the package. Target guards own every opaque handle until its
+//! producer drains.
 use crate::lift::{Host, Request, Response};
 use crate::types::Account;
 use futures_util::Stream;
@@ -74,6 +74,13 @@ pub struct NativeHost {
     response: Arc<Mutex<Option<Response>>>,
     terminal: Mutex<Option<Value>>,
     attempts: Mutex<Vec<tokio::task::JoinHandle<()>>>,
+    receipts: Mutex<Vec<String>>,
+    services: Option<(
+        Arc<super::Shared>,
+        Option<String>,
+        rpi_plugin_sdk::provider::native::Client,
+        crate::services::Service,
+    )>,
     /// Options copied from the wrapper request, minus reserved/private fields.
     provider_options: Map<String, Value>,
     disable_provider_retries: bool,
@@ -101,6 +108,8 @@ impl NativeHost {
             response: Arc::new(Mutex::new(None)),
             terminal: Mutex::new(None),
             attempts: Mutex::new(Vec::new()),
+            receipts: Mutex::new(Vec::new()),
+            services: None,
             provider_options,
             disable_provider_retries,
         }
@@ -132,6 +141,34 @@ impl NativeHost {
     }
 
     /// The final assistant message produced by the last delegated attempt.
+    pub(super) fn with_services(
+        mut self,
+        shared: Arc<super::Shared>,
+        scope: Option<String>,
+        client: rpi_plugin_sdk::provider::native::Client,
+        service: crate::services::Service,
+    ) -> Self {
+        self.services = Some((shared, scope, client, service));
+        self
+    }
+
+    pub async fn failover(&self, info: crate::lift::Failover<'_>) -> Result<bool, String> {
+        let Some((shared, scope, client, service)) = &self.services else {
+            return Ok(false);
+        };
+        shared
+            .compactions
+            .failover(
+                scope.clone(),
+                client,
+                service,
+                &shared.stopping,
+                &self.signal,
+                info,
+            )
+            .await
+    }
+
     pub fn terminal(&self) -> Option<Value> {
         self.terminal.lock().unwrap().clone()
     }
@@ -145,6 +182,137 @@ impl NativeHost {
         for attempt in attempts {
             let _ = attempt.await;
         }
+        for receipt in std::mem::take(&mut *self.receipts.lock().unwrap()) {
+            let _ = operation(
+                self.api,
+                &self.descriptor,
+                json!({"version":1,"action":"releaseAuth","receipt":receipt}),
+                CancellationToken::new(),
+            );
+        }
+    }
+
+    /// Start a secure cross-provider attempt. The guard owns both opaque
+    /// capabilities through the blocking producer, including early errors.
+    pub async fn start_target(
+        &self,
+        attempt: crate::virtual_provider::Attempt,
+    ) -> Result<AttemptStream, String> {
+        if self.cancelled() {
+            return Err("This operation was aborted".into());
+        }
+        let api = self.api;
+        let descriptor = self.descriptor.clone();
+        let signal = self.signal.clone();
+        let provider = attempt.provider_id;
+        let model = attempt.model["id"].as_str().unwrap_or_default().to_owned();
+        let guard = tokio::task::spawn_blocking(move || {
+            let capabilities = operation(
+                api,
+                &descriptor,
+                json!({"version":1,"action":"capabilities"}),
+                signal.clone(),
+            );
+            if !capabilities.is_ok_and(|value| {
+                value["delegationVersions"]
+                    .as_array()
+                    .is_some_and(|versions| versions.contains(&json!(2)))
+                    && value["opaqueTargets"] == true
+                    && value["ambientReceipts"] == true
+                    && value["epochRevocation"] == true
+            }) {
+                return Err("host lacks secure delegation v2".to_owned());
+            }
+            let target = operation(
+                api,
+                &descriptor,
+                json!({"version":2,"action":"resolveTarget","provider":provider,"model":model}),
+                signal.clone(),
+            )?;
+            let handle = target["target"]
+                .as_str()
+                .ok_or("missing delegation target")?
+                .to_owned();
+            let mut guard = TargetGuard {
+                api,
+                descriptor,
+                target: handle,
+                receipt: None,
+            };
+            if target["version"] != 2
+                || target["model"]["provider"] != provider
+                || target["model"]["id"] != model
+            {
+                return Err("target metadata identity mismatch".into());
+            }
+            let auth = operation(
+                api,
+                &guard.descriptor,
+                json!({"version":2,"action":"auth.resolveAmbient",
+                "target":guard.target,"provider":provider,"model":model}),
+                signal,
+            )?;
+            guard.receipt = auth["receipt"].as_str().map(str::to_owned);
+            if auth["version"] != 2 {
+                return Err("unsupported auth receipt".into());
+            }
+            if guard.receipt.is_none() {
+                return Err("missing account authentication receipt".into());
+            }
+            Ok(guard)
+        })
+        .await
+        .map_err(|_| "target authentication task stopped".to_owned())??;
+        let mut options = attempt.options;
+        for key in [
+            "authMode",
+            "responseMetadata",
+            "streamKind",
+            "identity",
+            "apiKey",
+            "headers",
+            "env",
+            "baseUrl",
+            "endpoint",
+        ] {
+            options.remove(key);
+        }
+        options.insert("maxRetries".into(), json!(0));
+        let request = json!({"version":2,"continuation":self.descriptor,"target":guard.target,
+            "authReceipt":guard.receipt,"context":attempt.context,"options":options});
+        self.spawn_attempt(request, Some(guard))
+    }
+
+    fn spawn_attempt(
+        &self,
+        request: Value,
+        target: Option<TargetGuard>,
+    ) -> Result<AttemptStream, String> {
+        *self.response.lock().unwrap() = None;
+        let (frames, receiver) = mpsc::channel(64);
+        let sink = Sink {
+            api: self.api,
+            frames,
+            terminal: Arc::new(Mutex::new(None)),
+            response: Arc::clone(&self.response),
+            emit: self.emit,
+            emit_data: self.emit_data,
+            cancelled: Arc::clone(&self.cancelled),
+            signal: self.signal.clone(),
+        };
+        let task = Attempt {
+            sink,
+            api: self.api,
+            request,
+            signal: self.signal.clone(),
+            cancelled: Arc::clone(&self.cancelled),
+            _target: target,
+        };
+        self.attempts
+            .lock()
+            .unwrap()
+            .push(tokio::task::spawn_blocking(move || task.run()));
+        Ok(AttemptStream { frames: receiver })
     }
 
     fn attempt_options(&self) -> Value {
@@ -166,6 +334,66 @@ impl NativeHost {
         }
         Value::Object(options)
     }
+}
+
+struct TargetGuard {
+    api: PluginApi,
+    descriptor: Value,
+    target: String,
+    receipt: Option<String>,
+}
+impl Drop for TargetGuard {
+    fn drop(&mut self) {
+        // Cleanup must not inherit a cancelled attempt's signal.
+        if let Some(receipt) = self.receipt.take() {
+            let _ = operation(
+                self.api,
+                &self.descriptor,
+                json!({"version":2,"action":"releaseAuth","receipt":receipt}),
+                CancellationToken::new(),
+            );
+        }
+        let _ = operation(
+            self.api,
+            &self.descriptor,
+            json!({"version":2,"action":"releaseTarget","target":self.target}),
+            CancellationToken::new(),
+        );
+    }
+}
+
+fn operation(
+    api: PluginApi,
+    descriptor: &Value,
+    mut request: Value,
+    signal: CancellationToken,
+) -> Result<Value, String> {
+    request["continuation"] = descriptor.clone();
+    let control = AuthRequestControl {
+        struct_size: std::mem::size_of::<AuthRequestControl>() as u32,
+        is_cancelled: auth_cancelled,
+        user_data: (&signal as *const CancellationToken).cast_mut().cast(),
+    };
+    let call = api
+        .provider_continuation
+        .ok_or("host lacks private provider continuation operations")?;
+    let mut out = StbString::empty();
+    let status = call(
+        StbStringRef::from_str(&request.to_string()),
+        &control,
+        &mut out,
+        api.user_data,
+    );
+    let out = unsafe { OwnedString::from_raw(out, Some(api.free_string)) };
+    let value: Value = serde_json::from_str(&out.to_string_lossy())
+        .map_err(|_| "invalid provider continuation response")?;
+    if status != 0 {
+        return Err(value["error"]
+            .as_str()
+            .unwrap_or("provider continuation failed")
+            .into());
+    }
+    Ok(value)
 }
 
 extern "C" fn auth_cancelled(context: *mut std::ffi::c_void) -> u8 {
@@ -331,6 +559,7 @@ struct Attempt {
     request: Value,
     signal: CancellationToken,
     cancelled: Arc<dyn Fn() -> bool + Send + Sync>,
+    _target: Option<TargetGuard>,
 }
 
 impl Attempt {
@@ -394,6 +623,9 @@ impl Attempt {
 
 #[async_trait::async_trait]
 impl Host for NativeHost {
+    async fn failover(&self, info: crate::lift::Failover<'_>) -> Result<bool, String> {
+        NativeHost::failover(self, info).await
+    }
     type Auth = Auth;
     type Stream = AttemptStream;
 
@@ -420,6 +652,7 @@ impl Host for NativeHost {
         })
         .await
         .map_err(|_| "account authentication task stopped".to_owned())??;
+        self.receipts.lock().unwrap().push(receipt.clone());
         Ok(Auth::Receipt(receipt))
     }
 
@@ -428,17 +661,6 @@ impl Host for NativeHost {
             self.signal.cancel();
             return Err("This operation was aborted".into());
         }
-        let (frames, receiver) = mpsc::channel(64);
-        let sink = Sink {
-            api: self.api,
-            frames,
-            terminal: Arc::new(Mutex::new(None)),
-            response: Arc::clone(&self.response),
-            emit: self.emit,
-            emit_data: self.emit_data,
-            cancelled: Arc::clone(&self.cancelled),
-            signal: self.signal.clone(),
-        };
         let mut request = json!({
             "version":1,
             "continuation":self.descriptor,
@@ -447,26 +669,23 @@ impl Host for NativeHost {
         if let Auth::Receipt(receipt) = auth {
             request["authReceipt"] = json!(receipt);
         }
-        let api = self.api;
-        let signal = self.signal.clone();
-        let cancelled = Arc::clone(&self.cancelled);
-        let task = Attempt {
-            sink,
-            api,
-            request,
-            signal,
-            cancelled,
-        };
-        let handle = tokio::task::spawn_blocking(move || task.run());
-        self.attempts.lock().unwrap().push(handle);
-        Ok(AttemptStream { frames: receiver })
+        self.spawn_attempt(request, None)
     }
 
     fn response(&self) -> Option<Response> {
         self.response.lock().unwrap().clone()
     }
 
-    async fn emit(&self, event: Value) -> bool {
+    async fn emit(&self, mut event: Value) -> bool {
+        // TS clocks are floating point; the native AssistantMessage wire uses
+        // i64 milliseconds. Convert only at this boundary, not in retry policy.
+        for key in ["message", "error", "partial"] {
+            if let Some(message) = event.get_mut(key).and_then(Value::as_object_mut) {
+                if let Some(timestamp) = message.get("timestamp").and_then(Value::as_f64) {
+                    message.insert("timestamp".into(), json!(timestamp as i64));
+                }
+            }
+        }
         if self.cancelled() {
             self.signal.cancel();
             return false;
