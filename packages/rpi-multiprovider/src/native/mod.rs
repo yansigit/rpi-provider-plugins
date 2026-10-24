@@ -458,14 +458,33 @@ impl Shared {
                 scope.origin.clone(),
             )
         };
+        // Virtual schedulers belong to this scope's catalog, not the shared
+        // ordinary-provider service. Clone the service before awaiting pins.
+        let virtual_service = self
+            .virtuals
+            .lock()
+            .await
+            .get(&scope_id)
+            .map(|catalog| catalog.service.clone());
+        let service_for = |pool: &str| {
+            virtual_service
+                .as_ref()
+                .filter(|service| service.has_provider(pool))
+                .unwrap_or(&self.service)
+        };
         let mut errors = Vec::new();
-        let pending = pins::apply(
-            &pins,
-            &self.service,
-            |pin, error| errors.push(restore_error(pin, &error)),
-            |_| {},
-        )
-        .await;
+        let mut pending = Vec::new();
+        for pin in &pins {
+            pending.extend(
+                pins::apply(
+                    std::slice::from_ref(pin),
+                    service_for(&pin.pool),
+                    |pin, error| errors.push(restore_error(pin, &error)),
+                    |_| {},
+                )
+                .await,
+            );
+        }
 
         // A pool that still records a decision — applied now or waiting for its
         // scheduler — wins over an inherited parent decision.
@@ -484,7 +503,7 @@ impl Shared {
                 still_pending.push(pin);
                 continue;
             };
-            if !self.service.has_provider(&pin.pool) {
+            if !service_for(&pin.pool).has_provider(&pin.pool) {
                 still_pending.push(pin);
                 continue;
             }
@@ -496,13 +515,18 @@ impl Shared {
             });
         }
         let mut applied = Vec::new();
-        let leftover = pins::apply(
-            &ready,
-            &self.service,
-            |pin, error| errors.push(restore_error(pin, &error)),
-            |pin| applied.push(pin.clone()),
-        )
-        .await;
+        let mut leftover = Vec::new();
+        for pin in &ready {
+            leftover.extend(
+                pins::apply(
+                    std::slice::from_ref(pin),
+                    service_for(&pin.pool),
+                    |pin, error| errors.push(restore_error(pin, &error)),
+                    |pin| applied.push(pin.clone()),
+                )
+                .await,
+            );
+        }
         if let Some(origin) = origin {
             for pin in &applied {
                 let data = json!({

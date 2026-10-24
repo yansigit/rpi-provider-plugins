@@ -212,3 +212,74 @@ fn virtual_native_publication_ack_healing_delete_and_reregister() {
     let (message, _) = request(registered.fake, &registered, "virtual-native");
     assert_eq!(message["stopReason"], "stop");
 }
+
+#[test]
+fn virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown() {
+    let temp = tempfile_dir();
+    let registered = virtual_setup(&temp);
+    let fake = unsafe { &*registered.fake };
+    let pin = |key: &str, backend: &str| {
+        json!({
+            "type":"custom", "customType":"pi-multiprovider:switch-account",
+            "data":{"pool":"virtual-native::probe-model", "key":key,
+                "accountId":format!("{backend}::probe-model")}
+        })
+    };
+    emit_event(&registered, EventTag::SessionStart);
+    let selected = || {
+        fake.delegates.lock().unwrap().clear();
+        let (message, _) = request(registered.fake, &registered, "virtual-native");
+        assert_eq!(message["stopReason"], "stop", "{message}");
+        let delegates = fake.delegates.lock().unwrap();
+        assert_eq!(delegates.len(), 1);
+        delegates[0]["target"].clone()
+    };
+    // Pin the opposite of the established automatic affinity, so a missing
+    // restoration cannot pass just because random scheduling picked the pin.
+    let backend = if selected() == "target:plain" {
+        "example"
+    } else {
+        "plain"
+    };
+    let expected = format!("target:{backend}");
+    fake.entries
+        .lock()
+        .unwrap()
+        .push(pin("session-parent", backend));
+    emit_event(&registered, EventTag::SessionStart);
+    assert_eq!(selected(), expected);
+    emit_event(&registered, EventTag::BeforeAgentStart);
+    assert_eq!(selected(), expected);
+    fake.inspect(Inspect {
+        child: true,
+        scope_id: Some("child-scope".into()),
+        session_id: "session-child".into(),
+    });
+    let child_backend = if backend == "plain" {
+        "example"
+    } else {
+        "plain"
+    };
+    *fake.entries.lock().unwrap() = vec![pin("session-child", child_backend)];
+    emit_event(&registered, EventTag::SessionStart);
+    assert_eq!(selected(), format!("target:{child_backend}"));
+    emit_event(&registered, EventTag::SessionShutdown);
+    fake.inspect(Inspect::default());
+    emit_event(&registered, EventTag::BeforeAgentStart);
+    assert_eq!(selected(), expected);
+}
+
+#[test]
+fn virtual_native_missing_session_identity_fails_explicitly() {
+    let temp = tempfile_dir();
+    let registered = virtual_setup(&temp);
+    let fake = unsafe { &*registered.fake };
+    fake.inspect(Inspect {
+        session_id: String::new(),
+        ..Inspect::default()
+    });
+    emit_event(&registered, EventTag::SessionStart);
+    let (message, _) = request(registered.fake, &registered, "virtual-native");
+    assert_eq!(message["errorMessage"], "multiprovider: session not ready");
+    assert!(fake.delegates.lock().unwrap().is_empty());
+}

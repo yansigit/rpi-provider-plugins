@@ -50,7 +50,11 @@ impl VirtualHost for NativeVirtualHost {
             * 1000.0
     }
     fn affinity_key(&self) -> Result<String, String> {
-        Ok(self.affinity.clone())
+        if self.affinity.is_empty() {
+            Err("multiprovider: session not ready".into())
+        } else {
+            Ok(self.affinity.clone())
+        }
     }
     fn backing_models(&self, provider: &str) -> Option<Vec<Value>> {
         models(&self.catalog, provider)
