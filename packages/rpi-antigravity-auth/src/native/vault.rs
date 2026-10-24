@@ -89,6 +89,16 @@ impl State {
             return Ok(crate::vault::setup::classify_host_slot(&record["google"]).into());
         }
         let vault = self.vault()?;
+        let mut files = vault
+            .authority
+            .store
+            .authority_files()
+            .map_err(|e| e.to_string())?;
+        crate::vault::import_guard::guard_storage(&files)?;
+        let stash_path = vault
+            .authority
+            .mode_file
+            .with_file_name("google-login-stash.json");
         let slot = Slot::new(
             path,
             &vault
@@ -102,6 +112,26 @@ impl State {
         match input["input"]["mode"].as_str() {
             Some("custody") => {
                 slot.enter().map_err(|e| e.to_string())?;
+                // Validate the real post-swap slot, not a fabricated placeholder.
+                files.mode = Some(json!({"version":1,"mode":"custody"}));
+                files.stash = vault
+                    .authority
+                    .store
+                    .authority_files()
+                    .map_err(|e| e.to_string())?
+                    .stash;
+                let custody = crate::vault::import_guard::inspect(
+                    path,
+                    &stash_path,
+                    "google",
+                    source::MARKER,
+                )
+                .map_err(|e| e.to_string())?;
+                if let crate::vault::import_guard::Admission::Refuse(refusal) =
+                    crate::vault::import_guard::admit(&files, &custody)
+                {
+                    return Err(refusal.notice.into());
+                }
                 Ok(Value::Null)
             }
             Some("local") => slot.exit().map(Value::from).map_err(|e| e.to_string()),

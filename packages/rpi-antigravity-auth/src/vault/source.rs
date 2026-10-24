@@ -70,6 +70,32 @@ impl Source<FileStore> {
     }
 }
 impl<S: Store> Source<S> {
+    async fn guard(&self) -> Result<(), String> {
+        // Ordinary IO/decoder failures retain the existing current/request error
+        // contracts. A provenance refusal must survive those diagnostic decoders.
+        let origin = |result: Result<Option<Value>, super::ceremony::Failure>| match result {
+            Ok(value) => Ok(value),
+            Err(error) if error.to_string() == super::import_guard::FRESH_ENROLLMENT_NOTICE => {
+                Err(error.to_string())
+            }
+            Err(_) => Ok(None),
+        };
+        let state = origin(self.store.read(super::ceremony::Slot::State).await)?;
+        let token = origin(self.store.read(super::ceremony::Slot::Token).await)?;
+        let path = self.mode_file.clone();
+        let mode = tokio::task::spawn_blocking(move || {
+            super::file_store::read_raw_mode(&path).unwrap_or(None)
+        })
+        .await
+        .map_err(|_| UNREADABLE.to_owned())?;
+        super::import_guard::guard_storage(&super::import_guard::Files {
+            mode,
+            enrollment_state: state,
+            enrollment_token: token,
+            ..Default::default()
+        })
+    }
+
     /// The owning runtime serializes these transitions across startup and mode changes.
     pub async fn synchronize<F, Fut>(&self, transition: F) -> Result<Value, String>
     where
@@ -112,6 +138,7 @@ impl<S: Store> Source<S> {
         value
     }
     pub async fn current(&self) -> Result<Value, String> {
+        self.guard().await?;
         let status = self.status().await;
         let authority = enrollment::read_authority(&self.store, PROPOSED_NAME).await;
         if authority == "unreadable" || status["mode"] == "unreadable" {
@@ -139,6 +166,7 @@ impl<S: Store> Source<S> {
         Ok(())
     }
     pub async fn request_mode(&self) -> Result<Value, String> {
+        self.guard().await?;
         let status = self.status().await;
         let authority = enrollment::read_authority(&self.store, PROPOSED_NAME).await;
         if authority == "local" && status["mode"] == "custody" {

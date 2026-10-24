@@ -33,6 +33,7 @@ struct Origin {
     invocation: Invocation,
     session_id: String,
     closed: AtomicBool,
+    authority_notice: AtomicBool,
     journals: OnceCell<Arc<JournalPort>>,
     _permit: OwnedSemaphorePermit,
 }
@@ -130,9 +131,27 @@ impl Router {
                             return Err("Cursor callback cannot redirect a session binding".into());
                         }
                         let release = scoped.input["action"] == "release";
-                        let result =
+                        let view = scoped.input["action"] == "view";
+                        let mut result =
                             (origin.invocation.persistence)(scoped.input, CancellationToken::new())
                                 .await?;
+                        if view {
+                            let location = (origin.invocation.persistence)(
+                                json!({"port":"sessions","action":"location","origin":scoped.scope}),
+                                CancellationToken::new(),
+                            ).await?;
+                            let path = Path::new(location["path"].as_str().unwrap_or(""));
+                            if crate::import_guard::guard_native_view(path, &mut result)
+                                && !origin.authority_notice.swap(true, Ordering::AcqRel)
+                            {
+                                (origin.invocation.live)(
+                                    json!({"port":"ui","action":"notify","kind":"warning",
+                                    "text":crate::import_guard::FRESH_AGENT_NOTICE}),
+                                    CancellationToken::new(),
+                                )
+                                .await?;
+                            }
+                        }
                         if release {
                             origin.close();
                             let mut state = self.state.lock().unwrap();
@@ -187,6 +206,7 @@ impl Router {
                         invocation: invocation.clone(),
                         session_id: session_id.into(),
                         closed: AtomicBool::new(false),
+                        authority_notice: AtomicBool::new(false),
                         journals: OnceCell::new(),
                         _permit: permit,
                     }),
@@ -224,7 +244,7 @@ impl Router {
                 let path = location["path"]
                     .as_str()
                     .ok_or("Cursor durable journals require persistent session storage")?;
-                JournalPort::for_session(Path::new(path), &origin.session_id).map(Arc::new)
+                JournalPort::for_native_session(Path::new(path), &origin.session_id).map(Arc::new)
             })
             .await?
             .clone();
@@ -233,9 +253,21 @@ impl Router {
             return Err("Cursor journal origin is closed".into());
         }
         // Once admitted, durability completes even if the worker stops waiting.
-        tokio::task::spawn_blocking(move || journal.request(input))
+        let result = tokio::task::spawn_blocking(move || journal.request(input))
             .await
-            .map_err(|_| "Cursor journal task stopped; inspect recovery records")?
+            .map_err(|_| "Cursor journal task stopped; inspect recovery records")?;
+        if result.as_ref().err().map(String::as_str)
+            == Some(crate::import_guard::FRESH_AGENT_NOTICE)
+            && !origin.authority_notice.swap(true, Ordering::AcqRel)
+        {
+            (origin.invocation.live)(
+                json!({"port":"ui","action":"notify","kind":"warning",
+                "text":crate::import_guard::FRESH_AGENT_NOTICE}),
+                CancellationToken::new(),
+            )
+            .await?;
+        }
+        result
     }
     /// Release abandoned readers before draining worker host tasks, then release captured origins.
     pub async fn close(&self) -> Result<(), String> {
@@ -263,5 +295,7 @@ impl Router {
     }
 }
 
+#[cfg(test)]
+mod import_authority_tests;
 #[cfg(test)]
 mod tests;

@@ -18,8 +18,8 @@
 //!
 //! A refused resume starts a fresh Cursor agent and reports
 //! [`FRESH_AGENT_NOTICE`]; nothing here creates, deletes, archives or resumes
-//! an agent. The retained adapter's ports must call this module before dispatch
-//! (wiring the existing port modules is the integrator's step).
+//! an agent. Native session projections and cloud journal reads call this module
+//! before exposing management records to the retained adapter.
 //!
 //! Identifier rules are the pinned upstream ones: Pi's `assertValidSessionId`
 //! for session and entry IDs, `isCursorLocalAgentId` for resume/cleanup agent
@@ -296,6 +296,111 @@ fn safe_source_path(path: &str) -> bool {
         return false;
     }
     !normalized.split('/').any(|component| component == "..")
+}
+
+/// Any origin marker, including malformed/forged markers, removes authority.
+pub fn has_import_origin(value: &Value) -> bool {
+    match value {
+        Value::Object(fields) => {
+            fields.contains_key("imported")
+                || fields.contains_key("importedFrom")
+                || fields.get("origin").and_then(Value::as_str) == Some("imported")
+                || fields.values().any(has_import_origin)
+        }
+        Value::Array(values) => values.iter().any(has_import_origin),
+        _ => false,
+    }
+}
+
+/// Admission for a typed native snapshot. Keep the tree and historical data,
+/// but remove management custom types that could otherwise confer authority.
+/// Native snapshots have no JSONL header: only this trusted adapter supplies v4.
+pub fn guard_native_view(path: &Path, view: &mut Value) -> bool {
+    let metadata = view["snapshot"]["metadata"].clone();
+    let header = json!({"type":"session", "version":NATIVE_SESSION_VERSION, "id":metadata["id"]});
+    let denied_origin = imported_location(path)
+        || !metadata["id"].as_str().map_or(false, valid_session_id)
+        || has_import_origin(&metadata)
+        || view["snapshot"].get("imported").is_some()
+        || view["snapshot"].get("importedFrom").is_some()
+        || view["snapshot"]["origin"] == "imported"
+        || metadata.get("version").map_or(false, |version| {
+            version.as_u64() != Some(NATIVE_SESSION_VERSION)
+        });
+    let mut refused = denied_origin;
+    let mut guard = |entry: &mut Value| {
+        let kind = entry["customType"].as_str().unwrap_or_default();
+        if !matches!(kind, RESUME_ENTRY | CLEANUP_ENTRY | CLOUD_ENTRY) {
+            return;
+        }
+        let data = &entry["data"];
+        let mut allowed = !denied_origin && !has_import_origin(entry) && entry_safe(entry);
+        allowed &= match kind {
+            RESUME_ENTRY => {
+                let text = format!("{header}\n{entry}\n");
+                evaluate(path, &text, Authority::Resume, &[]).allowed && local_candidates_safe(data)
+            }
+            CLEANUP_ENTRY => accepted_cleanup_entry(data).is_some() && local_candidates_safe(data),
+            CLOUD_ENTRY => accepted_cloud_entry(data).is_some(),
+            _ => false,
+        };
+        if !allowed {
+            entry["customType"] = json!("rpi-refused-cursor-authority");
+            refused = true;
+        }
+    };
+    if let Some(entries) = view["snapshot"]["entries"].as_array_mut() {
+        for entry in entries {
+            guard(entry);
+        }
+    }
+    if let Some(entries) = view["projection"]["entries"].as_array_mut() {
+        for entry in entries {
+            guard(&mut entry["sourceEntry"]);
+        }
+    }
+    refused
+}
+
+fn local_candidates_safe(data: &Value) -> bool {
+    [
+        "cleanupCandidateAgentIds",
+        "candidateAgentIds",
+        "protectedAgentIds",
+        "deletedAgentIds",
+    ]
+    .iter()
+    .all(|key| {
+        data.get(key).map_or(true, |ids| {
+            ids.as_array().map_or(false, |ids| {
+                ids.iter()
+                    .all(|id| id.as_str().map_or(false, valid_local_agent_id))
+            })
+        })
+    }) && ["cleanupCandidates", "failedAgentIds"].iter().all(|key| {
+        data.get(key).map_or(true, |ids| {
+            ids.as_array().map_or(false, |ids| {
+                ids.iter()
+                    .all(|id| id["agentId"].as_str().map_or(false, valid_local_agent_id))
+            })
+        })
+    })
+}
+
+/// Validate the exact locked cloud journal frame before it reaches the worker.
+/// Pending native intents remain readable for the existing reconciliation path.
+pub fn native_cloud_frame_allowed(path: &Path, session_id: &str, frame: &Value) -> bool {
+    !imported_location(path)
+        && valid_session_id(session_id)
+        && !has_import_origin(frame)
+        && frame["version"].as_u64() == Some(CUSTODY_RECORD_VERSION)
+        && frame["sessionId"].as_str() == Some(session_id)
+        && frame["sessionFile"].as_str() == path.to_str()
+        && (frame["anchorEntryId"].is_null()
+            || frame["anchorEntryId"]
+                .as_str()
+                .map_or(false, valid_session_id))
+        && accepted_cloud_entry(frame).is_some()
 }
 
 fn imported_location(path: &Path) -> bool {
