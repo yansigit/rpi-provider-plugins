@@ -14,7 +14,7 @@
       "login-dialog": 1
     },
     "upstreamMultiloginSpecs": {"total": 4, "covered": 4},
-    "referenceFixtureSha256": "2693d866878be41c9d8794a42b3255076e25c1c1993d2c94b",
+    "referenceFixtureSha256": "2693d866878be41c9d8794a42b53a3255076e25c1c1993a2c258db9157d7c94b",
     "referenceRerunsByteIdentical": 2,
     "replayTest": "tests/commands.rs::command_flows_match_the_upstream_reference",
     "localeTimeTest": "tests/commands.rs::locale_time_matches_en_us_utc"
