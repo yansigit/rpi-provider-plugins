@@ -5,7 +5,7 @@
   "base": "10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53",
   "reviewedCommit": "916fb385bf499be2607c133a4e382d634d648cac",
   "registryVersionsChanged": false,
-  "sourceSha256": "cd483145547892e4a746df408b7b69f07477d38b06a94fe706b8c85df0b06089",
+  "sourceSha256": "3a4b5bfa6cc502fc9589b3e6ce3deee71af34dac62745ecd9c34fc621d7d71bd",
   "toolchains": {
     "1.78.0": {
       "rustflags": "-Dwarnings",
@@ -21,12 +21,12 @@
           "ignored": 17
         },
         "rpi-multiprovider": {
-          "passed": 92,
+          "passed": 93,
           "failed": 0,
           "ignored": 2
         }
       },
-      "explicitNativeAbiTests": 24,
+      "explicitNativeAbiTests": 25,
       "realHostTests": 5,
       "antigravityLoadingGate": 1,
       "sdkPackageIds": [
@@ -45,7 +45,7 @@
           "path": "target/1.78.0/debug/librpi_multiprovider.so"
         }
       ],
-      "realHost": "Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains."
+      "realHost": "Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail."
     },
     "1.95.0": {
       "rustflags": "",
@@ -61,12 +61,12 @@
           "ignored": 17
         },
         "rpi-multiprovider": {
-          "passed": 92,
+          "passed": 93,
           "failed": 0,
           "ignored": 2
         }
       },
-      "explicitNativeAbiTests": 24,
+      "explicitNativeAbiTests": 25,
       "realHostTests": 5,
       "antigravityLoadingGate": 1,
       "sdkPackageIds": [
@@ -85,7 +85,7 @@
           "path": "target/1.95.0/debug/librpi_multiprovider.so"
         }
       ],
-      "realHost": "Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains."
+      "realHost": "Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail."
     }
   },
   "mutations": [
@@ -123,6 +123,11 @@
       "guard": "f3",
       "test": "virtual_native_missing_session_identity_fails_explicitly",
       "result": "killed (exit 101); mutation reverted"
+    },
+    {
+      "guard": "inherited",
+      "test": "virtual_native_inherited_pins_restore_journal_and_preserve_parent",
+      "result": "killed (exit 101); mutation reverted"
     }
   ],
   "differentialFixtures": {
@@ -150,7 +155,7 @@
     "strictClippy": "inherited failures on 1.78 and 1.95; 1.95 baseline comparison has identical library diagnostic counts",
     "compatClippy": "1.95 all-targets passes with only -A clippy::not_unsafe_ptr_arg_deref; existing warnings remain"
   },
-  "regeneration": "virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures historical; portable report checked twice and in a relocated detached checkout",
+  "regeneration": "virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures and pre-inherited-fix mutation logs historical; portable report checked twice",
   "ledger": {
     "M06": "Native owned catalog binding, publication acknowledgement, healing/deletion/re-registration, global wrapper and command binding proven by ABI tests; existing service lane unchanged.",
     "M07": "Virtual template/backend effects bound; real host target pool and backend failover proven; 70 upstream differential scenarios retained.",
@@ -183,8 +188,15 @@
     "mutate-f1.log",
     "mutate-f2.log",
     "mutate-f3.log",
+    "mutate-inherited.log",
     "cursor-node24.log",
     "fixtures-1.sha256",
-    "fixtures-2.sha256"
+    "fixtures-2.sha256",
+    "real-host-178.log",
+    "real-host-195.log",
+    "fresh-dll-178.log",
+    "fresh-dll-195.log",
+    "stale-dll.log",
+    "missing-dll.log"
   ]
 }

@@ -64,7 +64,7 @@ def cohort(path):
             for key, value in zip(('passed', 'failed', 'ignored'), match.groups()):
                 counts[current][key] += int(value)
     assert text.count('Doc-tests') == 3
-    assert [counts[name]['passed'] for name in PACKAGES] == [97, 62, 92]
+    assert [counts[name]['passed'] for name in PACKAGES] == [97, 62, 93]
     assert [counts[name]['ignored'] for name in PACKAGES] == [5, 17, 2]
     return counts
 
@@ -94,12 +94,13 @@ def report(logs):
             assert library.is_file()
             libraries.append({'path': f'target/{version}/debug/{library.name}'})
         native = (logs / f'native-{short}.log').read_text()
-        assert results(native) == [(24, 0, 0), (5, 0, 0)]
+        assert results(native) == [(25, 0, 0), (5, 0, 0)]
+        assert results((logs / f'real-host-{short}.log').read_text()) == [(5, 0, 0)]
         assert results((logs / f'r02-{short}.log').read_text()) == [(1, 0, 0)]
         toolchains[version] = {'rustflags': '-Dwarnings' if short == '178' else '', 'cohort': cohort(logs / f'test-{short}.log'),
-            'explicitNativeAbiTests': 24, 'realHostTests': 5, 'antigravityLoadingGate': 1,
+            'explicitNativeAbiTests': 25, 'realHostTests': 5, 'antigravityLoadingGate': 1,
             'sdkPackageIds': sorted(a['package_id'] for a in sdk_artifacts), 'cdylibs': libraries,
-            'realHost': 'Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains.'}
+            'realHost': 'Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains. DLL rebuilt after the exact test executable; missing/older DLLs fail.'}
     mutations = []
     for stem, test, expected in [
         ('v2', 'virtual_native_unsupported_v2_never_downgrades', 'host lacks secure delegation v2'),
@@ -109,10 +110,14 @@ def report(logs):
         ('f1', 'virtual_native_missing_terminal_fails_and_releases', 'invalid type: null, expected a string'),
         ('f2', 'virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown', 'assertion `left == right` failed'),
         ('f3', 'virtual_native_missing_session_identity_fails_explicitly', 'multiprovider: session not ready'),
+        ('inherited', 'virtual_native_inherited_pins_restore_journal_and_preserve_parent', 'assertion `left == right` failed'),
     ]:
         text = (logs / f'mutate-{stem}.log').read_text()
         assert f'test {test} ... FAILED' in text and expected in text
         mutations.append({'guard': stem, 'test': test, 'result': 'killed (exit 101); mutation reverted'})
+    for stem, expected in [('stale', 'stale DLL'), ('missing', 'required fresh DLL')]:
+        text = (logs / f'{stem}-dll.log').read_text()
+        assert 'test result: FAILED' in text and expected in text
     assert 'pass 8' in (logs / 'cursor-node24.log').read_text()
     assert 'fail 0' in (logs / 'cursor-node24.log').read_text()
     assert (logs / 'fixtures-1.sha256').read_bytes() == (logs / 'fixtures-2.sha256').read_bytes()
@@ -124,8 +129,10 @@ def report(logs):
     source_paths = ['Cargo.lock'] + git('ls-files', *(f'packages/{name}' for name in PACKAGES)).splitlines()
     rows = [f'{path} {identity(ROOT / path)["sha256"]}\n' for path in sorted(source_paths)]
     log_names = [f'{kind}-{tc}.{suffix}' for tc in ('178', '195') for kind, suffix in [('artifacts', 'jsonl'), ('artifacts', 'log'), ('test', 'log'), ('native', 'log'), ('r02', 'log')]]
-    log_names += [f'mutate-{stem}.log' for stem in ('v2', 'release', 'identity', 'terminal', 'f1', 'f2', 'f3')]
-    log_names += ['cursor-node24.log', 'fixtures-1.sha256', 'fixtures-2.sha256']
+    log_names += [f'mutate-{stem}.log' for stem in ('v2', 'release', 'identity', 'terminal', 'f1', 'f2', 'f3', 'inherited')]
+    log_names += ['cursor-node24.log', 'fixtures-1.sha256', 'fixtures-2.sha256',
+        'real-host-178.log', 'real-host-195.log', 'fresh-dll-178.log', 'fresh-dll-195.log',
+        'stale-dll.log', 'missing-dll.log']
     return {'schemaVersion': 2, 'status': 'provider-gates-pass-with-inherited-lint-and-host-limitations', 'host': HOST, 'base': BASE,
         'reviewedCommit': '916fb385bf499be2607c133a4e382d634d648cac', 'registryVersionsChanged': False,
         'sourceSha256': hashlib.sha256(''.join(rows).encode()).hexdigest(), 'toolchains': toolchains,
@@ -136,7 +143,7 @@ def report(logs):
             'strictClippy': 'inherited failures on 1.78 and 1.95; 1.95 baseline comparison has identical library diagnostic counts',
             'compatClippy': '1.95 all-targets passes with only -A clippy::not_unsafe_ptr_arg_deref; existing warnings remain'},
 
-        'regeneration': 'virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures historical; portable report checked twice and in a relocated detached checkout',
+        'regeneration': 'virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures and pre-inherited-fix mutation logs historical; portable report checked twice',
         'ledger': {
             'M06': 'Native owned catalog binding, publication acknowledgement, healing/deletion/re-registration, global wrapper and command binding proven by ABI tests; existing service lane unchanged.',
             'M07': 'Virtual template/backend effects bound; real host target pool and backend failover proven; 70 upstream differential scenarios retained.',

@@ -27,6 +27,18 @@ Review fixes:
   regenerations, a relocated detached checkout, and a differently named branch
   produced byte-identical JSON and Markdown.
 
+Latest re-review fixes (baseline `7f2c169`):
+
+- `80091ac`: seed scope-local pending inherited decisions from the filtered capture.
+  The ABI regression supplies both virtual-backend and ordinary pool pins through
+  `PI_MULTIPROVIDER_SESSION_PINS`, verifies journal appends, recorded precedence,
+  deferred identity/scheduler availability, and parent isolation after child shutdown.
+- `67cbf22`: real-host tests default to the DLL in their own executable's `deps`
+  directory, not a potentially stale top-level artifact. Explicit paths are still
+  supported but missing DLLs or DLLs older than the test executable fail loudly.
+  Negative missing/stale checks both exited 101; both toolchains' five host cases
+  then passed against freshly rebuilt DLLs. No artifact-skip path exists.
+
 ## Binding decisions
 
 `src/native/virtuals.rs` owns catalog effects, not a second retry scheduler. Each
@@ -77,9 +89,9 @@ claim that a production Fabric extension is available.
 | Offline provider cdylib build | pass | pass |
 | Antigravity cohort | 97 passed / 0 failed / 5 inherited ignored | same |
 | Cursor cohort | 62 / 0 / 17 inherited ignored | same |
-| Multiprovider cohort | 92 / 0 / 2 inherited ignored | same |
-| Total cohort | **251 / 0 / 24 inherited ignored** | **same** |
-| Explicit MP native ABI tests | 24 / 0 / 0 | 24 / 0 / 0 |
+| Multiprovider cohort | 93 / 0 / 2 inherited ignored | same |
+| Total cohort | **252 / 0 / 24 inherited ignored** | **same** |
+| Explicit MP native ABI tests | 25 / 0 / 0 | 25 / 0 / 0 |
 | Actual-host MP DLL acceptance | 5 / 0 / 0 | 5 / 0 / 0 |
 | Explicit Antigravity loading branch | 1 / 0 / 0 | 1 / 0 / 0 |
 
@@ -95,7 +107,7 @@ Both MP cdylibs are loaded into the real host built from pinned 8014e36 with Rus
 compiled fixture target/service DLLs, isolated agent directories and local socket
 synchronization. No sleeps are used as readiness synchronization.
 
-Native virtual ABI regression names (9):
+Native virtual ABI regression names (10):
 
 - `virtual_native_failover_releases_every_target_and_receipt`
 - `virtual_native_unsupported_v2_never_downgrades`
@@ -106,6 +118,7 @@ Native virtual ABI regression names (9):
 - `virtual_native_transport_failure_preserves_diagnostic_and_identity`
 - `virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown`
 - `virtual_native_missing_session_identity_fails_explicitly`
+- `virtual_native_inherited_pins_restore_journal_and_preserve_parent`
 
 New actual-host acceptance names (5):
 
@@ -131,9 +144,10 @@ presentation or import-storage exceptions.
 
 ### Mutation checks
 
-The four original mutations below remain historical evidence. Three new review
-mutations were applied individually, killed by assertions (exit 101), restored,
-and followed by passing native/cohort tests on both toolchains:
+The first seven mutations below are historical evidence from prior passes.
+This re-review pass reverted inherited seeding only: the new ABI regression failed
+with automatic `target:example` / account `a` instead of inherited `target:plain`
+/ account `b` (exit 101). Seeding was restored before both toolchains' passing gates.
 
 | Guard mutated | Regression |
 |---|---|
@@ -144,6 +158,7 @@ and followed by passing native/cohort tests on both toolchains:
 | F1: read fallback identity from the descriptor-free envelope | `virtual_native_missing_terminal_fails_and_releases` (typed deserialization fails) |
 | F2: route virtual pins back to the ordinary service | `virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown` (selected backend differs) |
 | F3: accept empty affinity | `virtual_native_missing_session_identity_fails_explicitly` (exact error absent) |
+| Revert inherited pending seeding | `virtual_native_inherited_pins_restore_journal_and_preserve_parent` (backend/account differ) |
 
 Portable JSON indexes logical log names. Optional local provenance records absolute
 paths, artifact sizes and SHA-256 hashes separately; it is not committed or used
@@ -151,6 +166,10 @@ in portable freshness comparisons. Binary hashes and raw-log hashes are not port
 because compiler paths and log output vary across checkouts.
 
 ### Formatting and lint qualification
+
+Lint comparisons below are historical from the preceding review-fix pass; this
+narrow re-review reran changed-file formatting and the requested build/test gates,
+not clippy or full-workspace formatting.
 
 Rust 1.95 rustfmt passes for every changed Rust file, with `--edition 2021
 --config skip_children=true` (including the `.rs.inc` regression file). Full
@@ -217,22 +236,37 @@ export RPI_TEST_HOST="${PARITY_TARGETS:?}/m-virtual-b2-178/debug/rpi"
 # with tc=195/version=1.95.0 and RUSTFLAGS unset:
 export CARGO_TARGET_DIR=$PARITY_TARGETS/m-virtual-b2-$tc
 export RPI_TEST_RUSTC=$RUSTUP_HOME/toolchains/$version-x86_64-unknown-linux-gnu/bin/rustc
-export RPI_TEST_MULTIPROVIDER_LIBRARY=$CARGO_TARGET_DIR/debug/librpi_multiprovider.so
+export RPI_TEST_MULTIPROVIDER_LIBRARY=$CARGO_TARGET_DIR/debug/deps/librpi_multiprovider.so
 export RPI_TEST_ANTIGRAVITY_LIBRARY=$CARGO_TARGET_DIR/debug/librpi_antigravity_auth.so
 # Build with --message-format=json to artifacts-$tc.jsonl; stderr artifacts-$tc.log.
 timeout 270 cargo +$version build --lib --locked --offline --message-format=json \
   -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider \
   > /tmp/m-virtual-b2/logs/artifacts-$tc.jsonl \
   2> /tmp/m-virtual-b2/logs/artifacts-$tc.log; echo exit=$?
+# Compile all test executables; run real-host cases separately after a fresh DLL build.
 timeout 270 cargo +$version test --locked --offline \
-  -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider \
+  -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider -- --skip real_dll \
   > /tmp/m-virtual-b2/logs/test-$tc.log 2>&1; echo exit=$?
 timeout 270 cargo +$version test --locked --offline -p rpi-multiprovider \
-  --test m_native --test m_virtual_loaded \
+  --test m_native \
   > /tmp/m-virtual-b2/logs/native-$tc.log 2>&1; echo exit=$?
 timeout 270 cargo +$version test --locked --offline -p rpi-cursor-sdk \
   --test r02_native_loading -- --nocapture \
   > /tmp/m-virtual-b2/logs/r02-$tc.log 2>&1; echo exit=$?
+
+# Force a fresh DLL build after the test executable, without relinking that test.
+# The metadata argument changes only build identity, not provider behavior.
+timeout 270 cargo +$version rustc --locked --offline -p rpi-multiprovider --lib \
+  -- -C metadata=m_virtual_b2_fresh_dll \
+  > /tmp/m-virtual-b2/logs/fresh-dll-$tc.log 2>&1; echo exit=$?
+# Extract the EXACT executable Cargo just ran; never glob an older test executable.
+exe=$(python3 -c 'import re,sys; print(re.search(r"Running tests/m_virtual_loaded.rs \\(([^)]+)\\)",open(sys.argv[1]).read())[1])' /tmp/m-virtual-b2/logs/test-$tc.log)
+timeout 270 "$exe" --nocapture > /tmp/m-virtual-b2/logs/real-host-$tc.log 2>&1; echo exit=$?
+# Include these five actual results in cohort/native totals (not skipped coverage).
+for kind in test native; do
+  python3 -c 'import pathlib,sys; p=pathlib.Path(sys.argv[1]); p.write_text(p.read_text()+pathlib.Path(sys.argv[2]).read_text())' \
+    /tmp/m-virtual-b2/logs/$kind-$tc.log /tmp/m-virtual-b2/logs/real-host-$tc.log
+done
 
 # Consume completed gates, immutable mutation logs and two-pass fixture outputs.
 python3 .github/scripts/refresh-m-virtual-b2-evidence.py --write
