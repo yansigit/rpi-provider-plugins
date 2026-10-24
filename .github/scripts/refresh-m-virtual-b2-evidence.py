@@ -24,8 +24,21 @@ def git(*args):
 
 
 def identity(path):
+    """Portable source identity; external artifact provenance is separate."""
     data = path.read_bytes()
-    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+    return {'path': path.relative_to(ROOT).as_posix(), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def provenance(logs):
+    """Optional local audit data, never part of portable freshness checks."""
+    paths = list(sorted(logs.iterdir()))
+    for short in ('178', '195'):
+        for line in (logs / f'artifacts-{short}.jsonl').read_text().splitlines():
+            artifact = json.loads(line)
+            paths.extend(Path(f) for f in artifact.get('filenames', []) if f.endswith('.so'))
+    return {'checkout': str(ROOT), 'commit': git('rev-parse', 'HEAD'),
+        'files': [{'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()} for path in paths if path.is_file()]}
 
 
 def results(text):
@@ -51,7 +64,7 @@ def cohort(path):
             for key, value in zip(('passed', 'failed', 'ignored'), match.groups()):
                 counts[current][key] += int(value)
     assert text.count('Doc-tests') == 3
-    assert [counts[name]['passed'] for name in PACKAGES] == [97, 62, 89]
+    assert [counts[name]['passed'] for name in PACKAGES] == [97, 62, 92]
     assert [counts[name]['ignored'] for name in PACKAGES] == [5, 17, 2]
     return counts
 
@@ -77,12 +90,14 @@ def report(logs):
         libraries = []
         for name in PACKAGES:
             artifact = next(a for a in artifacts if a.get('reason') == 'compiler-artifact' and a['target']['name'].replace('_', '-') == name and 'cdylib' in a['target']['crate_types'])
-            libraries.append(identity(Path(next(f for f in artifact['filenames'] if f.endswith('.so')))))
+            library = Path(next(f for f in artifact['filenames'] if f.endswith('.so')))
+            assert library.is_file()
+            libraries.append({'path': f'target/{version}/debug/{library.name}'})
         native = (logs / f'native-{short}.log').read_text()
-        assert results(native) == [(21, 0, 0), (5, 0, 0)]
+        assert results(native) == [(24, 0, 0), (5, 0, 0)]
         assert results((logs / f'r02-{short}.log').read_text()) == [(1, 0, 0)]
         toolchains[version] = {'rustflags': '-Dwarnings' if short == '178' else '', 'cohort': cohort(logs / f'test-{short}.log'),
-            'explicitNativeAbiTests': 21, 'realHostTests': 5, 'antigravityLoadingGate': 1,
+            'explicitNativeAbiTests': 24, 'realHostTests': 5, 'antigravityLoadingGate': 1,
             'sdkPackageIds': sorted(a['package_id'] for a in sdk_artifacts), 'cdylibs': libraries,
             'realHost': 'Pinned 8014e36 host built with Rust 1.78; same executable for both package toolchains.'}
     mutations = []
@@ -91,6 +106,9 @@ def report(logs):
         ('release', 'virtual_native_failover_releases_every_target_and_receipt', 'receipt:plain'),
         ('identity', 'virtual_native_failover_releases_every_target_and_receipt', 'get("identity").is_none()'),
         ('terminal', 'virtual_native_missing_terminal_fails_and_releases', 'Provider stream ended without a terminal event'),
+        ('f1', 'virtual_native_missing_terminal_fails_and_releases', 'invalid type: null, expected a string'),
+        ('f2', 'virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown', 'assertion `left == right` failed'),
+        ('f3', 'virtual_native_missing_session_identity_fails_explicitly', 'multiprovider: session not ready'),
     ]:
         text = (logs / f'mutate-{stem}.log').read_text()
         assert f'test {test} ... FAILED' in text and expected in text
@@ -106,31 +124,41 @@ def report(logs):
     source_paths = ['Cargo.lock'] + git('ls-files', *(f'packages/{name}' for name in PACKAGES)).splitlines()
     rows = [f'{path} {identity(ROOT / path)["sha256"]}\n' for path in sorted(source_paths)]
     log_names = [f'{kind}-{tc}.{suffix}' for tc in ('178', '195') for kind, suffix in [('artifacts', 'jsonl'), ('artifacts', 'log'), ('test', 'log'), ('native', 'log'), ('r02', 'log')]]
-    log_names += [f'mutate-{stem}.log' for stem in ('v2', 'release', 'identity', 'terminal')]
+    log_names += [f'mutate-{stem}.log' for stem in ('v2', 'release', 'identity', 'terminal', 'f1', 'f2', 'f3')]
     log_names += ['cursor-node24.log', 'fixtures-1.sha256', 'fixtures-2.sha256']
-    return {'schemaVersion': 1, 'status': 'scoped-pass-with-open-host-limitations', 'host': HOST, 'base': BASE,
-        'lane': git('branch', '--show-current'), 'registryVersionsChanged': False,
+    return {'schemaVersion': 2, 'status': 'provider-gates-pass-with-inherited-lint-and-host-limitations', 'host': HOST, 'base': BASE,
+        'reviewedCommit': '916fb385bf499be2607c133a4e382d634d648cac', 'registryVersionsChanged': False,
         'sourceSha256': hashlib.sha256(''.join(rows).encode()).hexdigest(), 'toolchains': toolchains,
-        'mutations': mutations, 'differentialFixtures': fixtures, 'node24Ipc': {'passed': 8, 'failed': 0},
-        'regeneration': 'virtual/lift/command/Cursor fixture outputs byte-identical twice; report is regenerated twice and checked',
+        'mutations': mutations, 'differentialFixtures': fixtures, 'node24Ipc': {'passed': 8, 'failed': 0, 'evidence': 'historical; not rerun for native review fixes'},
+        'formatAndLint': {
+            'changedRustFiles': 'Rust 1.95 rustfmt --check --edition 2021 --config skip_children=true passes',
+            'fullFmt': 'fails on inherited formatting debt at reviewed baseline; Rust 1.78 rustfmt unavailable',
+            'strictClippy': 'inherited failures on 1.78 and 1.95; 1.95 baseline comparison has identical library diagnostic counts',
+            'compatClippy': '1.95 all-targets passes with only -A clippy::not_unsafe_ptr_arg_deref; existing warnings remain'},
+
+        'regeneration': 'virtual/lift fixture outputs rerun byte-identically twice; command/Cursor fixtures historical; portable report checked twice and in a relocated detached checkout',
         'ledger': {
             'M06': 'Native owned catalog binding, publication acknowledgement, healing/deletion/re-registration, global wrapper and command binding proven by ABI tests; existing service lane unchanged.',
             'M07': 'Virtual template/backend effects bound; real host target pool and backend failover proven; 70 upstream differential scenarios retained.',
             'M08': 'Reuses existing retry state machines (96 lift scenarios); native ordered effects, missing terminal, fail-closed v2 and real host guards proven. Successful release after host cancellation is NOT proven: host rejects cleanup after epoch revocation.',
             'M09': 'PARTIAL: explicit service capability and absent-service inline fallback; successful compact/notice and cancellation/drain proven at native ABI seam; real host proves scoped service negotiation and delayed-work shutdown. Successful POST-TURN real-host compaction is NOT proven (invocation lease expires).'},
         'limitations': ['24 inherited ignored cohort tests; no new ignores or assertion weakening.',
+            'Strict clippy and whole-workspace fmt have inherited baseline failures; see formatAndLint and Markdown qualification.',
             'Real-host cancellation rejects releaseAuth/releaseTarget with inactive provider continuation; test requires exactly one cleanup attempt per handle and this exact error, not successful release.',
             'Host invocation native leases are cancelled when their callback returns. scope_lifetime permits inspection/shutdown only, not service calls. Root registration leases have identity null and are not a safe substitute for selected execution scope. No root fallback is implemented.',
             'No real Fabric extension, live auth/network, host typed-queue load, or full-workspace gate claimed. r02 runs the requested AG library branch; its pre-existing Cursor/legacy branches skip. Linux only.',
             'Older evidence JSON files remain historical and are not promoted by this report. Host ledger was not edited (read-only constraint).'],
-        'logs': [identity(logs / name) for name in log_names]}
+        'logs': log_names}
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--logs', type=Path, default=Path('/tmp/m-virtual-b2/logs'))
     parser.add_argument('--write', action='store_true')
+    parser.add_argument('--provenance', type=Path, help='optional nonportable local audit JSON')
     args = parser.parse_args()
+    if args.provenance:
+        args.provenance.write_text(json.dumps(provenance(args.logs.resolve()), indent=2) + '\n')
     output = ROOT / 'docs/evidence/m-virtual-b2.json'
     rendered = json.dumps(report(args.logs.resolve()), indent=2, ensure_ascii=False) + '\n'
     if args.write:

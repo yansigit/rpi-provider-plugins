@@ -1,14 +1,15 @@
 # M-VIRTUAL-B — native host-v2 virtual binding
 
-Status: **scoped gates pass; M09 real post-turn compaction remains open**.
+Status: **provider build/test gates pass; inherited strict lint/format failures and M09 real post-turn compaction remain open**.
 This report supersedes only the M06–M09 package-binding evidence; it does not
 promote historical reports or edit the read-only host ledger. Machine-readable
 hashes, SDK identities, counts and limitations: [`m-virtual-b2.json`](m-virtual-b2.json).
 
 ## Source and boundary
 
-- Worktree `/home/user/Projects/rpi-package--m-virtual-b2`, branch `lane/m-virtual-b2`,
-  based on `codex/provider-parity` (`10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53`).
+- Reviewed baseline commit `916fb385bf499be2607c133a4e382d634d648cac`,
+  based on `10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53`.
+  Checkout location and branch are local provenance, not portable evidence.
 - All three provider packages use host
   `8014e36cfc9923d404a76044ba0595dc4edc98e7`, unchanged Git URL. Cargo's existing
   URL cache was seeded from the local read-only host repository, not the network.
@@ -17,6 +18,14 @@ hashes, SDK identities, counts and limitations: [`m-virtual-b2.json`](m-virtual-
 - No host source changes; no old-lane changes, push, external requests, live
   credentials, or `~/.pi` / `~/.rpi` access. All test HOME/private TMP directories
   are isolated mode 0700. Fixture credentials are synthetic.
+
+Review fixes:
+
+- `4d2c0a8`: typed synthetic terminal identity and transport diagnostics (F1).
+- `7d08414`: scope-local virtual pin restoration and missing-session rejection (F2/F3).
+- F4 separates portable content from optional local provenance. Two original
+  regenerations, a relocated detached checkout, and a differently named branch
+  produced byte-identical JSON and Markdown.
 
 ## Binding decisions
 
@@ -45,7 +54,12 @@ Opaque target guards drain their producers and attempt receipt/target release on
 success, retries, failed receipt/stream startup, cancellation and errors. Exact
 upstream missing-terminal and exhaustion strings remain in the ported machines.
 The native stream adapter now uses `Provider stream ended without a terminal event`
-for a silent delegated stream as well.
+for a silent delegated stream as well. Synthetic terminals retain the resolved
+model locally (never in the v2 envelope), deserialize as `rpi_ai::AssistantMessage`,
+and preserve nonzero delegation diagnostics. Recorded and inherited virtual pins
+use the current scope's catalog service; reconciliation and child shutdown retain
+the parent's virtual pin. Missing session identity fails with the exact unready
+session error before delegation.
 
 The optional compaction adapter requires service `pi-fabric` version 1 **and**
 explicit capability `multiprovider.failoverCompaction.v1`; a `fabric_exec` tool
@@ -63,9 +77,9 @@ claim that a production Fabric extension is available.
 | Offline provider cdylib build | pass | pass |
 | Antigravity cohort | 97 passed / 0 failed / 5 inherited ignored | same |
 | Cursor cohort | 62 / 0 / 17 inherited ignored | same |
-| Multiprovider cohort | 89 / 0 / 2 inherited ignored | same |
-| Total cohort | **248 / 0 / 24 inherited ignored** | **same** |
-| Explicit MP native ABI tests | 21 / 0 / 0 | 21 / 0 / 0 |
+| Multiprovider cohort | 92 / 0 / 2 inherited ignored | same |
+| Total cohort | **251 / 0 / 24 inherited ignored** | **same** |
+| Explicit MP native ABI tests | 24 / 0 / 0 | 24 / 0 / 0 |
 | Actual-host MP DLL acceptance | 5 / 0 / 0 | 5 / 0 / 0 |
 | Explicit Antigravity loading branch | 1 / 0 / 0 | 1 / 0 / 0 |
 
@@ -74,13 +88,14 @@ All three doctest suites completed. No new ignores, passing artifact skips or
 weakened assertions were introduced in the new acceptance suite. The existing
 `r02_native_loading` harness explicitly executes the requested AG library branch;
 its unrelated legacy-provider and Cursor-library branches still report their
-pre-existing skips. Cursor IPC separately passed **8/8 on Node 24.22.0**.
+pre-existing skips. Historical Cursor IPC evidence remains **8/8 on Node 24.22.0**
+(not rerun for these native-only fixes).
 Both MP cdylibs are loaded into the real host built from pinned 8014e36 with Rust
 1.78 (same host executable for both package toolchains), using independently
 compiled fixture target/service DLLs, isolated agent directories and local socket
 synchronization. No sleeps are used as readiness synchronization.
 
-New native ABI regression names (6):
+Native virtual ABI regression names (9):
 
 - `virtual_native_failover_releases_every_target_and_receipt`
 - `virtual_native_unsupported_v2_never_downgrades`
@@ -88,6 +103,9 @@ New native ABI regression names (6):
 - `virtual_native_publication_ack_healing_delete_and_reregister`
 - `virtual_native_capable_service_compacts_and_shutdown_drains`
 - `virtual_native_delayed_compaction_is_cancelled_and_drained_on_shutdown`
+- `virtual_native_transport_failure_preserves_diagnostic_and_identity`
+- `virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown`
+- `virtual_native_missing_session_identity_fails_explicitly`
 
 New actual-host acceptance names (5):
 
@@ -106,23 +124,48 @@ the exact host revocation error; it does **not** claim the host accepted release
 Existing upstream differential tests are preserved unchanged: 70 virtual and
 96 lift scenarios cover backend/account traces, failover order, errors, terminal
 boundaries and missing terminals. Both upstream extractors and the existing
-command/Cursor asset fixture regenerators produced byte-identical outputs twice.
+command/Cursor asset fixture regenerators previously produced byte-identical outputs
+twice. This review-fix pass reran the virtual/lift extractors twice, byte-identically.
 No changes were made to the approved AG body-read timeout, Cursor snapshot,
 presentation or import-storage exceptions.
 
 ### Mutation checks
 
-All four mutations were applied individually, killed by their named regression
-(exit 101), reverted, then followed by clean gates on both toolchains:
+The four original mutations below remain historical evidence. Three new review
+mutations were applied individually, killed by assertions (exit 101), restored,
+and followed by passing native/cohort tests on both toolchains:
 
 | Guard mutated | Regression |
 |---|---|
 | Accept v1 instead of required v2 | `virtual_native_unsupported_v2_never_downgrades` |
 | Omit receipt release in target guard | `virtual_native_failover_releases_every_target_and_receipt` |
 | Forward source identity | `virtual_native_failover_releases_every_target_and_receipt` |
-| Replace exact missing-terminal error | `virtual_native_missing_terminal_fails_and_releases` |
+| Replace exact missing-terminal error (historical) | `virtual_native_missing_terminal_fails_and_releases` |
+| F1: read fallback identity from the descriptor-free envelope | `virtual_native_missing_terminal_fails_and_releases` (typed deserialization fails) |
+| F2: route virtual pins back to the ordinary service | `virtual_native_recorded_pin_is_scope_local_across_reconcile_and_shutdown` (selected backend differs) |
+| F3: accept empty affinity | `virtual_native_missing_session_identity_fails_explicitly` (exact error absent) |
 
-Logs and their SHA-256 hashes are indexed in the JSON report.
+Portable JSON indexes logical log names. Optional local provenance records absolute
+paths, artifact sizes and SHA-256 hashes separately; it is not committed or used
+in portable freshness comparisons. Binary hashes and raw-log hashes are not portable
+because compiler paths and log output vary across checkouts.
+
+### Formatting and lint qualification
+
+Rust 1.95 rustfmt passes for every changed Rust file, with `--edition 2021
+--config skip_children=true` (including the `.rs.inc` regression file). Full
+`cargo +1.95.0 fmt --all -- --check` already fails at the reviewed baseline due to
+unrelated formatting debt; no unrelated files were reformatted. Rust 1.78 rustfmt
+is not installed; no installation/network access was attempted.
+
+Strict cohort `clippy --all-targets -- -D warnings` fails identically on Rust 1.95
+at baseline and after fixes: Cursor 11, Antigravity 80 and Multiprovider 22 existing
+library diagnostics. Rust 1.78 with `RUSTFLAGS=-Dwarnings` also fails on inherited
+lints. Unqualified 1.95 clippy has the existing SDK `export_plugin!` macro's denied
+`clippy::not_unsafe_ptr_arg_deref` in all three packages. Running 1.95 clippy with
+only `-A clippy::not_unsafe_ptr_arg_deref` completes (existing warnings remain).
+These failures are not represented as clean strict lint gates; no unrelated lint
+fixes or source-level lint allowances were added.
 
 ## Ledger qualification and remaining host limitations
 
@@ -161,18 +204,18 @@ interrupted compile until it completes, never treat a timeout as a successful ga
 Do not run the entire workspace on 1.78.
 
 ```bash
-cd /home/user/Projects/rpi-package--m-virtual-b2
-source /home/user/Projects/.parity-env.sh
+cd "${LANE_CHECKOUT:?set to this checkout}"
+source "${PARITY_ENV:?set to the prepared offline parity-env.sh}"
 mkdir -p /tmp/m-virtual-b2/{home,tmp,logs}
-chmod 0700 /tmp/m-virtual-b2/{home,tmp}
+chmod 0700 /tmp/m-virtual-b2 /tmp/m-virtual-b2/{home,tmp}
 export HOME=/tmp/m-virtual-b2/home TMPDIR=/tmp/m-virtual-b2/tmp
 export RPI_PRIVATE_TMP=$TMPDIR
-export RUSTUP_HOME=/home/user/.rustup CARGO_HOME=/home/user/.cargo
+export RUSTUP_HOME="${PREPARED_RUSTUP_HOME:?}" CARGO_HOME="${PREPARED_CARGO_HOME:?}"
 export RUSTUP_AUTO_INSTALL=0 CARGO_NET_OFFLINE=true CARGO_BUILD_JOBS=6
-export RPI_TEST_HOST=/home/user/Projects/.targets/m-virtual-b2-178/debug/rpi
+export RPI_TEST_HOST="${PARITY_TARGETS:?}/m-virtual-b2-178/debug/rpi"
 # Run once with tc=178/version=1.78.0/RUSTFLAGS=-Dwarnings, then
 # with tc=195/version=1.95.0 and RUSTFLAGS unset:
-export CARGO_TARGET_DIR=/home/user/Projects/.targets/m-virtual-b2-$tc
+export CARGO_TARGET_DIR=$PARITY_TARGETS/m-virtual-b2-$tc
 export RPI_TEST_RUSTC=$RUSTUP_HOME/toolchains/$version-x86_64-unknown-linux-gnu/bin/rustc
 export RPI_TEST_MULTIPROVIDER_LIBRARY=$CARGO_TARGET_DIR/debug/librpi_multiprovider.so
 export RPI_TEST_ANTIGRAVITY_LIBRARY=$CARGO_TARGET_DIR/debug/librpi_antigravity_auth.so
@@ -199,5 +242,8 @@ sha256sum docs/evidence/m-virtual-b2.json
 python3 .github/scripts/refresh-m-virtual-b2-evidence.py
 ```
 
-The report is deterministic for the same source, binaries and gate logs. Raw
-logs remain under `/tmp/m-virtual-b2/logs`; historical cohort JSONs remain historical.
+Portable content is deterministic for the same source and verified gate outcomes,
+independent of checkout path, branch, raw log bytes and binary build paths. Use
+`--logs <local-log-directory> --provenance <local-provenance.json>` to retain local
+audit identities separately. The review-fix run used a fresh 0700 HOME/private TMP
+under a 0700 temporary parent. Historical cohort JSONs remain historical.
