@@ -1,9 +1,9 @@
 # Reconciled-host provider cohort verification
 
-**Current state (host `8f25e89`, refreshed at `lane/pkg-integration`):** the scoped
+**Current state (host `6064a76`, refreshed at `lane/pkg-final`):** the scoped
 package-binding results and the both-toolchain gates below were rerun from this
-checkout against host `8f25e899d1c6bf6f98a73d4800c0363c185ad5fc` (SDK workspace
-0.8.4): **283 cohort passed / 0 failed / 24 inherited ignored, plus 8 real-host
+checkout against host `6064a7616217ebb2d90014787bf4f45ce9e597dc` (SDK workspace
+0.9.2): **301 cohort passed / 0 failed / 24 inherited ignored, plus 8 real-host
 passed**. The M-VIRTUAL-B scope-lease
 evidence (that the same host binds per-package leases and releases them on turn
 boundaries), including the eight real-host `m_virtual_loaded` cases, is in
@@ -17,7 +17,7 @@ before that) remain historical evidence in Git; other packages' domain-evidence
 reports are unchanged.
 
 Scope: `rpi-antigravity-auth`, `rpi-cursor-sdk`, `rpi-multiprovider`, pinned together
-to host `8f25e899d1c6bf6f98a73d4800c0363c185ad5fc` (SDK workspace 0.8.4).
+to host `6064a7616217ebb2d90014787bf4f45ce9e597dc` (SDK workspace 0.9.2).
 No production-code migration was needed: this host preserves the parity SDK
 surface, and the packages already use the synchronous C emission contract.
 
@@ -28,7 +28,7 @@ to the existing local repository, so the pinned revision must already be present
 there. Do not fetch/install dependencies from the network or call live providers;
 all non-loopback network access is out of scope. Host source lives at
 `/home/user/Projects/pi-rust` (and its pinned checkout
-`/home/user/Projects/pi-rust--host-8f25e89`).
+`/home/user/Projects/pi-rust--host-6064a76`).
 
 The Cursor runtime's pinned Node dependencies are installed, never fetched:
 
@@ -158,13 +158,13 @@ the default resolves under the current `TMPDIR`, which the sequence above isolat
 
 ```bash
 python3 .github/scripts/refresh-provider-parity-evidence.py \
-  --host-checkout /home/user/Projects/pi-rust--host-8f25e89 --logs "$LOGS" --write
+  --host-checkout /home/user/Projects/pi-rust--host-6064a76 --logs "$LOGS" --write
 cp docs/provider-parity-sdk-cohort.json "$LOGS/cohort-pass1.json"
 python3 .github/scripts/refresh-provider-parity-evidence.py \
-  --host-checkout /home/user/Projects/pi-rust--host-8f25e89 --logs "$LOGS" --write
+  --host-checkout /home/user/Projects/pi-rust--host-6064a76 --logs "$LOGS" --write
 cmp "$LOGS/cohort-pass1.json" docs/provider-parity-sdk-cohort.json
 python3 .github/scripts/refresh-provider-parity-evidence.py \
-  --host-checkout /home/user/Projects/pi-rust--host-8f25e89 --logs "$LOGS" --check   # regenerates into a temp dir and diffs
+  --host-checkout /home/user/Projects/pi-rust--host-6064a76 --logs "$LOGS" --check   # regenerates into a temp dir and diffs
 ```
 
 Report regeneration is byte-identical for fixed verifier inputs. Rerunning tests

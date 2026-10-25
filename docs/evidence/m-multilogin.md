@@ -1,7 +1,7 @@
 # `/multilogin` production binding
 
 **Status: DELIVERED for `/multilogin` against parity host
-`8f25e899d1c6bf6f98a73d4800c0363c185ad5fc`. Not covered: a real-host run
+`6064a7616217ebb2d90014787bf4f45ce9e597dc`. Not covered: a real-host run
 (every end-to-end test here drives the production C entrypoint with a fake host
 vtable), cross-extension `activeAccountChanged` delivery from a login commit, and
 env/`models.json` readiness in the login presentation.**
@@ -9,7 +9,7 @@ env/`models.json` readiness in the login presentation.**
 Source change: `a245ab9`
 (`feat(multiprovider): register /multilogin through a persist-first pending login`).
 Base: `b776e56`, branch `lane/multilogin`.
-Host pin: `8f25e899d1c6bf6f98a73d4800c0363c185ad5fc` (only package-side changes; the
+Host pin: `6064a7616217ebb2d90014787bf4f45ce9e597dc` (only package-side changes; the
 host checkout was read-only and unmodified).
 
 The companion L1 report
