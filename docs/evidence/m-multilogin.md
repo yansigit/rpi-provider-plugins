@@ -73,22 +73,42 @@ account file never receives:
   `remove_credential` (`:436-450`) clears the capture. The public pool and the
   scheduler never see a reservation, so nothing enumerates or schedules one.
   `set_pending` (`src/native/credentials.rs:346-356`) is the capture step.
-- `packages/rpi-multiprovider/src/native/login.rs:99-105` is a `Drop` guard that
+- `packages/rpi-multiprovider/src/native/login.rs:95-106` is a `Drop` guard that
   drops the reservation on every exit path (success, cancellation, host error,
   presentation error), so a failed login leaves no pending entry behind.
-- `login(...)` (`src/native/login.rs:108-176`) reserves, sends
+- `packages/rpi-multiprovider/src/store/mod.rs:19` `RESERVED_ACCOUNT_PREFIX` is a
+  store-level invariant, not only a port convention: a stored account whose id
+  claims the prefix is refused on read (`records::reserved`
+  `src/store/records.rs:176-190`, called from `src/store/mod.rs:136`) and the id
+  is also refused when a new account would mint one
+  (`src/store/records.rs:236-238`), so such a file reports
+  `account id "…" is reserved for in-flight logins` instead of surfacing the
+  reservation as an account. `PENDING_ACCOUNT_PREFIX`
+  (`src/native/credentials.rs:26`) re-exports that one constant.
+- `login(...)` (`src/native/login.rs:137-214`) reserves, sends
   `{"port":"auth","action":"login","providerId":…,"methodId":…,
   "storeId":"multiprovider","accountId":<reservation>}`, then loops over the host
   replies: `success` returns the captured credential (and errors if the host
   claimed success without persisting one), `cancelled` maps to `CANCELLED`, and
-  `interaction` drives `present` and answers with `continue`. A presentation
-  error cancels the host login with `cancelLogin` on a fresh token
-  (`src/native/login.rs:142-160`) because the host keeps an unanswered login
-  until cancelled and the command's own token may already be cancelled.
-- `present` (`src/native/login.rs:178-258`) maps `input` (`secret` → masked
+  `interaction` drives `present` and answers with `continue`.
+- Every host call goes through `request` (`src/native/login.rs:108-121`), a
+  `tokio::select!` that is biased on `signal.cancelled()`. The host call itself
+  runs on a blocking thread the SDK cannot interrupt, so racing the command's own
+  token is the only way a cancelled command stops waiting for `login`/`continue`:
+  the reply is then abandoned and the loop unwinds with `CANCELLED`.
+- Whenever a login is abandoned after the host handed out a `loginId`, the plugin
+  sends `cancelLogin` on a **fresh** token (`cancel_login`
+  `src/native/login.rs:123-135`): a presentation error and a refused or cancelled
+  `continue` all cancel the ticket (`:186-214`), because the host keeps an
+  unanswered login until cancelled and the command's own token may be the very
+  reason the login is ending.
+- `present` (`src/native/login.rs:219-301`) maps `input` (`secret` → masked
   prompt, `url` → auth-url notification, `allowEmpty` and `message` honoured),
-  `select` (`choices` id/label) and `wait` (`pollAfterMs`, cancellable) onto the
-  existing `LoginDialog` interaction (`src/commands/login.rs:254`).
+  `select` (`choices` id/label, a choice without a non-empty `id` is refused at
+  `:264-274`, and an empty answer is an error rather than a cancel at
+  `:280-284`) and `wait` (`pollAfterMs`, cancellable, one notice per distinct
+  message at `:286-292`) onto the existing `LoginDialog` interaction
+  (`src/commands/login.rs:254`).
 
 The command itself is the ported upstream flow
 (`packages/rpi-multiprovider/src/commands/login.rs:552-606`): interactive-mode
@@ -165,10 +185,56 @@ vtable):
 - `:2636` `switch_account_never_reads_login_methods` — `/switch-account` issues
   no `auth` request at all, so the new metadata fetch cannot regress it.
 
-Unit tests in `src/native/login.rs`: `:260`
-`host_methods_become_pi_auth_presentation`, `:283`
-`older_hosts_without_presentation_keep_the_provider_login`, `:296`
-`malformed_method_lists_are_refused`.
+- `:2743` `multilogin_walks_input_wait_and_success_interactions` — one login
+  driven through `input` → `wait` (a single notice, answered with no value) →
+  `success`: exactly two `continue` requests (the typed key, then nothing) and
+  the credential the host persisted becomes the stored account.
+- `:2808` `multilogin_prompts_a_select_interaction_for_its_choice_id` — a
+  `select` interaction reaches the dialog with its title and
+  `[{label,value}]` choices, and the chosen `id` is what `continue` sends back.
+- `:2856` `cancelled_multilogin_cancels_a_host_login_held_mid_continue` — the
+  fake host holds the `continue` request open while the test cancels the command
+  token; the command unwinds while the host still waits (so the request race, not
+  a host reply, is what ended it), reports the cancel as no result and no error,
+  sends `cancelLogin` for that `loginId`, stores nothing and drops the
+  reservation.
+- `packages/rpi-multiprovider/tests/store.rs:396`
+  `reserved_login_ids_are_never_stored_accounts` — a file that already holds a
+  `pending-login-*` account is refused on read, and `add` refuses to mint one.
+
+Unit tests in `src/native/login.rs`: `:311`
+`host_methods_become_pi_auth_presentation`, `:334`
+`older_hosts_without_presentation_keep_the_provider_login`, `:347`
+`malformed_method_lists_are_refused`, `:401`
+`select_interactions_need_choice_ids`, `:419`
+`unresolved_select_answers_are_errors_not_cancellations`, `:438`
+`wait_interactions_report_once_and_stop_on_cancellation`.
+
+## Review follow-ups (F1-F5)
+
+The review of this lane (`/home/user/Projects/.parity-lanes/multilogin-review.md`,
+verdict APPROVE-WITH-FOLLOWUPS) listed five follow-ups. Every one is addressed or
+answered with evidence:
+
+| # | Follow-up | Disposition |
+| --- | --- | --- |
+| F1 | No prefix guard on real account ids: a store file could hold an account whose id claims `pending-login-` | The prefix is now a store invariant: `RESERVED_ACCOUNT_PREFIX` (`src/store/mod.rs:19`) is refused on read (`src/store/records.rs:176-190`, wired at `src/store/mod.rs:136`) and when a new account would mint one (`src/store/records.rs:236-238`), with `account id "…" is reserved for in-flight logins`. Pinned by `tests/store.rs:396` `reserved_login_ids_are_never_stored_accounts`. |
+| F2 | Outer cancellation while awaiting `client.request(login/continue)` leaks the host ticket | `request` (`src/native/login.rs:108-121`) is a biased `tokio::select!` on `signal.cancelled()`, and every login abandoned after a `loginId` is known sends `cancelLogin` on a **fresh** token (`cancel_login` `:123-135`, used at `:186-214`): presentation error, cancelled `continue`, refused `continue`. Pinned by `cancelled_multilogin_cancels_a_host_login_held_mid_continue` (`tests/m_native.rs:2856`), where the fake host still holds the request when the command unwinds. |
+| F3 | Paste prompt title must stay `Enter <name>:` (no Pi trailing-space drift) | No code change: the port already matches Pi (`src/commands/login.rs:352`, `masked = false`) and `multilogin_pastes_a_key_when_the_host_reports_no_interactive_login` pins the exact title. |
+| F4 | A `select` interaction answered empty reads as `CANCELLED` where the host raises a resolve error | `select` requires choices with a non-empty `id` (`src/native/login.rs:264-274`) and an empty answer is now `multiprovider: invalid login choices`, not `CANCELLED` (`:280-284`). Pinned by `select_interactions_need_choice_ids` and `unresolved_select_answers_are_errors_not_cancellations`. |
+| F5 | The login-dialog `select` control should carry `searchable: true` | **Rejected as a false positive.** Upstream routes the login-dialog select through `ExtensionSelectorComponent` (`provider-references/multiprovider/src/multilogin.ts:220-224`, `showSelect`); `searchable: true` belongs to the provider *picker* (`src/commands/login.rs:173`, matching the host's select spec). Adding it fails the recorded upstream fixture: `tests/commands.rs` `command_flows_match_the_upstream_reference` reports `trace[6].control: keys left {choices,kind,searchable,title} right {choices,kind,title}`. A comment next to the select branch in `src/commands/login.rs` records why. |
+
+One further hardening went beyond the list: a `wait` interaction is announced
+once per distinct message (`src/native/login.rs:286-292`) instead of on every
+`pollAfterMs` tick, pinned by `wait_interactions_report_once_and_stop_on_cancellation`
+and by the `input` → `wait` → `success` walk.
+
+Test additions that came with the follow-ups: `multilogin_walks_input_wait_and_success_interactions`
+(one login through `input` -> `wait` -> `success`, two `continue` requests, the
+host's own credential committed) and
+`multilogin_prompts_a_select_interaction_for_its_choice_id` (a `select` interaction
+reaching the dialog and its `id` coming back in `continue`), both end to end
+through the production C entrypoint (`tests/m_native.rs:2743`, `:2808`).
 
 ## Gates
 
@@ -176,27 +242,31 @@ All executions were offline, foreground and bounded (`timeout 270 …; echo exit
 no background jobs, no network. Environment: `source
 /home/user/Projects/.parity-env.sh` with `RUSTUP_HOME=/home/user/.rustup`,
 `CARGO_HOME=/home/user/.cargo`, `CARGO_NET_OFFLINE=true`,
-`CARGO_BUILD_JOBS=6`. Logs: `/tmp/ml-logs`.
+`CARGO_BUILD_JOBS=6`, plus an isolated `HOME`/`TMPDIR` (`/tmp/mlfix-home`, 0700).
+Logs: `/tmp/mlfix-logs`. The cdylib is rebuilt and pointed at the test run first,
+so `built_library_registers_through_the_exported_symbol` loads this build rather
+than a stale library.
 
 | Gate | Command | Result |
 | --- | --- | --- |
-| 1.95 lib (fresh, so the `m_native` cdylib test loads this build) | `CARGO_TARGET_DIR=/home/user/Projects/.targets/pkg-int-ml-195 cargo +1.95.0 build -p rpi-multiprovider --lib --locked --offline` | ok (`build-195-lib.log`) |
-| 1.95 cohort | `CARGO_TARGET_DIR=…/pkg-int-ml-195 RPI_TEST_MULTIPROVIDER_LIBRARY=$CARGO_TARGET_DIR/debug/librpi_multiprovider.so cargo +1.95.0 test -p rpi-multiprovider --locked --offline --no-fail-fast -- --skip real_dll` | **107 / 0 / 2** over 21 suites (`test-195.log`) |
-| 1.78 lib with `-Dwarnings` | `CARGO_TARGET_DIR=/home/user/Projects/.targets/ml-178 RUSTFLAGS=-Dwarnings cargo +1.78.0 build -p rpi-multiprovider --lib --locked --offline` | ok (`build-178-lib.log`) |
-| 1.78 cohort | same test command on `+1.78.0` with `CARGO_TARGET_DIR=…/ml-178` and `RPI_TEST_MULTIPROVIDER_LIBRARY=$CARGO_TARGET_DIR/debug/librpi_multiprovider.so` | **107 / 0 / 2** over 21 suites (`test-178.log`) |
+| 1.95 lib (built first, so the `m_native` cdylib test loads this build) | `CARGO_TARGET_DIR=/home/user/Projects/.targets/ml-195 cargo +1.95.0 build -p rpi-multiprovider --lib --locked --offline` | ok (`build-1.95.0.log`) |
+| 1.95 cohort | `CARGO_TARGET_DIR=…/ml-195 RPI_TEST_MULTIPROVIDER_LIBRARY=$CARGO_TARGET_DIR/debug/librpi_multiprovider.so cargo +1.95.0 test -p rpi-multiprovider --locked --offline -- --skip real_dll` | **114 / 0 / 2** over 21 suites (`test-1.95.0.log`) |
+| 1.78 lib (`CARGO_NET_OFFLINE`, no auto-install) | `CARGO_TARGET_DIR=/home/user/Projects/.targets/ml-178 cargo +1.78.0 build -p rpi-multiprovider --lib --locked --offline` | ok (`build-1.78.0.log`) |
+| 1.78 cohort | same test command on `+1.78.0` with `CARGO_TARGET_DIR=…/ml-178` and `RPI_TEST_MULTIPROVIDER_LIBRARY=$CARGO_TARGET_DIR/debug/librpi_multiprovider.so` | **114 / 0 / 2** over 21 suites (`test-1.78.0.log`) |
 
-Counts are passed / failed / ignored. The pre-change baseline for the same scope
-was 105 / 0 / 2, i.e. this lane adds exactly the two new `m_native` tests;
-`tests/m_native.rs` itself is 38 / 0 / 0 in both cohorts. The 2 ignores are
-pre-existing skips, and `real_dll` (the real-host suite) is out of scope here
-because this lane has no real-host run.
+Counts are passed / failed / ignored. The baseline for the same scope before the
+review follow-ups was 107 / 0 / 2, so those seven new tests are the three
+`m_native` interaction tests, `reserved_login_ids_are_never_stored_accounts` in
+`tests/store.rs` and the three `native::login::tests` cases: `tests/m_native.rs`
+is 41 / 0 / 0 (`38` before) and `tests/store.rs` is 8 / 0 / 1 (`7` before) in both
+cohorts. The 2 ignores are pre-existing skips, and `real_dll` (the real-host
+suite) is out of scope here because this lane has no real-host run.
 
-`rustfmt` (`rustfmt +1.95.0 --edition 2021 --check <file>`) is clean on every file
-this lane changed: `src/native/login.rs`, `src/native/credentials.rs`,
-`src/native/command_port.rs`, `src/native/commands.rs`, `tests/m_native.rs`, and
-`src/native/mod.rs` itself. Formatting `src/native/mod.rs` also pulls in its
-`mod services;` child, which reports 5 pre-existing diffs in
-`src/native/services.rs`; that file is untouched by this lane and was not
+`rustfmt` (`rustfmt +1.95.0 --check --edition 2021 <files>`) is clean on the seven
+files the review follow-ups changed: `src/native/login.rs`, `src/native/credentials.rs`,
+`src/store/mod.rs`, `src/store/records.rs`, `src/commands/login.rs`,
+`tests/m_native.rs` and `tests/store.rs`. `src/native/services.rs` carries
+pre-existing drift from earlier lanes; it is untouched here and was not
 reformatted.
 
 `cargo +1.95.0 clippy -p rpi-multiprovider --all-targets --locked --offline`
@@ -213,7 +283,8 @@ predate this lane). None of them falls inside the added line ranges of this diff
 Each mutation was applied alone to the committed tree, killed by a focused test
 (exit 101), then reverted (`git status` clean afterwards). Run with Rust 1.95.0 as
 `cargo test -p rpi-multiprovider --test m_native <filter>` (the library unit tests
-for the presentation ones). Logs under `/tmp/ml-logs`.
+for the presentation ones). Logs under `/tmp/ml-logs` (lane) and
+`/tmp/mlfix-logs/mut-m*.log` (review follow-ups).
 
 | Mutation | Killing test | Result |
 | --- | --- | --- |
@@ -224,6 +295,16 @@ for the presentation ones). Logs under `/tmp/ml-logs`.
 | `Reservation::drop`: leak the reservation instead of dropping it | `cancelled_multilogin_cancels_the_host_login_and_stores_nothing` (`assert_reservation_dropped`, `tests/m_native.rs:2399`) | killed (`mut-drop.log`) |
 | `login`: do not send `cancelLogin` when the presentation fails | `cancelled_multilogin_cancels_the_host_login_and_stores_nothing` (`tests/m_native.rs:2623`) | killed (`mut-cancel.log`) |
 | `parse_methods`: keep a blank `loginLabel` (not treated as absent) | `native::login::tests::older_hosts_without_presentation_keep_the_provider_login` (`src/native/login.rs:292`, "a blank label is absent") | killed (`mut-c.log`) |
+
+| `request`: drop the `signal.cancelled()` race (`client.request(body, signal.clone()).await`) | `cancelled_multilogin_cancels_a_host_login_held_mid_continue` (`tests/m_native.rs:2883`, the command never unwinds) | killed (`mut-m1b.log`) |
+| `login`: no `cancelLogin` when a `continue` is cancelled | same test, `cancelLogin` assertion (`tests/m_native.rs:2897`) | killed (`mut-m2.log`) |
+| `login`: no `cancelLogin` when the presentation errors | `cancelled_multilogin_cancels_the_host_login_and_stores_nothing` (`tests/m_native.rs:2672`) | killed (`mut-m3.log`) |
+| `present`: an empty `select` answer is `CANCELLED` again | `native::login::tests::unresolved_select_answers_are_errors_not_cancellations` (`src/native/login.rs:430`) | killed (`mut-m4.log`) |
+| `present`: `select` choices are not validated for ids | `native::login::tests::select_interactions_need_choice_ids` (`src/native/login.rs:404`) | killed (`mut-m5.log`) |
+| store read: skip the reserved-prefix check | `reserved_login_ids_are_never_stored_accounts` (`tests/store.rs:408`) | killed (`mut-m6.log`) |
+| store add: allow minting a reserved id | `reserved_login_ids_are_never_stored_accounts` (`tests/store.rs:427`) | killed (`mut-m7.log`) |
+| `present`: report a repeated `wait` message every poll | `native::login::tests::wait_interactions_report_once_and_stop_on_cancellation` (`src/native/login.rs:447`) | killed (`mut-m8.log`) |
+| `present`: answer a `wait` with its own message instead of no value | `multilogin_walks_input_wait_and_success_interactions` (`tests/m_native.rs:2776`) | killed (`mut-m9.log`) |
 
 The `presentation` gate mutation is only killed by the unit test, and that is
 inherent to the fake host: the pool manager receives the chosen method id from the
