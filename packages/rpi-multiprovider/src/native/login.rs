@@ -102,9 +102,38 @@ impl Drop for Reservation<'_> {
     }
 }
 
+/// One host login request, reporting [`CANCELLED`] as soon as the command's
+/// token fires. The request carries that token, so it is aborted on the host
+/// side at the same moment; the caller cancels the host login itself.
+async fn request(
+    client: &Client,
+    signal: &CancellationToken,
+    body: Value,
+) -> Result<Value, String> {
+    tokio::select! {
+        biased;
+        _ = signal.cancelled() => Err(CANCELLED.into()),
+        response = client.request(body, signal.clone()) => response,
+    }
+}
+
+/// Cancels one host login on a fresh token: the command's own token may be the
+/// reason the login is ending, and a cancelled token would abort this request
+/// before it reaches the host.
+async fn cancel_login(client: &Client, provider: &str, login_id: &str) {
+    let _ = client
+        .request(
+            json!({"port":"auth","action":"cancelLogin","providerId":provider,
+                "loginId":login_id}),
+            CancellationToken::new(),
+        )
+        .await;
+}
+
 /// Runs the host login for `method_id` into a private pending account and
-/// returns the credential it persisted. A cancelled presentation cancels the
-/// host login and reports [`CANCELLED`].
+/// returns the credential it persisted. A cancelled presentation, or a command
+/// token that fires while the host holds the login, cancels the host login and
+/// reports [`CANCELLED`].
 pub async fn login<I: LoginInteraction>(
     shared: &Shared,
     client: &Client,
@@ -117,13 +146,18 @@ pub async fn login<I: LoginInteraction>(
         id: shared.reserve_pending_login(provider)?,
         shared,
     };
-    let mut response = client
-        .request(
-            json!({"port":"auth","action":"login","providerId":provider,"methodId":method_id,
-                "storeId":CREDENTIAL_STORE_ID,"accountId":reservation.id}),
-            signal.clone(),
-        )
-        .await?;
+    let mut response = match request(
+        client,
+        signal,
+        json!({"port":"auth","action":"login","providerId":provider,"methodId":method_id,
+            "storeId":CREDENTIAL_STORE_ID,"accountId":reservation.id}),
+    )
+    .await
+    {
+        Ok(value) => value,
+        Err(_) if signal.is_cancelled() => return Err(CANCELLED.into()),
+        Err(error) => return Err(error),
+    };
     let mut waiting: Option<String> = None;
     loop {
         match response["kind"].as_str() {
@@ -150,24 +184,31 @@ pub async fn login<I: LoginInteraction>(
                     Ok(value) => value,
                     Err(error) => {
                         // The host keeps an unanswered login until it is
-                        // cancelled; the command's own token may already be.
-                        let _ = client
-                            .request(
-                                json!({"port":"auth","action":"cancelLogin",
-                                        "providerId":provider,"loginId":login_id}),
-                                CancellationToken::new(),
-                            )
-                            .await;
+                        // cancelled.
+                        cancel_login(client, provider, &login_id).await;
                         return Err(error);
                     }
                 };
-                response = client
-                    .request(
-                        json!({"port":"auth","action":"continue","providerId":provider,
-                            "loginId":login_id,"value":value}),
-                        signal.clone(),
-                    )
-                    .await?;
+                response = match request(
+                    client,
+                    signal,
+                    json!({"port":"auth","action":"continue","providerId":provider,
+                        "loginId":login_id,"value":value}),
+                )
+                .await
+                {
+                    Ok(value) => value,
+                    Err(_) if signal.is_cancelled() => {
+                        cancel_login(client, provider, &login_id).await;
+                        return Err(CANCELLED.into());
+                    }
+                    Err(error) => {
+                        // The host keeps the ticket of a continuation it
+                        // refused, so it is cancelled before the error shows.
+                        cancel_login(client, provider, &login_id).await;
+                        return Err(error);
+                    }
+                };
             }
             _ => return Err("multiprovider: invalid login response".into()),
         }
@@ -296,5 +337,73 @@ mod tests {
     fn malformed_method_lists_are_refused() {
         assert!(parse_methods(&json!({"id":"key"})).is_err());
         assert!(parse_methods(&json!([{"kind":"oauth","name":"x"}])).is_err());
+    }
+
+    /// Answers prompts from a fixed script and records what the dialog saw.
+    struct Scripted {
+        replies: std::sync::Mutex<std::collections::VecDeque<Result<String, String>>>,
+        events: std::sync::Mutex<Vec<Value>>,
+        prompts: std::sync::Mutex<Vec<Value>>,
+    }
+    impl Scripted {
+        fn replying(replies: Vec<Result<String, String>>) -> Self {
+            Self {
+                replies: std::sync::Mutex::new(replies.into()),
+                events: std::sync::Mutex::new(Vec::new()),
+                prompts: std::sync::Mutex::new(Vec::new()),
+            }
+        }
+    }
+    impl LoginInteraction for Scripted {
+        fn notify(
+            &self,
+            event: Value,
+        ) -> impl std::future::Future<Output = Result<(), String>> + Send {
+            async move {
+                self.events.lock().unwrap().push(event);
+                Ok(())
+            }
+        }
+        fn prompt(
+            &self,
+            prompt: Value,
+        ) -> impl std::future::Future<Output = Result<String, String>> + Send {
+            async move {
+                self.prompts.lock().unwrap().push(prompt);
+                self.replies
+                    .lock()
+                    .unwrap()
+                    .pop_front()
+                    .unwrap_or(Err(CANCELLED.into()))
+            }
+        }
+    }
+
+    fn blocked_on<F: std::future::Future>(future: F) -> F::Output {
+        tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(future)
+    }
+
+    #[test]
+    fn wait_interactions_report_once_and_stop_on_cancellation() {
+        let dialog = Scripted::replying(Vec::new());
+        let signal = CancellationToken::new();
+        let mut waiting = None;
+        let wait = json!({"kind":"wait","message":"Approve the request","pollAfterMs":5});
+        for _ in 0..2 {
+            let value = blocked_on(present(&wait, &dialog, &signal, &mut waiting)).unwrap();
+            assert_eq!(value, Value::Null);
+        }
+        assert_eq!(
+            dialog.events.lock().unwrap().clone(),
+            vec![json!({"type":"info","message":"Approve the request"})],
+            "a repeated wait message is reported once"
+        );
+        signal.cancel();
+        let error = blocked_on(present(&wait, &dialog, &signal, &mut waiting)).unwrap_err();
+        assert_eq!(error, CANCELLED);
     }
 }
