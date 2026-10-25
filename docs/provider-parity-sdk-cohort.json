@@ -3,7 +3,7 @@
   "status": "scoped-pass",
   "scope": "Offline provider cohort only; no live services, full workspace, or G1/G2 acceptance claimed.",
   "hostTarget": "6064a7616217ebb2d90014787bf4f45ce9e597dc",
-  "packageBase": "363fa54297a7efcf5d600a704296e6a3e39af0ec",
+  "packageBase": "d1a68b1ac9288cee0338d2e58fc7dfad27dd251d",
   "lane": "lane/pkg-final",
   "worktree": "<root>",
   "generator": ".github/scripts/refresh-provider-parity-evidence.py",
