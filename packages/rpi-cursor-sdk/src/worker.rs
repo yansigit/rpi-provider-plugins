@@ -10,13 +10,19 @@ use std::process::Stdio;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use tokio::io::AsyncWriteExt;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
-use tokio::process::{Child, Command};
+use tokio::process::{Child, ChildStderr, Command};
 use tokio::sync::{mpsc, oneshot};
 use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
 use wire::{Body, CAPACITY, MAX_CALLS, MAX_FRAME, PAYLOAD_BYTES};
+
+/// Bound on the captured worker stderr ring; enough for a module-resolution
+/// failure or a Node stack tail, small enough to stay in an error string.
+const DIAGNOSTIC_BYTES: usize = 4 * 1024;
+const DIAGNOSTIC_LINES: usize = 12;
+const REDACTED: &str = "[redacted]";
 
 #[derive(Clone)]
 pub struct WorkerConfig {
@@ -162,6 +168,7 @@ pub struct Worker {
     state: Arc<State>,
     reader: Option<JoinHandle<()>>,
     writer: Option<JoinHandle<()>>,
+    diagnostics: Option<JoinHandle<()>>,
 }
 
 pub struct Call {
@@ -234,30 +241,59 @@ impl Worker {
             .current_dir(&config.cwd)
             .stdin(Stdio::piped())
             .stdout(Stdio::null())
-            .stderr(Stdio::null())
+            // A worker that cannot resolve its packaged dependencies dies while
+            // bootstrapping; keep its own diagnostics instead of discarding them.
+            .stderr(Stdio::piped())
             .kill_on_drop(true)
             .spawn()
             .map_err(|error| format!("could not start Cursor Node worker: {error}"))?;
+        let diagnostics = Arc::new(Diagnostics::default());
+        let mut diagnostic_task = child
+            .stderr
+            .take()
+            .map(|stderr| tokio::spawn(capture_diagnostics(stderr, Arc::clone(&diagnostics))));
+        let mut stdin = child.stdin.take().ok_or("worker stdin unavailable")?;
         let bootstrap = json!({"version":1,"generation":generation,"token":token,"port":listener.local_addr().map_err(|_| "worker listener unavailable")?.port()});
         let started = tokio::time::timeout(Duration::from_secs(10), async {
-            let mut stdin = child.stdin.take().ok_or("worker stdin unavailable")?;
-            stdin
-                .write_all(&serde_json::to_vec(&bootstrap).unwrap())
-                .await
-                .map_err(|_| "worker bootstrap failed")?;
-            stdin
-                .shutdown()
-                .await
-                .map_err(|_| "worker bootstrap failed")?;
-            drop(stdin);
-            authenticate(&listener, &generation, &token).await
+            let handshake = async {
+                stdin
+                    .write_all(&serde_json::to_vec(&bootstrap).unwrap())
+                    .await
+                    .map_err(|_| "worker bootstrap failed")?;
+                stdin
+                    .shutdown()
+                    .await
+                    .map_err(|_| "worker bootstrap failed")?;
+                drop(stdin);
+                authenticate(&listener, &generation, &token).await
+            };
+            tokio::select! {
+                biased;
+                // The child dying is itself the answer: wait() would otherwise
+                // hide it behind the listener timeout below.
+                status = child.wait() => {
+                    if let Some(task) = diagnostic_task.take() {
+                        let _ = tokio::time::timeout(Duration::from_secs(1), task).await;
+                    }
+                    let status = status.map_err(|error| format!("could not reap Cursor worker: {error}"))?;
+                    Err(diagnostics.failure(status, &[&generation, &token]))
+                }
+                stream = handshake => stream,
+            }
         })
         .await
-        .map_err(|_| "Cursor worker handshake timed out; Node 24+ is required".to_owned())
+        .map_err(|_| {
+            // Only a worker that is still alive without connecting reaches this
+            // arm; the earlier arms report the child's own failure instead.
+            "Cursor worker handshake timed out; Node 24+ is required".to_owned()
+        })
         .and_then(|v| v);
         let stream = match started {
             Ok(stream) => stream,
             Err(error) => {
+                if let Some(task) = diagnostic_task.take() {
+                    task.abort();
+                }
                 let _ = child.kill().await;
                 let _ = child.wait().await;
                 return Err(error);
@@ -313,6 +349,7 @@ impl Worker {
             state,
             reader: Some(reader),
             writer: Some(writer),
+            diagnostics: diagnostic_task,
         })
     }
 
@@ -409,6 +446,10 @@ impl Worker {
         if let Some(task) = self.writer.take() {
             let _ = task.await;
         }
+        if let Some(task) = self.diagnostics.take() {
+            // The reaped child has closed its stderr; keep a bound anyway.
+            let _ = tokio::time::timeout(Duration::from_secs(1), task).await;
+        }
         drain_hosts(&self.state).await;
         status
     }
@@ -417,6 +458,9 @@ impl Worker {
 impl Drop for Worker {
     fn drop(&mut self) {
         self.state.fail("Cursor worker owner dropped".into());
+        if let Some(task) = self.diagnostics.take() {
+            task.abort();
+        }
         if let Some(mut child) = self.child.take() {
             let _ = child.start_kill();
             if let Ok(runtime) = tokio::runtime::Handle::try_current() {
@@ -430,6 +474,49 @@ impl Drop for Worker {
                     drain_hosts(&state).await;
                 });
             }
+        }
+    }
+}
+
+/// Last bytes a worker wrote to stderr, kept bounded so a chatty child cannot
+/// grow host memory.
+#[derive(Default)]
+struct Diagnostics(Mutex<Vec<u8>>);
+
+impl Diagnostics {
+    fn push(&self, chunk: &[u8]) {
+        let mut ring = self.0.lock().unwrap();
+        ring.extend_from_slice(chunk);
+        if ring.len() > DIAGNOSTIC_BYTES {
+            let excess = ring.len() - DIAGNOSTIC_BYTES;
+            ring.drain(..excess);
+        }
+    }
+
+    /// Fail fast with the worker's own words instead of a generic timeout.
+    /// Bootstrap secrets are never replayed, even when the child echoes them.
+    fn failure(&self, status: std::process::ExitStatus, secrets: &[&str]) -> String {
+        let mut text = String::from_utf8_lossy(&self.0.lock().unwrap()).into_owned();
+        for secret in secrets.iter().filter(|secret| !secret.is_empty()) {
+            text = text.replace(secret, REDACTED);
+        }
+        let tail: Vec<&str> = text.lines().rev().take(DIAGNOSTIC_LINES).collect();
+        let excerpt: Vec<&str> = tail.into_iter().rev().collect();
+        let excerpt = excerpt.join("\n");
+        let excerpt = excerpt.trim();
+        if excerpt.is_empty() {
+            return format!("Cursor worker exited before handshake ({status}): no stderr output");
+        }
+        format!("Cursor worker exited before handshake ({status}): {excerpt}")
+    }
+}
+
+async fn capture_diagnostics(mut stderr: ChildStderr, diagnostics: Arc<Diagnostics>) {
+    let mut chunk = [0; 1024];
+    loop {
+        match stderr.read(&mut chunk).await {
+            Ok(0) | Err(_) => return,
+            Ok(bytes) => diagnostics.push(&chunk[..bytes]),
         }
     }
 }
