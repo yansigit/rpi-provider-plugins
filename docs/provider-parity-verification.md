@@ -149,7 +149,7 @@ checkout with `--host-checkout`, which it asserts is at that pinned SHA, clean, 
 unchanged from the layered pins. Logs default to a per-checkout temporary directory
 (`PARITY_EVIDENCE_LOGS` overrides it) so lanes never read each other's evidence. It
 checks that registry dependency versions/checksums did not change relative to
-`5b5416c`, hashes all tracked files in the three resolved host crates, verifies their
+`363fa54` (the reviewed upstream sync that last changed them), hashes all tracked files in the three resolved host crates, verifies their
 checkout HEAD and cleanliness, and records every binary's SHA-256. It never runs a
 build, reads credentials, or accesses the network.
 

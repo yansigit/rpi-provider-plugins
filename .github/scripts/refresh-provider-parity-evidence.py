@@ -22,7 +22,7 @@ import tomllib
 
 PACKAGES = ["rpi-antigravity-auth", "rpi-cursor-sdk", "rpi-multiprovider"]
 HOST_CRATES = ["rpi-ai", "rpi-plugin-sdk", "rpi-telemetry"]
-BASE = "5b5416c"
+BASE = "363fa54"
 
 
 def checkout_root(start=None):
