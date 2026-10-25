@@ -436,7 +436,15 @@ mod linux {
         for name in ["dist", "shared"] {
             copy_tree(&source.join(name), &target.join(name));
         }
-        std::os::unix::fs::symlink(source.join("node_modules"), target.join("node_modules")).unwrap();
+        let dependencies = source.join("node_modules");
+        // A dangling link here used to fail as an opaque worker crash; the staged
+        // runtime is only executable when its installed tree exists.
+        assert!(
+            dependencies.is_dir(),
+            "{} is missing; run `npm ci --offline --ignore-scripts --no-audit --no-fund` in packages/rpi-cursor-sdk/runtime first (or packages/rpi-cursor-sdk/scripts/ensure-runtime-deps.sh)",
+            dependencies.display()
+        );
+        std::os::unix::fs::symlink(&dependencies, target.join("node_modules")).unwrap();
         staged
     }
 

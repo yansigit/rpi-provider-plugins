@@ -26,9 +26,13 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, 
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertPortable, checkoutPrefixes, checkoutRelativePath } from "./c_tools/home-paths.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = resolve(HERE, "..");
+// A gate run isolates HOME, so the checkout's own home-like prefix is redacted too.
+const CHECKOUT_ROOT = resolve(PACKAGE_ROOT, "../..");
+const PORTABLE_PREFIXES = checkoutPrefixes(CHECKOUT_ROOT);
 const SCENARIO_DIR = join(HERE, "c_tools/scenarios");
 const EVIDENCE_PATH = join(HERE, "c_tools-evidence.json");
 const WORKER_ENTRY = join(PACKAGE_ROOT, "runtime/main.mjs");
@@ -37,7 +41,8 @@ const REF_ROOT = resolve(process.env.RPI_PROVIDER_REFERENCES ?? join(HERE, "../.
 const PI_DIR = join(REF_ROOT, "node_modules/@earendil-works/pi-coding-agent");
 const PI_CLI = join(PI_DIR, "dist/bundle/cli.js");
 const PINNED_ADAPTER = join(REF_ROOT, "node_modules/pi-cursor-sdk");
-// The fake SDK lives in the c-fake lane until integration places it at tests/fake-sdk.
+// The fake SDK is tracked at tests/fake-sdk; RPI_CURSOR_FAKE_SDK overrides it and the
+// historical c-fake lane path stays as a last resort for older checkouts.
 const FAKE_DIR = process.env.RPI_CURSOR_FAKE_SDK
 	? resolve(process.env.RPI_CURSOR_FAKE_SDK)
 	: existsSync(join(HERE, "fake-sdk"))
@@ -126,6 +131,10 @@ function normalizeJsonLine(line, tmpRoot) {
 				.split(tmpRoot).join("<root>")
 				.replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g, "<uuid>")
 				.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z/g, "<iso>")
+				// Session file names carry the same clock in a dash-separated form.
+				.replace(/\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z/g, "<iso>")
+				// The retained adapter derives its on-disk store id from the fake agent.
+				.replace(/(pi-sessions\/)[0-9a-f]{32}/g, "$1<store>")
 				.replace(/cursor-replay-\d+-\d+-/g, "cursor-replay-<n>-<n>-")
 				.replace(/cursor-pi-bridge-[0-9a-f]{32}-t\d+/g, "cursor-pi-bridge-<run>-t<n>");
 		}
@@ -340,6 +349,7 @@ async function runCandidate(scenarioPath) {
 			throw new Error(`unexpected host request ${method}/${input.port}/${input.action}`);
 		}
 		const failures = [];
+		let pumpError;
 		const pump = async () => {
 			for (;;) {
 				const request = await peer.take((frame) => frame.kind === "request");
@@ -349,7 +359,9 @@ async function runCandidate(scenarioPath) {
 				);
 			}
 		};
-		void pump();
+		// The pump outlives individual awaits; a dead worker must surface as this
+		// scenario's own failure, not as an unhandled rejection that hides it.
+		pump().catch((error) => { pumpError = error.message; process.stderr.write(`worker pump stopped: ${error.message}\n`); });
 		await requestOnce("runtime.configure", {});
 		await requestOnce("extension.event", { event: { type: "session_start", reason: "startup" } });
 
@@ -405,7 +417,7 @@ async function runCandidate(scenarioPath) {
 			fakeLogRecords: records.length,
 			fakeLogSha256: sha256(normalizeFakeLog(fakeLog, tmpRoot)),
 			fakeLogRaw: normalizeFakeLog(fakeLog, tmpRoot),
-			hostFailures: failures,
+			hostFailures: [...failures, ...(pumpError ? [`worker pump: ${pumpError}`] : [])],
 			workerOutputLines: peer.output().split("\n").filter(Boolean).length,
 			recordedBindings: sortObject(recordedBindings),
 			recordedPrefixes: sortObject(recordedPrefixes),
@@ -514,15 +526,15 @@ function provenance() {
 		piVersion: read(join(PI_DIR, "package.json")),
 		cursorSdkVersion: read(join(REF_ROOT, "node_modules/@cursor/sdk/package.json")),
 		piCursorSdkVersion: read(join(PINNED_ADAPTER, "package.json")),
-		fakeSdkDir: FAKE_DIR.split(homedir()).join("<home>"),
+		fakeSdkDir: checkoutRelativePath(FAKE_DIR, CHECKOUT_ROOT, PORTABLE_PREFIXES),
 		fake,
 	};
 }
 
 async function main() {
 	if (!existsSync(PI_CLI)) throw new Error(`Pi CLI missing at ${PI_CLI}`);
-	if (!existsSync(REGISTER)) throw new Error(`fake SDK harness missing at ${FAKE_DIR} (set RPI_CURSOR_FAKE_SDK)`);
-	if (!existsSync(join(PACKAGE_ROOT, "runtime/dist/rpi/runtime.js"))) throw new Error("staged worker assets missing; run `npm run build` in worker/ then `node tests/stage-runtime.mjs`");
+	if (!existsSync(REGISTER)) throw new Error(`fake SDK harness missing at ${FAKE_DIR} (set RPI_CURSOR_FAKE_SDK; the tracked copy is tests/fake-sdk)`);
+	if (!existsSync(join(PACKAGE_ROOT, "runtime/dist/rpi/runtime.js"))) throw new Error("staged worker assets missing; run `scripts/ensure-runtime-deps.sh --worker`, then `npm run build` in worker/ and `node tests/stage-runtime.mjs`");
 	const node = process.versions.node;
 	if (Number(node.split(".")[0]) < 24) throw new Error(`Node 24+ required, found ${node}`);
 	const files = readdirSync(SCENARIO_DIR).filter((name) => name.endsWith(".json")).sort();
@@ -540,7 +552,7 @@ async function main() {
 		runtime: { node, platform: process.platform, arch: process.arch },
 		provenance: provenance(),
 		normalization: {
-			referencePiJson: "Timestamps/durations zeroed, UUIDs to <uuid>, ISO times to <iso>, cursor-replay-<ms>-<n>- to cursor-replay-<n>-<n>-, bridge run IDs to cursor-pi-bridge-<run>-t<n>, temporary root to <root>. Used only for the recorded hashes; counts are not normalized.",
+			referencePiJson: "Timestamps/durations zeroed, UUIDs to <uuid>, ISO times to <iso> (including the dash-separated session file stamp), derived pi-sessions/<hex> store ids to <store>, cursor-replay-<ms>-<n>- to cursor-replay-<n>-<n>-, bridge run IDs to cursor-pi-bridge-<run>-t<n>, temporary root to <root>. Used only for the recorded hashes; counts are not normalized.",
 			fakeLog: "No normalization beyond the temporary root; the fake writes no clocks, PIDs or random IDs. Counts are read from fake-log records, which flush immediately (unlike process_counters, which need a clean exit).",
 			counts: "nativeToolCalls, bridgeToolExecutions and violations come from fake-log records on both sides. hostToolInvocations are the tool names the host was asked to run (reference: Pi tool_execution_start; candidate: worker toolcall_end events). replayToolExecutions is the number of recorded-activity invocations that performed work (must be zero).",
 		},
@@ -552,13 +564,17 @@ async function main() {
 			"Windows/macOS worker startup.",
 		],
 		commands: [
-			"cd worker && npm ci --ignore-scripts --no-audit --no-fund && npm run build",
+			"scripts/ensure-runtime-deps.sh --worker   (offline npm ci for runtime/ and worker/; needs a populated npm cache)",
+			"cd worker && npm run build",
 			"node tests/stage-runtime.mjs",
 			"node tests/c_tools-reference.mjs        (check mode)",
 			"node tests/c_tools-reference.mjs --write",
 		],
 	};
 	const text = `${JSON.stringify(evidence, null, 2)}\n`;
+	// A raw home path in committed evidence leaks the developer's layout, and an
+	// isolated HOME cannot redact it after the fact.
+	assertPortable(evidence.provenance, PORTABLE_PREFIXES);
 	if (WRITE) {
 		writeFileSync(EVIDENCE_PATH, text);
 		process.stdout.write(`wrote ${EVIDENCE_PATH} (${evidence.status})\n`);
