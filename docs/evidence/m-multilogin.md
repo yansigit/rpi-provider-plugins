@@ -91,11 +91,14 @@ account file never receives:
   replies: `success` returns the captured credential (and errors if the host
   claimed success without persisting one), `cancelled` maps to `CANCELLED`, and
   `interaction` drives `present` and answers with `continue`.
-- Every host call goes through `request` (`src/native/login.rs:108-121`), a
-  `tokio::select!` that is biased on `signal.cancelled()`. The host call itself
-  runs on a blocking thread the SDK cannot interrupt, so racing the command's own
-  token is the only way a cancelled command stops waiting for `login`/`continue`:
-  the reply is then abandoned and the loop unwinds with `CANCELLED`.
+- Every host call goes through `request` (`src/native/login.rs`, `request` and
+  `abandon`). The call runs on a task of its own, and the command waits on it in
+  a `tokio::select!` that is biased on `signal.cancelled()`. The host call itself
+  runs on a blocking thread the SDK cannot interrupt, so a cancelled command
+  stops waiting at once and unwinds with `CANCELLED`. The reply is then owned by
+  a watcher task: when the host answers with an interaction after the command
+  gave up, whether that is the first `login` or a `continue` still in flight,
+  the watcher sends `cancelLogin` for the ticket it opened.
 - Whenever a login is abandoned after the host handed out a `loginId`, the plugin
   sends `cancelLogin` on a **fresh** token (`cancel_login`
   `src/native/login.rs:123-135`): a presentation error and a refused or cancelled

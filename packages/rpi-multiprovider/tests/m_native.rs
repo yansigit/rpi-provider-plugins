@@ -134,6 +134,11 @@ struct Fake {
     hang_continue: std::sync::atomic::AtomicBool,
     continue_waiting: std::sync::atomic::AtomicBool,
     continue_release: std::sync::atomic::AtomicBool,
+    /// Holds the `auth` `login` request until the test releases it, so the host
+    /// opens its first login ticket only after the command gave up on it.
+    hang_login: std::sync::atomic::AtomicBool,
+    login_waiting: std::sync::atomic::AtomicBool,
+    login_release: std::sync::atomic::AtomicBool,
 }
 
 impl Fake {
@@ -416,8 +421,25 @@ extern "C" fn fake_native_request(
                         }
                     }
                 }
-                Some("login") => json!({"kind":"interaction","loginId":"login-1",
-                    "interaction":{"kind":"input","title":"Enter the key","secret":true}}),
+                Some("login") => {
+                    if fake.hang_login.load(std::sync::atomic::Ordering::SeqCst) {
+                        // Like the continue hold, the deadline only keeps a
+                        // regression from wedging the suite.
+                        fake.login_waiting
+                            .store(true, std::sync::atomic::Ordering::SeqCst);
+                        let deadline =
+                            std::time::Instant::now() + std::time::Duration::from_secs(10);
+                        while !fake.login_release.load(std::sync::atomic::Ordering::SeqCst)
+                            && std::time::Instant::now() < deadline
+                        {
+                            std::thread::sleep(std::time::Duration::from_millis(1));
+                        }
+                        fake.login_waiting
+                            .store(false, std::sync::atomic::Ordering::SeqCst);
+                    }
+                    json!({"kind":"interaction","loginId":"login-1",
+                        "interaction":{"kind":"input","title":"Enter the key","secret":true}})
+                }
                 Some("continue") => {
                     if fake.hang_continue.load(std::sync::atomic::Ordering::SeqCst) {
                         // A host that never answers on its own: only the
@@ -2675,6 +2697,83 @@ fn cancelled_multilogin_cancels_the_host_login_and_stores_nothing() {
     assert!(!requests
         .iter()
         .any(|request| request["action"] == "continue"));
+    assert!(stored_accounts(&temp, "example").is_empty());
+    assert_reservation_dropped(&registered, "example", &pending);
+    assert!(stored_accounts(&temp, "example").is_empty());
+    finish(fake);
+}
+
+/// Polls until `done` holds, failing after five seconds.
+fn wait_until(what: &str, mut done: impl FnMut() -> bool) {
+    let start = std::time::Instant::now();
+    while !done() {
+        assert!(
+            start.elapsed() < std::time::Duration::from_secs(5),
+            "{what}"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(2));
+    }
+}
+
+/// The command token fires while the host still processes the first `login`.
+/// The command gives up at once, and the ticket the host opens afterwards is
+/// cancelled by the plugin; nothing is stored and the reservation is dropped.
+#[test]
+fn cancelled_multilogin_cancels_a_host_login_opened_after_the_command_gave_up() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key"}]),
+    );
+    unsafe { &*fake }
+        .hang_login
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"accounts.add","query":""}),
+        json!({"type":"select","values":["api_key"]}),
+        json!({"type":"input","value":"Work"}),
+    ]);
+
+    let (cancelled, receive) = spawn_cancellable(&registered);
+    wait_for(
+        &unsafe { &*fake }.login_waiting,
+        "held the host first login",
+    );
+    cancelled.store(true, std::sync::atomic::Ordering::SeqCst);
+    let raw = receive
+        .recv_timeout(std::time::Duration::from_secs(5))
+        .expect("command did not drain after cancellation");
+    // The host had not answered yet, so the command gave up on the request.
+    assert!(unsafe { &*fake }
+        .login_waiting
+        .load(std::sync::atomic::Ordering::SeqCst));
+    assert_eq!(raw, r#"{"version":1,"result":null}"#);
+
+    // Only now does the host open its ticket, after the command returned.
+    unsafe { &*fake }
+        .login_release
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    wait_until("the late login ticket was never cancelled", || {
+        auth_requests(fake)
+            .iter()
+            .any(|request| request["action"] == "cancelLogin" && request["loginId"] == "login-1")
+    });
+    let requests = auth_requests(fake);
+    assert!(
+        !requests
+            .iter()
+            .any(|request| request["action"] == "continue"),
+        "{requests:?}"
+    );
+    let pending = requests
+        .iter()
+        .find(|request| request["action"] == "login")
+        .and_then(|request| request["accountId"].as_str())
+        .unwrap()
+        .to_owned();
     assert!(stored_accounts(&temp, "example").is_empty());
     assert_reservation_dropped(&registered, "example", &pending);
     assert!(stored_accounts(&temp, "example").is_empty());

@@ -102,18 +102,54 @@ impl Drop for Reservation<'_> {
     }
 }
 
-/// One host login request, reporting [`CANCELLED`] as soon as the command's
-/// token fires. The request carries that token, so it is aborted on the host
-/// side at the same moment; the caller cancels the host login itself.
+/// One host login request. The request runs on a task the command does not wait
+/// on, so a command token that fires while the host still holds it reports
+/// [`CANCELLED`] at once. The request carries that token, so the host aborts it
+/// as well. If the host answers anyway, its reply is owned by a watcher that
+/// cancels the login ticket it opened: nothing else will ever continue it.
 async fn request(
     client: &Client,
+    provider: &str,
     signal: &CancellationToken,
     body: Value,
 ) -> Result<Value, String> {
-    tokio::select! {
+    if signal.is_cancelled() {
+        return Err(CANCELLED.into());
+    }
+    let (reply, mut received) = tokio::sync::oneshot::channel();
+    let (task_client, task_signal) = (client.clone(), signal.clone());
+    tokio::spawn(async move {
+        let _ = reply.send(task_client.request(body, task_signal).await);
+    });
+    let answered = tokio::select! {
         biased;
-        _ = signal.cancelled() => Err(CANCELLED.into()),
-        response = client.request(body, signal.clone()) => response,
+        _ = signal.cancelled() => None,
+        response = &mut received => Some(response),
+    };
+    match answered {
+        Some(response) => {
+            response.unwrap_or_else(|_| Err("multiprovider: host login request stopped".into()))
+        }
+        None => {
+            let (client, provider) = (client.clone(), provider.to_owned());
+            tokio::spawn(async move {
+                if let Ok(Ok(reply)) = received.await {
+                    abandon(&client, &provider, &reply).await;
+                }
+            });
+            Err(CANCELLED.into())
+        }
+    }
+}
+
+/// Cancels the login ticket of a host reply that no command will continue. Only
+/// an interaction opens a ticket; every other reply leaves nothing behind.
+async fn abandon(client: &Client, provider: &str, reply: &Value) {
+    if reply["kind"] != "interaction" {
+        return;
+    }
+    if let Some(login_id) = reply["loginId"].as_str().filter(|id| !id.is_empty()) {
+        cancel_login(client, provider, login_id).await;
     }
 }
 
@@ -146,18 +182,14 @@ pub async fn login<I: LoginInteraction>(
         id: shared.reserve_pending_login(provider)?,
         shared,
     };
-    let mut response = match request(
+    let mut response = request(
         client,
+        provider,
         signal,
         json!({"port":"auth","action":"login","providerId":provider,"methodId":method_id,
             "storeId":CREDENTIAL_STORE_ID,"accountId":reservation.id}),
     )
-    .await
-    {
-        Ok(value) => value,
-        Err(_) if signal.is_cancelled() => return Err(CANCELLED.into()),
-        Err(error) => return Err(error),
-    };
+    .await?;
     let mut waiting: Option<String> = None;
     loop {
         match response["kind"].as_str() {
@@ -191,6 +223,7 @@ pub async fn login<I: LoginInteraction>(
                 };
                 response = match request(
                     client,
+                    provider,
                     signal,
                     json!({"port":"auth","action":"continue","providerId":provider,
                         "loginId":login_id,"value":value}),
