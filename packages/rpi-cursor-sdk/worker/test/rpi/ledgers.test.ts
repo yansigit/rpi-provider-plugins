@@ -129,6 +129,23 @@ it("retains cloud intent before mutation, records a late result only on its orig
 	expect(pi.appendEntry).not.toHaveBeenCalled();
 });
 
+it("never falls back to branch ownership after a native imported-authority refusal", async () => {
+	const { journals, pi, ctx } = await recordedCloud();
+	const deletion = vi.fn(), archive = vi.fn();
+	cloud.setSdkOperations({ delete: deletion, archive });
+	const original = journals.request.getMockImplementation()!;
+	const notice = "Imported Pi history cannot resume a Cursor agent. This conversation continues with a fresh Cursor agent; earlier Cursor branch continuity, cleanup and cloud records are unavailable.";
+	journals.request.mockImplementation(async input => {
+		if (input.action === "open" && input.kind === "cloud") throw new Error(notice);
+		return original(input);
+	});
+	for (const action of ["delete", "archive"]) {
+		await expect(runCursorCloudLifecycleCommand(pi, `${action} ${agentId}${action === "delete" ? " --yes" : ""}`, ctx)).rejects.toThrow(notice);
+	}
+	expect(deletion).not.toHaveBeenCalled();
+	expect(archive).not.toHaveBeenCalled();
+});
+
 it("keeps an unresolved cloud mutation after SDK failure and refuses a repeat", async () => {
 	const { journals, pi, ctx } = await recordedCloud();
 	const deletion = vi.fn(async () => { throw new Error("connection lost after submission"); });

@@ -18,8 +18,8 @@
 //!
 //! A refused resume starts a fresh Cursor agent and reports
 //! [`FRESH_AGENT_NOTICE`]; nothing here creates, deletes, archives or resumes
-//! an agent. The retained adapter's ports must call this module before dispatch
-//! (wiring the existing port modules is the integrator's step).
+//! an agent. Native session projections and cloud journal reads call this module
+//! before exposing management records to the retained adapter.
 //!
 //! Identifier rules are the pinned upstream ones: Pi's `assertValidSessionId`
 //! for session and entry IDs, `isCursorLocalAgentId` for resume/cleanup agent
@@ -296,6 +296,145 @@ fn safe_source_path(path: &str) -> bool {
         return false;
     }
     !normalized.split('/').any(|component| component == "..")
+}
+
+/// Any origin marker, including malformed/forged markers, removes authority.
+pub fn has_import_origin(value: &Value) -> bool {
+    match value {
+        Value::Object(fields) => {
+            fields.contains_key("imported")
+                || fields.contains_key("importedFrom")
+                || fields.get("origin").and_then(Value::as_str) == Some("imported")
+                || fields.values().any(has_import_origin)
+        }
+        Value::Array(values) => values.iter().any(has_import_origin),
+        _ => false,
+    }
+}
+
+/// The host serialises `SessionSnapshot`/`SessionMetadata`
+/// (`crates/rpi-harness/src/session/types.rs`) with exactly these camelCase
+/// fields; a native view that carries any other field is not host storage.
+const SNAPSHOT_FIELDS: [&str; 6] = ["metadata", "revision", "branches", "entries", "name", "labels"];
+const METADATA_FIELDS: [&str; 3] = ["id", "createdAt", "parentSessionId"];
+
+fn host_fields(fields: &serde_json::Map<String, Value>, allowed: &[&str]) -> bool {
+    fields.keys().all(|key| allowed.contains(&key.as_str()))
+}
+
+/// A native snapshot is only authoritative in the shape the host writes it.
+fn host_snapshot(snapshot: &Value) -> bool {
+    let Some(fields) = snapshot.as_object() else {
+        return false;
+    };
+    if !host_fields(fields, &SNAPSHOT_FIELDS)
+        || snapshot["revision"].as_u64().is_none()
+        || !snapshot["branches"].is_array()
+        || !snapshot["entries"].is_array()
+        || !(snapshot["name"].is_null() || snapshot["name"].is_string())
+        || !snapshot["labels"].is_object()
+    {
+        return false;
+    }
+    let Some(metadata) = snapshot["metadata"].as_object() else {
+        return false;
+    };
+    host_fields(metadata, &METADATA_FIELDS)
+        && metadata.get("id").map_or(false, Value::is_string)
+        && metadata
+            .get("createdAt")
+            .map_or(false, |value| value.as_i64().is_some())
+        && metadata.get("parentSessionId").map_or(true, |value| {
+            value.is_null() || value.is_string()
+        })
+}
+
+/// Admission for a typed native snapshot. Keep the tree and historical data,
+/// but remove management custom types that could otherwise confer authority.
+/// Native snapshots have no JSONL header: only this trusted adapter supplies v4.
+pub fn guard_native_view(path: &Path, view: &mut Value) -> bool {
+    let metadata = view["snapshot"]["metadata"].clone();
+    let header = json!({"type":"session", "version":NATIVE_SESSION_VERSION, "id":metadata["id"]});
+    // An imported marker cannot be detected by looking for one of its fields: the
+    // host never writes `imported`, `importedFrom`, `origin` or a metadata
+    // `version`, so only the exact host snapshot shape carries local authority.
+    let denied_origin = imported_location(path)
+        || !host_snapshot(&view["snapshot"])
+        || !metadata["id"].as_str().map_or(false, valid_session_id);
+    let mut refused = denied_origin;
+    let mut guard = |entry: &mut Value| {
+        let kind = entry["customType"].as_str().unwrap_or_default();
+        if !matches!(kind, RESUME_ENTRY | CLEANUP_ENTRY | CLOUD_ENTRY) {
+            return;
+        }
+        let data = &entry["data"];
+        let mut allowed = !denied_origin && !has_import_origin(entry) && entry_safe(entry);
+        allowed &= match kind {
+            RESUME_ENTRY => {
+                let text = format!("{header}\n{entry}\n");
+                evaluate(path, &text, Authority::Resume, &[]).allowed && local_candidates_safe(data)
+            }
+            CLEANUP_ENTRY => accepted_cleanup_entry(data).is_some() && local_candidates_safe(data),
+            CLOUD_ENTRY => accepted_cloud_entry(data).is_some(),
+            _ => false,
+        };
+        if !allowed {
+            entry["customType"] = json!("rpi-refused-cursor-authority");
+            refused = true;
+        }
+    };
+    if let Some(entries) = view["snapshot"]["entries"].as_array_mut() {
+        for entry in entries {
+            guard(entry);
+        }
+    }
+    if let Some(entries) = view["projection"]["entries"].as_array_mut() {
+        for entry in entries {
+            guard(&mut entry["sourceEntry"]);
+        }
+    }
+    refused
+}
+
+fn local_candidates_safe(data: &Value) -> bool {
+    [
+        "cleanupCandidateAgentIds",
+        "candidateAgentIds",
+        "protectedAgentIds",
+        "deletedAgentIds",
+    ]
+    .iter()
+    .all(|key| {
+        data.get(key).map_or(true, |ids| {
+            ids.as_array().map_or(false, |ids| {
+                ids.iter()
+                    .all(|id| id.as_str().map_or(false, valid_local_agent_id))
+            })
+        })
+    }) && ["cleanupCandidates", "failedAgentIds"].iter().all(|key| {
+        data.get(key).map_or(true, |ids| {
+            ids.as_array().map_or(false, |ids| {
+                ids.iter()
+                    .all(|id| id["agentId"].as_str().map_or(false, valid_local_agent_id))
+            })
+        })
+    })
+}
+
+/// Validate the exact locked cloud journal frame before it reaches the worker.
+/// Pending native intents remain readable for the existing reconciliation path.
+pub fn native_cloud_frame_allowed(path: &Path, session_id: &str, frame: &Value) -> bool {
+    !imported_location(path)
+        && valid_session_id(session_id)
+        && !has_import_origin(frame)
+        && frame["version"].as_u64() == Some(CUSTODY_RECORD_VERSION)
+        && frame["sessionId"].as_str() == Some(session_id)
+        && frame["sessionFile"].as_str() == path.to_str()
+        && (frame["anchorEntryId"].is_null()
+            || frame["anchorEntryId"]
+                .as_str()
+                .map_or(false, valid_session_id))
+        && accepted_cloud_entry(frame).is_some()
 }
 
 fn imported_location(path: &Path) -> bool {
@@ -998,6 +1137,79 @@ mod tests {
         );
         assert!(decision.allowed);
         assert_eq!(decision.agent_id.as_deref(), Some("agent-abc"));
+    }
+
+    /// A view as the host writes it: a serialized `SessionSnapshot` wrapped by the
+    /// `sessions` port (`crates/rpi-cli/src/native_sessions.rs`).
+    fn host_view(entries: Value) -> Value {
+        json!({
+            "snapshot": {
+                "metadata": {
+                    "id": "0193aa1b-0000-7000-8000-000000000001",
+                    "createdAt": 1729000000000_i64
+                },
+                "revision": 1,
+                "branches": [{"lane":"main","revision":1,"leafId":null}],
+                "entries": entries,
+                "name": null,
+                "labels": {}
+            },
+            "leafId": null,
+            "branchRevision": 1,
+            "projection": {"entries": []}
+        })
+    }
+
+    #[test]
+    fn native_view_requires_the_host_snapshot_shape() {
+        let path = Path::new("/home/u/.rpi/sessions/a.jsonl");
+        let resume: Value = serde_json::from_str(&resume_line(2, "agent-abc")).unwrap();
+        let mut view = host_view(json!([resume.clone()]));
+        assert!(!guard_native_view(path, &mut view), "{view}");
+        assert_eq!(
+            view["snapshot"]["entries"][0]["customType"],
+            "cursor-sdk-agent-resume"
+        );
+        // Every marker the host never writes is refused because it is not part of
+        // the host snapshot shape, not because one specific field name is probed.
+        let deny = |mutate: &dyn Fn(&mut Value)| {
+            let mut view = host_view(json!([resume.clone()]));
+            mutate(&mut view);
+            assert!(guard_native_view(path, &mut view), "{view}");
+            assert_eq!(
+                view["snapshot"]["entries"][0]["customType"],
+                "rpi-refused-cursor-authority",
+                "{view}"
+            );
+        };
+        deny(&|view| view["snapshot"]["metadata"]["version"] = json!(4));
+        deny(&|view| view["snapshot"]["metadata"]["imported"] = json!(false));
+        deny(&|view| view["snapshot"]["metadata"]["origin"] = json!("imported"));
+        deny(&|view| view["snapshot"]["imported"] = json!(false));
+        deny(&|view| view["snapshot"]["importedFrom"] = json!("pi"));
+        deny(&|view| view["snapshot"]["origin"] = json!("imported"));
+        deny(&|view| {
+            view["snapshot"]
+                .as_object_mut()
+                .unwrap()
+                .remove("revision");
+        });
+        deny(&|view| {
+            view["snapshot"]["metadata"]
+                .as_object_mut()
+                .unwrap()
+                .remove("createdAt");
+        });
+        deny(&|view| view["snapshot"]["revision"] = json!("1"));
+        deny(&|view| view["snapshot"]["branches"] = json!({}));
+        deny(&|view| view["snapshot"]["name"] = json!(1));
+        deny(&|view| view["snapshot"]["labels"] = json!([]));
+        // An imported location still refuses even in an otherwise host-shaped view.
+        let mut imported = host_view(json!([resume.clone()]));
+        assert!(guard_native_view(
+            Path::new("/home/u/.rpi/sessions/pi-import/a.jsonl"),
+            &mut imported
+        ));
     }
 
     #[test]

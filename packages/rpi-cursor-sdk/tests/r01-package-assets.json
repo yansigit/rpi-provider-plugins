@@ -21,7 +21,7 @@
     },
     {
       "path": "runtime/dist/rpi/runtime.js",
-      "sha256": "2ee7e8aa21473d7f174a1fa4539f11a2d421c454de6895535ac3040d54932cf9"
+      "sha256": "ef250a7dbd23e2e850093090e380daba3c74f9474bbc123e254974581a61179e"
     },
     {
       "path": "runtime/dist/rpi/transport-thread.js",

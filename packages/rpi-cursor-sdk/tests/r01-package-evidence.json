@@ -11,7 +11,7 @@
   },
   "assetManifest": {
     "file": "tests/r01-package-assets.json",
-    "sha256": "a05d026c738daa7bb84f107625ddbb675a6b1a5d9d8695e3d09f0458fa598cd2",
+    "sha256": "a2a675fec74b9871e100104c5593a46bf12b1a409aeb08dcfd4447dfe161548b",
     "assets": 21,
     "entries": 22,
     "hostEntryLimit": 128,

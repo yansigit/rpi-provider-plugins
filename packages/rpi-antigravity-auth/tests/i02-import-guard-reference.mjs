@@ -60,6 +60,9 @@ const STASH = "google-login-stash.json";
 const MODE_VERSION = 1;
 const STASH_VERSION = 1;
 const SHA = "0".repeat(64);
+// Fixed staging prefixes the vault's own atomic write path produces.
+const STAGING = "1b9d0c4e-7f2a-4c3b-9a11-3d5e6f7a8b9c";
+const DIGEST = "0123456789abcdef01234567";
 const LOGIN = JSON.stringify({ google: { type: "api_key", key: "real-login-key" } });
 const PLACEHOLDER = JSON.stringify({ google: { type: "api_key", key: MARKER } });
 
@@ -150,9 +153,36 @@ try {
 		return markerCode(value.imported);
 	}
 
+	const RECORDS = ["pi-mode.json", "pi-enrollment-state.json", "pi-enrollment.json", "google-login-stash.json"];
+
+	// Staging names this package's own atomic writes leave in the vault directory.
+	const stagingToken = (token) =>
+		["lock", "marker", "ceremony"].includes(token) ||
+		(token.length > 0 && /^[0-9]+$/.test(token)) ||
+		(token.length >= 16 && /^[0-9a-f-]+$/.test(token));
+
+	function ownStaging(name) {
+		if (!name.endsWith(".tmp")) return false;
+		let stem = name.slice(0, -4);
+		if (stem.startsWith(".")) stem = stem.slice(1);
+		const record = RECORDS.filter((candidate) => stem.startsWith(candidate)).sort(
+			(a, b) => b.length - a.length,
+		)[0];
+		if (record === undefined) return false;
+		let rest = stem.slice(record.length);
+		while (rest.startsWith(".")) {
+			const token = rest.slice(1).split(".")[0];
+			if (!stagingToken(token)) return false;
+			rest = rest.slice(1 + token.length);
+		}
+		return rest === "";
+	}
+
 	function artifactCode(name) {
 		const lower = name.toLowerCase();
 		if (lower.includes("pi-import")) return "imported-location";
+		// Our own staging files carry no authority and are never read.
+		if (ownStaging(lower.split(/[\\/]/).pop())) return null;
 		if (lower.endsWith(".bak") || lower.endsWith(".backup") || lower.endsWith(".tmp") || lower.includes(".retired"))
 			return "active-backup";
 		return null;
@@ -353,6 +383,59 @@ try {
 		mode: { version: 1, mode: "custody" },
 		enrollment_token: token(),
 		artifacts: ["sessions/pi-import/a.jsonl"],
+	}, placeholder);
+	// Staging files the vault's own atomic write path creates (and never reads)
+	// are not imported state: an interrupted or concurrent write must not refuse.
+	add("custody-own-staging-state", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`.pi-enrollment-state.json.4102.${STAGING}.tmp`],
+	}, placeholder);
+	add("custody-own-staging-token", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`.pi-enrollment.json.4102.${DIGEST}.tmp`],
+	}, placeholder);
+	add("custody-own-staging-mode", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`pi-mode.json.${STAGING}.tmp`],
+	}, placeholder);
+	add("custody-own-staging-stash", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`google-login-stash.json.${STAGING}.tmp`],
+	}, placeholder);
+	add("custody-own-staging-lease", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`pi-enrollment-state.json.ceremony.lock.${STAGING}.tmp`],
+	}, placeholder);
+	add("custody-own-staging-nested", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`/home/u/.pi/agent/antigravity-auth-vault/pi-mode.json.${STAGING}.tmp`],
+	}, placeholder);
+	add("custody-own-staging-with-import", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`pi-mode.json.${STAGING}.tmp`, "sessions/pi-import/a.jsonl"],
+	}, placeholder);
+	// Names no write path of this package produces stay backups.
+	add("custody-mode-backup-artifact", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: ["pi-mode.json.bak"],
+	}, placeholder);
+	add("custody-unowned-staging-artifact", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`.pi-enrollment.json.notes.tmp`],
+	}, placeholder);
+	add("custody-staging-backup-artifact", {
+		mode: { version: 1, mode: "custody" },
+		enrollment_token: token(),
+		artifacts: [`.pi-enrollment.json.4102.${DIGEST}.tmp.bak`],
 	}, placeholder);
 	add("custody-obsolete-mode", { mode: { version: 0, mode: "custody" } }, placeholder);
 	add("custody-unknown-mode-key", { mode: { version: 1, mode: "custody", modeSource: "pi" } }, placeholder);

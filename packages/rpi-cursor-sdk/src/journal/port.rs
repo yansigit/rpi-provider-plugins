@@ -5,7 +5,8 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
-use std::path::Path;
+use std::io::{BufRead, BufReader, Seek, SeekFrom};
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
 const MAX_READERS: usize = 16;
@@ -46,6 +47,7 @@ pub struct JournalPort {
     cloud: Journal,
     usage: Journal,
     state: Mutex<State>,
+    authority: Option<(PathBuf, String)>,
 }
 
 #[derive(Default)]
@@ -69,7 +71,44 @@ impl JournalPort {
             cloud: Journal::new(directory.join(format!(".cursor-cloud-lifecycle-{hash}.journal"))),
             usage: Journal::new(directory.join(format!("cursor-usage-{hash}.journal"))),
             state: Mutex::new(State::default()),
+            authority: None,
         })
+    }
+
+    /// Production readers validate the same locked bytes they deliver to the worker.
+    pub fn for_native_session(session_file: &Path, session_id: &str) -> Result<Self, String> {
+        let mut port = Self::for_session(session_file, session_id)?;
+        port.authority = Some((session_file.to_owned(), session_id.to_owned()));
+        Ok(port)
+    }
+
+    fn guard_cloud(&self, snapshot: &mut Snapshot) -> Result<(), String> {
+        let Some((path, id)) = &self.authority else {
+            return Ok(());
+        };
+        let refused = || crate::import_guard::FRESH_AGENT_NOTICE.to_owned();
+        let name = self.cloud.path.file_name().unwrap().to_string_lossy();
+        for sibling in std::fs::read_dir(self.cloud.path.parent().unwrap()).map_err(io_error)? {
+            let sibling = sibling.map_err(io_error)?.file_name();
+            let sibling = sibling.to_string_lossy();
+            if superseded(&name, &sibling) {
+                return Err("native cloud journal has a superseded tail segment".to_owned());
+            }
+        }
+        if let Some(file) = snapshot.file.as_mut() {
+            for line in BufReader::new(&mut *file).lines() {
+                let line = line.map_err(io_error)?;
+                if line.is_empty() {
+                    continue;
+                }
+                let frame = serde_json::from_str::<Value>(&line).map_err(|_| refused())?;
+                if !crate::import_guard::native_cloud_frame_allowed(path, id, &frame) {
+                    return Err(refused());
+                }
+            }
+            file.seek(SeekFrom::Start(0)).map_err(io_error)?;
+        }
+        Ok(())
     }
 
     /// Run on a blocking host task; cancellation must not drop an admitted durability operation.
@@ -84,10 +123,13 @@ impl JournalPort {
                 if self.state.lock().unwrap().readers.len() >= MAX_READERS {
                     return Err("native journal reader limit reached".into());
                 }
-                let snapshot = self
+                let mut snapshot = self
                     .journal(kind)
                     .snapshot(Self::limit(kind))
                     .map_err(io_error)?;
+                if matches!(kind, Kind::Cloud) {
+                    self.guard_cloud(&mut snapshot)?;
+                }
                 let size = snapshot.size();
                 if size > 9_007_199_254_740_991 {
                     return Err("native journal size exceeds the worker integer range".into());
@@ -180,4 +222,20 @@ impl JournalPort {
 
 fn io_error(error: std::io::Error) -> String {
     format!("native journal IO failed: {error}; inspect the journal before retrying a mutation")
+}
+
+/// A rotated tail segment of the same journal (`…journal.1`) would make the bytes
+/// delivered to the worker ambiguous. Backup, staging and other prefix-sharing
+/// siblings carry no authority: only the exact locked file is read, and every
+/// frame in it is validated individually.
+fn superseded(name: &str, sibling: &str) -> bool {
+    match sibling
+        .strip_prefix(name)
+        .and_then(|rest| rest.strip_prefix('.'))
+    {
+        Some(segment) => {
+            !segment.is_empty() && segment.bytes().all(|byte| byte.is_ascii_digit())
+        }
+        None => false,
+    }
 }

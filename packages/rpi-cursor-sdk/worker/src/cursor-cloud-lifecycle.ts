@@ -473,7 +473,9 @@ async function readDurableCloudLifecycleJournal(session: CloudLifecycleSessionSt
 			fd = openExistingRegularFileNoFollow(durableLedgerPath(sessionFile, sessionId), constants.O_RDONLY);
 			lines = readFileSync(fd, "utf8").split(/\r?\n/);
 		}
-	} catch {
+	} catch (error) {
+		// Native authority refusals must not fall back to branch-only ownership.
+		if (session.native) throw error;
 		return [];
 	} finally {
 		if (fd !== undefined) {

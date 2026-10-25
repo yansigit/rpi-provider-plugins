@@ -1,0 +1,114 @@
+{
+  "ledger": "I02",
+  "hostPin": "e9c052653975c1d648092ab52e817a0b2f4b575c",
+  "hostBinarySha256": "790f5719e6d17abf3a15d885893e7e280c0c797ebd52885be319551a665f0071",
+  "baseline": {
+    "passed": 256,
+    "ignored": 24
+  },
+  "cohortAccounting": "259 + 8 separate fresh-DLL real-host cases = 267; three original lane tests plus eight review-fix tests; no new ignores",
+  "loadedVaultMaliciousMarkersPerToolchain": 15,
+  "sources": {
+    ".github/scripts/refresh-i02-evidence.py": "72de10461e412cb64b104c525c419f087c1cba174537cc43dcce201635bc6561",
+    "docs/evidence/i02-production.md": "294b411c623582ec4faa4993a0002cbf8e91d594eb5d7cb669b6dec55e47eba0",
+    "Cargo.lock": "5f1f8dc63933d00cde8cb45ad0ce03b83f0f224383e3841bd58d78c7f1848b67",
+    "packages/rpi-antigravity-auth/src/native/vault.rs": "d11e965f0a7f6cbea9286cf20b8fba38a8ed950d06b96e197ef70f0bd37f64ef",
+    "packages/rpi-antigravity-auth/src/vault/file_store.rs": "f8bbeb46b12415b37424d03de8c8c248cebee6596faa2578d8886caa35bcffb9",
+    "packages/rpi-antigravity-auth/src/vault/import_guard.rs": "1763e8f0b5048d3f14295ce6c40395d806581056e2b712f79d9b60727b7318c0",
+    "packages/rpi-antigravity-auth/src/vault/source.rs": "556426c43955ef729760b5199a240d36bd61baef461f196015868b482272445a",
+    "packages/rpi-antigravity-auth/scripts/native-import-authority.py": "73b235e00c0ee35c39e53e6c5223a9616b08227c913ee5cec8113cbba68001ce",
+    "packages/rpi-antigravity-auth/tests/i02_production_authority.rs": "4401b7ea01f00e379832bb53f9ae77ccafffbc0c02f88b9aabf1c8fbe558143e",
+    "packages/rpi-cursor-sdk/src/import_guard.rs": "d818adb3360d1ef64ffc563ab963cf6388173dfb3dc01f9fdb5a91a8ba8322b4",
+    "packages/rpi-cursor-sdk/src/journal/port.rs": "94060782cde8b3cff206b4ee1beed5872558760a4359b9a345c02cdca3208078",
+    "packages/rpi-cursor-sdk/src/native_host.rs": "69cbfea5ee1111984047e3ec862446907c0d0e984945e5b9553178c4091e69c3",
+    "packages/rpi-cursor-sdk/src/native_host/import_authority_tests.rs": "ad0723fc1fdc68dc3d2902d3aba2bd6b0d3993701b253611f043d77b2211df23",
+    "packages/rpi-cursor-sdk/worker/src/cursor-cloud-lifecycle.ts": "42a03baad127e4bb6110bbb67a82d87651a964fa244ffa79a3ca564513c144f5",
+    "packages/rpi-cursor-sdk/worker/test/rpi/ledgers.test.ts": "2b77a9fa85d7013b06a9c47538f6438bba9b1e73bade51e14e7084724b3d64c8",
+    "packages/rpi-cursor-sdk/tests/r01-package-assets.json": "a2a675fec74b9871e100104c5593a46bf12b1a409aeb08dcfd4447dfe161548b",
+    "packages/rpi-cursor-sdk/tests/r01-package-evidence.json": "136c127ba7ff210afd8b33e695d48ba936c993c794621e59261a795a5c630bd1"
+  },
+  "gates": {
+    "cohort-178.log": {
+      "passed": 259,
+      "failed": 0,
+      "ignored": 24,
+      "filtered": 8,
+      "sha256": "aae567507e9392741c0a6902cbf59f210cd9fbb83f10f8292e0ab8a7f6c98ed3"
+    },
+    "native-178.log": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "sha256": "72f6979092755099280be9c595c93edd477d8fa9cd7840915f0d1677f934d95f"
+    },
+    "cohort-195.log": {
+      "passed": 259,
+      "failed": 0,
+      "ignored": 24,
+      "filtered": 8,
+      "sha256": "8248e476efb6caeb51c300f71f905918aa17d93be2cee014b9304edb6cbe93b5"
+    },
+    "native-195.log": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "sha256": "00aadc469c6a884dfdc10bbbf722b1d0ce893b7a94e1ef1b9bef2517baa902a9"
+    },
+    "real-host-178.log": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "sha256": "66fa2aa97e8ebc06996d349e777c795d90f1e1d97d0c1824cb736cfa60fc750d"
+    },
+    "real-host-195.log": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "sha256": "f161a97d9910ddd2fb7ba5eb85df196a4c8115ca13d2c2cb25976a7f197ed003"
+    },
+    "worker-rust-195.log": {
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "sha256": "5f41bc3b6c0611230339005340ff9f94b51345a8265bd8e7b1629984b362ebe0"
+    },
+    "worker-vitest.log": {
+      "passed": 75,
+      "sha256": "d30721b9e07ce9772b8d71f04f4e059b11fb1851dc63c07b32c213d49f85bbc2"
+    },
+    "ipc.log": {
+      "passed": 8,
+      "sha256": "df5f3bcb9d9c2f789c24b1169533ebedd8086152c6da8bc76389936db4b14937"
+    }
+  },
+  "mutationsReverted": {
+    "mutation-view.log": "ef843e89ce26d9b330bcf2d7afd08a1727ab3a6c8b4d55c1935eff0524018741",
+    "mutation-cloud.log": "b29f7acc63f4ba6746f740974c904236f5a731f6cce75d2713f5a4853a081397",
+    "mutation-h1.log": "e1781b94c2189cf7c702c7d81fd56b1711024f31a81b13a60f47fabb5b8e3e14",
+    "mutation-h1-rollback.log": "b2568febd755ebf783fb8a89135467cb37460cb3264b8b546e5922f3981069e5",
+    "mutation-h2.log": "bafd2d95fe91df486a8700772d042ed99770b6a18b30ebe03087a1dab61db353",
+    "mutation-h2-path.log": "688c81b49ff03a62fbed1724367c2ad3cf1c54a8aef2c48753f4023d129efffe",
+    "mutation-m3.log": "641514d74f62e588ba16b067aef80add512e832357700b24cf830f646c5c9ceb",
+    "mutation-m4.log": "bd502ddba7dbe51fd0567ac255ab6dd16cae4961d10991c3c69eb0dac9c4073f",
+    "mutation-l6.log": "ec98c00fe2012816e489fa513caf500d3652e5af67fe80404108d51ec90738dc"
+  },
+  "fixtures": "cca87cf6b8988b8d08c0c3e449b3b3bcb09c3f78f5d6770d63de0076d7b42996  packages/rpi-multiprovider/tests/commands-reference.json\n8e529267bf6e1c5f2c19c8b7d24904da6c0a94146af589ce9cccc1eaee4dad8c  packages/rpi-multiprovider/tests/commands-a2-reference.json\na2a675fec74b9871e100104c5593a46bf12b1a409aeb08dcfd4447dfe161548b  packages/rpi-cursor-sdk/tests/r01-package-assets.json\n",
+  "libraries": {
+    "/home/user/Projects/.targets/i02-guards-178/debug/librpi_cursor_sdk.so": "164bb942bfcfd10f1cd9124fc5f4304f98889d91f232bb9038927683e903216e",
+    "/home/user/Projects/.targets/i02-guards-178/debug/librpi_antigravity_auth.so": "248944a40368213bdb9a5a9b060148a04699f33159de2d29f11f4b5d26edfc59",
+    "/home/user/Projects/.targets/i02-guards-178/debug/librpi_multiprovider.so": "0be2a7fbc276035f5e2a3cdeb6bf60513cb2c9592d7ce7961dae3015ed1974a0",
+    "/home/user/Projects/.targets/i02-guards-195/debug/librpi_cursor_sdk.so": "ca9daa6acd8e96d21f9d8e560c53254f574f6189617a4d948e14f51af9c7cfe9",
+    "/home/user/Projects/.targets/i02-guards-195/debug/librpi_antigravity_auth.so": "757035b6e9c2852d995d5f1df1ca5948cb779e7fa2ba0ac2c316f9b0799d8047",
+    "/home/user/Projects/.targets/i02-guards-195/debug/librpi_multiprovider.so": "38aef2422deb4ae79bb1795ac04761f0ef110899bca52e1e9ce8e80c615b1533"
+  },
+  "limitations": [
+    "No live provider calls; Cursor malicious fixtures use the production Router and worker ledger path, not a real-host Cursor model turn.",
+    "Both DLL toolchains run the eight real-host cases against the existing Rust 1.95 pinned host; no separate Rust 1.78 host is built.",
+    "Existing unmarked, byte-identical files cannot prove cross-agent provenance; host import does not copy vault storage."
+  ]
+}

@@ -231,6 +231,12 @@ fn safe_source_path(path: &str) -> bool {
 
 /// Check one value for an import origin marker. `Ok(())` means no marker.
 fn import_marker(value: &Value) -> Result<(), &'static str> {
+    if let Some(values) = value.as_array() {
+        for value in values {
+            import_marker(value)?;
+        }
+        return Ok(());
+    }
     let object = match value.as_object() {
         Some(object) => object,
         None => return Ok(()),
@@ -243,7 +249,12 @@ fn import_marker(value: &Value) -> Result<(), &'static str> {
     }
     let marker = match object.get("imported") {
         Some(marker) => marker,
-        None => return Ok(()),
+        None => {
+            for value in object.values() {
+                import_marker(value)?;
+            }
+            return Ok(());
+        }
     };
     let fields = marker.as_object().ok_or("invalid-import-marker")?;
     if fields.get("source").and_then(Value::as_str) != Some("pi") {
@@ -273,10 +284,64 @@ fn import_marker(value: &Value) -> Result<(), &'static str> {
     Err("imported-custody")
 }
 
+/// Records this guard reads; the vault's atomic writes stage beside them.
+const RECORDS: [&str; 4] = [
+    "pi-mode.json",
+    "pi-enrollment-state.json",
+    "pi-enrollment.json",
+    "google-login-stash.json",
+];
+
+/// Whether `name` is a staging file this package's own atomic write path leaves
+/// in the vault directory: `pi-mode.json.<uuid>.tmp` (setup), the dot-prefixed
+/// `.pi-enrollment{,-state}.json.<pid>.<uuid>.tmp` of the private store, the slot's
+/// `google-login-stash.json.<uuid>.tmp`, and the ceremony lease's
+/// `pi-enrollment-state.json.ceremony.lock.<uuid>.tmp`.
+///
+/// Staging files are written and renamed in one step and are never read, so an
+/// interrupted or concurrent write is not evidence of imported state.
+fn own_staging(name: &str) -> bool {
+    let Some(stem) = name.strip_suffix(".tmp") else {
+        return false;
+    };
+    let stem = stem.strip_prefix('.').unwrap_or(stem);
+    let record = RECORDS
+        .iter()
+        .filter(|record| stem.starts_with(*record))
+        .max_by_key(|record| record.len());
+    let Some(record) = record else {
+        return false;
+    };
+    let mut rest = &stem[record.len()..];
+    while let Some(token) = rest.strip_prefix('.') {
+        let end = token.find('.').unwrap_or(token.len());
+        if !staging_token(&token[..end]) {
+            return false;
+        }
+        rest = &token[end..];
+    }
+    rest.is_empty()
+}
+
+fn staging_token(token: &str) -> bool {
+    matches!(token, "lock" | "marker" | "ceremony")
+        || (!token.is_empty() && token.bytes().all(|byte| byte.is_ascii_digit()))
+        || (token.len() >= 16
+            && token
+                .bytes()
+                .all(|byte| byte.is_ascii_hexdigit() || byte == b'-'))
+}
+
 fn artifact(name: &str) -> Option<&'static str> {
     let lower = name.to_ascii_lowercase();
     if lower.contains("pi-import") {
         return Some("imported-location");
+    }
+    // Our own staging files carry no authority and are never read, so they are
+    // not evidence; only names this package never writes remain backups.
+    let file = lower.rsplit(|c| c == '/' || c == '\\').next().unwrap_or("");
+    if own_staging(file) {
+        return None;
     }
     if lower.ends_with(".bak")
         || lower.ends_with(".backup")
@@ -355,9 +420,25 @@ fn enrollment_state(value: &Value) -> Result<(), &'static str> {
 /// `files` are the vault records the host read; `custody` is the slot
 /// inspection from [`inspect`]. Nothing is written and no network is touched.
 pub fn admit(files: &Files, custody: &Custody) -> Admission {
+    if let Some(code) = storage_refusal(files) {
+        return fresh(code);
+    }
+    admit_custody(files, custody)
+}
+
+/// Raw storage admission runs before parsers can discard origin fields, and
+/// before enrollment consumers or credential-slot transitions read authority.
+pub fn guard_storage(files: &Files) -> Result<(), String> {
+    match storage_refusal(files) {
+        Some(_) => Err(FRESH_ENROLLMENT_NOTICE.into()),
+        None => Ok(()),
+    }
+}
+
+fn storage_refusal(files: &Files) -> Option<&'static str> {
     for name in &files.artifacts {
         if let Some(code) = artifact(name) {
-            return fresh(code);
+            return Some(code);
         }
     }
     for value in [
@@ -370,9 +451,13 @@ pub fn admit(files: &Files, custody: &Custody) -> Admission {
     .flatten()
     {
         if let Err(code) = import_marker(value) {
-            return fresh(code);
+            return Some(code);
         }
     }
+    None
+}
+
+fn admit_custody(files: &Files, custody: &Custody) -> Admission {
     if custody.slot == Slot::Foreign || custody.stash == Stash::Invalid {
         // A slot or stash that does not belong to this agent is not a login.
         return refuse("mismatched-custody", false);

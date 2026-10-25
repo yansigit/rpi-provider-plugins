@@ -15,6 +15,8 @@ pub enum Failure {
     Consumer(ConsumerError),
     Wire(Error),
     Storage(String),
+    /// Imported or foreign vault state: the payload is the user-facing refusal.
+    Refused(String),
     Private(super::private::PrivateError),
     Io(super::private::IoError),
     LockContention {
@@ -45,6 +47,7 @@ impl std::fmt::Display for Failure {
             Self::Consumer(e) => e.fmt(f),
             Self::Wire(e) => e.fmt(f),
             Self::Storage(e) => f.write_str(e),
+            Self::Refused(e) => f.write_str(e),
             Self::Private(e) => e.fmt(f),
             Self::Io(e) => f.write_str(&e.message),
             Self::LockContention { target, name, .. } => write!(

@@ -10,7 +10,7 @@
   },
   "counts": {
     "custodyCases": 6,
-    "markerCases": 23
+    "markerCases": 33
   },
   "custodyCases": [
     {
@@ -533,6 +533,287 @@
         "mode": null,
         "routeId": null,
         "code": "imported-location",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-own-staging-state",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          ".pi-enrollment-state.json.4102.1b9d0c4e-7f2a-4c3b-9a11-3d5e6f7a8b9c.tmp"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "custody",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "custody-own-staging-token",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          ".pi-enrollment.json.4102.0123456789abcdef01234567.tmp"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "custody",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "custody-own-staging-mode",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          "pi-mode.json.1b9d0c4e-7f2a-4c3b-9a11-3d5e6f7a8b9c.tmp"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "custody",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "custody-own-staging-stash",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          "google-login-stash.json.1b9d0c4e-7f2a-4c3b-9a11-3d5e6f7a8b9c.tmp"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "custody",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "custody-own-staging-lease",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          "pi-enrollment-state.json.ceremony.lock.1b9d0c4e-7f2a-4c3b-9a11-3d5e6f7a8b9c.tmp"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "custody",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "custody-own-staging-nested",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          "/home/u/.pi/agent/antigravity-auth-vault/pi-mode.json.1b9d0c4e-7f2a-4c3b-9a11-3d5e6f7a8b9c.tmp"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": true,
+        "mode": "custody",
+        "routeId": null,
+        "code": null,
+        "freshEnrollment": false,
+        "notice": null
+      }
+    },
+    {
+      "id": "custody-own-staging-with-import",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          "pi-mode.json.1b9d0c4e-7f2a-4c3b-9a11-3d5e6f7a8b9c.tmp",
+          "sessions/pi-import/a.jsonl"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "imported-location",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-mode-backup-artifact",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          "pi-mode.json.bak"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "active-backup",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-unowned-staging-artifact",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          ".pi-enrollment.json.notes.tmp"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "active-backup",
+        "freshEnrollment": true,
+        "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
+      }
+    },
+    {
+      "id": "custody-staging-backup-artifact",
+      "files": {
+        "mode": {
+          "version": 1,
+          "mode": "custody"
+        },
+        "enrollment_token": {
+          "token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "token_generation": 2
+        },
+        "artifacts": [
+          ".pi-enrollment.json.4102.0123456789abcdef01234567.tmp.bak"
+        ]
+      },
+      "custody": {
+        "slot": "placeholder",
+        "stash": "valid"
+      },
+      "result": {
+        "allowed": false,
+        "mode": null,
+        "routeId": null,
+        "code": "active-backup",
         "freshEnrollment": true,
         "notice": "Vault state that was not enrolled for this agent cannot serve Antigravity. Request vault access again; no imported custody, backup, token or local login is activated."
       }

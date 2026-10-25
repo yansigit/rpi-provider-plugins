@@ -32,7 +32,7 @@
     "Import marker shape: source, absolute .jsonl sourcePath without parent components, 64-hex sha256 and sessionVersion 1..3.",
     "Header and entry import markers, pi-import path containment, Pi version 3 and future version headers.",
     "Durable cloud journal frames: version, session identity, anchor id and pending archive/delete intent.",
-    "Backup and staging siblings of the cloud journal block cloud authority."
+    "A rotated tail segment of the cloud journal (`<journal>.<digits>`) blocks cloud authority; `.bak`, staging and prefix-sharing copies are never opened and do not."
   ],
   "commands": [
     "node packages/rpi-cursor-sdk/tests/i02-import-guard-reference.mjs /home/user/Projects/provider-references",
