@@ -13,6 +13,11 @@ use tokio_util::sync::CancellationToken;
 
 pub const FILE_NAME: &str = "multiprovider-auth.json";
 
+/// Account ids with this prefix belong to `/multilogin`'s in-flight pending
+/// logins. Reservations live in memory only, so a stored account never claims
+/// one.
+pub const RESERVED_ACCOUNT_PREFIX: &str = "pending-login-";
+
 // Parsing failures stay structured until the native presentation policy is selected.
 pub enum Failure {
     Public(Error),
@@ -128,6 +133,7 @@ impl Store {
             column: error.column(),
         })?;
         schema::state(&state)?;
+        records::reserved(&state)?;
         Ok(state)
     }
     fn directory(&self) -> &Path {

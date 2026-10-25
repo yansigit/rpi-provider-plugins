@@ -389,3 +389,53 @@ async fn private_auth_transactions_bind_identity_and_commit_before_release() {
         .await
         .is_err());
 }
+
+/// `/multilogin`'s in-flight logins own the `pending-login-` id namespace in
+/// memory; a stored account never claims it, whichever side tries.
+#[tokio::test]
+async fn reserved_login_ids_are_never_stored_accounts() {
+    let root = scratch();
+    let path = root.0.join("accounts.json");
+    let store = Store::new(path.clone());
+    let saved = checked(&store, add("Real")).await;
+
+    // A hand-edited file naming a reservation is refused, not read as an
+    // ordinary account.
+    let mut file: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    file["providers"]["example"]["accounts"][0]["id"] = json!("pending-login-forged");
+    std::fs::write(&path, file.to_string()).unwrap();
+    assert_eq!(
+        failure(store.read().expect_err("reserved id in the file"))["error"]["message"],
+        "multiprovider: account id \"pending-login-forged\" is reserved for in-flight logins"
+    );
+
+    // Nor does the store mint one for a new account.
+    let mut file: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    file["providers"]["example"]["accounts"][0]["id"] = saved["id"].clone();
+    std::fs::write(&path, file.to_string()).unwrap();
+    let minting = Store::with_sources(
+        path.clone(),
+        Arc::new(|| 1.0),
+        Arc::new(|| "pending-login-minted".to_owned()),
+    );
+    assert_eq!(
+        failure(
+            minting
+                .request(add("Minted"), CancellationToken::new())
+                .await
+                .err()
+                .expect("reserved id was minted")
+        )["error"]["message"],
+        "multiprovider: account id \"pending-login-minted\" is reserved for in-flight logins"
+    );
+    let accounts = checked(&store, json!({"op":"pool","provider":"example"})).await["accounts"]
+        .as_array()
+        .cloned()
+        .unwrap();
+    assert_eq!(
+        accounts.len(),
+        1,
+        "a refused add stores nothing: {accounts:?}"
+    );
+    assert_eq!(accounts[0]["label"], "Real");
+}

@@ -171,6 +171,28 @@ fn upstream(pool: &mut Value, input: &Value, merge: bool) -> Result<(), Error> {
     }
     Ok(())
 }
+/// Refuses a stored account whose id claims [`super::RESERVED_ACCOUNT_PREFIX`]:
+/// those ids belong to `/multilogin`'s in-flight logins, which are memory-only.
+pub fn reserved(state: &Value) -> Result<(), Error> {
+    for (_, pool) in schema::entries(&state["providers"]) {
+        for account in pool["accounts"].as_array().into_iter().flatten() {
+            if let Some(id) = account["id"]
+                .as_str()
+                .filter(|id| id.starts_with(super::RESERVED_ACCOUNT_PREFIX))
+            {
+                return Err(reserved_id(id));
+            }
+        }
+    }
+    Ok(())
+}
+
+fn reserved_id(id: &str) -> Error {
+    error(format!(
+        "account id \"{id}\" is reserved for in-flight logins"
+    ))
+}
+
 pub fn execute(
     state: &mut Value,
     request: &Value,
@@ -210,7 +232,11 @@ pub fn execute(
             }
             upstream(&mut pool, settings, true)?;
             let at = stamp(now)?;
-            let account = json!({"id":random_id(),"label":label(input.get("label"))?,"authKind":if input["credential"]["type"] == "oauth" { "oauth" } else { "api-key" },
+            let id = random_id();
+            if id.starts_with(super::RESERVED_ACCOUNT_PREFIX) {
+                return Err(reserved_id(&id));
+            }
+            let account = json!({"id":id,"label":label(input.get("label"))?,"authKind":if input["credential"]["type"] == "oauth" { "oauth" } else { "api-key" },
                 "credential":input["credential"],"enabled":input.get("enabled").filter(|value| !value.is_null()).cloned().unwrap_or(json!(true)),
                 "weight":schema::weight(input.get("weight")),"priority":schema::priority(input.get("priority"), &json!(pool["accounts"].as_array().unwrap().len()+1)),"createdAt":at,"updatedAt":at});
             pool["accounts"]

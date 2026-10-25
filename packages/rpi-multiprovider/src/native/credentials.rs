@@ -21,8 +21,9 @@ use tokio_util::sync::CancellationToken;
 pub const CREDENTIAL_STORE_ID: &str = "multiprovider";
 
 /// Prefix of the account ids reserved for in-flight logins, so a reservation is
-/// recognizable in diagnostics. Reservations are looked up by exact id first.
-pub const PENDING_ACCOUNT_PREFIX: &str = "pending-login-";
+/// recognizable in diagnostics. Reservations are looked up by exact id first,
+/// and the store refuses to persist an account that claims the same prefix.
+pub const PENDING_ACCOUNT_PREFIX: &str = crate::store::RESERVED_ACCOUNT_PREFIX;
 
 /// A private pending account: the persist-first destination of one host login.
 ///
