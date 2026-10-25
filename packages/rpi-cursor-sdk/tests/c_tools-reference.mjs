@@ -26,12 +26,13 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, 
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { assertPortable, checkoutPrefixes, portablePath } from "./c_tools/home-paths.mjs";
+import { assertPortable, checkoutPrefixes, checkoutRelativePath } from "./c_tools/home-paths.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = resolve(HERE, "..");
 // A gate run isolates HOME, so the checkout's own home-like prefix is redacted too.
-const PORTABLE_PREFIXES = checkoutPrefixes(resolve(PACKAGE_ROOT, "../.."));
+const CHECKOUT_ROOT = resolve(PACKAGE_ROOT, "../..");
+const PORTABLE_PREFIXES = checkoutPrefixes(CHECKOUT_ROOT);
 const SCENARIO_DIR = join(HERE, "c_tools/scenarios");
 const EVIDENCE_PATH = join(HERE, "c_tools-evidence.json");
 const WORKER_ENTRY = join(PACKAGE_ROOT, "runtime/main.mjs");
@@ -525,7 +526,7 @@ function provenance() {
 		piVersion: read(join(PI_DIR, "package.json")),
 		cursorSdkVersion: read(join(REF_ROOT, "node_modules/@cursor/sdk/package.json")),
 		piCursorSdkVersion: read(join(PINNED_ADAPTER, "package.json")),
-		fakeSdkDir: portablePath(FAKE_DIR, PORTABLE_PREFIXES),
+		fakeSdkDir: checkoutRelativePath(FAKE_DIR, CHECKOUT_ROOT, PORTABLE_PREFIXES),
 		fake,
 	};
 }

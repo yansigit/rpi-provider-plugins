@@ -56,3 +56,21 @@ export function checkoutPrefixes(checkout) {
 	const projects = dirname(checkout);
 	return basename(projects) === "Projects" ? [dirname(projects)] : [checkout];
 }
+
+/**
+ * A recorded path that does not depend on which checkout produced it: paths
+ * inside the checkout are recorded relative to it (`<checkout>/...`), so a lane
+ * worktree and the main checkout regenerate byte-identical provenance; anything
+ * else falls back to home redaction.
+ * @param {string} path
+ * @param {string} checkout
+ * @param {string[]} extra
+ */
+export function checkoutRelativePath(path, checkout, extra = []) {
+	const root = checkout.replace(/\/+$/, "");
+	if (path === root) return CHECKOUT_MARKER;
+	if (path.startsWith(`${root}/`)) return `${CHECKOUT_MARKER}${path.slice(root.length)}`;
+	return portablePath(path, extra);
+}
+
+export const CHECKOUT_MARKER = "<checkout>";
