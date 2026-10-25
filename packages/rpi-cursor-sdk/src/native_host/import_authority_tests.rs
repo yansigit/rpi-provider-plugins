@@ -51,7 +51,22 @@ async fn imported_management_never_reaches_native_worker_views_or_journals() {
                     .extend(marker.as_object().unwrap().clone());
             }
         }
-        let view = json!({"snapshot":{"metadata":{"id":"native"},"entries":entries},"projection":{"entries":entries.iter().map(|entry|json!({"sourceEntry":entry})).collect::<Vec<_>>()}});
+        // The host serialises `SessionSnapshot` (`crates/rpi-harness/src/session/types.rs`)
+        // and wraps it as `{"snapshot":…,"leafId":…,"projection":…,"branchRevision":…}`
+        // (`crates/rpi-cli/src/native_sessions.rs`); the guard admits only that shape.
+        let view = json!({
+            "snapshot": {
+                "metadata": {"id":"native","createdAt":1729000000000_i64},
+                "revision": 1,
+                "branches": [{"lane":"main","revision":1,"leafId":null}],
+                "entries": entries,
+                "name": null,
+                "labels": {}
+            },
+            "leafId": null,
+            "branchRevision": 1,
+            "projection": {"entries":entries.iter().map(|entry|json!({"sourceEntry":entry})).collect::<Vec<_>>()}
+        });
         let trace = Arc::new(Mutex::new(Vec::new()));
         let request: Request = Arc::new({
             let path = path.clone();
@@ -64,7 +79,7 @@ async fn imported_management_never_reaches_native_worker_views_or_journals() {
                     trace.lock().unwrap().push(input.clone());
                     Ok(match input["action"].as_str() {
                         Some("capture") => {
-                            json!({"origin":"origin","snapshot":{"metadata":{"id":"native"}}})
+                            json!({"origin":"origin","snapshot":{"metadata":{"id":"native","createdAt":1729000000000_i64},"revision":0,"branches":[],"entries":[],"name":null,"labels":{}}})
                         }
                         Some("view") => view,
                         Some("location") => json!({"path":path}),
