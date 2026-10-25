@@ -434,6 +434,13 @@ mod linux {
             std::fs::copy(source.join(name), target.join(name)).unwrap();
         }
         for name in ["dist", "shared"] {
+            // Build outputs, not tracked: a fresh worktree fails here otherwise
+            // with a bare NotFound from copy_tree.
+            assert!(
+                source.join(name).is_dir(),
+                "{} is missing; stage the worker first: `(cd worker && node scripts/build.mjs) && node tests/stage-runtime.mjs` in packages/rpi-cursor-sdk",
+                source.join(name).display()
+            );
             copy_tree(&source.join(name), &target.join(name));
         }
         let dependencies = source.join("node_modules");

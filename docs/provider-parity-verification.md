@@ -51,7 +51,33 @@ LOGS=/tmp/pkg-repin-$(basename "$PWD")          # per-checkout, never shared bet
 mkdir -p "$LOGS" /tmp/g1-evidence-run/{home,tmp}
 export HOME=/tmp/g1-evidence-run/home TMPDIR=/tmp/g1-evidence-run/tmp
 export RPI_PRIVATE_TMP=/tmp/g1-evidence-run/tmp
+```
 
+The Cursor worker build and staging run before the toolchain loop: together they
+write the untracked `runtime/dist` and `runtime/shared` trees that
+`r02_native_loading` copies beside the Cursor library, and a fresh worktree has
+neither (the test refuses with `… runtime/dist is missing; stage the worker
+first …`). The installed dependencies are enough:
+
+```bash
+(cd packages/rpi-cursor-sdk/worker &&
+  timeout 90 node scripts/build.mjs &&
+  timeout 45 node --test test/rpi/transport.test.mjs
+) > "$LOGS/cursor-node24-final.log" 2>&1
+(cd packages/rpi-cursor-sdk && timeout 30 node tests/stage-runtime.mjs) \
+  > "$LOGS/cursor-stage.log" 2>&1
+(cd packages/rpi-cursor-sdk/worker &&
+  timeout 120 node node_modules/vitest/vitest.mjs run test/rpi/protocol.test.ts
+) > "$LOGS/cursor-vitest.log" 2>&1
+```
+
+The parity environment selects Node 24.22.0. All eight IPC tests pass, including
+the slow-consumer test, and the four Vitest protocol tests pass. Worker build
+outputs are ignored and not committed.
+
+Then, per toolchain:
+
+```bash
 for tc in 178 195; do
   if [ "$tc" = 178 ]; then
     version=1.78.0; export RUSTFLAGS=-Dwarnings
@@ -91,22 +117,6 @@ the Antigravity branch of `r02_native_loading`, and (with
 `runtime/` worker, so `ensure-runtime-deps.sh` must have run first. The legacy-library
 branch and the real host binary beyond the M-VIRTUAL-B scope below are **not**
 claimed here. The test harness uses fake host vtables, not a running host process.
-
-For the Cursor worker, the installed dependencies are enough:
-
-```bash
-(cd packages/rpi-cursor-sdk/worker &&
-  timeout 90 node scripts/build.mjs &&
-  timeout 45 node --test test/rpi/transport.test.mjs
-) > "$LOGS/cursor-node24-final.log" 2>&1
-(cd packages/rpi-cursor-sdk/worker &&
-  timeout 120 node node_modules/vitest/vitest.mjs run test/rpi/protocol.test.ts
-) > "$LOGS/cursor-vitest.log" 2>&1
-```
-
-The parity environment selects Node 24.22.0. All eight IPC tests pass, including
-the slow-consumer test, and the four Vitest protocol tests pass. Worker build
-outputs are ignored and not committed.
 
 ## Reference regenerators and deterministic report
 
