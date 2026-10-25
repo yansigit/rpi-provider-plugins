@@ -3,7 +3,8 @@
 **Current state (host `e9c0526`, refreshed at `lane/g1-evidence-fix`):** the scoped
 package-binding results and the both-toolchain gates below were rerun from this
 checkout against host `e9c052653975c1d648092ab52e817a0b2f4b575c` (SDK workspace
-0.8.4): **258 passed / 0 failed / 24 inherited ignored**. The M-VIRTUAL-B scope-lease
+0.8.4): **262 cohort passed / 0 failed / 24 inherited ignored, plus 8 real-host
+passed**. The M-VIRTUAL-B scope-lease
 evidence (that the same host binds per-package leases and releases them on turn
 boundaries), including the eight real-host `m_virtual_loaded` cases, is in
 [`evidence/m-virtual-b2.md`](evidence/m-virtual-b2.md) and its deterministic JSON
@@ -60,7 +61,7 @@ for tc in 178 195; do
   export CARGO_TARGET_DIR=/home/user/Projects/.targets/g1-evidence-$tc
   timeout 600 cargo +$version test --locked --offline \
     -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider \
-    > "$LOGS/test-$tc.log" 2>&1 || exit $?
+    -- --skip real_dll > "$LOGS/test-$tc.log" 2>&1 || exit $?
   cp "$LOGS/test-$tc.log" "$LOGS/test-$tc-final.log"
   timeout 180 cargo +$version build --lib --locked --offline \
     -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider \
@@ -77,6 +78,12 @@ for tc in 178 195; do
     --locked --offline -- --nocapture > "$LOGS/r02-native-$tc.log" 2>&1 || exit $?
 done
 ```
+
+The cohort run skips the eight `real_dll_*` cases in `m_virtual_loaded`: they are
+mandatory failures without a real host binary, and a plain `cargo test` cannot
+order the fresh-DLL rebuild they check for. They run separately (see *Results*),
+before the cdylib builds above, because their `-C metadata=m_virtual_b2_fresh_dll`
+rebuild replaces the library files whose hashes the report records.
 
 These explicit library paths exercise the multiprovider native-registration tests,
 the Antigravity branch of `r02_native_loading`, and (with
@@ -136,17 +143,18 @@ checks that registry dependency versions/checksums did not change relative to
 checkout HEAD and cleanliness, and records every binary's SHA-256. It never runs a
 build, reads credentials, or accesses the network.
 
-After preserving the mutation-check logs described below:
+After preserving the mutation-check logs described below (pass `--logs "$LOGS"`:
+the default resolves under the current `TMPDIR`, which the sequence above isolates):
 
 ```bash
 python3 .github/scripts/refresh-provider-parity-evidence.py \
-  --host-checkout /home/user/Projects/pi-rust--host-e9c0526 --write
+  --host-checkout /home/user/Projects/pi-rust--host-e9c0526 --logs "$LOGS" --write
 cp docs/provider-parity-sdk-cohort.json "$LOGS/cohort-pass1.json"
 python3 .github/scripts/refresh-provider-parity-evidence.py \
-  --host-checkout /home/user/Projects/pi-rust--host-e9c0526 --write
+  --host-checkout /home/user/Projects/pi-rust--host-e9c0526 --logs "$LOGS" --write
 cmp "$LOGS/cohort-pass1.json" docs/provider-parity-sdk-cohort.json
 python3 .github/scripts/refresh-provider-parity-evidence.py \
-  --host-checkout /home/user/Projects/pi-rust--host-e9c0526 --check   # regenerates into a temp dir and diffs
+  --host-checkout /home/user/Projects/pi-rust--host-e9c0526 --logs "$LOGS" --check   # regenerates into a temp dir and diffs
 ```
 
 Report regeneration is byte-identical for fixed verifier inputs. Rerunning tests
@@ -160,14 +168,19 @@ Each Rust toolchain passes the same cohort:
 | Package | Passed | Failed | Ignored (pre-existing) |
 | --- | ---: | ---: | ---: |
 | rpi-antigravity-auth | 97 | 0 | 5 |
-| rpi-cursor-sdk | 64 | 0 | 17 |
-| rpi-multiprovider | 97 (89 cohort + 8 real-host) | 0 | 2 |
-| **Total** | **258** | **0** | **24** |
+| rpi-cursor-sdk | 76 | 0 | 17 |
+| rpi-multiprovider | 89 | 0 | 2 |
+| **Cohort total** | **262** | **0** | **24** |
+| `m_virtual_loaded` real-host (separate run) | 8 | 0 | 0 |
 
-The two Cursor tests beyond the previously recorded 62
-(`worker_that_dies_during_bootstrap_reports_its_stderr_fast` and
-`bootstrap_secrets_are_redacted_from_worker_stderr`) pin the bootstrap failure path
-and its secret redaction; they are part of the cohort command. The 8
+The 14 Cursor tests beyond the previously recorded 62 pin the worker bootstrap
+failure path: an exited, timed-out, or pipe-closed worker reports its status and
+bounded stderr (`worker_that_dies_during_bootstrap_reports_its_stderr_fast`,
+`an_exited_worker_failure_carries_its_status_and_stderr`,
+`a_handshake_timeout_carries_the_worker_stderr`, the closed-pipe and live-worker
+cases), and the stderr ring redacts secrets before trimming, across chunk
+boundaries, and keeps its tail valid UTF-8 (`bootstrap_secrets_are_redacted_from_worker_stderr`
+and the `secrets_*`/ring cases). They are part of the cohort command. The 8
 `rpi-multiprovider` real-host cases are the documented M-VIRTUAL-B sequence (build
 the test with `--no-run`, `cargo rustc -p rpi-multiprovider --lib --locked --
 -C metadata=m_virtual_b2_fresh_dll`, then run the test executable directly with
