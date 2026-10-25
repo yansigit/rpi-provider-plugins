@@ -59,7 +59,7 @@ def render(logs):
     for tc in ["178", "195"]:
         name = f"cohort-{tc}.log"
         result = counts((logs / name).read_text())
-        assert result == {"passed": 251, "failed": 0, "ignored": 24, "filtered": 8}, result
+        assert result == {"passed": 259, "failed": 0, "ignored": 24, "filtered": 8}, result
         gates[name] = {**result, "sha256": sha(logs / name)}
         name = f"native-{tc}.log"
         result = counts((logs / name).read_text())
@@ -78,7 +78,17 @@ def render(logs):
     assert re.search(r"(?m)^(?:#|ℹ) pass 8$", ipc) and re.search(r"(?m)^(?:#|ℹ) fail 0$", ipc)
     gates["ipc.log"] = {"passed": 8, "sha256": sha(logs / "ipc.log")}
     mutations = {}
-    for name, finding in [("mutation-view.log", "left: true"), ("mutation-cloud.log", "called `Result::unwrap_err()` on an `Ok` value")]:
+    for name, finding in [
+        ("mutation-view.log", "left: true"),
+        ("mutation-cloud.log", "called `Result::unwrap_err()` on an `Ok` value"),
+        ("mutation-h1.log", "antigravity-vault-custody"),
+        ("mutation-h1-rollback.log", "rollback_restores_the_login_and_drops_the_stash"),
+        ("mutation-h2.log", "active-backup"),
+        ("mutation-h2-path.log", "called `Result::unwrap()` on an `Err` value: Storage("),
+        ("mutation-m3.log", "packages/rpi-cursor-sdk/src/import_guard.rs:1178"),
+        ("mutation-m4.log", "packages/rpi-cursor-sdk/src/journal/tests.rs:301"),
+        ("mutation-l6.log", "expected a typed provenance refusal"),
+    ]:
         text = (logs / name).read_text()
         assert "test result: FAILED" in text and finding in text
         mutations[name] = sha(logs / name)
@@ -92,7 +102,7 @@ def render(logs):
     checkout = Path("/home/user/Projects/pi-rust--host-e9c0526")
     assert subprocess.check_output(["git", "-C", str(checkout), "rev-parse", "HEAD"], text=True).strip() == PIN
     return json.dumps({"ledger": "I02", "hostPin": PIN, "hostBinarySha256": sha(host), "baseline": {"passed": 256, "ignored": 24},
-                       "cohortAccounting": "251 + 8 separate fresh-DLL real-host cases = 259; three new tests; no new ignores",
+                       "cohortAccounting": "259 + 8 separate fresh-DLL real-host cases = 267; three original lane tests plus eight review-fix tests; no new ignores",
                        "loadedVaultMaliciousMarkersPerToolchain": 15,
                        "sources": sources, "gates": gates, "mutationsReverted": mutations,
                        "fixtures": (logs / "fixtures-1.sha256").read_text(), "libraries": libraries,
