@@ -16,7 +16,7 @@ crate-type = ["rlib", "cdylib"]
 async-trait.workspace = true
 futures-util = "0.3"
 rpi-node-collation = { path = "../../crates/rpi-node-collation" }
-rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "8f25e899d1c6bf6f98a73d4800c0363c185ad5fc", default-features = false, features = ["provider"] }
+rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "e9fa88ca6af4107440ac2d518226a30838ecce00", default-features = false, features = ["provider"] }
 serde.workspace = true
 serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
 indexmap = "=2.11.4"
@@ -27,5 +27,5 @@ tokio.workspace = true
 tokio-util = { version = "0.7", features = ["rt"] }
 
 [dev-dependencies]
-rpi-ai = { git = "https://github.com/yansigit/pi-rust", rev = "8f25e899d1c6bf6f98a73d4800c0363c185ad5fc", default-features = false }
+rpi-ai = { git = "https://github.com/yansigit/pi-rust", rev = "e9fa88ca6af4107440ac2d518226a30838ecce00", default-features = false }
 tokio = { workspace = true, features = ["macros"] }
