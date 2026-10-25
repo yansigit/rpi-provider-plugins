@@ -263,13 +263,23 @@ async fn present<I: LoginInteraction>(
                 .as_array()
                 .ok_or("multiprovider: invalid login choices")?
                 .iter()
-                .map(|choice| json!({"id":choice["id"],"label":choice["label"]}))
-                .collect();
+                .map(
+                    |choice| match (choice["id"].as_str(), choice["label"].as_str()) {
+                        (Some(id), Some(label)) if !id.is_empty() => {
+                            Ok(json!({"id":id,"label":label}))
+                        }
+                        _ => Err("multiprovider: invalid login choices"),
+                    },
+                )
+                .collect::<Result<Vec<Value>, _>>()?;
             let chosen = dialog
                 .prompt(json!({"type":"select","message":title,"options":options}))
                 .await?;
+            // A dialog cancel already arrives as [`CANCELLED`] from the prompt;
+            // an empty answer to a resolved list means the provider's choices
+            // had no id, which the host reports as a resolve error.
             if chosen.is_empty() {
-                return Err(CANCELLED.into());
+                return Err("multiprovider: invalid login choices".into());
             }
             Ok(json!(chosen))
         }
@@ -385,6 +395,43 @@ mod tests {
             .build()
             .unwrap()
             .block_on(future)
+    }
+
+    #[test]
+    fn select_interactions_need_choice_ids() {
+        let dialog = Scripted::replying(Vec::new());
+        let mut waiting = None;
+        let error = blocked_on(present(
+            &json!({"kind":"select","title":"Pick","choices":[{"label":"Alpha"}]}),
+            &dialog,
+            &CancellationToken::new(),
+            &mut waiting,
+        ))
+        .unwrap_err();
+        assert_eq!(error, "multiprovider: invalid login choices");
+        assert!(
+            dialog.prompts.lock().unwrap().is_empty(),
+            "an unresolvable choice list never prompts"
+        );
+    }
+
+    #[test]
+    fn unresolved_select_answers_are_errors_not_cancellations() {
+        let dialog = Scripted::replying(vec![Ok(String::new())]);
+        let mut waiting = None;
+        let error = blocked_on(present(
+            &json!({"kind":"select","title":"Pick","choices":[
+                {"id":"ws-a","label":"Alpha"},{"id":"ws-b","label":"Beta"}]}),
+            &dialog,
+            &CancellationToken::new(),
+            &mut waiting,
+        ))
+        .unwrap_err();
+        assert_ne!(error, CANCELLED, "the host reports a resolve error");
+        assert_eq!(error, "multiprovider: invalid login choices");
+        let prompt = dialog.prompts.lock().unwrap()[0].clone();
+        assert_eq!(prompt["type"], "select");
+        assert_eq!(prompt["options"][1]["id"], "ws-b");
     }
 
     #[test]
