@@ -26,6 +26,7 @@ jobs:
       source_ref: ${{ steps.version.outputs.source_ref }}
       package_releases: ${{ steps.tags.outputs.package_releases }}
       bundle_tag: ${{ steps.tags.outputs.bundle_tag }}
+      web_tag: ${{ steps.tags.outputs.web_tag }}
     defaults:
       run:
         shell: bash
@@ -61,6 +62,26 @@ jobs:
       - name: Restore Rust build cache
         uses: Swatinem/rust-cache@v2
 
+      # rust-cache prunes downloaded native archives while retaining build.rs
+      # link directives. Restore native libraries separately after clearing
+      # stale output, and save them before rust-cache's post-job pruning.
+      - name: Reset cached native speech links
+        run: |
+          cargo clean -p sherpa-onnx-sys
+          python3 - <<'PY'
+          import pathlib, shutil
+          target = pathlib.Path('target').resolve()
+          native = target / 'sherpa-onnx-prebuilt'
+          if native.resolve().parent != target:
+              raise RuntimeError('Native cache must stay inside target')
+          shutil.rmtree(native, ignore_errors=True)
+          PY
+      - name: Restore native speech libraries
+        uses: actions/cache@v4
+        with:
+          path: target/sherpa-onnx-prebuilt
+          key: native-speech-1.13.8-${{ runner.os }}-${{ runner.arch }}
+
       - name: Resolve registry dependencies
         run: cargo update --workspace
 
@@ -73,8 +94,25 @@ jobs:
       - name: Synchronize package catalog versions
         run: python3 .github/scripts/sync-release-catalog.py
 
+      - name: Install Node.js for the embedded frontend
+        # `packages/rpi-web/assets` is generated and untracked; building it here
+        # keeps the published crate and `cargo install rpi-web` shipping the UI.
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: packages/rpi-web/frontend/package-lock.json
+
+      - name: Build the embedded web frontend
+        working-directory: packages/rpi-web/frontend
+        run: |
+          npm ci
+          npm run build
+
       - name: Test workspace
-        run: cargo test --workspace --locked
+        run: |
+          cargo build -p rpi-providers --locked
+          cargo test --workspace --locked
 
       - name: Test the prebuilt distribution contract
         run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
@@ -132,3 +170,11 @@ jobs:
       source_ref: ${{ needs.release.outputs.source_ref }}
       package_releases: ${{ needs.release.outputs.package_releases }}
       bundle_tag: ${{ needs.release.outputs.bundle_tag }}
+
+  web-assets:
+    needs: release
+    if: needs.release.outputs.web_tag != ''
+    uses: ./.github/workflows/release-web.yml
+    with:
+      source_ref: ${{ needs.release.outputs.source_ref }}
+      tag: ${{ needs.release.outputs.web_tag }}
