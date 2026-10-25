@@ -91,7 +91,9 @@ impl Store for FileStore {
                 Slot::State => files.enrollment_state = value.clone(),
                 Slot::Token => files.enrollment_token = value.clone(),
             }
-            super::import_guard::guard_storage(&files).map_err(Failure::Storage)?;
+            // A provenance refusal is not a storage fault: keep it typed so callers
+            // do not have to compare notice text.
+            super::import_guard::guard_storage(&files).map_err(Failure::Refused)?;
             Ok(value)
         })
         .await

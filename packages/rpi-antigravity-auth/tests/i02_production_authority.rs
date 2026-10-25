@@ -1,6 +1,6 @@
 //! I02 real FileStore/Source boundary, plus the optional loaded-host fixture.
 use rpi_antigravity_auth::vault::{
-    ceremony::{Slot, Store},
+    ceremony::{Failure, Slot, Store},
     file_store::FileStore,
     import_guard::FRESH_ENROLLMENT_NOTICE,
     source::Source,
@@ -82,6 +82,25 @@ async fn raw_enrollment_provenance_is_refused_before_consumer_decoding() {    le
         source.request_mode().await.unwrap_err(),
         FRESH_ENROLLMENT_NOTICE
     );
+}
+
+/// A provenance refusal is a typed failure, not a message comparison.
+#[tokio::test]
+async fn provenance_refusal_reaches_the_store_as_a_typed_failure() {
+    let scratch = vault_dir();
+    write_private(
+        &scratch.0.join("pi-enrollment-state.json"),
+        &json!({"version":1,"phase":"approved","proposedName":"antigravity-auth-pi","approvedName":"antigravity-auth-pi","tokenGeneration":2,"updatedAt":1729000000000_f64,"imported":false}).to_string(),
+    );
+    let store = FileStore::new(
+        scratch.0.join("pi-enrollment-state.json"),
+        scratch.0.join("pi-enrollment.json"),
+    )
+    .unwrap();
+    match store.read(Slot::State).await {
+        Err(Failure::Refused(notice)) => assert_eq!(notice, FRESH_ENROLLMENT_NOTICE),
+        other => panic!("expected a typed provenance refusal, got {other:?}"),
+    }
 }
 
 /// A crashed or concurrent write leaves its staging file behind. Staging files are

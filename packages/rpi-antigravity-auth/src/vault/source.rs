@@ -72,12 +72,11 @@ impl Source<FileStore> {
 impl<S: Store> Source<S> {
     async fn guard(&self) -> Result<(), String> {
         // Ordinary IO/decoder failures retain the existing current/request error
-        // contracts. A provenance refusal must survive those diagnostic decoders.
+        // contracts. A provenance refusal is typed and must survive those
+        // diagnostic decoders with the notice the guard produced.
         let origin = |result: Result<Option<Value>, super::ceremony::Failure>| match result {
             Ok(value) => Ok(value),
-            Err(error) if error.to_string() == super::import_guard::FRESH_ENROLLMENT_NOTICE => {
-                Err(error.to_string())
-            }
+            Err(super::ceremony::Failure::Refused(notice)) => Err(notice),
             Err(_) => Ok(None),
         };
         let state = origin(self.store.read(super::ceremony::Slot::State).await)?;
