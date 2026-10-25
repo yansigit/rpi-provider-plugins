@@ -217,7 +217,8 @@ pub async fn switch_account<U: Ui, P: Port>(ui: &U, port: &P, args: &str) -> Res
         port.append_entry(
             SESSION_PIN_ENTRY,
             json!({"pool": pool_id, "key": affinity_key}),
-        );
+        )
+        .await?;
         port.announce_active_account(&pool_id).await?;
         let text = if pool_affinity {
             "Cleared this session's pinned account. The next request re-selects using the pool strategy."
@@ -246,7 +247,8 @@ pub async fn switch_account<U: Ui, P: Port>(ui: &U, port: &P, args: &str) -> Res
     port.append_entry(
         SESSION_PIN_ENTRY,
         json!({"pool": pool_id, "key": affinity_key, "accountId": account_id, "label": label}),
-    );
+    )
+    .await?;
     port.announce_active_account(&pool_id).await?;
     let cooldown = match account.get("cooldownUntil").and_then(Value::as_f64) {
         Some(until) => format!(

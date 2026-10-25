@@ -107,6 +107,12 @@ struct Fake {
     dialog_waiting: std::sync::atomic::AtomicBool,
     catalog: Mutex<Option<Value>>,
     publications: Mutex<Vec<Value>>,
+    snapshot_model: Mutex<Option<Value>>,
+    fail_journal: std::sync::atomic::AtomicBool,
+    /// Corrupts the account store while serving `sessions/journalAppend`, so
+    /// the post-commit announcement finds an unreadable pool.
+    corrupt_store_after_journal: std::sync::atomic::AtomicBool,
+    cancel_dialog: std::sync::atomic::AtomicBool,
     fail_publication: std::sync::atomic::AtomicBool,
     v2: std::sync::atomic::AtomicBool,
     fail_first_virtual_attempt: std::sync::atomic::AtomicBool,
@@ -338,7 +344,10 @@ extern "C" fn fake_native_request(
             }
         },
         (Some("context"), Some("snapshot")) => {
-            let snapshot = json!({"hasUI":fake.has_ui,"mode":fake.mode});
+            let mut snapshot = json!({"hasUI":fake.has_ui,"mode":fake.mode});
+            if let Some(model) = fake.snapshot_model.lock().unwrap().clone() {
+                snapshot["model"] = model;
+            }
             fake.command_snapshots
                 .lock()
                 .unwrap()
@@ -390,7 +399,16 @@ extern "C" fn fake_native_request(
                 return 1;
             }
             match value["ui"]["kind"].as_str() {
-                Some("select") => json!({"type":"select","values":["0"]}),
+                Some("select") => {
+                    if fake
+                        .cancel_dialog
+                        .load(std::sync::atomic::Ordering::SeqCst)
+                    {
+                        Value::Null
+                    } else {
+                        json!({"type":"select","values":["0"]})
+                    }
+                }
                 Some("confirm") => json!({"confirmed":true}),
                 _ => Value::Null,
             }
@@ -404,7 +422,28 @@ extern "C" fn fake_native_request(
             json!({"origin":"origin-1","snapshot":{"entries":entries,"branches":[],"revision":1}})
         }
         (Some("sessions"), Some("journalAppend")) => {
+            if fake
+                .fail_journal
+                .load(std::sync::atomic::Ordering::SeqCst)
+            {
+                unsafe {
+                    *out = StbString::from_string(
+                        json!({"version":1,"error":"fake journal append refused"}).to_string(),
+                    );
+                }
+                return 1;
+            }
             fake.appended.lock().unwrap().push(value["data"].clone());
+            if fake
+                .corrupt_store_after_journal
+                .load(std::sync::atomic::Ordering::SeqCst)
+            {
+                // The pin (or its clearing) and its journal entry are already
+                // durable here; the announcement rebuilds the pool from the
+                // store, which this makes unreadable.
+                std::fs::write(fake.agent.join("multiprovider-auth.json"), b"{not json")
+                    .unwrap();
+            }
             json!({"entry":{"id":format!("entry-{}", fake.appended.lock().unwrap().len())},"revision":2})
         }
         (Some("sessions"), Some("release")) => Value::Null,
@@ -742,7 +781,7 @@ fn registers_one_identity_preserving_wrapper_store_and_awaited_lifecycle() {
             .iter()
             .map(|(m, ..)| m["name"].as_str().unwrap())
             .collect::<Vec<_>>(),
-        vec!["multilogout", "accounts", "vprovider"]
+        vec!["multilogout", "accounts", "switch-account", "vprovider"]
     );
     for tag in [
         EventTag::SessionStart,
@@ -838,6 +877,368 @@ fn exported_plugin_runs_accounts_and_logout_against_live_store_and_scheduler() {
     assert_eq!(
         std::fs::read_to_string(upstream_auth).unwrap(),
         r#"{"provider":"unchanged"}"#
+    );
+    finish(fake);
+}
+
+fn switch_model() -> Value {
+    json!({"provider":"example","id":"probe-model","name":"probe-model"})
+}
+
+fn switch_accounts() -> Vec<Value> {
+    vec![
+        account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        ),
+        account(
+            "b",
+            "B",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        ),
+    ]
+}
+
+fn notified(fake: *mut Fake, text: &str) -> bool {
+    unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["port"] == "ui" && request["action"] == "notify" && request["text"] == text)
+}
+
+#[test]
+fn exported_switch_account_pins_and_journals_through_production_registration() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, switch_accounts(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    let result = invoke_registered_command_args(&registered, "switch-account", "A");
+    assert!(result.get("error").is_none(), "{result}");
+    assert_eq!(result["result"], Value::Null);
+    assert!(
+        notified(fake, "Switched to A for this session. Pool settings are unchanged; new requests from this session use it."),
+        "successful switch notifies the new account"
+    );
+    assert_eq!(
+        unsafe { &*fake }.appended.lock().unwrap().as_slice(),
+        &[json!({"pool":"example","key":"session-parent","accountId":"a","label":"A"})],
+        "the pin decision is journaled with the command scope's origin"
+    );
+    // The pin landed in the scheduler the command reads: an empty reference
+    // falls back to the picker with the pinned account marked current.
+    let result = invoke_registered_command_args(&registered, "switch-account", "");
+    assert!(result.get("error").is_none(), "{result}");
+    let picker = unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|request| request["port"] == "dialogs")
+        .cloned()
+        .last()
+        .expect("fallback switch shows the account picker");
+    let choices = picker["ui"]["choices"].as_array().unwrap();
+    assert!(
+        choices.iter().any(|choice| choice["label"]
+            .as_str()
+            .is_some_and(|label| label.contains("A (api-key)") && label.contains("current"))),
+        "the pinned account is marked current: {choices:?}"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_without_ui_leaves_store_and_journal_untouched() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, switch_accounts(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    unsafe { &mut *fake }.has_ui = false;
+    let before = std::fs::read(temp.join("multiprovider-auth.json")).unwrap();
+    let result = invoke_registered_command_args(&registered, "switch-account", "A");
+    assert!(result.get("error").is_none(), "{result}");
+    // The shared notify helper stays silent without interactive UI, exactly
+    // like the upstream no-UI trace.
+    assert!(
+        !unsafe { &*fake }
+            .command_requests
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|request| request["port"] == "dialogs" || request["port"] == "ui"),
+        "headless switch emits no UI output"
+    );
+    assert!(
+        unsafe { &*fake }.appended.lock().unwrap().is_empty(),
+        "headless switch journals nothing"
+    );
+    assert_eq!(
+        std::fs::read(temp.join("multiprovider-auth.json")).unwrap(),
+        before,
+        "headless switch mutates no stored account"
+    );
+    assert!(
+        !unsafe { &*fake }
+            .command_requests
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|request| request["port"] == "dialogs"),
+        "headless switch shows no dialog"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_journal_failure_reports_without_success_ui() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, switch_accounts(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    unsafe { &*fake }
+        .fail_journal
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    let result = invoke_registered_command_args(&registered, "switch-account", "A");
+    assert!(
+        result["error"].as_str().is_some_and(|error| error.contains("fake journal append refused")),
+        "journal failure surfaces through the envelope: {result}"
+    );
+    assert!(
+        !notified(fake, "Switched to A for this session. Pool settings are unchanged; new requests from this session use it."),
+        "a switch that was not journaled claims no success"
+    );
+    assert!(
+        unsafe { &*fake }.appended.lock().unwrap().is_empty(),
+        "refused journal records nothing"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_unknown_provider_reports_no_pools() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, switch_accounts(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.snapshot_model.lock().unwrap().replace(
+        json!({"provider":"zeta","id":"probe-model","name":"probe-model"}),
+    );
+    let result = invoke_registered_command_args(&registered, "switch-account", "");
+    assert!(result.get("error").is_none(), "{result}");
+    assert!(
+        notified(fake, "zeta has no pooled accounts. Use /multilogin to add one."),
+        "an unregistered model provider reports no pools"
+    );
+    assert!(
+        unsafe { &*fake }.appended.lock().unwrap().is_empty(),
+        "a switch with no pool journals nothing"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_lists_upstream_while_host_reports_unknown_auth() {
+    let temp = tempfile_dir();
+    let registered = register(
+        &temp,
+        vec![account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    // `unknown` is the status the pinned host actually emits: every provider is
+    // registered as `AuthStatus::Unknown` and `update_auth_status` has no
+    // production caller. Upstream includes the account because the check is
+    // `configured !== false`, not `configured === true`.
+    unsafe { &*fake }.catalog.lock().unwrap().replace(json!({
+        "revision": 2,
+        "providers": [{"id":"example","name":"example","builtin":false,"authStatus":"unknown"}]
+    }));
+    // The shared test store disables the upstream account; this case needs
+    // the pool the scheduler would serve once ambient auth exists.
+    let store_path = temp.join("multiprovider-auth.json");
+    let mut state: Value =
+        serde_json::from_str(&std::fs::read_to_string(&store_path).unwrap()).unwrap();
+    state["providers"]["example"]["includeUpstream"] = json!(true);
+    std::fs::write(&store_path, serde_json::to_string_pretty(&state).unwrap()).unwrap();
+    let result = invoke_registered_command_args(&registered, "switch-account", "");
+    assert!(result.get("error").is_none(), "{result}");
+    // The scripted dialog picks Automatic, clearing the session pin.
+    assert!(
+        notified(fake, "Cleared this session's pinned account. The next request re-selects using the pool strategy."),
+        "automatic switch clears the session pin"
+    );
+    let picker = unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|request| request["port"] == "dialogs")
+        .cloned()
+        .last()
+        .expect("automatic switch shows the account picker first");
+    let choices = picker["ui"]["choices"].as_array().unwrap();
+    assert!(
+        choices.get(1).and_then(|choice| choice["label"].as_str()).is_some_and(|label| label.contains("Pi default (upstream)")),
+        "an unknown host status keeps the upstream account switchable: {choices:?}"
+    );
+    assert_eq!(
+        unsafe { &*fake }.appended.lock().unwrap().as_slice(),
+        &[json!({"pool":"example","key":"session-parent"})],
+        "clearing the pin journals pool and key only"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_hides_upstream_while_host_reports_unauthenticated() {
+    let temp = tempfile_dir();
+    let registered = register(
+        &temp,
+        vec![account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    unsafe { &*fake }.catalog.lock().unwrap().replace(json!({
+        "revision": 2,
+        "providers": [{"id":"example","name":"example","builtin":false,"authStatus":"unauthenticated"}]
+    }));
+    let store_path = temp.join("multiprovider-auth.json");
+    let mut state: Value =
+        serde_json::from_str(&std::fs::read_to_string(&store_path).unwrap()).unwrap();
+    state["providers"]["example"]["includeUpstream"] = json!(true);
+    std::fs::write(&store_path, serde_json::to_string_pretty(&state).unwrap()).unwrap();
+    let result = invoke_registered_command_args(&registered, "switch-account", "");
+    assert!(result.get("error").is_none(), "{result}");
+    let picker = unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|request| request["port"] == "dialogs")
+        .cloned()
+        .last()
+        .expect("the switch still shows the account picker");
+    let choices = picker["ui"]["choices"].as_array().unwrap();
+    assert!(
+        !choices.iter().any(|choice| choice["label"]
+            .as_str()
+            .is_some_and(|label| label.contains("Pi default (upstream)"))),
+        "an explicit unauthenticated status excludes the upstream account: {choices:?}"
+    );
+    assert!(
+        choices.get(1).and_then(|choice| choice["label"].as_str()).is_some_and(|label| label.contains("A (api-key)")),
+        "the stored account stays switchable: {choices:?}"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_reports_a_failed_announcement_without_failing_the_switch() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, switch_accounts(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    let store_path = temp.join("multiprovider-auth.json");
+    let store = std::fs::read(&store_path).unwrap();
+    unsafe { &*fake }
+        .corrupt_store_after_journal
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    let result = invoke_registered_command_args(&registered, "switch-account", "A");
+    // The host refilled nothing; restore the store for the shutdown hooks.
+    std::fs::write(&store_path, &store).unwrap();
+    assert!(
+        result.get("error").is_none(),
+        "a failed announcement never fails a pin that is already journaled: {result}"
+    );
+    assert!(
+        notified(fake, "Switched to A for this session. Pool settings are unchanged; new requests from this session use it."),
+        "the committed switch still reports success"
+    );
+    assert_eq!(
+        unsafe { &*fake }.appended.lock().unwrap().as_slice(),
+        &[json!({"pool":"example","key":"session-parent","accountId":"a","label":"A"})],
+        "the pin decision stays journaled"
+    );
+    assert!(
+        unsafe { &*fake }
+            .command_requests
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|request| request["port"] == "ui"
+                && request["kind"] == "warning"
+                && request["text"].as_str().is_some_and(|text| text
+                    .contains("sibling extensions were not notified"))),
+        "the lost announcement is reported instead of swallowed silently"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_picker_cancel_leaves_pin_and_journal_untouched() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, switch_accounts(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    unsafe { &*fake }
+        .cancel_dialog
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    let before = std::fs::read(temp.join("multiprovider-auth.json")).unwrap();
+    let result = invoke_registered_command_args(&registered, "switch-account", "");
+    assert!(result.get("error").is_none(), "{result}");
+    assert_eq!(result["result"], Value::Null);
+    assert!(
+        unsafe { &*fake }.appended.lock().unwrap().is_empty(),
+        "cancelled switch journals nothing"
+    );
+    assert_eq!(
+        std::fs::read(temp.join("multiprovider-auth.json")).unwrap(),
+        before,
+        "cancelled switch mutates no stored account"
     );
     finish(fake);
 }
@@ -1727,7 +2128,7 @@ fn built_library_registers_through_the_exported_symbol() {
             .iter()
             .map(|(manifest, ..)| manifest["name"].as_str().unwrap())
             .collect::<Vec<_>>(),
-        vec!["multilogout", "accounts", "vprovider"],
+        vec!["multilogout", "accounts", "switch-account", "vprovider"],
         "loaded cdylib must register exactly the supported commands in canonical order"
     );
     let wrapper = registered.wrapper.lock().unwrap().clone().unwrap();

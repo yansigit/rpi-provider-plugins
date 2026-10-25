@@ -559,11 +559,101 @@ impl Shared {
     /// keeps the origin's anchor, so several decisions in one reconcile each
     /// form their own parent link even after earlier appends advanced it.
     async fn append(&self, origin: String, data: Value) -> Result<(), String> {
+        self.append_journal(origin, pins::SESSION_PIN_ENTRY_TYPE, data)
+            .await
+    }
+
+    /// Scheduler that owns `pool` for command flows. The scope's virtual
+    /// catalog service serves a pool it registered, exactly like `apply_pins`;
+    /// everything else runs on the shared service. Commands pin, read and
+    /// announce through the same scheduler that serves the session's requests.
+    pub(super) async fn command_service(&self, scope_id: &Option<String>, pool: &str) -> Service {
+        self.virtuals
+            .lock()
+            .await
+            .get(scope_id)
+            .filter(|catalog| catalog.service.has_provider(pool))
+            .map(|catalog| catalog.service.clone())
+            .unwrap_or_else(|| self.service.clone())
+    }
+
+    /// Scheduler snapshot for command flows: the shared providers plus the
+    /// scope's virtual scheduler registrations, which live in the virtual
+    /// catalog service rather than the shared one.
+    pub(super) async fn command_snapshot(
+        &self,
+        scope_id: &Option<String>,
+    ) -> Result<Value, String> {
+        let mut snapshot = self
+            .service
+            .snapshot()
+            .await
+            .map_err(|error| error.to_string())?;
+        if let Some(virtuals) = self.virtuals.lock().await.get(scope_id) {
+            let extra = virtuals
+                .service
+                .snapshot()
+                .await
+                .map_err(|error| error.to_string())?;
+            if let Some(providers) = snapshot
+                .get_mut("providers")
+                .and_then(Value::as_array_mut)
+            {
+                providers.extend(extra["providers"].as_array().cloned().unwrap_or_default());
+            }
+        }
+        Ok(snapshot)
+    }
+
+    /// Command-scope journal origin for `scope_id` (M05). Command invocations
+    /// never run `capture_session` themselves, so this captures the session
+    /// first when the scope has no origin yet. A missing origin afterwards
+    /// means the host could not capture the session, and the caller must not
+    /// pretend the decision was journaled.
+    pub(super) async fn command_origin(
+        &self,
+        client: &rpi_plugin_sdk::provider::native::Client,
+        signal: &CancellationToken,
+        scope_id: Option<String>,
+    ) -> Result<String, String> {
+        if let Some(origin) = self
+            .state
+            .lock()
+            .map_err(|_| "multiprovider state poisoned".to_owned())?
+            .scopes
+            .get(&scope_id)
+            .and_then(|scope| scope.origin.clone())
+        {
+            return Ok(origin);
+        }
+        self.capture_session(client, scope_id.clone(), signal).await;
+        self.state
+            .lock()
+            .map_err(|_| "multiprovider state poisoned".to_owned())?
+            .scopes
+            .get(&scope_id)
+            .and_then(|scope| scope.origin.clone())
+            .ok_or_else(|| {
+                "multiprovider: session origin is unavailable; the switch cannot be journaled"
+                    .to_owned()
+            })
+    }
+
+    /// Journal one entry of the caller's custom type through `origin`. Unlike
+    /// [`Self::append`], which always writes pin-restore entries, commands
+    /// record their own entry types (for example `/switch-account` records
+    /// `pi-multiprovider:switch-account`).
+    pub(super) async fn append_journal(
+        &self,
+        origin: String,
+        custom_type: &str,
+        data: Value,
+    ) -> Result<(), String> {
         let client = self.scoped().await?;
         client
             .request(
                 json!({"port":"sessions","action":"journalAppend","origin":origin,
-                    "customType":pins::SESSION_PIN_ENTRY_TYPE,"data":data}),
+                    "customType":custom_type,"data":data}),
                 CancellationToken::new(),
             )
             .await
@@ -1156,7 +1246,7 @@ pub fn register(api: &PluginApi) -> i32 {
                 unsafe { &*state }.shared.clone(),
             )),
             unsafe { &*state }.stopping.clone(),
-            vec!["multilogout", "accounts", "vprovider"],
+            vec!["multilogout", "accounts", "switch-account", "vprovider"],
         )?;
         commands.register()?;
         *unsafe { &*state }

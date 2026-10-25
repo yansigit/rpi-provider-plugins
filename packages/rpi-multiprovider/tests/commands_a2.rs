@@ -299,12 +299,19 @@ impl Port for FakePort {
     ) -> impl Future<Output = Result<(), String>> + Send {
         async { Ok(()) }
     }
-    fn append_entry(&self, custom_type: &str, data: Value) {
-        self.run
-            .entries
-            .lock()
-            .unwrap()
-            .push(json!({"customType": custom_type, "data": data}));
+    fn append_entry(
+        &self,
+        custom_type: &str,
+        data: Value,
+    ) -> impl Future<Output = Result<(), String>> + Send {
+        async move {
+            self.run
+                .entries
+                .lock()
+                .unwrap()
+                .push(json!({"customType": custom_type, "data": data}));
+            Ok(())
+        }
     }
     fn login<I: LoginInteraction>(
         &self,
