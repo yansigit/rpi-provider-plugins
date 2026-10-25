@@ -6,8 +6,8 @@ promote historical reports or edit the read-only host ledger. Machine-readable
 hashes, SDK identities, counts and limitations: [`m-virtual-b2.json`](m-virtual-b2.json).
 The cohort counts in that JSON (97 / 62 / 97 = 256) are as measured for the
 reviewed commit below; [`../provider-parity-verification.md`](../provider-parity-verification.md)
-reports 258 because two worker-bootstrap regression tests were added after this
-report's gate run, and this file was not regenerated for that addition (its
+reports the current, larger cohort because regression tests were added after
+this report's gate run, and this file was not regenerated for those additions (its
 inputs are the historical mutation, pinned-host, real-host and
 fixture-regeneration logs of the reviewed commit, not a plain refresh).
 

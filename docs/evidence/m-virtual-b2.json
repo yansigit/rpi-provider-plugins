@@ -197,7 +197,7 @@
     "ScopeServiceLease grants no UI authority. The exact TS success notice is emitted on stderr, not through an expired invocation UI client. No root fallback is implemented.",
     "No real Fabric extension, live auth/network, host typed-queue load, or full-workspace gate claimed. r02 runs the requested AG library branch; its pre-existing Cursor/legacy branches skip. Linux only.",
     "Older evidence JSON files remain historical and are not promoted by this report. Host ledger was not edited (read-only constraint).",
-    "Cohort test counts here (97/62/97 = 256) are the counts recorded for the reviewed commit; docs/provider-parity-verification.md reports 258 because two worker-bootstrap regression tests were added after this report's gate run. This file was not regenerated for that addition: its inputs are the historical mutation, pinned-host, real-host and fixture-regeneration logs of reviewed commit 916fb38, which a plain refresh cannot reproduce."
+    "Cohort test counts here (97/62/97 = 256) are the counts recorded for the reviewed commit; docs/provider-parity-verification.md reports the current, larger cohort because regression tests were added after this report's gate run. This file was not regenerated for those additions: its inputs are the historical mutation, pinned-host, real-host and fixture-regeneration logs of reviewed commit 916fb38, which a plain refresh cannot reproduce."
   ],
   "logs": [
     "artifacts-178.jsonl",
