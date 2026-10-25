@@ -26,9 +26,12 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, 
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertPortable, checkoutPrefixes, portablePath } from "./c_tools/home-paths.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = resolve(HERE, "..");
+// A gate run isolates HOME, so the checkout's own home-like prefix is redacted too.
+const PORTABLE_PREFIXES = checkoutPrefixes(resolve(PACKAGE_ROOT, "../.."));
 const SCENARIO_DIR = join(HERE, "c_tools/scenarios");
 const EVIDENCE_PATH = join(HERE, "c_tools-evidence.json");
 const WORKER_ENTRY = join(PACKAGE_ROOT, "runtime/main.mjs");
@@ -522,7 +525,7 @@ function provenance() {
 		piVersion: read(join(PI_DIR, "package.json")),
 		cursorSdkVersion: read(join(REF_ROOT, "node_modules/@cursor/sdk/package.json")),
 		piCursorSdkVersion: read(join(PINNED_ADAPTER, "package.json")),
-		fakeSdkDir: FAKE_DIR.split(homedir()).join("<home>"),
+		fakeSdkDir: portablePath(FAKE_DIR, PORTABLE_PREFIXES),
 		fake,
 	};
 }
@@ -568,6 +571,9 @@ async function main() {
 		],
 	};
 	const text = `${JSON.stringify(evidence, null, 2)}\n`;
+	// A raw home path in committed evidence leaks the developer's layout, and an
+	// isolated HOME cannot redact it after the fact.
+	assertPortable(evidence.provenance, PORTABLE_PREFIXES);
 	if (WRITE) {
 		writeFileSync(EVIDENCE_PATH, text);
 		process.stdout.write(`wrote ${EVIDENCE_PATH} (${evidence.status})\n`);
