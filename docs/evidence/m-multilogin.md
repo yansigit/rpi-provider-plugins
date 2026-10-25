@@ -104,7 +104,12 @@ account file never receives:
   `src/native/login.rs:123-135`): a presentation error and a refused or cancelled
   `continue` all cancel the ticket (`:186-214`), because the host keeps an
   unanswered login until cancelled and the command's own token may be the very
-  reason the login is ending.
+  reason the login is ending. The command waits for that cancel reply for at
+  most `CANCEL_DEADLINE` (2 s, `src/native/login.rs`); a slower host keeps the
+  cancel running on its own task, so Esc still returns `CANCELLED` promptly.
+  Pinned by `cancelled_multilogin_returns_while_the_host_is_slow_to_cancel`
+  (`tests/m_native.rs`), where the fake host holds the cancel reply for ten
+  seconds.
 - `present` (`src/native/login.rs:219-301`) maps `input` (`secret` → masked
   prompt, `url` → auth-url notification, `allowEmpty` and `message` honoured),
   `select` (`choices` id/label, a choice without a non-empty `id` is refused at

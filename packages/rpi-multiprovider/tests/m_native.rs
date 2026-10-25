@@ -139,6 +139,11 @@ struct Fake {
     hang_login: std::sync::atomic::AtomicBool,
     login_waiting: std::sync::atomic::AtomicBool,
     login_release: std::sync::atomic::AtomicBool,
+    /// Holds the `auth` `cancelLogin` reply until the test releases it, like a
+    /// host that is slow to acknowledge a cancellation.
+    hang_cancel: std::sync::atomic::AtomicBool,
+    cancel_waiting: std::sync::atomic::AtomicBool,
+    cancel_release: std::sync::atomic::AtomicBool,
 }
 
 impl Fake {
@@ -537,7 +542,24 @@ extern "C" fn fake_native_request(
                     }
                     json!({"kind":"success"})
                 }
-                Some("cancelLogin") => json!({"kind":"cancelled"}),
+                Some("cancelLogin") => {
+                    if fake.hang_cancel.load(std::sync::atomic::Ordering::SeqCst) {
+                        // The deadline only keeps a regression from wedging the
+                        // suite: a correct plugin stops waiting long before it.
+                        fake.cancel_waiting
+                            .store(true, std::sync::atomic::Ordering::SeqCst);
+                        let deadline =
+                            std::time::Instant::now() + std::time::Duration::from_secs(10);
+                        while !fake.cancel_release.load(std::sync::atomic::Ordering::SeqCst)
+                            && std::time::Instant::now() < deadline
+                        {
+                            std::thread::sleep(std::time::Duration::from_millis(1));
+                        }
+                        fake.cancel_waiting
+                            .store(false, std::sync::atomic::Ordering::SeqCst);
+                    }
+                    json!({"kind":"cancelled"})
+                }
                 _ => {
                     unsafe {
                         *out = StbString::from_string(
@@ -2697,6 +2719,79 @@ fn cancelled_multilogin_cancels_the_host_login_and_stores_nothing() {
     assert!(!requests
         .iter()
         .any(|request| request["action"] == "continue"));
+    assert!(stored_accounts(&temp, "example").is_empty());
+    assert_reservation_dropped(&registered, "example", &pending);
+    assert!(stored_accounts(&temp, "example").is_empty());
+    finish(fake);
+}
+
+/// A host that is slow to acknowledge `cancelLogin` must not hold Esc. The
+/// command returns CANCELLED within its cancel deadline, and the cancel still
+/// reaches the host, which is still answering it when the command has returned.
+#[test]
+fn cancelled_multilogin_returns_while_the_host_is_slow_to_cancel() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key"}]),
+    );
+    unsafe { &*fake }
+        .hang_continue
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    unsafe { &*fake }
+        .hang_cancel
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"accounts.add","query":""}),
+        json!({"type":"select","values":["api_key"]}),
+        json!({"type":"input","value":"Work"}),
+        json!({"type":"input","value":"sk-slow"}),
+    ]);
+
+    let (cancelled, receive) = spawn_cancellable(&registered);
+    wait_for(
+        &unsafe { &*fake }.continue_waiting,
+        "held the host continue",
+    );
+    let started = std::time::Instant::now();
+    cancelled.store(true, std::sync::atomic::Ordering::SeqCst);
+    // The host holds the cancel for ten seconds; the command must not wait for it.
+    let raw = receive
+        .recv_timeout(std::time::Duration::from_secs(5))
+        .expect("command waited on a slow cancelLogin");
+    let elapsed = started.elapsed();
+    assert!(
+        elapsed < std::time::Duration::from_secs(4),
+        "command took {elapsed:?} to return"
+    );
+    assert_eq!(raw, r#"{"version":1,"result":null}"#);
+
+    // The cancel was delivered: the host received it and is still answering.
+    assert!(unsafe { &*fake }
+        .cancel_waiting
+        .load(std::sync::atomic::Ordering::SeqCst));
+    let requests = auth_requests(fake);
+    assert!(
+        requests
+            .iter()
+            .any(|request| request["action"] == "cancelLogin" && request["loginId"] == "login-1"),
+        "{requests:?}"
+    );
+    let pending = requests
+        .iter()
+        .find(|request| request["action"] == "login")
+        .and_then(|request| request["accountId"].as_str())
+        .unwrap()
+        .to_owned();
+    unsafe { &*fake }
+        .cancel_release
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    unsafe { &*fake }
+        .continue_release
+        .store(true, std::sync::atomic::Ordering::SeqCst);
     assert!(stored_accounts(&temp, "example").is_empty());
     assert_reservation_dropped(&registered, "example", &pending);
     assert!(stored_accounts(&temp, "example").is_empty());

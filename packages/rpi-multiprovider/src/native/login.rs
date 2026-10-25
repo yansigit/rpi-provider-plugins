@@ -11,6 +11,7 @@ use super::{credentials::CREDENTIAL_STORE_ID, Shared};
 use crate::commands::port::{AuthMethod, LoginInteraction, CANCELLED};
 use rpi_plugin_sdk::provider::native::Client;
 use serde_json::{json, Value};
+use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
 /// One host-reported provider authentication method (`auth` `methods`).
@@ -153,17 +154,24 @@ async fn abandon(client: &Client, provider: &str, reply: &Value) {
     }
 }
 
+/// Longest a command waits for the host's `cancelLogin` reply before it returns
+/// [`CANCELLED`]. The host only drops a ticket from its map, so a healthy reply
+/// takes milliseconds. A host that is slower than this keeps the cancel running
+/// on its own task, so Esc never waits on a host that is busy with a login.
+const CANCEL_DEADLINE: Duration = Duration::from_secs(2);
+
 /// Cancels one host login on a fresh token: the command's own token may be the
 /// reason the login is ending, and a cancelled token would abort this request
-/// before it reaches the host.
+/// before it reaches the host. The cancel is sent on a task of its own, and the
+/// caller waits for it at most [`CANCEL_DEADLINE`].
 async fn cancel_login(client: &Client, provider: &str, login_id: &str) {
-    let _ = client
-        .request(
-            json!({"port":"auth","action":"cancelLogin","providerId":provider,
-                "loginId":login_id}),
-            CancellationToken::new(),
-        )
-        .await;
+    let client = client.clone();
+    let body = json!({"port":"auth","action":"cancelLogin","providerId":provider,
+        "loginId":login_id});
+    let cancel = tokio::spawn(async move {
+        let _ = client.request(body, CancellationToken::new()).await;
+    });
+    let _ = tokio::time::timeout(CANCEL_DEADLINE, cancel).await;
 }
 
 /// Runs the host login for `method_id` into a private pending account and
