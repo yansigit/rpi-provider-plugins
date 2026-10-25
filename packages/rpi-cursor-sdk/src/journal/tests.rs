@@ -275,6 +275,43 @@ fn journal_port_bounds_scopes_and_releases_abandoned_readers_on_shutdown() {
 }
 
 #[test]
+fn cloud_authority_ignores_non_journal_siblings_and_refuses_tail_segments() {
+    use serde_json::json;
+    use sha2::{Digest, Sha256};
+    let directory = Directory::new();
+    let session = directory.0.join("sessions.sqlite");
+    fs::write(&session, b"").unwrap();
+    let port = port::JournalPort::for_native_session(&session, "one").unwrap();
+    let open = json!({"action":"open","kind":"cloud"});
+    let hash = format!("{:x}", Sha256::digest(b"one"));
+    let name = format!(".cursor-cloud-lifecycle-{}.journal", &hash[..32]);
+    // Backup, staging and prefix-sharing copies are not cloud authority: they are
+    // never opened, and the locked journal's own frames are validated instead.
+    let siblings = [".bak", ".backup", ".tmp", ".retired", ".partial"];
+    for suffix in siblings {
+        fs::write(directory.0.join(format!("{name}{suffix}")), b"{}\n").unwrap();
+    }
+    fs::write(
+        directory
+            .0
+            .join(format!(".cursor-cloud-lifecycle-{}.journalextra", &hash[..32])),
+        b"{}\n",
+    )
+    .unwrap();
+    assert_eq!(port.request(open.clone()).unwrap()["size"], 0);
+    for suffix in siblings {
+        fs::remove_file(directory.0.join(format!("{name}{suffix}"))).unwrap();
+    }
+    // A rotated tail segment of the same journal is refused with its own message.
+    fs::write(directory.0.join(format!("{name}.1")), b"{}\n").unwrap();
+    assert_eq!(
+        port.request(open).unwrap_err(),
+        "native cloud journal has a superseded tail segment"
+    );
+    port.close();
+}
+
+#[test]
 #[ignore = "internal child of the cross-process lock test"]
 fn process_writer_child() {
     let Some(path) = std::env::var_os("RPI_JOURNAL_TEST_PATH") else {

@@ -91,8 +91,8 @@ impl JournalPort {
         for sibling in std::fs::read_dir(self.cloud.path.parent().unwrap()).map_err(io_error)? {
             let sibling = sibling.map_err(io_error)?.file_name();
             let sibling = sibling.to_string_lossy();
-            if sibling.starts_with(name.as_ref()) && sibling != name {
-                return Err(refused());
+            if superseded(&name, &sibling) {
+                return Err("native cloud journal has a superseded tail segment".to_owned());
             }
         }
         if let Some(file) = snapshot.file.as_mut() {
@@ -222,4 +222,20 @@ impl JournalPort {
 
 fn io_error(error: std::io::Error) -> String {
     format!("native journal IO failed: {error}; inspect the journal before retrying a mutation")
+}
+
+/// A rotated tail segment of the same journal (`…journal.1`) would make the bytes
+/// delivered to the worker ambiguous. Backup, staging and other prefix-sharing
+/// siblings carry no authority: only the exact locked file is read, and every
+/// frame in it is validated individually.
+fn superseded(name: &str, sibling: &str) -> bool {
+    match sibling
+        .strip_prefix(name)
+        .and_then(|rest| rest.strip_prefix('.'))
+    {
+        Some(segment) => {
+            !segment.is_empty() && segment.bytes().all(|byte| byte.is_ascii_digit())
+        }
+        None => false,
+    }
 }
