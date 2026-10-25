@@ -22,6 +22,7 @@ pub mod commands;
 pub mod credentials;
 mod fabric;
 pub mod lift;
+pub mod login;
 pub mod services;
 pub mod virtuals;
 
@@ -78,6 +79,10 @@ pub(super) struct Scope {
 
 pub(super) struct State {
     pub locks: HashMap<String, (String, String, Box<credentials::Held>)>,
+    /// Private pending accounts of in-flight `/multilogin` logins, keyed by
+    /// their reserved account id: the provider and the credential the host's
+    /// login persisted into it. Never written to the account file.
+    pub pending_logins: HashMap<String, credentials::PendingLogin>,
     scopes: HashMap<Option<String>, Scope>,
     registrations: HashMap<String, Arc<Registration>>,
     warned_missing: HashSet<String>,
@@ -131,6 +136,7 @@ impl Runtime {
                 client,
                 state: Mutex::new(State {
                     locks: HashMap::new(),
+                    pending_logins: HashMap::new(),
                     scopes: HashMap::new(),
                     registrations: HashMap::new(),
                     warned_missing: HashSet::new(),
@@ -595,10 +601,7 @@ impl Shared {
                 .snapshot()
                 .await
                 .map_err(|error| error.to_string())?;
-            if let Some(providers) = snapshot
-                .get_mut("providers")
-                .and_then(Value::as_array_mut)
-            {
+            if let Some(providers) = snapshot.get_mut("providers").and_then(Value::as_array_mut) {
                 providers.extend(extra["providers"].as_array().cloned().unwrap_or_default());
             }
         }
@@ -1246,7 +1249,13 @@ pub fn register(api: &PluginApi) -> i32 {
                 unsafe { &*state }.shared.clone(),
             )),
             unsafe { &*state }.stopping.clone(),
-            vec!["multilogout", "accounts", "switch-account", "vprovider"],
+            vec![
+                "multilogin",
+                "multilogout",
+                "accounts",
+                "switch-account",
+                "vprovider",
+            ],
         )?;
         commands.register()?;
         *unsafe { &*state }

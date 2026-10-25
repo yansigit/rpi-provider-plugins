@@ -120,6 +120,12 @@ struct Fake {
     fabric_idle: std::sync::atomic::AtomicBool,
     fabric_calls: Mutex<Vec<Value>>,
     fabric_wake: std::sync::Condvar,
+    /// Scripted dialog replies consumed before the default replies.
+    dialog_replies: Mutex<VecDeque<Value>>,
+    /// `auth` `methods` responses by provider id; absent providers fail.
+    auth_methods: Mutex<HashMap<String, Value>>,
+    /// Every `auth` port request, in order.
+    auth_requests: Mutex<Vec<Value>>,
 }
 
 impl Fake {
@@ -379,8 +385,109 @@ extern "C" fn fake_native_request(
             if value["action"] != "unregister" { providers.push(json!({"id":value["providerId"],"models":value["models"]})); }
             json!({"revision":2})
         },
+        (Some("auth"), action) => {
+            fake.auth_requests.lock().unwrap().push(value.clone());
+            match action {
+                Some("methods") => {
+                    let methods = fake
+                        .auth_methods
+                        .lock()
+                        .unwrap()
+                        .get(value["providerId"].as_str().unwrap_or(""))
+                        .cloned();
+                    match methods {
+                        Some(methods) => methods,
+                        None => {
+                            unsafe {
+                                *out = StbString::from_string(
+                                    json!({"version":1,"error":"provider is not registered"})
+                                        .to_string(),
+                                );
+                            }
+                            return 1;
+                        }
+                    }
+                }
+                Some("login") => json!({"kind":"interaction","loginId":"login-1",
+                    "interaction":{"kind":"input","title":"Enter the key","secret":true}}),
+                Some("continue") => {
+                    // The host persists the login's credential into the
+                    // requested store account before reporting success.
+                    let login = fake
+                        .auth_requests
+                        .lock()
+                        .unwrap()
+                        .iter()
+                        .rev()
+                        .find(|request| request["action"] == "login")
+                        .cloned()
+                        .unwrap();
+                    let (_, store_request, release, free, context) =
+                        fake.store.lock().unwrap().clone().unwrap();
+                    let call = |action: &str, input: Value| -> Value {
+                        let request = json!({"version":1,"storeId":login["storeId"],
+                            "providerId":login["providerId"],"accountId":login["accountId"],
+                            "action":action,"input":input});
+                        let mut reply = StbString::empty();
+                        assert_eq!(
+                            store_request(
+                                StbStringRef::from_str(&request.to_string()),
+                                std::ptr::null(),
+                                &mut reply,
+                                context as *mut c_void,
+                            ),
+                            0
+                        );
+                        let owned = unsafe { OwnedString::from_raw(reply, Some(free)) };
+                        serde_json::from_str(&owned.to_string_lossy()).unwrap()
+                    };
+                    // Failures are reported like the host's, never as a
+                    // panic across the callback boundary.
+                    let fail = |message: String| {
+                        unsafe {
+                            *out = StbString::from_string(
+                                json!({"version":1,"error":message}).to_string(),
+                            );
+                        }
+                        1
+                    };
+                    let locked = call("lock", Value::Null);
+                    if locked["kind"] != "locked" || !locked["payload"]["credential"].is_null() {
+                        return fail(format!("unexpected lock reply {locked}"));
+                    }
+                    let lock = locked["payload"]["lockId"].as_str().unwrap().to_owned();
+                    let replaced = call(
+                        "replace",
+                        json!({"lockId":lock,"credential":{"type":"api_key","key":value["value"]}}),
+                    );
+                    release(StbStringRef::from_str(&lock), context as *mut c_void);
+                    if replaced["kind"] != "success" {
+                        return fail(format!("credential store refused the login: {replaced}"));
+                    }
+                    json!({"kind":"success"})
+                }
+                Some("cancelLogin") => json!({"kind":"cancelled"}),
+                _ => {
+                    unsafe {
+                        *out = StbString::from_string(
+                            json!({"version":1,"error":"unknown authentication action"})
+                                .to_string(),
+                        );
+                    }
+                    return 1;
+                }
+            }
+        }
         (Some("dialogs"), Some("show")) => {
             fake.command_requests.lock().unwrap().push(value.clone());
+            if let Some(reply) = fake.dialog_replies.lock().unwrap().pop_front() {
+                unsafe {
+                    *out = StbString::from_string(
+                        json!({"version":1,"result":reply}).to_string(),
+                    );
+                }
+                return 0;
+            }
             if fake.hang_dialog.load(std::sync::atomic::Ordering::SeqCst) {
                 fake.dialog_waiting
                     .store(true, std::sync::atomic::Ordering::SeqCst);
@@ -781,7 +888,13 @@ fn registers_one_identity_preserving_wrapper_store_and_awaited_lifecycle() {
             .iter()
             .map(|(m, ..)| m["name"].as_str().unwrap())
             .collect::<Vec<_>>(),
-        vec!["multilogout", "accounts", "switch-account", "vprovider"]
+        vec![
+            "multilogin",
+            "multilogout",
+            "accounts",
+            "switch-account",
+            "vprovider"
+        ]
     );
     for tag in [
         EventTag::SessionStart,
@@ -908,7 +1021,9 @@ fn notified(fake: *mut Fake, text: &str) -> bool {
         .lock()
         .unwrap()
         .iter()
-        .any(|request| request["port"] == "ui" && request["action"] == "notify" && request["text"] == text)
+        .any(|request| {
+            request["port"] == "ui" && request["action"] == "notify" && request["text"] == text
+        })
 }
 
 #[test]
@@ -1017,7 +1132,9 @@ fn exported_switch_account_journal_failure_reports_without_success_ui() {
         .store(true, std::sync::atomic::Ordering::SeqCst);
     let result = invoke_registered_command_args(&registered, "switch-account", "A");
     assert!(
-        result["error"].as_str().is_some_and(|error| error.contains("fake journal append refused")),
+        result["error"]
+            .as_str()
+            .is_some_and(|error| error.contains("fake journal append refused")),
         "journal failure surfaces through the envelope: {result}"
     );
     assert!(
@@ -1036,13 +1153,18 @@ fn exported_switch_account_unknown_provider_reports_no_pools() {
     let temp = tempfile_dir();
     let registered = register(&temp, switch_accounts(), None);
     let fake = registered.fake;
-    unsafe { &*fake }.snapshot_model.lock().unwrap().replace(
-        json!({"provider":"zeta","id":"probe-model","name":"probe-model"}),
-    );
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(json!({"provider":"zeta","id":"probe-model","name":"probe-model"}));
     let result = invoke_registered_command_args(&registered, "switch-account", "");
     assert!(result.get("error").is_none(), "{result}");
     assert!(
-        notified(fake, "zeta has no pooled accounts. Use /multilogin to add one."),
+        notified(
+            fake,
+            "zeta has no pooled accounts. Use /multilogin to add one."
+        ),
         "an unregistered model provider reports no pools"
     );
     assert!(
@@ -1104,7 +1226,10 @@ fn exported_switch_account_lists_upstream_while_host_reports_unknown_auth() {
         .expect("automatic switch shows the account picker first");
     let choices = picker["ui"]["choices"].as_array().unwrap();
     assert!(
-        choices.get(1).and_then(|choice| choice["label"].as_str()).is_some_and(|label| label.contains("Pi default (upstream)")),
+        choices
+            .get(1)
+            .and_then(|choice| choice["label"].as_str())
+            .is_some_and(|label| label.contains("Pi default (upstream)")),
         "an unknown host status keeps the upstream account switchable: {choices:?}"
     );
     assert_eq!(
@@ -1162,7 +1287,10 @@ fn exported_switch_account_hides_upstream_while_host_reports_unauthenticated() {
         "an explicit unauthenticated status excludes the upstream account: {choices:?}"
     );
     assert!(
-        choices.get(1).and_then(|choice| choice["label"].as_str()).is_some_and(|label| label.contains("A (api-key)")),
+        choices
+            .get(1)
+            .and_then(|choice| choice["label"].as_str())
+            .is_some_and(|label| label.contains("A (api-key)")),
         "the stored account stays switchable: {choices:?}"
     );
     finish(fake);
@@ -1207,8 +1335,9 @@ fn exported_switch_account_reports_a_failed_announcement_without_failing_the_swi
             .iter()
             .any(|request| request["port"] == "ui"
                 && request["kind"] == "warning"
-                && request["text"].as_str().is_some_and(|text| text
-                    .contains("sibling extensions were not notified"))),
+                && request["text"]
+                    .as_str()
+                    .is_some_and(|text| text.contains("sibling extensions were not notified"))),
         "the lost announcement is reported instead of swallowed silently"
     );
     finish(fake);
@@ -2128,7 +2257,13 @@ fn built_library_registers_through_the_exported_symbol() {
             .iter()
             .map(|(manifest, ..)| manifest["name"].as_str().unwrap())
             .collect::<Vec<_>>(),
-        vec!["multilogout", "accounts", "switch-account", "vprovider"],
+        vec![
+            "multilogin",
+            "multilogout",
+            "accounts",
+            "switch-account",
+            "vprovider"
+        ],
         "loaded cdylib must register exactly the supported commands in canonical order"
     );
     let wrapper = registered.wrapper.lock().unwrap().clone().unwrap();
@@ -2203,4 +2338,306 @@ fn built_library_registers_through_the_exported_symbol() {
             .is_some_and(|label| label.contains("A (api-key)"))),
         "expected pooled-account line in loaded dialog: {account_dialog}"
     );
+}
+
+fn auth_requests(fake: *mut Fake) -> Vec<Value> {
+    unsafe { &*fake }.auth_requests.lock().unwrap().clone()
+}
+
+fn stored_accounts(agent: &Path, provider: &str) -> Vec<Value> {
+    let file: Value = serde_json::from_str(
+        &std::fs::read_to_string(agent.join("multiprovider-auth.json")).unwrap(),
+    )
+    .unwrap();
+    file["providers"][provider]["accounts"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+}
+
+/// One registered store callback request, as the host makes it.
+fn store_call(
+    registered: &Registered,
+    provider: &str,
+    account: &str,
+    action: &str,
+    input: Value,
+) -> Value {
+    let (_, request, _, free, context) = &registered.store;
+    let input = json!({"version":1,"storeId":"multiprovider","providerId":provider,
+        "accountId":account,"action":action,"input":input});
+    let mut out = StbString::empty();
+    assert_eq!(
+        request(
+            StbStringRef::from_str(&input.to_string()),
+            std::ptr::null(),
+            &mut out,
+            *context as *mut c_void
+        ),
+        0
+    );
+    let owned = unsafe { OwnedString::from_raw(out, Some(*free)) };
+    serde_json::from_str(&owned.to_string_lossy()).unwrap()
+}
+
+/// After its login ends, a reservation no longer captures credentials: a
+/// replace through the dropped id reaches the account file, which has no such
+/// account, and fails without writing.
+fn assert_reservation_dropped(registered: &Registered, provider: &str, pending: &str) {
+    let locked = store_call(registered, provider, pending, "lock", Value::Null);
+    assert_eq!(locked["kind"], "locked", "{locked}");
+    let lock = locked["payload"]["lockId"].as_str().unwrap().to_owned();
+    let replaced = store_call(
+        registered,
+        provider,
+        pending,
+        "replace",
+        json!({"lockId":lock,"credential":{"type":"api_key","key":"late"}}),
+    );
+    let (_, _, release, _, context) = &registered.store;
+    release(StbStringRef::from_str(&lock), *context as *mut c_void);
+    assert_eq!(replaced["kind"], "error", "{replaced}");
+}
+
+#[test]
+fn multilogin_adds_an_account_through_a_private_pending_login() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key"}]),
+    );
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"accounts.add","query":""}),
+        json!({"type":"select","values":["api_key"]}),
+        json!({"type":"input","value":"Work"}),
+        json!({"type":"input","value":"sk-pooled"}),
+        json!({"type":"cancel"}),
+    ]);
+
+    let result = invoke_registered_command(&registered, "multilogin");
+    assert!(result.get("error").is_none(), "{result}");
+
+    // The provider without readable methods offers no login, so the only
+    // option is selected without a dialog; the host login targets a private
+    // pending account of this plugin's store.
+    let requests = auth_requests(fake);
+    let login = requests
+        .iter()
+        .find(|request| request["action"] == "login")
+        .expect("host login");
+    assert_eq!(login["providerId"], "example");
+    assert_eq!(login["methodId"], "key");
+    assert_eq!(login["storeId"], "multiprovider");
+    let pending = login["accountId"].as_str().unwrap().to_owned();
+    assert!(
+        pending.starts_with(credentials::PENDING_ACCOUNT_PREFIX),
+        "{pending}"
+    );
+    assert!(requests
+        .iter()
+        .any(|request| request["action"] == "continue" && request["value"] == "sk-pooled"));
+    assert!(!requests
+        .iter()
+        .any(|request| request["action"] == "cancelLogin"));
+
+    // The captured credential is committed through the store's `add`, under a
+    // minted account id; the reservation itself is never persisted.
+    let accounts = stored_accounts(&temp, "example");
+    assert_eq!(accounts.len(), 1, "{accounts:?}");
+    assert_eq!(accounts[0]["label"], "Work");
+    assert_eq!(
+        accounts[0]["credential"],
+        json!({"type":"api_key","key":"sk-pooled"})
+    );
+    assert_ne!(accounts[0]["id"], json!(pending));
+    let path = temp.join("multiprovider-auth.json");
+    assert!(notified(
+        fake,
+        &format!(
+            "Added Work to example. Credentials saved to {}",
+            path.display()
+        )
+    ));
+    // The secret prompt was masked and titled by the login dialog.
+    assert!(unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["ui"]["kind"] == "input"
+            && request["ui"]["masked"] == true
+            && request["ui"]["title"] == "Add example account · Enter the key"));
+    assert_reservation_dropped(&registered, "example", &pending);
+    assert_eq!(stored_accounts(&temp, "example").len(), 1);
+    finish(fake);
+}
+
+#[test]
+fn multilogin_reauthenticates_a_stored_account_through_a_pending_login() {
+    let temp = tempfile_dir();
+    let registered = register(
+        &temp,
+        vec![account(
+            "team",
+            "Team",
+            json!({"type":"api_key","key":"sk-old"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key"}]),
+    );
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"stored.team","query":""}),
+        json!({"type":"open","id":"account.team.reauth","query":""}),
+        json!({"type":"select","values":["api_key"]}),
+        json!({"type":"input","value":"sk-new"}),
+        json!({"type":"cancel"}),
+    ]);
+
+    let result = invoke_registered_command(&registered, "multilogin");
+    assert!(result.get("error").is_none(), "{result}");
+
+    // Persist-first: the host login never targets the stored account; the
+    // stored credential changes only through the command's own `replace`.
+    let requests = auth_requests(fake);
+    let login = requests
+        .iter()
+        .find(|request| request["action"] == "login")
+        .expect("host login");
+    let pending = login["accountId"].as_str().unwrap().to_owned();
+    assert!(
+        pending.starts_with(credentials::PENDING_ACCOUNT_PREFIX),
+        "{pending}"
+    );
+    let accounts = stored_accounts(&temp, "example");
+    assert_eq!(accounts.len(), 1, "{accounts:?}");
+    assert_eq!(accounts[0]["id"], "team");
+    assert_eq!(accounts[0]["label"], "Team");
+    assert_eq!(
+        accounts[0]["credential"],
+        json!({"type":"api_key","key":"sk-new"})
+    );
+    let path = temp.join("multiprovider-auth.json");
+    assert!(notified(
+        fake,
+        &format!(
+            "Reauthenticated Team for example. Credentials saved to {}",
+            path.display()
+        )
+    ));
+    assert!(unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["ui"]["kind"] == "input"
+            && request["ui"]["masked"] == true
+            && request["ui"]["title"] == "Reauthenticate Team · Enter the key"));
+    assert_reservation_dropped(&registered, "example", &pending);
+    finish(fake);
+}
+
+#[test]
+fn multilogin_pastes_a_key_when_the_host_reports_no_interactive_login() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key","interactiveLogin":false}]),
+    );
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"accounts.add","query":""}),
+        json!({"type":"select","values":["api_key_paste"]}),
+        json!({"type":"input","value":"Work"}),
+        json!({"type":"input","value":"  sk-pasted  "}),
+        json!({"type":"cancel"}),
+    ]);
+
+    let result = invoke_registered_command(&registered, "multilogin");
+    assert!(result.get("error").is_none(), "{result}");
+
+    // Pi's api_key_paste prompts directly; the host login is never started.
+    assert!(!auth_requests(fake)
+        .iter()
+        .any(|request| request["action"] == "login"));
+    let accounts = stored_accounts(&temp, "example");
+    assert_eq!(accounts.len(), 1, "{accounts:?}");
+    assert_eq!(
+        accounts[0]["credential"],
+        json!({"type":"api_key","key":"sk-pasted"})
+    );
+    // Pi's `promptApiKeyCredential` (src/multilogin.ts:350) prompts through
+    // `ctx.ui.input("Enter " + name + ":", "")`, and `ui.input` has no masking
+    // option at all (pi-coding-agent `dist/core/extensions/types.d.ts`:78,
+    // `ExtensionUIDialogOptions` holds only `signal`/`timeout`), so the pasted
+    // key dialog is titled by the method name and is not masked.
+    assert!(unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["ui"]["kind"] == "input"
+            && request["ui"]["masked"] == false
+            && request["ui"]["title"] == "Enter API key:"));
+    finish(fake);
+}
+
+#[test]
+fn cancelled_multilogin_cancels_the_host_login_and_stores_nothing() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key"}]),
+    );
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"accounts.add","query":""}),
+        json!({"type":"select","values":["api_key"]}),
+        json!({"type":"input","value":"Work"}),
+        json!({"type":"cancel"}),
+        json!({"type":"cancel"}),
+    ]);
+
+    let result = invoke_registered_command(&registered, "multilogin");
+    assert!(result.get("error").is_none(), "{result}");
+
+    let requests = auth_requests(fake);
+    let pending = requests
+        .iter()
+        .find(|request| request["action"] == "login")
+        .and_then(|request| request["accountId"].as_str())
+        .unwrap()
+        .to_owned();
+    assert!(requests
+        .iter()
+        .any(|request| request["action"] == "cancelLogin" && request["loginId"] == "login-1"));
+    assert!(!requests
+        .iter()
+        .any(|request| request["action"] == "continue"));
+    assert!(stored_accounts(&temp, "example").is_empty());
+    assert_reservation_dropped(&registered, "example", &pending);
+    assert!(stored_accounts(&temp, "example").is_empty());
+    finish(fake);
+}
+
+#[test]
+fn switch_account_never_reads_login_methods() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    let _ = invoke_registered_command(&registered, "switch-account");
+    assert!(auth_requests(fake).is_empty());
+    finish(fake);
 }

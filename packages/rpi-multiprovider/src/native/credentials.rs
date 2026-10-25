@@ -20,6 +20,23 @@ use tokio_util::sync::CancellationToken;
 
 pub const CREDENTIAL_STORE_ID: &str = "multiprovider";
 
+/// Prefix of the account ids reserved for in-flight logins, so a reservation is
+/// recognizable in diagnostics. Reservations are looked up by exact id first.
+pub const PENDING_ACCOUNT_PREFIX: &str = "pending-login-";
+
+/// A private pending account: the persist-first destination of one host login.
+///
+/// The host's login always persists the credential it obtains into a store
+/// account before reporting success. A new pool account has no record yet, so
+/// `/multilogin` reserves a pending id, lets the host lock and replace it here,
+/// and then commits the captured credential through the store's `add` (or
+/// `replace` for reauthentication) exactly as upstream does with the login's
+/// return value. The scheduler and the account file never see a reservation.
+pub struct PendingLogin {
+    pub provider: String,
+    pub credential: Option<Value>,
+}
+
 /// Return the stored credential for one pooled account, or `None`.
 ///
 /// This is the private half of `MultiAuthStore.getPool`: the public pool never
@@ -283,7 +300,66 @@ pub extern "C" fn release(lock_id: StbStringRef, context: *mut std::ffi::c_void)
 }
 
 impl super::Shared {
+    /// The reservation for `account`, checked against `provider`. `Ok(None)`
+    /// means `account` is not reserved and names a stored account.
+    fn pending(&self, provider: &str, account: &str) -> Result<Option<Option<Value>>, String> {
+        let state = self
+            .state
+            .lock()
+            .map_err(|_| "credential lock state poisoned".to_owned())?;
+        match state.pending_logins.get(account) {
+            None => Ok(None),
+            Some(pending) if pending.provider == provider => Ok(Some(pending.credential.clone())),
+            Some(_) => Err(format!(
+                "multiprovider: stored account \"{account}\" is unavailable"
+            )),
+        }
+    }
+
+    /// Reserves a private pending account for one login of `provider`.
+    pub(super) fn reserve_pending_login(&self, provider: &str) -> Result<String, String> {
+        let id = format!("{PENDING_ACCOUNT_PREFIX}{}", uuid::Uuid::new_v4());
+        self.state
+            .lock()
+            .map_err(|_| "credential lock state poisoned".to_owned())?
+            .pending_logins
+            .insert(
+                id.clone(),
+                PendingLogin {
+                    provider: provider.to_owned(),
+                    credential: None,
+                },
+            );
+        Ok(id)
+    }
+
+    /// Drops a reservation, returning the credential the login persisted.
+    pub(super) fn take_pending_login(&self, id: &str) -> Option<Value> {
+        self.state
+            .lock()
+            .ok()?
+            .pending_logins
+            .remove(id)
+            .and_then(|pending| pending.credential)
+    }
+
+    fn set_pending(&self, account: &str, credential: Option<Value>) -> Result<(), String> {
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| "credential lock state poisoned".to_owned())?;
+        let pending = state
+            .pending_logins
+            .get_mut(account)
+            .ok_or_else(|| format!("multiprovider: stored account \"{account}\" is unavailable"))?;
+        pending.credential = credential;
+        Ok(())
+    }
+
     pub(super) fn store_read(&self, provider: &str, account: &str) -> Result<Value, String> {
+        if let Some(credential) = self.pending(provider, account)? {
+            return Ok(json!({"version":1,"kind":"credential","payload":credential}));
+        }
         let credential = read(self.store.path(), provider, account)
             .map_err(|failure| failure_text(failure))?
             .map(|value| normalized(&value))
@@ -298,11 +374,15 @@ impl super::Shared {
         signal: &CancellationToken,
         cancelled: &impl Fn() -> bool,
     ) -> Result<Value, String> {
+        let pending = self.pending(provider, account)?;
         let held = acquire(self.store.path(), signal, cancelled).map_err(failure_text)?;
-        let credential = read(self.store.path(), provider, account)
-            .map_err(failure_text)?
-            .map(|value| normalized(&value))
-            .transpose()?;
+        let credential = match pending {
+            Some(credential) => credential,
+            None => read(self.store.path(), provider, account)
+                .map_err(failure_text)?
+                .map(|value| normalized(&value))
+                .transpose()?,
+        };
         let id = uuid::Uuid::new_v4().to_string();
         self.state
             .lock()
@@ -342,6 +422,10 @@ impl super::Shared {
     ) -> Result<Value, String> {
         self.check_lock(provider, account, lock)?;
         let credential = normalized(credential)?;
+        if self.pending(provider, account)?.is_some() {
+            self.set_pending(account, Some(credential))?;
+            return Ok(json!({"version":1,"kind":"success","payload":{}}));
+        }
         let request = json!({
             "op":"replace","provider":provider,"account":account,"credential":credential,
         });
@@ -356,6 +440,10 @@ impl super::Shared {
         lock: &str,
     ) -> Result<Value, String> {
         self.check_lock(provider, account, lock)?;
+        if self.pending(provider, account)?.is_some() {
+            self.set_pending(account, None)?;
+            return Ok(json!({"version":1,"kind":"success","payload":{}}));
+        }
         let request = json!({"op":"remove","provider":provider,"account":account});
         self.store_write(request)?;
         Ok(json!({"version":1,"kind":"success","payload":{}}))
