@@ -109,6 +109,9 @@ struct Fake {
     publications: Mutex<Vec<Value>>,
     snapshot_model: Mutex<Option<Value>>,
     fail_journal: std::sync::atomic::AtomicBool,
+    /// Corrupts the account store while serving `sessions/journalAppend`, so
+    /// the post-commit announcement finds an unreadable pool.
+    corrupt_store_after_journal: std::sync::atomic::AtomicBool,
     cancel_dialog: std::sync::atomic::AtomicBool,
     fail_publication: std::sync::atomic::AtomicBool,
     v2: std::sync::atomic::AtomicBool,
@@ -431,6 +434,16 @@ extern "C" fn fake_native_request(
                 return 1;
             }
             fake.appended.lock().unwrap().push(value["data"].clone());
+            if fake
+                .corrupt_store_after_journal
+                .load(std::sync::atomic::Ordering::SeqCst)
+            {
+                // The pin (or its clearing) and its journal entry are already
+                // durable here; the announcement rebuilds the pool from the
+                // store, which this makes unreadable.
+                std::fs::write(fake.agent.join("multiprovider-auth.json"), b"{not json")
+                    .unwrap();
+            }
             json!({"entry":{"id":format!("entry-{}", fake.appended.lock().unwrap().len())},"revision":2})
         }
         (Some("sessions"), Some("release")) => Value::Null,
@@ -1040,7 +1053,7 @@ fn exported_switch_account_unknown_provider_reports_no_pools() {
 }
 
 #[test]
-fn exported_switch_account_lists_upstream_while_host_reports_authenticated() {
+fn exported_switch_account_lists_upstream_while_host_reports_unknown_auth() {
     let temp = tempfile_dir();
     let registered = register(
         &temp,
@@ -1058,9 +1071,13 @@ fn exported_switch_account_lists_upstream_while_host_reports_authenticated() {
         .lock()
         .unwrap()
         .replace(switch_model());
+    // `unknown` is the status the pinned host actually emits: every provider is
+    // registered as `AuthStatus::Unknown` and `update_auth_status` has no
+    // production caller. Upstream includes the account because the check is
+    // `configured !== false`, not `configured === true`.
     unsafe { &*fake }.catalog.lock().unwrap().replace(json!({
         "revision": 2,
-        "providers": [{"id":"example","name":"example","builtin":false,"authStatus":"authenticated"}]
+        "providers": [{"id":"example","name":"example","builtin":false,"authStatus":"unknown"}]
     }));
     // The shared test store disables the upstream account; this case needs
     // the pool the scheduler would serve once ambient auth exists.
@@ -1088,12 +1105,111 @@ fn exported_switch_account_lists_upstream_while_host_reports_authenticated() {
     let choices = picker["ui"]["choices"].as_array().unwrap();
     assert!(
         choices.get(1).and_then(|choice| choice["label"].as_str()).is_some_and(|label| label.contains("Pi default (upstream)")),
-        "an authenticated host keeps the upstream account switchable: {choices:?}"
+        "an unknown host status keeps the upstream account switchable: {choices:?}"
     );
     assert_eq!(
         unsafe { &*fake }.appended.lock().unwrap().as_slice(),
         &[json!({"pool":"example","key":"session-parent"})],
         "clearing the pin journals pool and key only"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_hides_upstream_while_host_reports_unauthenticated() {
+    let temp = tempfile_dir();
+    let registered = register(
+        &temp,
+        vec![account(
+            "a",
+            "A",
+            json!({"type":"api_key","key":"local-fixture"}),
+            true,
+        )],
+        None,
+    );
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    unsafe { &*fake }.catalog.lock().unwrap().replace(json!({
+        "revision": 2,
+        "providers": [{"id":"example","name":"example","builtin":false,"authStatus":"unauthenticated"}]
+    }));
+    let store_path = temp.join("multiprovider-auth.json");
+    let mut state: Value =
+        serde_json::from_str(&std::fs::read_to_string(&store_path).unwrap()).unwrap();
+    state["providers"]["example"]["includeUpstream"] = json!(true);
+    std::fs::write(&store_path, serde_json::to_string_pretty(&state).unwrap()).unwrap();
+    let result = invoke_registered_command_args(&registered, "switch-account", "");
+    assert!(result.get("error").is_none(), "{result}");
+    let picker = unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|request| request["port"] == "dialogs")
+        .cloned()
+        .last()
+        .expect("the switch still shows the account picker");
+    let choices = picker["ui"]["choices"].as_array().unwrap();
+    assert!(
+        !choices.iter().any(|choice| choice["label"]
+            .as_str()
+            .is_some_and(|label| label.contains("Pi default (upstream)"))),
+        "an explicit unauthenticated status excludes the upstream account: {choices:?}"
+    );
+    assert!(
+        choices.get(1).and_then(|choice| choice["label"].as_str()).is_some_and(|label| label.contains("A (api-key)")),
+        "the stored account stays switchable: {choices:?}"
+    );
+    finish(fake);
+}
+
+#[test]
+fn exported_switch_account_reports_a_failed_announcement_without_failing_the_switch() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, switch_accounts(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }
+        .snapshot_model
+        .lock()
+        .unwrap()
+        .replace(switch_model());
+    let store_path = temp.join("multiprovider-auth.json");
+    let store = std::fs::read(&store_path).unwrap();
+    unsafe { &*fake }
+        .corrupt_store_after_journal
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    let result = invoke_registered_command_args(&registered, "switch-account", "A");
+    // The host refilled nothing; restore the store for the shutdown hooks.
+    std::fs::write(&store_path, &store).unwrap();
+    assert!(
+        result.get("error").is_none(),
+        "a failed announcement never fails a pin that is already journaled: {result}"
+    );
+    assert!(
+        notified(fake, "Switched to A for this session. Pool settings are unchanged; new requests from this session use it."),
+        "the committed switch still reports success"
+    );
+    assert_eq!(
+        unsafe { &*fake }.appended.lock().unwrap().as_slice(),
+        &[json!({"pool":"example","key":"session-parent","accountId":"a","label":"A"})],
+        "the pin decision stays journaled"
+    );
+    assert!(
+        unsafe { &*fake }
+            .command_requests
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|request| request["port"] == "ui"
+                && request["kind"] == "warning"
+                && request["text"].as_str().is_some_and(|text| text
+                    .contains("sibling extensions were not notified"))),
+        "the lost announcement is reported instead of swallowed silently"
     );
     finish(fake);
 }

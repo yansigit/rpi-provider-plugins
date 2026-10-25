@@ -520,11 +520,13 @@ impl Port for SwitchPort {
     }
     fn runtime(&self) -> Option<RuntimeView> {
         // The host exposes no session-runtime auth-status port; the provider
-        // catalog's `authStatus` is the only production signal. Only
-        // `unauthenticated` (or a missing status) reads as unconfigured, so
-        // ambient credentials keep the upstream account switchable, matching
-        // the runtime-absent default upstream (`probeSessionRuntime`
-        // returning `undefined`).
+        // catalog's `authStatus` is the only production signal. Only an
+        // explicit `unauthenticated` (or nothing at all) reads as
+        // unconfigured: the pinned host registers every provider as `unknown`
+        // (`ModelRegistry::update_auth_status` has no production caller), and
+        // upstream decides with `status?.configured !== false`, so an
+        // unreported status keeps the upstream account switchable instead of
+        // hiding it behind a required `authenticated`.
         let cache = self.cache.lock().ok()?;
         let providers: Vec<ProviderInfo> = cache.catalog["providers"]
             .as_array()?
@@ -546,7 +548,7 @@ impl Port for SwitchPort {
                 (
                     provider["id"].as_str().unwrap_or_default().to_owned(),
                     AuthStatus {
-                        configured: matches!(status, "authenticated" | "expired"),
+                        configured: status != "unauthenticated",
                         label: None,
                         source: None,
                     },
@@ -618,6 +620,8 @@ impl Port for SwitchPort {
         pool: &str,
     ) -> impl Future<Output = Result<(), String>> + Send {
         let shared = self.shared.clone();
+        let client = self.client.clone();
+        let signal = self.signal.clone();
         let scope_id = self.scope_id.clone();
         let pool = pool.to_owned();
         let context = SwitchAnnounceContext {
@@ -625,60 +629,80 @@ impl Port for SwitchPort {
         };
         let key = self.session_id();
         async move {
-            // The pin (or its clearing) is already in the scheduler; report
-            // the active account through the same announcement path the
-            // sibling service consumers use. With no subscribers registered
-            // this notifies nobody, exactly like the upstream fan-out to an
-            // empty listener set. Cross-extension delivery (service
-            // registration plus the `activeAccountChanged` topic) is still
-            // unwired in the native binding.
-            let snapshot = shared.command_snapshot(&scope_id).await?;
-            let accounts: Vec<Account> = snapshot["providers"]
-                .as_array()
-                .into_iter()
-                .flatten()
-                .find(|candidate| candidate["id"] == pool.as_str())
-                .and_then(|provider| provider["accounts"].as_array().cloned())
-                .unwrap_or_default()
-                .iter()
-                .map(|account| Account {
-                    id: account["id"].as_str().unwrap_or_default().to_owned(),
-                    label: account["label"].as_str().unwrap_or_default().to_owned(),
-                    auth_kind: account["authKind"].as_str().unwrap_or_default().to_owned(),
-                    credential_ref: Value::Null,
-                    enabled: account["enabled"].as_bool(),
-                    weight: account["weight"].as_f64(),
-                    priority: account["priority"].as_f64(),
-                    metadata: None,
-                })
-                .collect();
-            let scheduler = shared.command_service(&scope_id, &pool).await;
-            if !scheduler.has_provider(&pool) {
-                return Ok(());
+            // The pin (or its clearing) and its journal entry are already
+            // committed when this runs, so a failed announcement is reported
+            // through a warning and never fails (nor rolls back) the switch:
+            // upstream publishes the change with a fire-and-forget
+            // `pi.events.emit`. The registry this builds is per call, so it
+            // reaches no listener yet; cross-extension delivery needs the
+            // `pi-multiprovider` service registration this binding does not
+            // install (documented gap M06).
+            let outcome: Result<(), String> = async {
+                let snapshot = shared.command_snapshot(&scope_id).await?;
+                let accounts: Vec<Account> = snapshot["providers"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .find(|candidate| candidate["id"] == pool.as_str())
+                    .and_then(|provider| provider["accounts"].as_array().cloned())
+                    .unwrap_or_default()
+                    .iter()
+                    .map(|account| Account {
+                        id: account["id"].as_str().unwrap_or_default().to_owned(),
+                        label: account["label"].as_str().unwrap_or_default().to_owned(),
+                        auth_kind: account["authKind"].as_str().unwrap_or_default().to_owned(),
+                        credential_ref: Value::Null,
+                        enabled: account["enabled"].as_bool(),
+                        weight: account["weight"].as_f64(),
+                        priority: account["priority"].as_f64(),
+                        metadata: None,
+                    })
+                    .collect();
+                let scheduler = shared.command_service(&scope_id, &pool).await;
+                if !scheduler.has_provider(&pool) {
+                    return Ok(());
+                }
+                let pool_for_lookup = pool.clone();
+                let get_integration: Arc<IntegrationLookup> = Arc::new(
+                    move |id: &str| -> Option<Arc<dyn ProviderIntegration>> {
+                        if id != pool_for_lookup {
+                            return None;
+                        }
+                        Some(Arc::new(PoolAccounts {
+                            accounts: accounts.clone(),
+                        }))
+                    },
+                );
+                let get_base_provider: Arc<BaseProviderLookup<SwitchAnnounceContext>> =
+                    Arc::new(|_, _| None);
+                let affinity_key_for: Arc<AffinityKeyFor<SwitchAnnounceContext>> =
+                    Arc::new(move |_, _, _| Ok(key.clone()));
+                let announcement = ServiceAnnouncement::new(AnnouncementDependencies {
+                    scheduler,
+                    get_integration,
+                    get_base_provider,
+                    affinity_key_for,
+                });
+                let account = announcement.get_active_account(&pool, &context).await?;
+                announcement.notify_active_account_changed(&pool, &context, account);
+                Ok(())
             }
-            let pool_for_lookup = pool.clone();
-            let get_integration: Arc<IntegrationLookup> = Arc::new(
-                move |id: &str| -> Option<Arc<dyn ProviderIntegration>> {
-                    if id != pool_for_lookup {
-                        return None;
-                    }
-                    Some(Arc::new(PoolAccounts {
-                        accounts: accounts.clone(),
-                    }))
-                },
-            );
-            let get_base_provider: Arc<BaseProviderLookup<SwitchAnnounceContext>> =
-                Arc::new(|_, _| None);
-            let affinity_key_for: Arc<AffinityKeyFor<SwitchAnnounceContext>> =
-                Arc::new(move |_, _, _| Ok(key.clone()));
-            let announcement = ServiceAnnouncement::new(AnnouncementDependencies {
-                scheduler,
-                get_integration,
-                get_base_provider,
-                affinity_key_for,
-            });
-            let account = announcement.get_active_account(&pool, &context).await?;
-            announcement.notify_active_account_changed(&pool, &context, account);
+            .await;
+            if let Err(error) = outcome {
+                let _ = client
+                    .request(
+                        json!({
+                            "port":"ui",
+                            "action":"notify",
+                            "kind":"warning",
+                            "text":format!(
+                                "The {pool} account selection changed, but sibling extensions were not notified: {error}"
+                            ),
+                        }),
+                        signal,
+                    )
+                    .await;
+            }
             Ok(())
         }
     }
