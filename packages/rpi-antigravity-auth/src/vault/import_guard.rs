@@ -284,10 +284,64 @@ fn import_marker(value: &Value) -> Result<(), &'static str> {
     Err("imported-custody")
 }
 
+/// Records this guard reads; the vault's atomic writes stage beside them.
+const RECORDS: [&str; 4] = [
+    "pi-mode.json",
+    "pi-enrollment-state.json",
+    "pi-enrollment.json",
+    "google-login-stash.json",
+];
+
+/// Whether `name` is a staging file this package's own atomic write path leaves
+/// in the vault directory: `pi-mode.json.<uuid>.tmp` (setup), the dot-prefixed
+/// `.pi-enrollment{,-state}.json.<pid>.<uuid>.tmp` of the private store, the slot's
+/// `google-login-stash.json.<uuid>.tmp`, and the ceremony lease's
+/// `pi-enrollment-state.json.ceremony.lock.<uuid>.tmp`.
+///
+/// Staging files are written and renamed in one step and are never read, so an
+/// interrupted or concurrent write is not evidence of imported state.
+fn own_staging(name: &str) -> bool {
+    let Some(stem) = name.strip_suffix(".tmp") else {
+        return false;
+    };
+    let stem = stem.strip_prefix('.').unwrap_or(stem);
+    let record = RECORDS
+        .iter()
+        .filter(|record| stem.starts_with(*record))
+        .max_by_key(|record| record.len());
+    let Some(record) = record else {
+        return false;
+    };
+    let mut rest = &stem[record.len()..];
+    while let Some(token) = rest.strip_prefix('.') {
+        let end = token.find('.').unwrap_or(token.len());
+        if !staging_token(&token[..end]) {
+            return false;
+        }
+        rest = &token[end..];
+    }
+    rest.is_empty()
+}
+
+fn staging_token(token: &str) -> bool {
+    matches!(token, "lock" | "marker" | "ceremony")
+        || (!token.is_empty() && token.bytes().all(|byte| byte.is_ascii_digit()))
+        || (token.len() >= 16
+            && token
+                .bytes()
+                .all(|byte| byte.is_ascii_hexdigit() || byte == b'-'))
+}
+
 fn artifact(name: &str) -> Option<&'static str> {
     let lower = name.to_ascii_lowercase();
     if lower.contains("pi-import") {
         return Some("imported-location");
+    }
+    // Our own staging files carry no authority and are never read, so they are
+    // not evidence; only names this package never writes remain backups.
+    let file = lower.rsplit(|c| c == '/' || c == '\\').next().unwrap_or("");
+    if own_staging(file) {
+        return None;
     }
     if lower.ends_with(".bak")
         || lower.ends_with(".backup")

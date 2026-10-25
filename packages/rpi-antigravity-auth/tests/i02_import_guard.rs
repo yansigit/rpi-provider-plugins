@@ -60,7 +60,7 @@ fn every_admission_matches_the_reference_case() {
     );
     assert_eq!(fixture["pi"], "1.3.0");
     assert_eq!(fixture["upstreamHashes"].as_object().unwrap().len(), 3);
-    assert_eq!(refused, 19);
+    assert_eq!(refused, 23);
 }
 
 #[test]
