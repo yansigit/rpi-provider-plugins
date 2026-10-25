@@ -1,6 +1,8 @@
 # L1 switch-account production binding
 
-**Status: DELIVERED for `/switch-account`. `/multilogin` remains unregistered.**
+**Status: DELIVERED for `/switch-account`. `/multilogin` is now registered; see
+[`m-multilogin.md`](m-multilogin.md), which supersedes the login-presentation gap
+below.**
 
 Source change: `be20f31`
 (`feat(multiprovider): bind production /switch-account runner with scope journal and announcements`).
@@ -313,9 +315,9 @@ pass unmutated in the cohort.
 
 ## Remaining requested work
 
-- **M02 `/multilogin`:** still unregistered, blocked on the host auth-metadata
-  contract above. Pending-account workflow, nested auth binding, labels/reauth/
-  cancellation/error parity, and virtual editing acceptance remain incomplete.
+- **M02 `/multilogin`:** registered after host `8f25e89` added the
+  presentation metadata; see [`m-multilogin.md`](m-multilogin.md) for what is
+  and is not covered.
 - **M05 command gap (remainder):** exercise command-created pins through native
   branch/reload/child flows (creation path is bound and journaled; the
   restore flows predate this lane).

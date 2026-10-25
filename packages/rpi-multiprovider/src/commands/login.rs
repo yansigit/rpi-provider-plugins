@@ -276,6 +276,10 @@ impl<U: Ui> LoginInteraction for LoginDialog<'_, U> {
                     .enumerate()
                     .map(|(index, label)| json!({"label": label, "value": index.to_string()}))
                     .collect();
+                // The login-interaction select is not searchable: upstream
+                // routes it through `ExtensionSelectorComponent`
+                // (`src/multilogin.ts:220-224`), and `searchable: true` belongs
+                // to the provider picker only (`login_options` above).
                 let control = json!({"kind":"select","title":title,"choices":choices});
                 let Some(index) = select_control(self.ui, control, labels.len()).await? else {
                     return Err(CANCELLED.into());

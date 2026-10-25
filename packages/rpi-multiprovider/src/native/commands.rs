@@ -112,6 +112,7 @@ pub async fn run<P: CommandHost, U: Ui>(
 /// [`Ui`] over the host's awaited dialogs and ordered notifications. The
 /// invocation signal is the command's own token, so closing the command or the
 /// plugin cancels a pending dialog without affecting other owners.
+#[derive(Clone)]
 pub struct Dialogs {
     client: Client,
     view: View,

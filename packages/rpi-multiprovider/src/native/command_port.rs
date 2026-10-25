@@ -1,4 +1,5 @@
 //! Native runner and the narrow ports for the commands currently supported.
+use super::login::HostMethod;
 use super::{
     commands::{Dialogs, Runner},
     Shared,
@@ -7,6 +8,7 @@ use crate::announcement::{
     AffinityKeyFor, AnnouncementDependencies, BaseProviderLookup, IntegrationLookup,
     ServiceAnnouncement, ServiceContext,
 };
+use crate::commands::pool_manager::PoolDefaults;
 use crate::commands::port::{
     AccountsPort, AuthStatus, LoginInteraction, LogoutPort, PoolAction, PoolBuffer, PoolMethod,
     Port, ProviderInfo, RuntimeView, SelectedModel,
@@ -179,9 +181,21 @@ impl Runner for NativeRunner {
                     client,
                     signal,
                     ui.mode().to_owned(),
+                    None,
                 )
                 .await?;
                 return crate::commands::switch::switch_account(&ui, &port, &args).await;
+            }
+            if command == "multilogin" {
+                let port = SwitchPort::new(
+                    self.shared.clone(),
+                    client,
+                    signal,
+                    ui.mode().to_owned(),
+                    Some(ui.clone()),
+                )
+                .await?;
+                return crate::commands::login::multilogin(&ui, &port, &args).await;
             }
             let port =
                 NativePort::new(self.shared.clone(), client, signal, ui.mode().to_owned()).await?;
@@ -233,10 +247,14 @@ struct SwitchCache {
     /// The scope's virtual catalog service once `reconcile_virtuals` created
     /// it (`None` when the scope has no virtual providers).
     virtual_service: Option<Service>,
+    /// Host-reported authentication methods per catalog provider; fetched for
+    /// `/multilogin` only (see [`SwitchPort::dialogs`]).
+    methods: std::collections::HashMap<String, Vec<HostMethod>>,
 }
 
-/// Production port for `/switch-account`: the full [`Port`] surface backed by
-/// the shared scheduler/store plus the host catalog, model and session ports.
+/// Production port for `/switch-account` and `/multilogin`: the full [`Port`]
+/// surface backed by the shared scheduler/store plus the host catalog, model,
+/// session and auth ports.
 ///
 /// The [`Port`] trait's synchronous methods cannot await the scope's virtual
 /// catalog mutex, so the catalog snapshot is cached at construction and
@@ -257,6 +275,10 @@ struct SwitchPort {
     session_fallback: String,
     model: Option<SelectedModel>,
     cache: Mutex<SwitchCache>,
+    /// The command's dialogs, present for `/multilogin` only: its pool manager
+    /// screen needs them and its provider list needs the host's per-method
+    /// login metadata, which `/switch-account` never reads or fetches.
+    dialogs: Option<super::commands::Dialogs>,
 }
 
 impl SwitchPort {
@@ -265,6 +287,7 @@ impl SwitchPort {
         client: Client,
         signal: CancellationToken,
         mode: String,
+        dialogs: Option<super::commands::Dialogs>,
     ) -> Result<Self, String> {
         let inspect = shared.inspect(&client, &signal).await?;
         let scope_id = inspect["scopeId"].as_str().map(str::to_owned);
@@ -274,17 +297,17 @@ impl SwitchPort {
             .unwrap_or_default()
             .to_owned();
         let view = client
-            .request(json!({"port":"context","action":"snapshot"}), signal.clone())
+            .request(
+                json!({"port":"context","action":"snapshot"}),
+                signal.clone(),
+            )
             .await?;
         // The host always selects a model object; `name` falls back to the id
         // the same way a missing display name would still identify the model.
         let model = view["model"].as_object().and_then(|model| {
             let provider = model.get("provider")?.as_str()?;
             let id = model.get("id")?.as_str()?;
-            let name = model
-                .get("name")
-                .and_then(Value::as_str)
-                .unwrap_or(id);
+            let name = model.get("name").and_then(Value::as_str).unwrap_or(id);
             Some(SelectedModel {
                 provider: provider.to_owned(),
                 id: id.to_owned(),
@@ -303,7 +326,9 @@ impl SwitchPort {
                 catalog: Value::Null,
                 virtual_configs: Vec::new(),
                 virtual_service: None,
+                methods: Default::default(),
             }),
+            dialogs,
         };
         port.refresh().await?;
         Ok(port)
@@ -336,6 +361,19 @@ impl SwitchPort {
             .await
             .get(&self.scope_id)
             .map(|catalog| catalog.service.clone());
+        let mut methods = std::collections::HashMap::new();
+        if self.dialogs.is_some() {
+            for provider in catalog["providers"].as_array().into_iter().flatten() {
+                let Some(id) = provider["id"].as_str() else {
+                    continue;
+                };
+                // A provider whose methods cannot be read offers no login,
+                // like a Pi provider without `auth`.
+                if let Ok(found) = super::login::methods(&self.client, &self.signal, id).await {
+                    methods.insert(id.to_owned(), found);
+                }
+            }
+        }
         *self
             .cache
             .lock()
@@ -343,8 +381,26 @@ impl SwitchPort {
             catalog,
             virtual_configs,
             virtual_service,
+            methods,
         };
         Ok(())
+    }
+
+    /// `ProviderInfo` for one catalog entry, with the host's login metadata
+    /// when it was fetched.
+    fn provider_info(cache: &SwitchCache, provider: &Value) -> ProviderInfo {
+        let id = provider["id"].as_str().unwrap_or_default().to_owned();
+        let (oauth, api_key) = cache
+            .methods
+            .get(&id)
+            .map(|methods| super::login::presentation(methods))
+            .unwrap_or((None, None));
+        ProviderInfo {
+            name: provider["name"].as_str().unwrap_or_default().to_owned(),
+            id,
+            oauth,
+            api_key,
+        }
     }
 
     fn catalog_has(&self, id: &str) -> bool {
@@ -352,9 +408,9 @@ impl SwitchPort {
             .lock()
             .ok()
             .and_then(|cache| {
-                cache.catalog["providers"].as_array().map(|providers| {
-                    providers.iter().any(|provider| provider["id"] == id)
-                })
+                cache.catalog["providers"]
+                    .as_array()
+                    .map(|providers| providers.iter().any(|provider| provider["id"] == id))
             })
             .unwrap_or(false)
     }
@@ -451,9 +507,8 @@ impl Port for SwitchPort {
             .unwrap_or_else(|| self.session_fallback.clone())
     }
     fn store_path(&self) -> String {
-        // `/switch-account` never shows a save path; only the login flow does,
-        // and it is unreachable through this port.
-        String::new()
+        // `getMultiAuthPath()`; only the `/multilogin` save notices show it.
+        self.shared.store.path().display().to_string()
     }
     fn store(&self, request: Value) -> impl Future<Output = Result<Value, String>> + Send {
         self.shared.store_request(request, self.signal.clone())
@@ -470,22 +525,16 @@ impl Port for SwitchPort {
         async move { self.shared.command_snapshot(&self.scope_id).await }
     }
     fn registered_providers(&self) -> Vec<ProviderInfo> {
-        // The host catalog carries no per-method login metadata (id, name and
-        // kind only), so login presentation stays unwired: `/multilogin` is
-        // not registered until the host exposes the auth-method metadata it
-        // needs. `/switch-account` never reads these fields.
-        self.cache
-            .lock()
-            .ok()
-            .and_then(|cache| cache.catalog["providers"].as_array().cloned())
-            .unwrap_or_default()
-            .iter()
-            .map(|provider| ProviderInfo {
-                id: provider["id"].as_str().unwrap_or_default().to_owned(),
-                name: provider["name"].as_str().unwrap_or_default().to_owned(),
-                oauth: None,
-                api_key: None,
-            })
+        // Login metadata comes from the host's `auth` `methods` action and is
+        // only fetched for `/multilogin`; `/switch-account` never reads it.
+        let Ok(cache) = self.cache.lock() else {
+            return Vec::new();
+        };
+        cache.catalog["providers"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .map(|provider| Self::provider_info(&cache, provider))
             .collect()
     }
     fn installed_provider_name(&self, id: &str) -> Option<String> {
@@ -497,9 +546,10 @@ impl Port for SwitchPort {
             .and_then(|provider| provider["name"].as_str().map(str::to_owned))
     }
     fn is_virtual_provider(&self, id: &str) -> bool {
-        self.cache.lock().ok().is_some_and(|cache| {
-            cache.virtual_configs.iter().any(|config| config.id == id)
-        })
+        self.cache
+            .lock()
+            .ok()
+            .is_some_and(|cache| cache.virtual_configs.iter().any(|config| config.id == id))
     }
     fn virtual_provider_name(&self, id: &str) -> Option<String> {
         self.cache.lock().ok().and_then(|cache| {
@@ -513,8 +563,7 @@ impl Port for SwitchPort {
     fn is_virtual_pool(&self, provider_id: &str, model_id: &str) -> bool {
         self.cache.lock().ok().is_some_and(|cache| {
             cache.virtual_configs.iter().any(|config| {
-                config.id == provider_id
-                    && config.models.iter().any(|model| model.id == model_id)
+                config.id == provider_id && config.models.iter().any(|model| model.id == model_id)
             })
         })
     }
@@ -531,12 +580,7 @@ impl Port for SwitchPort {
         let providers: Vec<ProviderInfo> = cache.catalog["providers"]
             .as_array()?
             .iter()
-            .map(|provider| ProviderInfo {
-                id: provider["id"].as_str().unwrap_or_default().to_owned(),
-                name: provider["name"].as_str().unwrap_or_default().to_owned(),
-                oauth: None,
-                api_key: None,
-            })
+            .map(|provider| Self::provider_info(&cache, provider))
             .collect();
         let auth = cache.catalog["providers"]
             .as_array()
@@ -613,7 +657,8 @@ impl Port for SwitchPort {
         }
     }
     fn clear_affinity(&self, pool: &str, key: &str) {
-        self.cached_service(pool).clear_affinity(Some(pool), Some(key));
+        self.cached_service(pool)
+            .clear_affinity(Some(pool), Some(key));
     }
     fn announce_active_account(
         &self,
@@ -663,16 +708,15 @@ impl Port for SwitchPort {
                     return Ok(());
                 }
                 let pool_for_lookup = pool.clone();
-                let get_integration: Arc<IntegrationLookup> = Arc::new(
-                    move |id: &str| -> Option<Arc<dyn ProviderIntegration>> {
+                let get_integration: Arc<IntegrationLookup> =
+                    Arc::new(move |id: &str| -> Option<Arc<dyn ProviderIntegration>> {
                         if id != pool_for_lookup {
                             return None;
                         }
                         Some(Arc::new(PoolAccounts {
                             accounts: accounts.clone(),
                         }))
-                    },
-                );
+                    });
                 let get_base_provider: Arc<BaseProviderLookup<SwitchAnnounceContext>> =
                     Arc::new(|_, _| None);
                 let affinity_key_for: Arc<AffinityKeyFor<SwitchAnnounceContext>> =
@@ -727,21 +771,51 @@ impl Port for SwitchPort {
     }
     fn login<I: LoginInteraction>(
         &self,
-        _provider: &ProviderInfo,
-        _auth_type: &str,
-        _interaction: &I,
+        provider: &ProviderInfo,
+        auth_type: &str,
+        interaction: &I,
     ) -> impl Future<Output = Result<Value, String>> + Send {
-        // Unreachable from `/switch-account`; `/multilogin` stays unregistered
-        // until the host exposes the auth-method metadata its login needs.
-        async move { Err("login is not supported by the switch-account port".to_owned()) }
+        let method = self.cache.lock().ok().and_then(|cache| {
+            cache
+                .methods
+                .get(&provider.id)
+                .and_then(|methods| super::login::method_id(methods, auth_type))
+        });
+        let provider_id = provider.id.clone();
+        let missing = format!("No {auth_type} login method for {}", provider.name);
+        async move {
+            let method = method.ok_or(missing)?;
+            super::login::login(
+                &self.shared,
+                &self.client,
+                &self.signal,
+                &provider_id,
+                &method,
+                interaction,
+            )
+            .await
+        }
     }
     fn pool_manager(
         &self,
-        _provider: &ProviderInfo,
-        _methods: &[PoolMethod],
-        _buffer: &mut PoolBuffer,
+        provider: &ProviderInfo,
+        methods: &[PoolMethod],
+        buffer: &mut PoolBuffer,
     ) -> impl Future<Output = Result<PoolAction, String>> + Send {
-        // Unreachable from `/switch-account`; owned by the pool manager lane.
-        async move { Err("pool management is not supported by the switch-account port".to_owned()) }
+        async move {
+            let dialogs = self
+                .dialogs
+                .as_ref()
+                .ok_or("pool management needs the /multilogin dialogs")?;
+            crate::commands::pool_manager::open(dialogs, self, provider, methods, buffer).await
+        }
+    }
+}
+
+impl PoolDefaults for SwitchPort {
+    /// `service.updateSchedulerDefaults(effective)`. The store already
+    /// validated every setting it returned.
+    fn update_scheduler_defaults(&self, settings: Value) {
+        let _ = self.shared.service.update_settings(&settings);
     }
 }

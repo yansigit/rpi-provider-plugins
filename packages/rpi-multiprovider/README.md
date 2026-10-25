@@ -5,14 +5,16 @@ Native port of `monotykamary/pi-multiprovider` at
 native provider contracts and Pi 1.3.0 behavior. Original MIT notice is in `LICENSE`.
 
 The package has a loadable native extension entry point, a global provider wrapper,
-and credential-store and lifecycle integration. It registers only `/multilogout`
-and `/accounts`; the other three commands are not registered. This is partial
+and credential-store and lifecycle integration. It registers `/multilogin`,
+`/multilogout`, `/accounts`, `/switch-account` and `/vprovider`. This is partial
 integration, not full parity or release completion. Same-provider v1 delegation
-and the actual DLL `/accounts` callback are tested with a fake host vtable (not a
-real rpi host RPC). Native auth still needs the private pending-account,
-persist-first workflow; switch-account still needs awaited journal/announcement
-integration; virtual-provider application and host delegation support remain
-pending. Full cross-provider behavior, virtual/native services, Fabric, managed
+and the DLL command callbacks are tested with a fake host vtable (not a real rpi
+host RPC). `/multilogin` logs in through the host `auth` port into a private
+pending account of this plugin's credential store and commits the captured
+credential with the store's own `add`/`replace`
+([evidence](../../docs/evidence/m-multilogin.md)). Cross-extension
+`activeAccountChanged` delivery, virtual-provider application and host
+delegation support remain pending. Full cross-provider behavior, virtual/native services, Fabric, managed
 provider integration and end-to-end runtime acceptance remain incomplete.
 
 The three SDK pins are ECC9-aligned with the host; see the
