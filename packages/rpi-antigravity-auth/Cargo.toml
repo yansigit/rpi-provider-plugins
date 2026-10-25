@@ -39,7 +39,7 @@ async-compression = { version = "=0.4.18", default-features = false, features = 
 zstd = { version = "0.13", default-features = false }
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
 hyper = { version = "1", features = ["http1"] }
-rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "5e5c99b8fd2af79c6d5e0cf56a81c8862e791d35", default-features = false, features = ["provider"] }
+rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "6064a7616217ebb2d90014787bf4f45ce9e597dc", default-features = false, features = ["provider"] }
 
 cortexkit-claustrum-client = { path = "../../vendor/claustrum-client", default-features = false }
 subc-protocol = "=0.32.8"
