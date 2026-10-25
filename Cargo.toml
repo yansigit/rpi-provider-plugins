@@ -26,6 +26,7 @@ members = [
     "packages/rpi-permission-gate",
     "packages/rpi-langfuse",
     "packages/rpi-voice",
+    "packages/rpi-providers",
     "packages/rpi-web",
     "packages/rpi-extcore",
     "packages/rpi-http",
@@ -33,9 +34,6 @@ members = [
 ]
 exclude = [
     "tools/rpi-package-smoke",
-    # Upstream package, temporarily out of the workspace: its deps (rpi-ai 0.8.3,
-    # rpi-plugin-sdk 0.8.3, rpi-extensions 0.8.3) are not in the offline registry cache.
-    "packages/rpi-providers",
     "vendor/claustrum-client",
     "vendor/subc-client-rs",
     "vendor/subc-os",
