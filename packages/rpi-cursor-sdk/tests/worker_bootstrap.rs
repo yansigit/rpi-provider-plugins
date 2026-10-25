@@ -40,34 +40,44 @@ fn host() -> HostHandler {
     Arc::new(|call| Box::pin(async move { Ok(call.input) }))
 }
 
-/// The bootstrap entry under test; `None` skips on a host without Node 24+.
-fn entry(directory: &TempDir, source: &str) -> Option<PathBuf> {
-    let node = std::env::var_os("RPI_CURSOR_NODE")
+/// The Node binary under test; the bootstrap tests must not silently pass by
+/// asserting nothing.
+fn node_binary() -> PathBuf {
+    std::env::var_os("RPI_CURSOR_NODE")
         .map(PathBuf::from)
-        .unwrap_or_else(|| "node".into());
+        .unwrap_or_else(|| "node".into())
+}
+
+/// The bootstrap entry under test.
+fn entry(directory: &TempDir, source: &str) -> PathBuf {
+    let node = node_binary();
     let usable = std::process::Command::new(&node)
         .arg("--version")
         .output()
         .map(|output| output.status.success())
         .unwrap_or(false);
-    if !usable {
-        eprintln!("SKIP: install Node 24+ or set RPI_CURSOR_NODE for worker bootstrap tests");
-        return None;
-    }
+    assert!(
+        usable,
+        "the worker bootstrap tests need Node 24+ on PATH or RPI_CURSOR_NODE pointing at one; \
+         {} is not usable, so nothing would be asserted",
+        node.display()
+    );
     let path = directory.path().join("bootstrap.mjs");
     std::fs::write(&path, source).unwrap();
-    Some(path)
+    path
 }
 
-fn early_exit(node_entry: PathBuf, cwd: &Path) -> String {
+fn spawn_error(node_entry: PathBuf, cwd: &Path) -> String {
+    spawn_error_within(node_entry, cwd, Duration::from_secs(5))
+}
+
+fn spawn_error_within(node_entry: PathBuf, cwd: &Path, limit: Duration) -> String {
     let started = Instant::now();
     let error = tokio::runtime::Runtime::new()
         .unwrap()
         .block_on(Worker::spawn(
             WorkerConfig {
-                node: std::env::var_os("RPI_CURSOR_NODE")
-                    .map(PathBuf::from)
-                    .unwrap_or_else(|| "node".into()),
+                node: node_binary(),
                 entry: node_entry,
                 cwd: cwd.to_path_buf(),
             },
@@ -77,16 +87,20 @@ fn early_exit(node_entry: PathBuf, cwd: &Path) -> String {
         .expect("a worker that never connects must not spawn");
     let elapsed = started.elapsed();
     assert!(
-        elapsed < Duration::from_secs(5),
-        "early exit must not wait for the 10s handshake timeout: {elapsed:?}"
+        elapsed < limit,
+        "bootstrap failure must be reported inside {limit:?}: {elapsed:?}"
     );
     error
+}
+
+fn early_exit(node_entry: PathBuf, cwd: &Path) -> String {
+    spawn_error(node_entry, cwd)
 }
 
 #[test]
 fn worker_that_dies_during_bootstrap_reports_its_stderr_fast() {
     let directory = TempDir::new("crash");
-    let Some(node_entry) = entry(
+    let node_entry = entry(
         &directory,
         concat!(
             "import { readFileSync } from \"node:fs\";\n",
@@ -94,9 +108,7 @@ fn worker_that_dies_during_bootstrap_reports_its_stderr_fast() {
             "process.stderr.write(\"Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@cursor/sdk'\\n\");\n",
             "process.exit(1);\n",
         ),
-    ) else {
-        return;
-    };
+    );
     let error = early_exit(node_entry, directory.path());
     assert!(
         error.starts_with("Cursor worker exited before handshake ("),
@@ -115,16 +127,14 @@ fn worker_that_dies_during_bootstrap_reports_its_stderr_fast() {
 #[test]
 fn bootstrap_secrets_are_redacted_from_worker_stderr() {
     let directory = TempDir::new("echo");
-    let Some(node_entry) = entry(
+    let node_entry = entry(
         &directory,
         concat!(
             "import { readFileSync } from \"node:fs\";\n",
             "process.stderr.write(readFileSync(0, \"utf8\"));\n",
             "process.exit(1);\n",
         ),
-    ) else {
-        return;
-    };
+    );
     let error = early_exit(node_entry, directory.path());
     assert!(
         error.starts_with("Cursor worker exited before handshake ("),
@@ -145,4 +155,54 @@ fn bootstrap_secrets_are_redacted_from_worker_stderr() {
             "unredacted secret in worker stderr: {error}"
         );
     }
+}
+
+#[test]
+fn a_worker_that_closes_its_bootstrap_pipe_still_reports_its_stderr() {
+    let directory = TempDir::new("closed");
+    let node_entry = entry(
+        &directory,
+        concat!(
+            "import { closeSync } from \"node:fs\";\n",
+            "closeSync(0);\n",
+            "process.stderr.write(\"Error: bootstrap input closed before the handshake\\n\");\n",
+            "setTimeout(() => process.exit(3), 1500);\n",
+        ),
+    );
+    let error = spawn_error(node_entry, directory.path());
+    assert!(
+        error.contains("bootstrap input closed before the handshake"),
+        "worker stderr must reach the caller whichever bootstrap arm loses: {error}"
+    );
+    assert!(
+        !error.contains("worker bootstrap failed"),
+        "a closed bootstrap pipe is not a bare failure: {error}"
+    );
+}
+
+#[test]
+fn a_live_worker_that_never_connects_keeps_the_timeout_sentence_and_its_stderr() {
+    let directory = TempDir::new("timeout");
+    let node_entry = entry(
+        &directory,
+        concat!(
+            "import { readFileSync } from \"node:fs\";\n",
+            "readFileSync(0, \"utf8\");\n",
+            "process.stderr.write(\"Error: cannot find module '@cursor/sdk' while bootstrapping\\n\");\n",
+            "setTimeout(() => process.exit(1), 30000);\n",
+        ),
+    );
+    let error = spawn_error_within(node_entry, directory.path(), Duration::from_secs(13));
+    assert!(
+        error.starts_with("Cursor worker handshake timed out; Node 24+ is required"),
+        "the timeout sentence is part of the contract: {error}"
+    );
+    assert!(
+        error.contains("(worker stderr: "),
+        "a timeout must carry what the worker printed: {error}"
+    );
+    assert!(
+        error.contains("cannot find module '@cursor/sdk'"),
+        "worker stderr must reach the caller: {error}"
+    );
 }
