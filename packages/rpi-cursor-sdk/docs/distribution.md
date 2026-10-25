@@ -69,12 +69,20 @@ platform archives exist.
 The release workflow builds the worker before packaging:
 
 ```sh
-cd packages/rpi-cursor-sdk/worker
-npm ci --ignore-scripts --no-audit --no-fund
+cd packages/rpi-cursor-sdk
+scripts/ensure-runtime-deps.sh --worker   # offline npm ci for runtime/ and worker/
+cd worker
 npm run build
 cd ..
 node scripts/stage-package-runtime.mjs
 ```
+
+`scripts/ensure-runtime-deps.sh` installs `runtime/package-lock.json` (and, with
+`--worker`, the worker lock) with `npm ci --offline --ignore-scripts --no-audit
+--no-fund`. It needs a populated npm cache (`~/.npm/_cacache`) from one earlier
+online install of the same lockfile, and fails with that instruction when the
+cache is missing. A fresh worktree has no `runtime/node_modules`, so the
+packaged worker cannot start until this step runs.
 
 `scripts/stage-package-runtime.mjs` writes `.package/runtime/` (ignored by git)
 and `.package/runtime-assets.json`. It resolves esbuild from the worker's
@@ -131,7 +139,9 @@ npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 The exact `@cursor/sdk@1.0.37` dependency, its platform package and the MIT
 Pi 1.3.0 peers come from `runtime/package-lock.json`. No network call is made by
 rpi itself; the SDK is only used once it has been installed. Offline execution
-requires this step to have completed.
+requires this step to have completed. In a source checkout (where the runtime
+directory is `packages/rpi-cursor-sdk/runtime`), `packages/rpi-cursor-sdk/scripts/ensure-runtime-deps.sh`
+performs the same install from the npm cache without network access.
 
 `rpi uninstall rpi-cursor-sdk` removes the library and the files recorded in
 `prebuilt.assets`. It intentionally removes only recorded paths, so a

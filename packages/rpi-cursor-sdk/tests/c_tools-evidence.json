@@ -20,7 +20,7 @@
     "piVersion": "1.3.0",
     "cursorSdkVersion": "1.0.37",
     "piCursorSdkVersion": "0.5.3",
-    "fakeSdkDir": "<home>/Projects/rpi-package--c-fake/packages/rpi-cursor-sdk/tests/fake-sdk",
+    "fakeSdkDir": "/home/user/Projects/rpi-package--g1-evidence/packages/rpi-cursor-sdk/tests/fake-sdk",
     "fake": {
       "sdk.mjs": "7385a8296888d1c9893b63d2519a5de74cc455852d4a4d16a6929d38c17e28e6",
       "hooks.mjs": "852dd2a9857466891cc8333bcf2e95116aac11533cbdf665083b1f254eea104f",
@@ -30,7 +30,7 @@
     }
   },
   "normalization": {
-    "referencePiJson": "Timestamps/durations zeroed, UUIDs to <uuid>, ISO times to <iso>, cursor-replay-<ms>-<n>- to cursor-replay-<n>-<n>-, bridge run IDs to cursor-pi-bridge-<run>-t<n>, temporary root to <root>. Used only for the recorded hashes; counts are not normalized.",
+    "referencePiJson": "Timestamps/durations zeroed, UUIDs to <uuid>, ISO times to <iso> (including the dash-separated session file stamp), derived pi-sessions/<hex> store ids to <store>, cursor-replay-<ms>-<n>- to cursor-replay-<n>-<n>-, bridge run IDs to cursor-pi-bridge-<run>-t<n>, temporary root to <root>. Used only for the recorded hashes; counts are not normalized.",
     "fakeLog": "No normalization beyond the temporary root; the fake writes no clocks, PIDs or random IDs. Counts are read from fake-log records, which flush immediately (unlike process_counters, which need a clean exit).",
     "counts": "nativeToolCalls, bridgeToolExecutions and violations come from fake-log records on both sides. hostToolInvocations are the tool names the host was asked to run (reference: Pi tool_execution_start; candidate: worker toolcall_end events). replayToolExecutions is the number of recorded-activity invocations that performed work (must be zero)."
   },
@@ -77,7 +77,7 @@
         "exitCode": 0,
         "fakeLogRecords": 25,
         "fakeLogSha256": "1576374b183259d0fffc5b3b2de7c06da9f0a8cff069faebdfc0cf4db7dadd17",
-        "normalizedPiSha256": "c83eff83c6502c0901547e1b5b239bec44003e2276fb16b4e6076cb83e04a210",
+        "normalizedPiSha256": "1e31f3c3a87acce3b202e506165a6f16b5df0d860cc1a072f7ab400b6787013b",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -152,7 +152,7 @@
         "exitCode": 0,
         "fakeLogRecords": 25,
         "fakeLogSha256": "f71ce834157065c5cd60146a4c5524c3b17271eef86dc6c7cfc6669656f9832f",
-        "normalizedPiSha256": "108489e55cf07f075f619e84452e7f84c944ba8c039f15bd1318bf5a96eccff1",
+        "normalizedPiSha256": "b675a132e3f42577a6e876d158e9371ea7f2901547db7c1f776501614ae5dc44",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -233,7 +233,7 @@
         "exitCode": 0,
         "fakeLogRecords": 20,
         "fakeLogSha256": "89c6c623f78466ffe2e7a3a0e7565ac34de078771aa35885eb4b04a114a4863b",
-        "normalizedPiSha256": "a063f71142894fb32e64e9495baf48aaff31dcac0381d96d174fef76efb04714",
+        "normalizedPiSha256": "c629c39067a1f5a442312c3a31be89f36ce54e532e55fa85390b4e23604c23e6",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -314,7 +314,7 @@
         "exitCode": 0,
         "fakeLogRecords": 23,
         "fakeLogSha256": "f0891a19568339ea9ade1fd8cf6d83154e27b6819c430a3a1cea978fdae43e70",
-        "normalizedPiSha256": "f98634ea0c453f9df0e6d2117b0eb7c338270a3c253486fe307a74532b2d5416",
+        "normalizedPiSha256": "43d377ba2e0f71a77fa7f48fabc24c7a8f4378a0ffc3ddd5cb3aea34d0e1cd55",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -389,7 +389,7 @@
         "exitCode": 0,
         "fakeLogRecords": 24,
         "fakeLogSha256": "7afe11e89b58d8a990bd29307eb05ccf6923d2994c163cb8d36e09c47123b4f8",
-        "normalizedPiSha256": "2f846b491ba781f07ff025dec71a5ecca4900d9d9559bed9d49316fcaddf7bbd",
+        "normalizedPiSha256": "46db61d5c04096363ff780f044921069301642f1e3c2fb1c27f08595ee252fe5",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -473,7 +473,7 @@
         "exitCode": 0,
         "fakeLogRecords": 30,
         "fakeLogSha256": "69f852be98e5fc6d5a5c17156f34ecf376cd2492471cbb9a2858f9270e9850d6",
-        "normalizedPiSha256": "9f8287e129ecb3e3f400131093ef1d922274a4adc0f66cc4a080b71a51cb279a",
+        "normalizedPiSha256": "632ac52831a7cccf48fa1e0a98788439b45fa7cfbfc1df1fccb72181b092e01e",
         "stderrLines": 0
       },
       "candidateDetail": {
@@ -514,7 +514,8 @@
     "Windows/macOS worker startup."
   ],
   "commands": [
-    "cd worker && npm ci --ignore-scripts --no-audit --no-fund && npm run build",
+    "scripts/ensure-runtime-deps.sh --worker   (offline npm ci for runtime/ and worker/; needs a populated npm cache)",
+    "cd worker && npm run build",
     "node tests/stage-runtime.mjs",
     "node tests/c_tools-reference.mjs        (check mode)",
     "node tests/c_tools-reference.mjs --write"

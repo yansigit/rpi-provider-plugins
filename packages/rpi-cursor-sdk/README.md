@@ -27,8 +27,10 @@ acceptance remains in progress.
 Reproduce the transport checks with Node 24+ and Rust 1.78:
 
 ```sh
+# Fresh worktrees ship no installed Node trees; this installs both from the npm
+# cache without network access (see scripts/ensure-runtime-deps.sh).
+scripts/ensure-runtime-deps.sh --worker
 cd worker
-npm ci --ignore-scripts --no-audit --no-fund
 npm run build
 node node_modules/vitest/vitest.mjs run test/rpi/protocol.test.ts
 node --test test/rpi/transport.test.mjs
@@ -36,7 +38,7 @@ cd ..
 RUSTFLAGS=-Dwarnings cargo +1.78.0 test -p rpi-cursor-sdk --locked -- --include-ignored
 ```
 
-The Rust process tests are explicitly ignored in the ordinary Cargo run because they require the built Node assets; the command above enables them. Set `RPI_CURSOR_NODE` if Node 24 is not the default. The journal differential also requires the built pinned reference at `../../../provider-references/cursor`, or an explicit `RPI_CURSOR_REFERENCE` path. The tests launch the fixture worker from a different working directory and do not call Cursor. The retained adapter's original suite uses the established baseline environment: Node 24.22.0, `TERM=xterm-256color`, `CURSOR_API_KEY=offline-fixture`, and a private `TMPDIR` outside any Git repository. Its original lockfile remains unchanged.
+A worktree without `runtime/node_modules` cannot start the packaged worker at all: `node runtime/main.mjs` fails with `ERR_MODULE_NOT_FOUND` in about 50 ms. `scripts/ensure-runtime-deps.sh` performs the offline `npm ci --offline --ignore-scripts --no-audit --no-fund` install of the locked tree (add `--worker` for the worker test/dev tree, `--check` to verify only), and fails with the cache instruction when the packages are not cached. `tests/r02_native_loading.rs` asserts the same precondition instead of staging a dangling `node_modules` link, and the worker reports the child's stderr for a worker that exits before the handshake. The Rust process tests are explicitly ignored in the ordinary Cargo run because they require the built Node assets; the command above enables them. Set `RPI_CURSOR_NODE` if Node 24 is not the default. The journal differential also requires the built pinned reference at `../../../provider-references/cursor`, or an explicit `RPI_CURSOR_REFERENCE` path. The tests launch the fixture worker from a different working directory and do not call Cursor. The retained adapter's original suite uses the established baseline environment: Node 24.22.0, `TERM=xterm-256color`, `CURSOR_API_KEY=offline-fixture`, and a private `TMPDIR` outside any Git repository. Its original lockfile remains unchanged.
 
 Manual integration review and regression checks cover ordering, admission release, malformed frames, nested host calls, slow consumers, cancellation, crashes and draining admitted host work. A retained artifact-race test observed safe fixture bytes under its temporary rename path in one full run; unchanged original/fork targeted checks and a subsequent full run passed. This timing limitation remains recorded. The original 53 Pi loader checks do not establish native rpi loading.
 
@@ -70,7 +72,8 @@ tools belong to rpi. Verification is recorded in `tests/extension-evidence.json`
 
 The separate `runtime/` lock pins the integrated Pi 1.3.0 peers and external SDK
 1.0.37. It does not change the retained baseline lock. Build in `worker/`, run
-`npm ci --ignore-scripts --no-audit --no-fund` in `runtime/`, then run
+`scripts/ensure-runtime-deps.sh --worker` (offline `npm ci` for `runtime/` and
+`worker/`) or `npm ci --ignore-scripts --no-audit --no-fund` in `runtime/`, then run
 `node tests/stage-runtime.mjs` and `node --test tests/native-extension.mjs` from this
 directory to exercise the staged runtime. Background session leases and late
 cloud/usage completion are covered by `tests/lifetime-evidence.json`. The native
