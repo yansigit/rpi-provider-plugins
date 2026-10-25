@@ -18,7 +18,7 @@ assets = ".package/runtime-assets.json"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "e9c052653975c1d648092ab52e817a0b2f4b575c", default-features = false, features = ["provider"] }
+rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "8f25e899d1c6bf6f98a73d4800c0363c185ad5fc", default-features = false, features = ["provider"] }
 serde.workspace = true
 serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
 tokio = { workspace = true, features = ["net", "io-util", "process", "macros"] }
