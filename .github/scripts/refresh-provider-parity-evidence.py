@@ -9,17 +9,38 @@ No builds, network, credential access, timestamps, or hand-maintained hash field
 The existing reference generators remain authoritative for their own fixtures.
 """
 import argparse
+import difflib
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
+import sys
+import tempfile
 import tomllib
 
-ROOT = Path(__file__).resolve().parents[2]
 PACKAGES = ["rpi-antigravity-auth", "rpi-cursor-sdk", "rpi-multiprovider"]
 HOST_CRATES = ["rpi-ai", "rpi-plugin-sdk", "rpi-telemetry"]
 BASE = "5b5416c"
+
+
+def checkout_root(start=None):
+    """Repository root of the checkout that contains this script (or --root)."""
+    probe = Path(start) if start is not None else Path(__file__).resolve()
+    resolved = subprocess.run(["git", "-C", str(probe), "rev-parse", "--show-toplevel"],
+                              capture_output=True, text=True)
+    if resolved.returncode == 0 and resolved.stdout.strip():
+        return Path(resolved.stdout.strip())
+    return Path(__file__).resolve().parents[2]
+
+
+ROOT = checkout_root()
+
+
+def default_logs(root):
+    """Per-checkout verifier log directory; never a directory shared by other lanes."""
+    return Path(os.environ.get("PARITY_EVIDENCE_LOGS", Path(tempfile.gettempdir()) / f"pkg-repin-{root.name}"))
 
 
 def git(*args, cwd=ROOT):
@@ -59,13 +80,18 @@ def test_counts(path):
     return counts
 
 
-def report(logs):
+def report(logs, host_checkout=None):
     manifests = {name: tomllib.loads((ROOT / "packages" / name / "Cargo.toml").read_text()) for name in PACKAGES}
     revisions = {m["dependencies"]["rpi-plugin-sdk"]["rev"] for m in manifests.values()}
     assert len(revisions) == 1
     revision = revisions.pop()
     assert re.fullmatch("[0-9a-f]{40}", revision)
     lock = tomllib.loads((ROOT / "Cargo.lock").read_text())
+    locked = {match[1] for package in lock["package"] if package["name"] in HOST_CRATES
+              for match in [re.search(r"rev=([0-9a-f]{40})", package.get("source", ""))] if match}
+    # Cargo.lock also pins unrelated host-SDK revisions for this workspace's own graph;
+    # the package pin is the revision the three manifests resolve to.
+    assert revision in locked, f"Cargo.lock has no {HOST_CRATES} entry at the manifest pin {revision}; found {sorted(locked)}"
     old_lock = tomllib.loads(git("show", f"{BASE}:Cargo.lock"))
     registry = lambda value: sorted((p["name"], p["version"], p.get("checksum")) for p in value["package"] if p.get("source", "").startswith("registry+"))
     assert registry(lock) == registry(old_lock), "unrelated registry dependency change"
@@ -79,8 +105,11 @@ def report(logs):
         assert len(sdk_artifacts) == 3
         sdk = next(a for a in sdk_artifacts if a["target"]["name"].replace("_", "-") == "rpi-plugin-sdk")
         checkout = Path(sdk["target"]["src_path"]).parents[3]
-        assert git("rev-parse", "HEAD", cwd=checkout) == revision
+        assert git("rev-parse", "HEAD", cwd=checkout) == revision, f"artifact checkout {checkout} is not at the pinned host commit"
         assert not git("status", "--porcelain", "--", "crates/rpi-ai", "crates/rpi-plugin-sdk", "crates/rpi-telemetry", cwd=checkout)
+        if host_checkout is not None:
+            assert git("rev-parse", "HEAD", cwd=host_checkout) == revision, f"--host-checkout {host_checkout} is not at the pinned host commit {revision}"
+            assert not git("status", "--porcelain", "--", "crates/rpi-ai", "crates/rpi-plugin-sdk", "crates/rpi-telemetry", cwd=host_checkout)
         source = []
         for crate in HOST_CRATES:
             files = [checkout / p for p in git("ls-files", f"crates/{crate}", cwd=checkout).splitlines()]
@@ -148,20 +177,44 @@ def report(logs):
                         "The real host typed stream queue and extension C callback adapter are not linked by these package harnesses. New tests exercise the actual package C emit sink, TLS body channel, and Cursor IPC credit adapter instead.",
                         "Native loading uses existing fake-vtable tests, not a full host process; Cursor/legacy loading branches were not requested via environment.",
                         "No host source changes were needed; direct host queue coverage remains a host follow-up needed, not a demonstrated host defect.",
-                        "Domain evidence files outside this refreshed cohort report remain historical; only the named reference fixtures were freshly regenerated."],
+                        "Domain evidence files outside this refreshed cohort report remain historical; only the named reference fixtures were freshly regenerated.",
+                        "The five retained-regression mutation logs are the originally recorded mutation runs; a plain report refresh does not re-apply production mutations."],
         "logs": [identity(logs / name) for name in selected_logs],
     }
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--logs", type=Path, default=Path("/tmp/pkg-repin"))
+    parser.add_argument("--root", type=Path, help="checkout to verify (default: this script's repository root)")
+    parser.add_argument("--logs", type=Path,
+                        help="verifier log directory (default: a per-checkout directory under $TMPDIR, "
+                             "overridable with PARITY_EVIDENCE_LOGS)")
+    parser.add_argument("--host-checkout", type=Path,
+                        help="pinned host artifact checkout; must be at the host commit pinned by Cargo.lock/Cargo.toml")
     parser.add_argument("--write", action="store_true")
+    parser.add_argument("--check", action="store_true",
+                        help="render into a temporary directory and diff against the tracked report")
     args = parser.parse_args()
+    if args.root is not None:
+        ROOT = checkout_root(args.root)
+    logs = (args.logs or default_logs(ROOT)).resolve()
+    host_checkout = args.host_checkout.resolve() if args.host_checkout else None
     path = ROOT / "docs/provider-parity-sdk-cohort.json"
-    rendered = json.dumps(report(args.logs.resolve()), indent=2, ensure_ascii=False) + "\n"
-    if args.write:
+    rendered = json.dumps(report(logs, host_checkout), indent=2, ensure_ascii=False) + "\n"
+    if args.check:
+        staged = Path(tempfile.mkdtemp(prefix="provider-parity-cohort-")) / path.name
+        staged.write_text(rendered)
+        committed = path.read_text() if path.exists() else ""
+        if committed != rendered:
+            diff = list(difflib.unified_diff(committed.splitlines(True), rendered.splitlines(True),
+                                             str(path), str(staged)))
+            sys.stdout.write("".join(diff[:200]))
+            print(f"{path.relative_to(ROOT)} does not match the verifier logs in {logs}; rerun with --write")
+            sys.exit(1)
+        print(f"verified {path.relative_to(ROOT)} against {logs}")
+    elif args.write:
         path.write_text(rendered)
+        print(f"wrote {path.relative_to(ROOT)}")
     else:
         assert path.read_text() == rendered, "cohort report is stale; regenerate with --write"
-    print(f"{'wrote' if args.write else 'verified'} {path.relative_to(ROOT)}")
+        print(f"verified {path.relative_to(ROOT)}")

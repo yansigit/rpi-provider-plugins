@@ -2,10 +2,10 @@
   "schemaVersion": 2,
   "status": "scoped-pass",
   "scope": "Offline provider cohort only; no live services, full workspace, or G1/G2 acceptance claimed.",
-  "hostTarget": "7dfadb0720bed6d624ea39b383e64b3753469206",
+  "hostTarget": "e9c052653975c1d648092ab52e817a0b2f4b575c",
   "packageBase": "5b5416cad5dc569fe1d473a381b144b791b036eb",
-  "lane": "lane/stream-api-migration",
-  "worktree": "/home/user/Projects/rpi-package--stream-api-migration",
+  "lane": "lane/g1-evidence-fix",
+  "worktree": "/home/user/Projects/rpi-package--g1-evidence",
   "generator": ".github/scripts/refresh-provider-parity-evidence.py",
   "pinResolution": {
     "registryVersionsChanged": false,
@@ -13,44 +13,44 @@
       {
         "name": "rpi-ai",
         "version": "0.8.4",
-        "source": "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
+        "source": "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#e9c052653975c1d648092ab52e817a0b2f4b575c"
       },
       {
         "name": "rpi-plugin-sdk",
         "version": "0.8.4",
-        "source": "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
+        "source": "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#e9c052653975c1d648092ab52e817a0b2f4b575c"
       },
       {
         "name": "rpi-telemetry",
         "version": "0.8.4",
-        "source": "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#7dfadb0720bed6d624ea39b383e64b3753469206"
+        "source": "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#e9c052653975c1d648092ab52e817a0b2f4b575c"
       }
     ]
   },
   "packageFiles": {
-    "files": 1000,
-    "sha256": "197e2589eca22f47eb437781c51884b7f745ebad147659243066fd3d6ffd0e8f"
+    "files": 1007,
+    "sha256": "8af7b93cc623e0fbba9f81260e9910fbd6addc7d02268c48cbc311a62ea0411f"
   },
   "pinFiles": [
     {
-      "path": "/home/user/Projects/rpi-package--stream-api-migration/packages/rpi-antigravity-auth/Cargo.toml",
+      "path": "/home/user/Projects/rpi-package--g1-evidence/packages/rpi-antigravity-auth/Cargo.toml",
       "bytes": 2560,
-      "sha256": "45d67348eb9a65850296581ec9fd6e3c2b7ed73a78ce2395effbb3eca3759bbb"
+      "sha256": "98d8e8bd8c7504fe97f87c0262ffd7564e81eb288799ce0c4d9a7a449254fc79"
     },
     {
-      "path": "/home/user/Projects/rpi-package--stream-api-migration/packages/rpi-cursor-sdk/Cargo.toml",
+      "path": "/home/user/Projects/rpi-package--g1-evidence/packages/rpi-cursor-sdk/Cargo.toml",
       "bytes": 1186,
-      "sha256": "bf12fa879110eb93599a9c8bbcdff68dbf9a3916f2e6ee2f1b37cbd994107305"
+      "sha256": "a54df83b1d9eaa7d02abf0ae05082150133624648b41e7e9f3745e2919822ad1"
     },
     {
-      "path": "/home/user/Projects/rpi-package--stream-api-migration/packages/rpi-multiprovider/Cargo.toml",
-      "bytes": 978,
-      "sha256": "f52cbcaaef8ef4cdb8b7cd43434dfc5eb467d2bc0dd6ca908f6fbc9a4a8fd1ba"
+      "path": "/home/user/Projects/rpi-package--g1-evidence/packages/rpi-multiprovider/Cargo.toml",
+      "bytes": 1111,
+      "sha256": "84ebbf144086fa9798b7dfe703c4484eeb8f5aae23f1a059566c58cb48e409b6"
     },
     {
-      "path": "/home/user/Projects/rpi-package--stream-api-migration/Cargo.lock",
-      "bytes": 114490,
-      "sha256": "df5547e21f241c136466b105b85d53c2844b261018fc39bdc522fe54c53d1dff"
+      "path": "/home/user/Projects/rpi-package--g1-evidence/Cargo.lock",
+      "bytes": 114507,
+      "sha256": "5f1f8dc63933d00cde8cb45ad0ce03b83f0f224383e3841bd58d78c7f1848b67"
     }
   ],
   "toolchains": {
@@ -62,29 +62,29 @@
           "ignored": 5
         },
         "rpi-cursor-sdk": {
-          "passed": 62,
+          "passed": 64,
           "failed": 0,
           "ignored": 17
         },
         "rpi-multiprovider": {
-          "passed": 78,
+          "passed": 97,
           "failed": 0,
           "ignored": 2
         }
       },
       "rustflags": "-Dwarnings",
-      "sdkCheckout": "/home/user/.cargo/git/checkouts/pi-rust-81c7759b3b39ca16/7dfadb0",
-      "sdkCheckoutHead": "7dfadb0720bed6d624ea39b383e64b3753469206",
+      "sdkCheckout": "/home/user/.cargo/git/checkouts/pi-rust-81c7759b3b39ca16/e9c0526",
+      "sdkCheckoutHead": "e9c052653975c1d648092ab52e817a0b2f4b575c",
       "sdkSources": [
         {
           "name": "rpi-ai",
           "files": 43,
-          "sha256": "75fcc8ff259d3bdc16d850a5d49035a8fdd8d8d73e9a90ea03085c88f91c9e75"
+          "sha256": "3accedcd36cb2ba27574df4f05d3f683d57883b734fc5557e68ea3570306b855"
         },
         {
           "name": "rpi-plugin-sdk",
-          "files": 17,
-          "sha256": "d7ac5d410d7c64773de043be5e67edf5d7d4677f904dad95b9f0c6a995bb21e5"
+          "files": 19,
+          "sha256": "45309cc39a79d30c55c29cf2982a29c661a022d687f73dc69425e251bbae252d"
         },
         {
           "name": "rpi-telemetry",
@@ -93,29 +93,29 @@
         }
       ],
       "compilerArtifactPackageIds": [
-        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-ai@0.8.4",
-        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-plugin-sdk@0.8.4",
-        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-telemetry@0.8.4"
+        "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#rpi-ai@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#rpi-plugin-sdk@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#rpi-telemetry@0.8.4"
       ],
       "cdylibs": [
         {
-          "path": "/home/user/Projects/.targets/verify-integrated-package-178/debug/librpi_antigravity_auth.so",
-          "bytes": 185527912,
-          "sha256": "f44a83f3194e115f2cf4a0f3085f53c8eaf945bfddb8af2c2552b8818d820e92"
+          "path": "/home/user/Projects/.targets/g1-evidence-178/debug/librpi_antigravity_auth.so",
+          "bytes": 185587088,
+          "sha256": "07a9345df2ee08214d036259609d8b3d3364292a6062a4d47312d112ad994a52"
         },
         {
-          "path": "/home/user/Projects/.targets/verify-integrated-package-178/debug/librpi_cursor_sdk.so",
-          "bytes": 109343952,
-          "sha256": "6abb80ab2b50a6a3bb1a5e2ee04dc120ad002ec6dc38ef7dda783b594a772fa4"
+          "path": "/home/user/Projects/.targets/g1-evidence-178/debug/librpi_cursor_sdk.so",
+          "bytes": 110136576,
+          "sha256": "8ed1db7e19d2d7feb57ea41e0358bebb1392f35d90cdec1ec60c821d4a549ce4"
         },
         {
-          "path": "/home/user/Projects/.targets/verify-integrated-package-178/debug/librpi_multiprovider.so",
-          "bytes": 122071384,
-          "sha256": "9547669a3ad2a6f227a3a3e5f0f946fb48e8ff4b3d625e1cc66fb39e43a147b2"
+          "path": "/home/user/Projects/.targets/g1-evidence-178/debug/librpi_multiprovider.so",
+          "bytes": 127046616,
+          "sha256": "2662a8d69071d1074a3b25a12344979aa4be4c92da873787e790c801e5bc7d81"
         }
       ],
       "nativeLoading": {
-        "multiproviderTests": 15,
+        "multiproviderTests": 25,
         "antigravityRegistrationTests": 1,
         "cursorAndLegacyLoading": "not run (RPI_TEST_* library variables unset)"
       }
@@ -128,29 +128,29 @@
           "ignored": 5
         },
         "rpi-cursor-sdk": {
-          "passed": 62,
+          "passed": 64,
           "failed": 0,
           "ignored": 17
         },
         "rpi-multiprovider": {
-          "passed": 78,
+          "passed": 97,
           "failed": 0,
           "ignored": 2
         }
       },
       "rustflags": "",
-      "sdkCheckout": "/home/user/.cargo/git/checkouts/pi-rust-96414b53477e8afb/7dfadb0",
-      "sdkCheckoutHead": "7dfadb0720bed6d624ea39b383e64b3753469206",
+      "sdkCheckout": "/home/user/.cargo/git/checkouts/pi-rust-96414b53477e8afb/e9c0526",
+      "sdkCheckoutHead": "e9c052653975c1d648092ab52e817a0b2f4b575c",
       "sdkSources": [
         {
           "name": "rpi-ai",
           "files": 43,
-          "sha256": "75fcc8ff259d3bdc16d850a5d49035a8fdd8d8d73e9a90ea03085c88f91c9e75"
+          "sha256": "3accedcd36cb2ba27574df4f05d3f683d57883b734fc5557e68ea3570306b855"
         },
         {
           "name": "rpi-plugin-sdk",
-          "files": 17,
-          "sha256": "d7ac5d410d7c64773de043be5e67edf5d7d4677f904dad95b9f0c6a995bb21e5"
+          "files": 19,
+          "sha256": "45309cc39a79d30c55c29cf2982a29c661a022d687f73dc69425e251bbae252d"
         },
         {
           "name": "rpi-telemetry",
@@ -159,29 +159,29 @@
         }
       ],
       "compilerArtifactPackageIds": [
-        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-ai@0.8.4",
-        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-plugin-sdk@0.8.4",
-        "git+https://github.com/yansigit/pi-rust?rev=7dfadb0720bed6d624ea39b383e64b3753469206#rpi-telemetry@0.8.4"
+        "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#rpi-ai@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#rpi-plugin-sdk@0.8.4",
+        "git+https://github.com/yansigit/pi-rust?rev=e9c052653975c1d648092ab52e817a0b2f4b575c#rpi-telemetry@0.8.4"
       ],
       "cdylibs": [
         {
-          "path": "/home/user/Projects/.targets/verify-integrated-package-195/debug/librpi_antigravity_auth.so",
-          "bytes": 179362016,
-          "sha256": "734b3542167283fcd7e47e238f67e10db032bd764b9ac1d0bf4d224950d3d485"
+          "path": "/home/user/Projects/.targets/g1-evidence-195/debug/librpi_antigravity_auth.so",
+          "bytes": 179476424,
+          "sha256": "ff311dec53339ac4459175f166a611a08e5fb039f97f0bd241deb99bfafd313d"
         },
         {
-          "path": "/home/user/Projects/.targets/verify-integrated-package-195/debug/librpi_cursor_sdk.so",
-          "bytes": 105596656,
-          "sha256": "7bf1ebaa04816f68215a10b5bea919c9071b2b8d33076a0876847dfe7075e92f"
+          "path": "/home/user/Projects/.targets/g1-evidence-195/debug/librpi_cursor_sdk.so",
+          "bytes": 106303504,
+          "sha256": "612bf2aa207dd90e59dba13fe2e3b8a12349fc66d2e386a81b2dc72ebd0d04c1"
         },
         {
-          "path": "/home/user/Projects/.targets/verify-integrated-package-195/debug/librpi_multiprovider.so",
-          "bytes": 117525040,
-          "sha256": "fc0252358a9cc582bb8313ed01b1b7f7b49950e55f5e865bf176e420be00c17a"
+          "path": "/home/user/Projects/.targets/g1-evidence-195/debug/librpi_multiprovider.so",
+          "bytes": 122340896,
+          "sha256": "2978d156d280bffcdebe44d79505ee49dbd1dac3d7b32336f1e3af99fa8a7db5"
         }
       ],
       "nativeLoading": {
-        "multiproviderTests": 15,
+        "multiproviderTests": 25,
         "antigravityRegistrationTests": 1,
         "cursorAndLegacyLoading": "not run (RPI_TEST_* library variables unset)"
       }
@@ -240,108 +240,109 @@
     "The real host typed stream queue and extension C callback adapter are not linked by these package harnesses. New tests exercise the actual package C emit sink, TLS body channel, and Cursor IPC credit adapter instead.",
     "Native loading uses existing fake-vtable tests, not a full host process; Cursor/legacy loading branches were not requested via environment.",
     "No host source changes were needed; direct host queue coverage remains a host follow-up needed, not a demonstrated host defect.",
-    "Domain evidence files outside this refreshed cohort report remain historical; only the named reference fixtures were freshly regenerated."
+    "Domain evidence files outside this refreshed cohort report remain historical; only the named reference fixtures were freshly regenerated.",
+    "The five retained-regression mutation logs are the originally recorded mutation runs; a plain report refresh does not re-apply production mutations."
   ],
   "logs": [
     {
-      "path": "/tmp/pkg-repin/test-178-final.log",
-      "bytes": 39549,
-      "sha256": "018a141002feb91ca323d3689537ee137a678388099976ed043f76d5f63c0f9b"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/test-178-final.log",
+      "bytes": 42843,
+      "sha256": "e28b27c07da0845b1307617815ae4c89f1fd5e14ea3aefcc7783a0d504fee8e7"
     },
     {
-      "path": "/tmp/pkg-repin/test-195-final.log",
-      "bytes": 39549,
-      "sha256": "e6ee31ae6ef609e3622d4f35058d1f90915720e9b4b78ff148f19c2716fe3bb5"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/test-195-final.log",
+      "bytes": 42716,
+      "sha256": "f2769f219422c7ee4e51b8d5cc3d837ee475dc172cd3c7dc5f44bb00bf6c0080"
     },
     {
-      "path": "/tmp/pkg-repin/build-cdylib-178.log",
-      "bytes": 922,
-      "sha256": "63e0732d840cde63f70674c33392d6dd893b790eb02ece5083fdfb0411771436"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/build-cdylib-178.log",
+      "bytes": 4600,
+      "sha256": "43c7b4a5a97fcff2e5ec1f2283c464ba5316e1b4424431401f66cc0bdcf2acb7"
     },
     {
-      "path": "/tmp/pkg-repin/artifacts-178.jsonl",
-      "bytes": 217031,
-      "sha256": "37160440cb02d5c87ec4330eca747efe913c197c3c16e6abebaf7ff3ce3b99b0"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/artifacts-178.jsonl",
+      "bytes": 210289,
+      "sha256": "240410baac0937ae4fcc6e2b53db9674d6f01846883a5cc262b24a283476e9c2"
     },
     {
-      "path": "/tmp/pkg-repin/mp-native-178.log",
-      "bytes": 1809,
-      "sha256": "b0770d921f8c0f833a4cbdb4098d6b59d4476a2ed9a386e69d1d408768147b83"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/mp-native-178.log",
+      "bytes": 2978,
+      "sha256": "d1b6c478494a662e835352a41cf3e6d14014f4626b010c9a26aa3b7704537348"
     },
     {
-      "path": "/tmp/pkg-repin/r02-native-178.log",
-      "bytes": 1134,
-      "sha256": "4fe5cd2c72afba237a0207fdc6766308d41f41d314284eeb95f440a9a107759f"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/r02-native-178.log",
+      "bytes": 2198,
+      "sha256": "0da35155384f870120c249fecda70b2bbfea028033bc7a29f7c72c3a44a37831"
     },
     {
-      "path": "/tmp/pkg-repin/build-cdylib-195.log",
-      "bytes": 1159,
-      "sha256": "8d2c4352ef450a63cdf5ef7bcab9ae397545eef3090f6093d5806745f435113c"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/build-cdylib-195.log",
+      "bytes": 2593,
+      "sha256": "b069a841f27a0071daf4b9deea8f85499d9f78c8282640e13023aa8ce0aa2c82"
     },
     {
-      "path": "/tmp/pkg-repin/artifacts-195.jsonl",
-      "bytes": 216912,
-      "sha256": "0a6f4b411fa557fc13fc5a42e4afc24496eaf5d0c64c76b56629af6d449e46ec"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/artifacts-195.jsonl",
+      "bytes": 210011,
+      "sha256": "fbc3c244eab18036eb84d769e235e9741cd9fc666f6d0050ba526e36f2cf346c"
     },
     {
-      "path": "/tmp/pkg-repin/mp-native-195.log",
-      "bytes": 1809,
-      "sha256": "eda4e043c7511ff9684aa66c877aea3c7a5ee0b88f0118c9de0b5e78e6c1a4e6"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/mp-native-195.log",
+      "bytes": 2771,
+      "sha256": "a8216deedf3e479d7ed05538630baea385ec7e83d71a716684778fd4f6e3ad4e"
     },
     {
-      "path": "/tmp/pkg-repin/r02-native-195.log",
-      "bytes": 1134,
-      "sha256": "1a6b33f500027b4e931fc51059dc1dc3d48aca3d2153d0d4ed12a79a9c6f4b54"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/r02-native-195.log",
+      "bytes": 738,
+      "sha256": "00bba861e9c60bab542eaeba668eca10ab7001faabab38343c108be1ecd105ef"
     },
     {
-      "path": "/tmp/pkg-repin/mutate-c-emit.log",
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/mutate-c-emit.log",
       "bytes": 1196,
       "sha256": "9be3cb14650aee8d4501c6babfa9bf8403bf212a5364bcc5023eb750878c5247"
     },
     {
-      "path": "/tmp/pkg-repin/mutate-receipt.log",
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/mutate-receipt.log",
       "bytes": 1110,
       "sha256": "efec2deab74d5bb60e75e737fa2ee3ed0c8d9d546050a9c563fc5d04539a2d66"
     },
     {
-      "path": "/tmp/pkg-repin/mutate-blocked-idle.log",
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/mutate-blocked-idle.log",
       "bytes": 1095,
       "sha256": "e55ba7138fb5c71f2f49d043378560f0c4e1afb2ab49727f271f5526dd0b422f"
     },
     {
-      "path": "/tmp/pkg-repin/mutate-body-order.log",
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/mutate-body-order.log",
       "bytes": 47834528,
       "sha256": "fab6f0e0a3a8c0ad7fdbca7fc15ee88a04f100294e0d8b0b79ec16f738d03087"
     },
     {
-      "path": "/tmp/pkg-repin/mutate-cursor-snapshot.log",
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/mutate-cursor-snapshot.log",
       "bytes": 21046,
       "sha256": "eaa9ac48cc751552618162b96e36cc7748e66b55c5bbf6741ff1e6664066c813"
     },
     {
-      "path": "/tmp/pkg-repin/cursor-node24-final.log",
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/cursor-node24-final.log",
       "bytes": 927,
-      "sha256": "478d459e8a7355a02e37eaf8a6d4a6d0f37c458942d7d701d3259ed0399f148e"
+      "sha256": "32c79b513ec402d4c167ae96a0124fe82275ea038dc09d91c9642f3c4d4abfcd"
     },
     {
-      "path": "/tmp/pkg-repin/reference-mp-1.log",
-      "bytes": 396,
-      "sha256": "438aecb4103679fd363f65c38f2d9ae38dd65e4f010dc7bed6e6f14062ec6d53"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/reference-mp-1.log",
+      "bytes": 398,
+      "sha256": "d18d9e41ea9cd89ec39f3c95695e3870c88283cb5931696a1355f9834522b76b"
     },
     {
-      "path": "/tmp/pkg-repin/reference-mp-2.log",
-      "bytes": 396,
-      "sha256": "8fd09f190dd5302db45ca02bfbc48ff84496a43a888989025dc849cccf26a41c"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/reference-mp-2.log",
+      "bytes": 398,
+      "sha256": "580011f542ddb92b76c373842ff8ef70e308b9e264221df9befc67f0bbdcf3ec"
     },
     {
-      "path": "/tmp/pkg-repin/reference-cursor-1.log",
-      "bytes": 1216,
-      "sha256": "31c06c599c86680e5d20d13095f0cb6bbd71bd0e678823034dc4b5cae7a53087"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/reference-cursor-1.log",
+      "bytes": 1207,
+      "sha256": "924b3928b17a5d19ec850cd471161255f4ba3902853e8e86653fdbc9991dc097"
     },
     {
-      "path": "/tmp/pkg-repin/reference-cursor-2.log",
-      "bytes": 1216,
-      "sha256": "31c06c599c86680e5d20d13095f0cb6bbd71bd0e678823034dc4b5cae7a53087"
+      "path": "/tmp/pkg-repin-rpi-package--g1-evidence/reference-cursor-2.log",
+      "bytes": 1207,
+      "sha256": "924b3928b17a5d19ec850cd471161255f4ba3902853e8e86653fdbc9991dc097"
     }
   ]
 }
