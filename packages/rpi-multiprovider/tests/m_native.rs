@@ -126,6 +126,14 @@ struct Fake {
     auth_methods: Mutex<HashMap<String, Value>>,
     /// Every `auth` port request, in order.
     auth_requests: Mutex<Vec<Value>>,
+    /// Scripted `auth` `continue` replies, consumed before the persist path;
+    /// a `{"kind":"success"}` entry falls through to it.
+    continue_script: Mutex<VecDeque<Value>>,
+    /// Holds the `auth` `continue` request until the test releases it, so only
+    /// the plugin's own cancellation race can unwind the command.
+    hang_continue: std::sync::atomic::AtomicBool,
+    continue_waiting: std::sync::atomic::AtomicBool,
+    continue_release: std::sync::atomic::AtomicBool,
 }
 
 impl Fake {
@@ -411,6 +419,50 @@ extern "C" fn fake_native_request(
                 Some("login") => json!({"kind":"interaction","loginId":"login-1",
                     "interaction":{"kind":"input","title":"Enter the key","secret":true}}),
                 Some("continue") => {
+                    if fake.hang_continue.load(std::sync::atomic::Ordering::SeqCst) {
+                        // A host that never answers on its own: only the
+                        // plugin's cancellation race can unwind the command.
+                        fake.continue_waiting
+                            .store(true, std::sync::atomic::Ordering::SeqCst);
+                        // The deadline only keeps a regression from wedging the
+                        // suite: a correct plugin releases this thread long
+                        // before it, by dropping the request it raced.
+                        let deadline =
+                            std::time::Instant::now() + std::time::Duration::from_secs(10);
+                        while !fake
+                            .continue_release
+                            .load(std::sync::atomic::Ordering::SeqCst)
+                            && std::time::Instant::now() < deadline
+                        {
+                            std::thread::sleep(std::time::Duration::from_millis(1));
+                        }
+                        fake.continue_waiting
+                            .store(false, std::sync::atomic::Ordering::SeqCst);
+                        unsafe {
+                            *out = StbString::from_string(
+                                json!({"version":1,"error":"native auth continue released"})
+                                    .to_string(),
+                            );
+                        }
+                        return 1;
+                    }
+                    // A scripted interaction answers instead of the persist
+                    // path; a scripted success may name the credential the host
+                    // would have persisted (a `wait` answer carries no value).
+                    let mut credential = json!({"type":"api_key","key":value["value"]});
+                    if let Some(scripted) = fake.continue_script.lock().unwrap().pop_front() {
+                        if scripted["kind"] != "success" {
+                            unsafe {
+                                *out = StbString::from_string(
+                                    json!({"version":1,"result":scripted}).to_string(),
+                                );
+                            }
+                            return 0;
+                        }
+                        if scripted["credential"].is_object() {
+                            credential = scripted["credential"].clone();
+                        }
+                    }
                     // The host persists the login's credential into the
                     // requested store account before reporting success.
                     let login = fake
@@ -456,10 +508,7 @@ extern "C" fn fake_native_request(
                         return fail(format!("unexpected lock reply {locked}"));
                     }
                     let lock = locked["payload"]["lockId"].as_str().unwrap().to_owned();
-                    let replaced = call(
-                        "replace",
-                        json!({"lockId":lock,"credential":{"type":"api_key","key":value["value"]}}),
-                    );
+                    let replaced = call("replace", json!({"lockId":lock,"credential":credential}));
                     release(StbStringRef::from_str(&lock), context as *mut c_void);
                     if replaced["kind"] != "success" {
                         return fail(format!("credential store refused the login: {replaced}"));
@@ -2639,5 +2688,226 @@ fn switch_account_never_reads_login_methods() {
     let fake = registered.fake;
     let _ = invoke_registered_command(&registered, "switch-account");
     assert!(auth_requests(fake).is_empty());
+    finish(fake);
+}
+
+/// Waits for a flag another thread of a command invocation set.
+fn wait_for(flag: &std::sync::atomic::AtomicBool, what: &str) {
+    let start = std::time::Instant::now();
+    while !flag.load(std::sync::atomic::Ordering::SeqCst) {
+        assert!(
+            start.elapsed() < std::time::Duration::from_secs(5),
+            "multilogin never {what}"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(2));
+    }
+}
+
+/// Runs `/multilogin` on its own thread with a host-controllable command token,
+/// so a test can cancel it while the host holds a login request.
+fn spawn_cancellable(
+    registered: &Registered,
+) -> (
+    Arc<std::sync::atomic::AtomicBool>,
+    std::sync::mpsc::Receiver<String>,
+) {
+    let (_, callback, free, context) = registered
+        .commands
+        .iter()
+        .find(|(manifest, ..)| manifest["name"] == "multilogin")
+        .unwrap()
+        .clone();
+    let cancelled = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let task_cancel = cancelled.clone();
+    let (send, receive) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let control = AuthRequestControl {
+            struct_size: std::mem::size_of::<AuthRequestControl>() as u32,
+            is_cancelled: command_cancelled,
+            user_data: Arc::as_ptr(&task_cancel).cast_mut().cast(),
+        };
+        let mut out = StbString::empty();
+        let _ = callback(
+            StbStringRef::from_str(r#"{"version":1,"command":"multilogin","args":""}"#),
+            &control,
+            &mut out,
+            context as *mut c_void,
+        );
+        let owned = unsafe { OwnedString::from_raw(out, Some(free)) };
+        let _ = send.send(owned.to_string_lossy());
+    });
+    (cancelled, receive)
+}
+
+#[test]
+fn multilogin_walks_input_wait_and_success_interactions() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key"}]),
+    );
+    // The host answers the key with a wait, then completes the login.
+    *unsafe { &*fake }.continue_script.lock().unwrap() = VecDeque::from(vec![
+        json!({"kind":"interaction","loginId":"login-1","interaction":{
+            "kind":"wait","message":"Approve the login in your browser","pollAfterMs":1}}),
+        json!({"kind":"success","credential":{"type":"api_key","key":"sk-held"}}),
+    ]);
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"accounts.add","query":""}),
+        json!({"type":"select","values":["api_key"]}),
+        json!({"type":"input","value":"Work"}),
+        json!({"type":"input","value":"sk-multi"}),
+    ]);
+
+    let result = invoke_registered_command(&registered, "multilogin");
+    assert!(result.get("error").is_none(), "{result}");
+
+    // Two continuations: the key, then the wait's empty answer; the login only
+    // completes on the host's success, and nothing is cancelled.
+    let continues: Vec<Value> = auth_requests(fake)
+        .into_iter()
+        .filter(|request| request["action"] == "continue")
+        .collect();
+    assert_eq!(continues.len(), 2, "{continues:?}");
+    assert_eq!(continues[0]["value"], "sk-multi");
+    assert_eq!(
+        continues[1]["value"],
+        Value::Null,
+        "a wait answers with no value"
+    );
+    let requests = auth_requests(fake);
+    assert!(
+        !requests
+            .iter()
+            .any(|request| request["action"] == "cancelLogin"),
+        "{requests:?}"
+    );
+    assert!(unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["port"] == "ui"
+            && request["action"] == "notify"
+            && request["text"] == "Add example account · Approve the login in your browser"));
+    let accounts = stored_accounts(&temp, "example");
+    assert_eq!(accounts.len(), 1, "{accounts:?}");
+    assert_eq!(accounts[0]["label"], "Work");
+    assert_eq!(
+        accounts[0]["credential"],
+        json!({"type":"api_key","key":"sk-held"}),
+        "the host-persisted credential is committed as-is"
+    );
+    finish(fake);
+}
+
+#[test]
+fn multilogin_prompts_a_select_interaction_for_its_choice_id() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key"}]),
+    );
+    *unsafe { &*fake }.continue_script.lock().unwrap() = VecDeque::from(vec![
+        json!({"kind":"interaction","loginId":"login-1","interaction":{
+            "kind":"select","title":"Pick a workspace","choices":[
+                {"id":"ws-a","label":"Alpha"},{"id":"ws-b","label":"Beta"}]}}),
+        json!({"kind":"success"}),
+    ]);
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"accounts.add","query":""}),
+        json!({"type":"select","values":["api_key"]}),
+        json!({"type":"input","value":"Work"}),
+        json!({"type":"input","value":"sk-select"}),
+        json!({"type":"select","values":["1"]}),
+    ]);
+
+    let result = invoke_registered_command(&registered, "multilogin");
+    assert!(result.get("error").is_none(), "{result}");
+
+    // The select is a host list of the provider's choices, keyed by dialog
+    // index, and its answer is the chosen id, not the label or the index.
+    assert!(unsafe { &*fake }
+        .command_requests
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| request["ui"]["kind"] == "select"
+            && request["ui"]["title"] == "Add example account · Pick a workspace"
+            && request["ui"]["choices"]
+                == json!([{"label":"Alpha","value":"0"},{"label":"Beta","value":"1"}])));
+    let continues: Vec<Value> = auth_requests(fake)
+        .into_iter()
+        .filter(|request| request["action"] == "continue")
+        .collect();
+    assert_eq!(continues.len(), 2, "{continues:?}");
+    assert_eq!(continues[1]["value"], "ws-b");
+    assert_eq!(stored_accounts(&temp, "example").len(), 1);
+    finish(fake);
+}
+
+#[test]
+fn cancelled_multilogin_cancels_a_host_login_held_mid_continue() {
+    let temp = tempfile_dir();
+    let registered = register(&temp, Vec::new(), None);
+    let fake = registered.fake;
+    unsafe { &*fake }.auth_methods.lock().unwrap().insert(
+        "example".into(),
+        json!([{"id":"key","kind":"api_key","name":"API key"}]),
+    );
+    unsafe { &*fake }
+        .hang_continue
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    *unsafe { &*fake }.dialog_replies.lock().unwrap() = VecDeque::from(vec![
+        json!({"type":"open","id":"accounts","query":""}),
+        json!({"type":"open","id":"accounts.add","query":""}),
+        json!({"type":"select","values":["api_key"]}),
+        json!({"type":"input","value":"Work"}),
+        json!({"type":"input","value":"sk-hung"}),
+    ]);
+
+    let (cancelled, receive) = spawn_cancellable(&registered);
+    wait_for(
+        &unsafe { &*fake }.continue_waiting,
+        "held the host continue",
+    );
+    cancelled.store(true, std::sync::atomic::Ordering::SeqCst);
+    let raw = receive
+        .recv_timeout(std::time::Duration::from_secs(5))
+        .expect("command did not drain after cancellation");
+    // The host was still holding the request while the command unwound, so it
+    // is released only after the reply: the plugin raced the token itself.
+    assert!(unsafe { &*fake }
+        .continue_waiting
+        .load(std::sync::atomic::Ordering::SeqCst));
+    unsafe { &*fake }
+        .continue_release
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    // A cancelled login resolves like a cancelled dialog: no error, no result.
+    assert_eq!(raw, r#"{"version":1,"result":null}"#);
+    // The cancelLogin carries the loginId the host needs, so a login the plugin
+    // gave up on leaves no ticket behind.
+    let requests = auth_requests(fake);
+    assert!(
+        requests
+            .iter()
+            .any(|request| request["action"] == "cancelLogin" && request["loginId"] == "login-1"),
+        "{requests:?}"
+    );
+    let pending = requests
+        .iter()
+        .find(|request| request["action"] == "login")
+        .and_then(|request| request["accountId"].as_str())
+        .unwrap()
+        .to_owned();
+    assert!(stored_accounts(&temp, "example").is_empty());
+    assert_reservation_dropped(&registered, "example", &pending);
+    assert!(stored_accounts(&temp, "example").is_empty());
     finish(fake);
 }
