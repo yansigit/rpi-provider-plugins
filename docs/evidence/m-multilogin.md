@@ -77,13 +77,15 @@ account file never receives:
   drops the reservation on every exit path (success, cancellation, host error,
   presentation error), so a failed login leaves no pending entry behind.
 - `packages/rpi-multiprovider/src/store/mod.rs:19` `RESERVED_ACCOUNT_PREFIX` is a
-  store-level invariant, not only a port convention: a stored account whose id
-  claims the prefix is refused on read (`records::reserved`
-  `src/store/records.rs:176-190`, called from `src/store/mod.rs:136`) and the id
-  is also refused when a new account would mint one
-  (`src/store/records.rs:236-238`), so such a file reports
-  `account id "…" is reserved for in-flight logins` instead of surfacing the
-  reservation as an account. `PENDING_ACCOUNT_PREFIX`
+  store-level invariant, not only a port convention. The store never mints an
+  account with that prefix (`src/store/records.rs`, `add`, refused with
+  `account id "…" is reserved for in-flight logins`). A hand-edited record that
+  claims it does not brick the store: `records::hold` takes it out of the pool
+  for every operation except `remove`, so listing, use, the scheduler inventory
+  (`src/native/mod.rs`, `inventory`), the host credential read
+  (`src/native/credentials.rs`, `credential`) and the credential port
+  (`src/store/port.rs`, `account`) never serve it. Writes put it back where it
+  was (`records::restore`), and `remove` deletes it. `PENDING_ACCOUNT_PREFIX`
   (`src/native/credentials.rs:26`) re-exports that one constant.
 - `login(...)` (`src/native/login.rs:137-214`) reserves, sends
   `{"port":"auth","action":"login","providerId":…,"methodId":…,
@@ -206,9 +208,13 @@ vtable):
   a host reply, is what ended it), reports the cancel as no result and no error,
   sends `cancelLogin` for that `loginId`, stores nothing and drops the
   reservation.
-- `packages/rpi-multiprovider/tests/store.rs:396`
-  `reserved_login_ids_are_never_stored_accounts` — a file that already holds a
-  `pending-login-*` account is refused on read, and `add` refuses to mint one.
+- `packages/rpi-multiprovider/tests/store.rs`
+  `reserved_login_ids_are_never_stored_accounts` — `add` refuses to mint a
+  reserved id. `reserved_records_are_skipped_and_removable_through_the_request_path`
+  — a hand-edited `pending-login-*` record is skipped by list, pool, has, the
+  scheduler inventory, the credential port and the host read, is preserved by
+  writes, refused by `account`, and deleted by `remove`, while the other accounts
+  keep working.
 
 Unit tests in `src/native/login.rs`: `:311`
 `host_methods_become_pi_auth_presentation`, `:334`
@@ -226,7 +232,7 @@ answered with evidence:
 
 | # | Follow-up | Disposition |
 | --- | --- | --- |
-| F1 | No prefix guard on real account ids: a store file could hold an account whose id claims `pending-login-` | The prefix is now a store invariant: `RESERVED_ACCOUNT_PREFIX` (`src/store/mod.rs:19`) is refused on read (`src/store/records.rs:176-190`, wired at `src/store/mod.rs:136`) and when a new account would mint one (`src/store/records.rs:236-238`), with `account id "…" is reserved for in-flight logins`. Pinned by `tests/store.rs:396` `reserved_login_ids_are_never_stored_accounts`. |
+| F1 | No prefix guard on real account ids: a store file could hold an account whose id claims `pending-login-` | The prefix is a store invariant: `RESERVED_ACCOUNT_PREFIX` (`src/store/mod.rs:19`) is refused when a new account would mint one (`src/store/records.rs`, `add`), with `account id "…" is reserved for in-flight logins`. A stored record that claims it is skipped on every operation except `remove`, and is kept by writes (`records::hold` / `records::restore`), so one bad record cannot block the store. Pinned by `tests/store.rs` `reserved_login_ids_are_never_stored_accounts` and `reserved_records_are_skipped_and_removable_through_the_request_path`. |
 | F2 | Outer cancellation while awaiting `client.request(login/continue)` leaks the host ticket | `request` (`src/native/login.rs:108-121`) is a biased `tokio::select!` on `signal.cancelled()`, and every login abandoned after a `loginId` is known sends `cancelLogin` on a **fresh** token (`cancel_login` `:123-135`, used at `:186-214`): presentation error, cancelled `continue`, refused `continue`. Pinned by `cancelled_multilogin_cancels_a_host_login_held_mid_continue` (`tests/m_native.rs:2856`), where the fake host still holds the request when the command unwinds. |
 | F3 | Paste prompt title must stay `Enter <name>:` (no Pi trailing-space drift) | No code change: the port already matches Pi (`src/commands/login.rs:352`, `masked = false`) and `multilogin_pastes_a_key_when_the_host_reports_no_interactive_login` pins the exact title. |
 | F4 | A `select` interaction answered empty reads as `CANCELLED` where the host raises a resolve error | `select` requires choices with a non-empty `id` (`src/native/login.rs:264-274`) and an empty answer is now `multiprovider: invalid login choices`, not `CANCELLED` (`:280-284`). Pinned by `select_interactions_need_choice_ids` and `unresolved_select_answers_are_errors_not_cancellations`. |
@@ -309,7 +315,16 @@ for the presentation ones). Logs under `/tmp/ml-logs` (lane) and
 | `login`: no `cancelLogin` when the presentation errors | `cancelled_multilogin_cancels_the_host_login_and_stores_nothing` (`tests/m_native.rs:2672`) | killed (`mut-m3.log`) |
 | `present`: an empty `select` answer is `CANCELLED` again | `native::login::tests::unresolved_select_answers_are_errors_not_cancellations` (`src/native/login.rs:430`) | killed (`mut-m4.log`) |
 | `present`: `select` choices are not validated for ids | `native::login::tests::select_interactions_need_choice_ids` (`src/native/login.rs:404`) | killed (`mut-m5.log`) |
-| store read: skip the reserved-prefix check | `reserved_login_ids_are_never_stored_accounts` (`tests/store.rs:408`) | killed (`mut-m6.log`) |
+| store read: skip the reserved-prefix check | superseded: `read` no longer refuses; see the three `records`/`request` rows below | n/a |
+| (follow-up B1) `request`: drop the watcher's `cancelLogin` for a reply that opens a ticket after the command gave up | `cancelled_multilogin_cancels_a_host_login_opened_after_the_command_gave_up` (`tests/m_native.rs`) | killed (exit 101) |
+| (follow-up B2) `cancel_login`: wait for the reply with no deadline | `cancelled_multilogin_returns_while_the_host_is_slow_to_cancel` (`tests/m_native.rs`) | killed (exit 101) |
+| (follow-up B3) store request: no `records::hold` for non-remove operations | `reserved_records_are_skipped_and_removable_through_the_request_path` (`tests/store.rs`, list assertion) | killed (exit 101) |
+| (follow-up B3) store request: no `records::restore` on write | same test, write-preservation assertion | killed (exit 101) |
+| (follow-up B3) store request: `remove` also holds the records | same test, `remove` assertion | killed (exit 101) |
+| (follow-up B3) scheduler inventory serves reserved records | same test, inventory assertion | killed (exit 101) |
+| (follow-up B3) credential port serves a reserved record | same test, port read assertion | killed (exit 101) |
+| (follow-up B3) `native::credentials::read` serves a reserved record | same test, `credentials::read` assertion | killed (exit 101) |
+| (follow-up B3) `account`/`replace` on a reserved id reports no reserved diagnostic | same test, diagnostic assertion | killed (exit 101) |
 | store add: allow minting a reserved id | `reserved_login_ids_are_never_stored_accounts` (`tests/store.rs:427`) | killed (`mut-m7.log`) |
 | `present`: report a repeated `wait` message every poll | `native::login::tests::wait_interactions_report_once_and_stop_on_cancellation` (`src/native/login.rs:447`) | killed (`mut-m8.log`) |
 | `present`: answer a `wait` with its own message instead of no value | `multilogin_walks_input_wait_and_success_interactions` (`tests/m_native.rs:2776`) | killed (`mut-m9.log`) |

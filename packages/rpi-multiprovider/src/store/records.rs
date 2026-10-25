@@ -171,26 +171,70 @@ fn upstream(pool: &mut Value, input: &Value, merge: bool) -> Result<(), Error> {
     }
     Ok(())
 }
-/// Refuses a stored account whose id claims [`super::RESERVED_ACCOUNT_PREFIX`]:
-/// those ids belong to `/multilogin`'s in-flight logins, which are memory-only.
-pub fn reserved(state: &Value) -> Result<(), Error> {
-    for (_, pool) in schema::entries(&state["providers"]) {
-        for account in pool["accounts"].as_array().into_iter().flatten() {
-            if let Some(id) = account["id"]
-                .as_str()
-                .filter(|id| id.starts_with(super::RESERVED_ACCOUNT_PREFIX))
-            {
-                return Err(reserved_id(id));
-            }
-        }
-    }
-    Ok(())
-}
-
 fn reserved_id(id: &str) -> Error {
     error(format!(
         "account id \"{id}\" is reserved for in-flight logins"
     ))
+}
+
+fn reserved_account(account: &Value) -> bool {
+    account["id"]
+        .as_str()
+        .is_some_and(super::is_reserved_account_id)
+}
+
+/// A reserved record taken out of its pool by [`hold`]: the provider, its index
+/// among that pool's accounts, and the record itself.
+pub type Held = (String, usize, Value);
+
+/// Takes the reserved records out of every pool. A reserved record is memory-only
+/// state that only a hand edit can plant, so the operations on accounts neither
+/// see, schedule nor rewrite it. [`restore`] puts the records back when the
+/// operation writes.
+pub fn hold(state: &mut Value) -> Vec<Held> {
+    let mut held = Vec::new();
+    let providers: Vec<String> = schema::entries(&state["providers"])
+        .into_iter()
+        .map(|(id, _)| id)
+        .collect();
+    for provider in providers {
+        let Some(mut pool) = property(&state["providers"], &provider).cloned() else {
+            continue;
+        };
+        let Some(accounts) = pool["accounts"].as_array_mut() else {
+            continue;
+        };
+        if !accounts.iter().any(reserved_account) {
+            continue;
+        }
+        let mut kept = Vec::with_capacity(accounts.len());
+        for (index, account) in std::mem::take(accounts).into_iter().enumerate() {
+            if reserved_account(&account) {
+                held.push((provider.clone(), index, account));
+            } else {
+                kept.push(account);
+            }
+        }
+        pool["accounts"] = kept.into();
+        put(&mut state["providers"], &provider, pool);
+    }
+    held
+}
+
+/// Puts the records [`hold`] took back at their original positions.
+pub fn restore(state: &mut Value, held: Vec<Held>) -> Result<(), Error> {
+    for (provider, index, account) in held {
+        let mut pool = property(&state["providers"], &provider)
+            .cloned()
+            .ok_or_else(|| error("reserved account lost its pool"))?;
+        let accounts = pool["accounts"]
+            .as_array_mut()
+            .ok_or_else(|| error("malformed accounts"))?;
+        let at = index.min(accounts.len());
+        accounts.insert(at, account);
+        put(&mut state["providers"], &provider, pool);
+    }
+    Ok(())
 }
 
 pub fn execute(
@@ -248,6 +292,9 @@ pub fn execute(
         }
         "account" | "replace" => {
             let id = text(request, "account")?;
+            if super::is_reserved_account_id(id) {
+                return Err(reserved_id(id));
+            }
             let mut pool = property(&state["providers"], provider)
                 .cloned()
                 .ok_or_else(|| error(format!("unknown stored account \"{id}\"")))?;

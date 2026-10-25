@@ -34,6 +34,10 @@ fn field<'a>(value: &'a Value, name: &str) -> Result<&'a str, Failure> {
         .ok_or_else(|| error(format!("missing {name}")))
 }
 fn account<'a>(state: &'a Value, provider: &str, id: &str) -> Result<&'a Value, Failure> {
+    // A reserved record is never a credential the host can read or replace.
+    if super::is_reserved_account_id(id) {
+        return Err(error(format!("stored account \"{id}\" is unavailable")));
+    }
     schema::entries(&state["providers"])
         .into_iter()
         .find(|(name, _)| name == provider)

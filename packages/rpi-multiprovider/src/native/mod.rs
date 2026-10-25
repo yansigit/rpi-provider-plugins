@@ -711,6 +711,10 @@ fn inventory(store: &Store, provider: &str) -> Result<Vec<Account>, String> {
         let Some(id) = account["id"].as_str() else {
             return Err("multiprovider: stored account has no id".into());
         };
+        // A reserved record belongs to an in-flight login, never to the scheduler.
+        if crate::store::is_reserved_account_id(id) {
+            continue;
+        }
         accounts.push(Account {
             id: id.to_owned(),
             label: account["label"].as_str().unwrap_or(id).to_owned(),

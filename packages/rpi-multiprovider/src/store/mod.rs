@@ -18,6 +18,11 @@ pub const FILE_NAME: &str = "multiprovider-auth.json";
 /// one.
 pub const RESERVED_ACCOUNT_PREFIX: &str = "pending-login-";
 
+/// Whether an account id belongs to `/multilogin`'s in-flight logins.
+pub fn is_reserved_account_id(id: &str) -> bool {
+    id.starts_with(RESERVED_ACCOUNT_PREFIX)
+}
+
 // Parsing failures stay structured until the native presentation policy is selected.
 pub enum Failure {
     Public(Error),
@@ -112,12 +117,24 @@ impl Store {
             None
         };
         let mut state = self.read()?;
+        // `remove` is the one operation that addresses a reserved record, so it
+        // can delete one. Every other operation sees only the stored accounts,
+        // and the records are put back unchanged when it writes.
+        let held = if request["op"] == "remove" {
+            Vec::new()
+        } else {
+            records::hold(&mut state)
+        };
         let result = records::execute(&mut state, &request, &*self.now, &*self.random_id)?;
         if writable {
+            records::restore(&mut state, held)?;
             self.write(&state)?;
         }
         Ok(result)
     }
+    /// The validated file as stored. Reserved records are included, so callers
+    /// that serve accounts must skip them. The request path does so through
+    /// `records::hold`, and one bad record never blocks the whole store.
     pub fn read(&self) -> Result<Value, Failure> {
         let bytes = match fs::read(&self.path) {
             Ok(bytes) => bytes,
@@ -133,7 +150,6 @@ impl Store {
             column: error.column(),
         })?;
         schema::state(&state)?;
-        records::reserved(&state)?;
         Ok(state)
     }
     fn directory(&self) -> &Path {

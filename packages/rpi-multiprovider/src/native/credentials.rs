@@ -21,8 +21,9 @@ use tokio_util::sync::CancellationToken;
 pub const CREDENTIAL_STORE_ID: &str = "multiprovider";
 
 /// Prefix of the account ids reserved for in-flight logins, so a reservation is
-/// recognizable in diagnostics. Reservations are looked up by exact id first,
-/// and the store refuses to persist an account that claims the same prefix.
+/// recognizable in diagnostics. Reservations are looked up by exact id first.
+/// The store never mints an account with this prefix, and it skips a stored
+/// record that has one, so such a record is never served or scheduled.
 pub const PENDING_ACCOUNT_PREFIX: &str = crate::store::RESERVED_ACCOUNT_PREFIX;
 
 /// A private pending account: the persist-first destination of one host login.
@@ -50,6 +51,9 @@ pub fn read(path: &Path, provider: &str, account: &str) -> Result<Option<Value>,
 }
 
 fn credential(state: &Value, provider: &str, account: &str) -> Option<Value> {
+    if crate::store::is_reserved_account_id(account) {
+        return None;
+    }
     state["providers"]
         .get(provider)?
         .get("accounts")?

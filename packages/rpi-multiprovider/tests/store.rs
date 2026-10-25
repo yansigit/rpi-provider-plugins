@@ -397,22 +397,9 @@ async fn reserved_login_ids_are_never_stored_accounts() {
     let root = scratch();
     let path = root.0.join("accounts.json");
     let store = Store::new(path.clone());
-    let saved = checked(&store, add("Real")).await;
+    checked(&store, add("Real")).await;
 
-    // A hand-edited file naming a reservation is refused, not read as an
-    // ordinary account.
-    let mut file: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    file["providers"]["example"]["accounts"][0]["id"] = json!("pending-login-forged");
-    std::fs::write(&path, file.to_string()).unwrap();
-    assert_eq!(
-        failure(store.read().expect_err("reserved id in the file"))["error"]["message"],
-        "multiprovider: account id \"pending-login-forged\" is reserved for in-flight logins"
-    );
-
-    // Nor does the store mint one for a new account.
-    let mut file: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    file["providers"]["example"]["accounts"][0]["id"] = saved["id"].clone();
-    std::fs::write(&path, file.to_string()).unwrap();
+    // The store never mints a reserved id for a new account.
     let minting = Store::with_sources(
         path.clone(),
         Arc::new(|| 1.0),
@@ -438,4 +425,148 @@ async fn reserved_login_ids_are_never_stored_accounts() {
         "a refused add stores nothing: {accounts:?}"
     );
     assert_eq!(accounts[0]["label"], "Real");
+}
+
+/// Account ids stored under one provider, read straight from the file.
+fn stored_ids(file: &Value, provider: &str) -> Vec<String> {
+    file["providers"][provider]["accounts"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(|account| account["id"].as_str().unwrap().to_owned())
+        .collect()
+}
+
+/// A hand-edited `pending-login-*` record must not brick the store. Listing,
+/// use and the scheduler skip it, the other accounts keep working, writes leave
+/// it in the file, and `remove` deletes it through the request path.
+#[tokio::test]
+async fn reserved_records_are_skipped_and_removable_through_the_request_path() {
+    use rpi_multiprovider::native::credentials;
+    use rpi_multiprovider::store::port::{Port, STORE_ID};
+
+    let root = scratch();
+    let path = root.0.join("accounts.json");
+    let store = Store::new(path.clone());
+    let saved = checked(&store, add("Real")).await;
+    let saved_id = saved["id"].as_str().unwrap().to_owned();
+
+    // The same pool holds a planted record, and a second provider holds only one.
+    let mut file: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    let mut forged = file["providers"]["example"]["accounts"][0].clone();
+    forged["id"] = json!("pending-login-forged");
+    forged["label"] = json!("Forged");
+    file["providers"]["example"]["accounts"]
+        .as_array_mut()
+        .unwrap()
+        .push(forged.clone());
+    let mut orphan = forged.clone();
+    orphan["id"] = json!("pending-login-orphan");
+    file["providers"]["orphan"] = json!({"policy":"round-robin","affinity":true,
+        "includeUpstream":true,"accounts":[orphan]});
+    std::fs::write(&path, file.to_string()).unwrap();
+
+    // Listing, presence and the pool never show a record.
+    assert_eq!(
+        checked(&store, json!({"op":"list"})).await,
+        json!(["example"])
+    );
+    let pool = checked(&store, json!({"op":"pool","provider":"example"})).await;
+    let listed: Vec<&str> = pool["accounts"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|account| account["id"].as_str().unwrap())
+        .collect();
+    assert_eq!(listed, [saved_id.as_str()]);
+    assert_eq!(
+        checked(&store, json!({"op":"has","provider":"example"})).await,
+        json!(true)
+    );
+    assert_eq!(
+        checked(&store, json!({"op":"has","provider":"orphan"})).await,
+        json!(false)
+    );
+
+    // The scheduler's inventory never schedules a record, and the host cannot
+    // read or replace one.
+    let inventory = native_accounts(&store);
+    assert!(inventory.contains(&saved_id), "{inventory:?}");
+    assert!(!inventory.iter().any(|id| id.starts_with("pending-login-")));
+    let port = Port::new(store.clone());
+    let read = json!({"version":1,"storeId":STORE_ID,"providerId":"example",
+        "accountId":"pending-login-forged","action":"read","input":null});
+    assert!(port.request(read, CancellationToken::new()).await.is_err());
+    assert!(matches!(
+        credentials::read(&path, "example", "pending-login-forged"),
+        Ok(None)
+    ));
+
+    // Accounts keep working: one is relabelled and another is added.
+    checked(
+        &store,
+        json!({"op":"account","provider":"example","account":saved_id,"input":{"label":"Renamed"}}),
+    )
+    .await;
+    let second = checked(&store, add("Second")).await;
+    let second_id = second["id"].as_str().unwrap().to_owned();
+    // Addressing the record directly is refused with the reserved diagnostic.
+    let refused = store
+        .request(
+            json!({"op":"account","provider":"example","account":"pending-login-forged","input":{"label":"Edited"}}),
+            CancellationToken::new(),
+        )
+        .await
+        .err()
+        .expect("a reserved record was edited");
+    assert_eq!(
+        failure(refused)["error"]["message"],
+        "multiprovider: account id \"pending-login-forged\" is reserved for in-flight logins"
+    );
+
+    // Writes leave the records where they were.
+    let file: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    assert_eq!(
+        stored_ids(&file, "example"),
+        [
+            saved_id.clone(),
+            "pending-login-forged".into(),
+            second_id.clone()
+        ]
+    );
+    assert_eq!(stored_ids(&file, "orphan"), ["pending-login-orphan"]);
+    assert_eq!(
+        file["providers"]["example"]["accounts"][0]["label"],
+        "Renamed"
+    );
+
+    // `remove` deletes a record, and the orphan's pool goes with its last one.
+    assert_eq!(
+        checked(
+            &store,
+            json!({"op":"remove","provider":"example","account":"pending-login-forged"})
+        )
+        .await,
+        json!(true)
+    );
+    assert_eq!(
+        checked(
+            &store,
+            json!({"op":"remove","provider":"orphan","account":"pending-login-orphan"})
+        )
+        .await,
+        json!(true)
+    );
+    let file: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    assert_eq!(stored_ids(&file, "example"), [saved_id, second_id]);
+    assert!(file["providers"].get("orphan").is_none(), "{file}");
+}
+
+/// Account ids the scheduler inventory serves for `example`.
+fn native_accounts(store: &Store) -> Vec<String> {
+    rpi_multiprovider::native::provider_accounts(store, "example")
+        .unwrap()
+        .iter()
+        .map(|account| account["id"].as_str().unwrap().to_owned())
+        .collect()
 }
