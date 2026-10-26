@@ -7,47 +7,26 @@ not substitutes for the requested package version.
 
 ## Release workflow
 
-Every push or PR merge to `main` runs
-`.github/workflows/release-cargo.yml`. release-plz compares the workspace with
-crates.io, updates versions and package changelogs for unpublished changes,
-and synchronizes `catalog/packages.json`. Ordinary changes to the current
-`0.x` packages get a patch bump; conventional breaking-change commits can
-increase the minor version. Packages inheriting the workspace version share
-that version. Already prepared, unpublished versions are preserved.
-Release analysis includes history after the migration to registry SDK
-dependencies; older commits requiring an external `pi-rust` checkout are
-excluded in the CI checkout so historical package comparisons can run.
+This repository does not publish to crates.io. Its packages are `publish = false`,
+and each release is made by hand:
 
-The workflow tests the workspace and dry-runs Cargo publishing before creating
-and merging a version PR. It respects protected `main` without directly pushing
-to it. It then publishes unpublished extension crates and creates per-package
-tags (`<package>-v<version>`) and GitHub Releases.
-The installer is excluded because it has `publish = false`. Publishing runs
-in the same workflow as the version update. Runs are serialized, and a failed
-release can be retried from the Actions UI or with `workflow_dispatch` on `main`.
+1. Tag the released commit as `<package>-v<version>` and create a GitHub Release
+   for that tag.
+2. Run the `release-assets.yml` workflow manually with `source_ref` set to that
+   commit and `package_releases` set to a JSON array of the tags.
 
-Configure the repository Actions secret `CARGO_REGISTRY_TOKEN` with crates.io
-publishing permission for all extension crates, including permission to create
-any names that have not been published yet. The workflow's `GITHUB_TOKEN` needs
-permission to create and merge the version PR and create tags/releases. Enable
-Actions PR creation in the repository settings. If branch rules require
-approvals or checks, the version PR must satisfy them before releasing.
-If organization policy blocks Actions PR creation, set the optional
-`RELEASE_GITHUB_TOKEN` secret with repository Contents and Pull requests write
-permissions instead.
-
-After crate publishing, `release-assets.yml` automatically builds Windows x64,
-Linux x64/ARM64, and macOS Intel/Apple Silicon binaries from the exact release
-commit. Each package Release receives individual extension archives and an
-`rpi-extension.json` manifest with download URLs, SHA-256 hashes, target triples,
-library names and SDK ABI. A separate bundle Release contains the full
-collection, installer and standalone ACP bridge. The existing
-`release-unix.yml` manual entry point now uses the same five-platform pipeline.
+The workflow builds the requested libraries from the exact commit on Windows x64,
+Linux x64/ARM64, and macOS Intel/Apple Silicon. It attaches each package's
+archives to its Release, then publishes the `rpi-extension.json` manifest
+(download URLs, SHA-256 hashes, target triples, library names and SDK ABI) last,
+after all five platforms are present. Release builds need the repository secrets
+`RPI_ANTIGRAVITY_OAUTH_CLIENT_ID` and `RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET`; the
+workflow stops before compiling if either is empty.
 
 Host developers can implement prebuilt installation using the discovery
-protocol below and its [JSON schema](rpi-extension.schema.json). Discover the
-repository from crates.io metadata, then use the requested package's versioned Release manifest;
-packages in this repository do not all share one version.
+protocol below and its [JSON schema](rpi-extension.schema.json). Use the
+requested package's versioned Release manifest; packages in a repository do not
+all share one version.
 
 ## Discovery
 
@@ -148,52 +127,18 @@ Unknown fields may be ignored; unknown schema versions must be rejected.
 
 ## Bundles and build provenance
 
-The aggregate Release `rpi-packages-<first 12 characters of source commit>`
-contains `rpi-packages.json`, five full platform bundles, and five standalone
-ACP bridge archives. Bundles contain all workspace cdylibs, the installer, and
-the catalog. `rpi-packages.json` maps target triples to archive checksums and
-the individual package versions, SDK identities and library checksums.
-It is a convenience distribution for installing the whole collection; single
-package installation uses the package Release above.
-
-All five builds use the same exact Git commit. Linux GNU builds use Ubuntu
+There is no aggregate bundle in this repository; each package Release is
+self-contained. All five builds use the same exact Git commit. Linux GNU builds use Ubuntu
 22.04; normal runtime dependencies such as glibc, ALSA and OpenSSL still apply.
 The supported targets are Windows x64 MSVC, Linux x64/ARM64 GNU, and macOS
 Intel/Apple Silicon. Windows ARM64, Linux musl and 32-bit platforms are not
 currently built. The loader performs the final host compatibility check.
 
-## Release automation
+## Retrying an asset build
 
-On a push to `main`, the release workflow prepares versions and changelogs,
-synchronizes the catalog, runs tests and Cargo publishing preflight, and opens
-and squash-merges a PR containing the tested release metadata. It never pushes
-directly to protected `main`. The repository must allow Actions to create PRs;
-the version PR is merged only when branch protection permits it. If approval or
-required checks are added later, merge that PR through the normal review flow
-and rerun the release workflow on `main`.
-
-The workflow then publishes crates, creates per-package tags/Releases, and
-calls the cross-platform build workflow directly. This direct call is needed
-because pushes/releases made with `GITHUB_TOKEN` do not trigger another
-workflow automatically (see [GitHub's token event behavior](https://docs.github.com/en/actions/concepts/security/github_token)).
-When organization policy permits Actions PR creation,
-the built-in token is sufficient. Otherwise set `RELEASE_GITHUB_TOKEN` to a
-repository-scoped GitHub App token or fine-grained personal access token with
-Contents and Pull requests write permissions. This token is used for the PR
-API only; it does not bypass `main` protection. A version-PR push triggered by
-that token is skipped by the release workflow because the original run already
-publishes the merged commit. `workflow_dispatch` can always retry that commit.
-
-The build pipeline preserves Actions artifacts for 14 days. Five-platform
-assembly verifies source commit, package identity, SDK identity and checksums
-before uploading discovery manifests. A completed manifest and its archives
-are preserved on retry; unfinished releases can finish uploading safely.
-To recover a failed asset build, rerun the failed jobs or manually invoke
-`release-assets.yml` with the published commit and a JSON array of its package
-tags. The existing `release-unix.yml` entry point now manually builds all five
-platform bundles from its supplied tag.
-
-Repository prerequisites: `CARGO_REGISTRY_TOKEN` with publishing permission
-for all extension crates, Actions PR creation enabled or `RELEASE_GITHUB_TOKEN`,
-and permission for the workflow token to push its release branch and create
-Releases. `main` remains protected against direct pushes, including bot pushes.
+The build artifacts are kept for 14 days. Before it uploads the discovery
+manifest, the publish job verifies the source commit, package identity, SDK
+identity and checksums of every platform. A release whose manifest is already
+published keeps its assets on retry, and an unfinished release can finish
+uploading safely. To recover a failed build, rerun the failed jobs or run
+`release-assets.yml` again with the same commit and tags.

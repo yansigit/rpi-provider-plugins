@@ -91,14 +91,11 @@ update cannot remove it) and fails if the compiled worker is missing.
 
 ## Releasing without crates.io
 
-This crate is `publish = false`: it is distributed only as a GitHub Release, but
-its release still needs the same `<package>-v<version>` tag as every published
-extension. `release-plz release` skips `cargo publish` for it and still creates
-the tag and GitHub Release. Because the crate is never in the cargo registry,
-release-plz cannot confirm the version from the registry, so after a release run
-check that `rpi-cursor-sdk-v<version>` exists on the release commit. If it does
-not, create the tag and empty release manually and let the asset workflow fill
-them in:
+This crate is `publish = false`: it is distributed only as a GitHub Release. Its
+release still needs the `<package>-v<version>` tag that the extension catalog
+refers to. No workflow in this repository creates the tag or the release, so
+create both on the released commit, then let the asset workflow attach the
+archives:
 
 ```sh
 commit="$(git rev-parse HEAD)"          # the released, already-tested commit
@@ -115,15 +112,13 @@ gh release create "$tag" --verify-tag \
 # Then build and upload the five platform archives plus rpi-extension.json.
 gh workflow run release-assets.yml \
   -f source_ref="$commit" \
-  -f package_releases="[\"$tag\"]" \
-  -f bundle_tag="rpi-packages-${commit:0:12}"
+  -f package_releases="[\"$tag\"]"
 ```
 
-For a package-only retry (no aggregate bundle), add `-f packages_only=true`; the
-backfill workflow requires the tag to point at `source_ref`, because
-`select-release-tags.py` only selects package tags whose peeled commit equals the
-built revision. Do not push a package tag later at a different commit: the
-release job then finds no matching package and uploads nothing.
+The publish step checks that the tag points at `source_ref` and refuses a tag on
+any other commit. Do not move the tag after the release exists. A retry
+for the same tag and commit is safe: a release that already has
+`rpi-extension.json` keeps its assets.
 
 ## Install-time npm step
 
