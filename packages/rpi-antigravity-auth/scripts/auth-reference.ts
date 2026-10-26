@@ -10,6 +10,20 @@ const integrated = resolve(process.env.RPI_REFERENCE_INTEGRATED!);
 const output = resolve(process.env.RPI_REFERENCE_OUTPUT!);
 const pin = 'a97f9055017f3c1546afbfe61a19d50b428be3d8';
 assert.equal(execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),pin);
+// The upstream client identity is supplied by the operator (RPI_REFERENCE_OAUTH_CLIENT_ID and
+// RPI_REFERENCE_OAUTH_CLIENT_SECRET) and every occurrence is mapped to the scrubbed placeholders
+// before writing, so the committed fixture never carries the real values.
+const scrubbedClient:[string,string][]=[['RPI_REFERENCE_OAUTH_CLIENT_ID','antigravity-oauth-client-id.invalid'],['RPI_REFERENCE_OAUTH_CLIENT_SECRET','antigravity-oauth-client-secret-placeholder']];
+function normalizeOAuthClient(text:string):string{
+  let result=text;
+  for(const [variable,placeholder] of scrubbedClient){
+    const value=process.env[variable];
+    assert.ok(value,`${variable} must be set to the upstream value so it can be scrubbed`);
+    assert.ok(result.includes(value),`${variable} does not occur in the regenerated document`);
+    result=result.split(value).join(placeholder);
+  }
+  return result;
+}
 const crypto = await import('node:crypto');
 const entropy = Buffer.from(Array.from({length:32}, (_,i) => i));
 mock.module('node:crypto', {exports:{...Object.fromEntries(Object.entries(crypto).filter(([key]) => key !== 'default')),randomBytes: (length: number) => { assert.ok(length<=32); return entropy.subarray(0,length); }}});
@@ -97,6 +111,6 @@ try {
     logins.push({input,responses:[token,user,managed],result,ui,trace:structuredClone(trace)});
   }
   const sourceHashes=Object.fromEntries(await Promise.all(['packages/core/src/antigravity/oauth.ts','packages/core/src/auth.ts','packages/pi/src/index.ts','packages/pi/src/credential-cache.ts'].map(async file=>[file,crypto.createHash('sha256').update(await readFile(join(root,file))).digest('hex')])));
-  await writeFile(output,JSON.stringify({reference:pin,host:host.version,runtime:process.version,clock,sourceHashes,authorizations,packed,expiries,expired,cacheTrace,cases,logins},null,2)+'\n');
+  await writeFile(output,normalizeOAuthClient(JSON.stringify({reference:pin,host:host.version,runtime:process.version,clock,sourceHashes,authorizations,packed,expiries,expired,cacheTrace,cases,logins},null,2)+'\n'));
   console.log(JSON.stringify({cases:cases.length,logins:logins.length}));
 } finally {await rm(temporary,{recursive:true,force:true});}

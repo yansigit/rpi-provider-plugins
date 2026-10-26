@@ -5,8 +5,13 @@
 //   RPI_REFERENCE_DIR=<provider-references/antigravity> \
 //   RPI_REFERENCE_INTEGRATED=<provider-references/integrated> \
 //   RPI_REFERENCE_OUTPUT=tests/fixtures/ag1-oauth.json \
+//   RPI_REFERENCE_OAUTH_CLIENT_ID=<upstream client id> \
+//   RPI_REFERENCE_OAUTH_CLIENT_SECRET=<upstream client secret> \
 //   node --experimental-test-module-mocks scripts/ag1-oauth-reference.mjs --write
 // Without --write the regenerated document is compared to the committed fixture.
+// The upstream client identity is not stored in this repository: the two variables
+// above name the values the upstream code sends, and every occurrence is mapped to
+// the scrubbed placeholders before the document is written or compared.
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -330,6 +335,24 @@ const sourceHashes = Object.fromEntries(
   ),
 );
 
+// Maps the upstream client identity to the placeholders the committed fixture carries.
+// Each value must be supplied and must occur, so a missing or stale value fails loudly
+// instead of silently writing (or comparing) the real identity.
+const scrubbedClient = [
+  ['RPI_REFERENCE_OAUTH_CLIENT_ID', 'antigravity-oauth-client-id.invalid'],
+  ['RPI_REFERENCE_OAUTH_CLIENT_SECRET', 'antigravity-oauth-client-secret-placeholder'],
+];
+function normalizeOAuthClient(text) {
+  let result = text;
+  for (const [variable, placeholder] of scrubbedClient) {
+    const value = process.env[variable];
+    assert.ok(value, `${variable} must be set to the upstream value so it can be scrubbed`);
+    assert.ok(result.includes(value), `${variable} does not occur in the regenerated document`);
+    result = result.split(value).join(placeholder);
+  }
+  return result;
+}
+
 const document =
   JSON.stringify(
     {
@@ -350,11 +373,12 @@ const document =
     2,
   ) + '\n';
 server.close();
+const normalized = normalizeOAuthClient(document);
 if (write) {
-  await writeFile(output, document);
+  await writeFile(output, normalized);
   console.log(JSON.stringify({ exchange: exchange.length, refresh: refresh.length, project: projectCases.length, cache: cacheTrace.length, redaction: redactionCases.length }));
 } else {
   const committed = await readFile(output, 'utf8');
-  assert.equal(document, committed, 'fixture differs; run with --write');
+  assert.equal(normalized, committed, 'fixture differs; run with --write');
   console.log(JSON.stringify({ checked: true, exchange: exchange.length, refresh: refresh.length, project: projectCases.length }));
 }

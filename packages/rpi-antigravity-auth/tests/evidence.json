@@ -259,7 +259,7 @@
     "tests/fixtures/diagnostics.json": "a2786d3fac0f6c1d9e1a052f834a4f8c62ce96e6f88bbfb288113a23f6b536d1",
     "tests/fixtures/transport.json": "20c5b982636328061cc938c6d8fbd5804baf972e1745e7ebff2a109e4bec8a45",
     "tests/fixtures/network.json": "53e1042b8b185cf4012ac0fbf8723c3991b0c9cfa274f70a71e16e145c306b80",
-    "tests/fixtures/auth.json": "3584a5310e91ca527fbce91830000a60661bfdb8341845938b34db28afbf3a7b",
+    "tests/fixtures/auth.json": "28bf69cf6b694d42cf454cdcbaacca458b9662ebf49727c53195bdba0b41e334",
     "tests/fixtures/project.json": "c361c401873da9082b077722cde46f4fd520fec67df3562c62c86ba98e753e10",
     "tests/fixtures/fetch.json": "683e7d46d90800538e5984eaced07df92764ceead5fe7f12b4fccee33ac16687",
     "tests/fixtures/local.json": "38fbd8e1dfe88f88a730a1e162826a584513442bb05a59c2674c5abe1d79c45e"

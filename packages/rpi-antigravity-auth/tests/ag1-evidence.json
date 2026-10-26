@@ -19,7 +19,7 @@
     "referenceCheckMode": "node --experimental-test-module-mocks scripts/ag1-oauth-reference.mjs and scripts/ag1-retired-reference.mjs regenerate byte-identical documents (two runs each) and exit non-zero on any difference; both assert the pinned sha256 of every imported upstream source and of the imported dist files/trees before importing them"
   },
   "fixtures": {
-    "tests/fixtures/ag1-oauth.json": "05ced614959a6dbdf9ac28321ca9b78991cf06c21b81ca79edbd819e74cdde7d",
+    "tests/fixtures/ag1-oauth.json": "7b154fb58dd298f3e04559db6f449287223015ea909af7a1f068a454496fe1cc",
     "tests/fixtures/ag1-retired.json": "9ad96622b4e9486ace4a0725b17755c1c5cb0921caf0412c0468b2e737bd383f",
     "tests/fixtures/ag1-json-errors.json": "94a02386b02dd1da4278e1d86e77543c117a110942eab1b909eb8fc6cd9ff099"
   },
