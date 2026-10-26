@@ -299,7 +299,7 @@ class CursorPackageTests(unittest.TestCase):
             if not archive.exists():
                 self.archive(target)
             targets[target] = {
-                "url": f"https://github.com/pi-rust/rpi-package/releases/download/{PACKAGE_TAG}/{archive.name}",
+                "url": f"https://github.com/yansigit/rpi-provider-plugins/releases/download/{PACKAGE_TAG}/{archive.name}",
                 "format": "zip" if suffix == ".zip" else "tar.gz",
                 "size": archive.stat().st_size,
                 "sha256": sha256(archive.read_bytes()),
@@ -307,7 +307,7 @@ class CursorPackageTests(unittest.TestCase):
                 "assets": [{"path": item["path"], "sha256": item["sha256"]} for item in self.assets],
             }
         return {"schema_version": 1, "name": "rpi-cursor-sdk", "version": PACKAGE_VERSION,
-                "repository": "https://github.com/pi-rust/rpi-package", "tag": PACKAGE_TAG,
+                "repository": "https://github.com/yansigit/rpi-provider-plugins", "tag": PACKAGE_TAG,
                 "source_commit": "a" * 40, "sdk": {"version": "0.3.20", "plugin_abi": 4}, "targets": targets}
 
     def install(self, store, manifest, target, archive):

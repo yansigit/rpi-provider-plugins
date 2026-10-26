@@ -185,12 +185,16 @@ fn cargo_metadata_and_catalog_advertise_the_prebuilt_release() {
     assert_eq!(entry["type"], "extension");
     assert_eq!(
         entry["install"],
-        "rpi install rpi-cursor-sdk --github pi-rust/rpi-package"
+        "rpi install rpi-cursor-sdk --github yansigit/rpi-provider-plugins"
+    );
+    assert_eq!(
+        entry["repository"],
+        "https://github.com/yansigit/rpi-provider-plugins"
     );
     assert_eq!(
         entry["prebuilt_manifest"],
         format!(
-            "https://github.com/pi-rust/rpi-package/releases/download/rpi-cursor-sdk-v{version}/rpi-extension.json"
+            "https://github.com/yansigit/rpi-provider-plugins/releases/download/rpi-cursor-sdk-v{version}/rpi-extension.json"
         )
     );
 }

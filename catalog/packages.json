@@ -6,9 +6,9 @@
     "tool": null,
     "inspiredBy": "pi-cursor-sdk / Cursor Agents SDK",
     "sourceDownloadsPerMonth": null,
-    "install": "rpi install rpi-cursor-sdk --github pi-rust/rpi-package",
-    "repository": "https://github.com/pi-rust/rpi-package",
-    "prebuilt_manifest": "https://github.com/pi-rust/rpi-package/releases/download/rpi-cursor-sdk-v0.1.9/rpi-extension.json"
+    "install": "rpi install rpi-cursor-sdk --github yansigit/rpi-provider-plugins",
+    "repository": "https://github.com/yansigit/rpi-provider-plugins",
+    "prebuilt_manifest": "https://github.com/yansigit/rpi-provider-plugins/releases/download/rpi-cursor-sdk-v0.1.9/rpi-extension.json"
   },
   {
     "name": "rpi-antigravity-auth",

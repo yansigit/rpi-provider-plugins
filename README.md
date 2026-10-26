@@ -56,11 +56,24 @@ The `real_dll` tests load the library into a built rpi host, which is set with
 are either `#[ignore]`d with the reason or skip when their inputs are unset. See
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
-To install a package into rpi from this checkout:
+To install a package into rpi:
 
 ```sh
+# rpi-cursor-sdk is prebuilt. Its GitHub release (tag rpi-cursor-sdk-v<version>
+# with rpi-extension.json) must exist first; without it the install fails.
+rpi install rpi-cursor-sdk --github yansigit/rpi-provider-plugins
+
+# rpi-antigravity-auth and rpi-multiprovider are source-only. Run from the
+# repository root so the relative path resolves.
 rpi install rpi-multiprovider --path packages/rpi-multiprovider
+rpi install rpi-antigravity-auth --path packages/rpi-antigravity-auth
 ```
+
+The host's `--github` install is prebuilt-only. It reads the version from the
+`<package>-v<version>` tags of the named repository and downloads that release's
+`rpi-extension.json`. It cannot build from a GitHub URL or from a subdirectory,
+and `--build` and `--path` are local-only. Those two packages have no release, so
+they install from a local checkout.
 
 ## Antigravity OAuth client
 
