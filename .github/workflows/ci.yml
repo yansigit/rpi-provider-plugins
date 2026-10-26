@@ -63,7 +63,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # The evidence tests resolve the recorded registry baseline commit, so
+      # they need history rather than the default shallow clone.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
