@@ -1,52 +1,25 @@
-name: Build cross-platform release assets
+name: Build release assets
 
+# Manual entry point. Create the package release tag (for example rpi-cursor-sdk-v0.1.9)
+# on the source commit first; the build attaches archives to that existing release.
 on:
-  workflow_call:
-    inputs:
-      source_ref:
-        type: string
-        required: true
-      package_releases:
-        type: string
-        required: true
-      bundle_tag:
-        type: string
-        required: true
-    # Checked by the build job, which fails before compiling when either is empty.
-    secrets:
-      RPI_ANTIGRAVITY_OAUTH_CLIENT_ID:
-        required: false
-      RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET:
-        required: false
   workflow_dispatch:
     inputs:
       source_ref:
-        description: Published release tag or commit to build
+        description: Exact source commit that the package release tags point at
         required: true
         type: string
       package_releases:
-        description: JSON array of package tags to receive prebuilt assets
+        description: JSON array of package release tags to build, such as ["rpi-cursor-sdk-v0.1.9"]
         required: true
         default: '[]'
         type: string
-      bundle_tag:
-        description: Bundle Release tag (empty generates a tag from the commit)
-        required: false
-        type: string
-      packages_only:
-        description: Backfill only selected package releases without building the full bundle
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: write
 
 jobs:
-  backfill:
-    if: inputs.packages_only == true
-    permissions:
-      contents: write
+  packages:
     uses: ./.github/workflows/release-packages.yml
     with:
       source_ref: ${{ inputs.source_ref }}
@@ -54,159 +27,3 @@ jobs:
     secrets:
       RPI_ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_ID }}
       RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
-
-  source:
-    if: inputs.packages_only != true
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-    outputs:
-      revision: ${{ steps.source.outputs.revision }}
-      bundle_tag: ${{ steps.source.outputs.bundle_tag }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.source_ref }}
-      - id: source
-        env:
-          BUNDLE_TAG: ${{ inputs.bundle_tag }}
-        run: |
-          revision="$(git rev-parse HEAD)"
-          echo "revision=$revision" >> "$GITHUB_OUTPUT"
-          echo "bundle_tag=${BUNDLE_TAG:-rpi-packages-${revision:0:12}}" >> "$GITHUB_OUTPUT"
-
-  build:
-    needs: source
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 90
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: windows-2022
-            target: x86_64-pc-windows-msvc
-          - runner: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
-          - runner: ubuntu-22.04-arm
-            target: aarch64-unknown-linux-gnu
-          - runner: macos-15-intel
-            target: x86_64-apple-darwin
-          - runner: macos-14
-            target: aarch64-apple-darwin
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Require the Antigravity OAuth client secrets
-        env:
-          RPI_ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_ID }}
-          RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
-        run: |
-          for name in RPI_ANTIGRAVITY_OAUTH_CLIENT_ID RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET; do
-            if [ -z "${!name//[[:space:]]/}" ]; then
-              echo "::error::Repository secret $name is empty. Release builds compile rpi-antigravity-auth, which needs it." >&2
-              exit 1
-            fi
-          done
-      - name: Check out the exact release commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.source.outputs.revision }}
-      - name: Install Linux native dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libasound2-dev libssl-dev pkg-config
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: release-assets-${{ matrix.target }}
-      - name: Reset cached native speech links
-        run: |
-          cargo clean -p sherpa-onnx-sys
-          python3 - <<'PY'
-          import pathlib, shutil
-          target = pathlib.Path('target').resolve()
-          native = target / 'sherpa-onnx-prebuilt'
-          if native.resolve().parent != target:
-              raise RuntimeError('Native cache must stay inside target')
-          shutil.rmtree(native, ignore_errors=True)
-          PY
-      - name: Restore native speech libraries
-        uses: actions/cache@v4
-        with:
-          path: target/sherpa-onnx-prebuilt
-          key: native-speech-1.13.8-${{ runner.os }}-${{ runner.arch }}
-      - name: Test platform packaging
-        run: cargo test --locked -p rpi-package-install
-      - name: Build extension libraries and installer
-        env:
-          RPI_ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_ID }}
-          RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
-        run: cargo build --release --workspace --locked
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Build the Cursor worker runtime and stage its sidecar assets
-        if: hashFiles('packages/rpi-cursor-sdk/scripts/stage-package-runtime.mjs') != ''
-        working-directory: packages/rpi-cursor-sdk
-        run: |
-          cd worker
-          npm ci --ignore-scripts --no-audit --no-fund
-          npm run build
-          cd ..
-          node scripts/stage-package-runtime.mjs
-      - name: Assemble full extension bundle and ACP bridge
-        run: |
-          cargo run --release --locked -p rpi-package-install -- pack --all
-          cargo run --release --locked -p rpi-package-install -- pack-acp
-      - name: Package individual extensions and record checksums and SDK ABI
-        env:
-          TARGET: ${{ matrix.target }}
-          SOURCE_REF: ${{ needs.source.outputs.revision }}
-          BUNDLE_TAG: ${{ needs.source.outputs.bundle_tag }}
-          PACKAGE_RELEASES: ${{ inputs.package_releases }}
-        run: |
-          python .github/scripts/prebuilt-assets.py build \
-            --target "$TARGET" --repository "$GITHUB_REPOSITORY" \
-            --source-ref "$SOURCE_REF" --bundle-tag "$BUNDLE_TAG" \
-            --tags "$PACKAGE_RELEASES"
-      - name: Preserve downloadable build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: prebuilt-${{ matrix.target }}
-          path: dist/release-assets/
-          if-no-files-found: error
-          retention-days: 14
-
-  publish:
-    needs: [source, build]
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.source.outputs.revision }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: prebuilt-*
-          path: dist/release-assets/
-          merge-multiple: true
-      - name: Validate all platforms and upload archives before discovery manifests
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          SOURCE_REF: ${{ needs.source.outputs.revision }}
-          BUNDLE_TAG: ${{ needs.source.outputs.bundle_tag }}
-          PACKAGE_RELEASES: ${{ inputs.package_releases }}
-        run: |
-          python .github/scripts/prebuilt-assets.py publish \
-            --repository "$GITHUB_REPOSITORY" --source-ref "$SOURCE_REF" \
-            --bundle-tag "$BUNDLE_TAG" --tags "$PACKAGE_RELEASES"

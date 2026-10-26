@@ -18,7 +18,10 @@ import tomllib
 
 PACKAGES = ('rpi-antigravity-auth', 'rpi-cursor-sdk', 'rpi-multiprovider')
 HOST_CRATES = ('rpi-ai', 'rpi-plugin-sdk', 'rpi-telemetry')
-BASE = '10515f50bc9a9f7a5a958d00bfd166c1b8f0ff53'
+# Registry baseline: the commit that introduced this repository's pruned root Cargo.lock.
+# The monorepo commit that the historical evidence was measured against (10515f5) was
+# rewritten away when the provider packages were extracted, so it no longer resolves here.
+BASE = 'b67b572062f317a8bf97e66f500ce1c59a85b962'
 # Counts as measured when this evidence was written. Test counts drift as tests are
 # added or moved between toolchains, so they are recorded as the floor to beat, not
 # an exact expectation a later run must reproduce.

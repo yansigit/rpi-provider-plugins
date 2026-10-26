@@ -1,5 +1,4 @@
 /target/
-/target/smoke-plugins/
 **/target/
 /dist/
 *.log
@@ -8,11 +7,5 @@
 .deploy/
 __pycache__/
 
-# Web frontend build dependencies, test output, and generated bundle
-packages/rpi-web/frontend/node_modules/
-packages/rpi-web/frontend/test-results/
-packages/rpi-web/frontend/playwright-report/
-packages/rpi-web/assets/
-
-# Local-only helper scripts (contain machine-specific paths)
-packages/rpi-web/scripts/dev-frontend.sh
+# Cursor package staging output (scripts/stage-package-runtime.mjs)
+packages/rpi-cursor-sdk/.package/

@@ -18,7 +18,6 @@ PASS_SECRET = "%s: ${{ secrets.%s }}" % (SECRET, SECRET)
 CHECK_STEP = "Require the Antigravity OAuth client secrets"
 RELEASE_BUILDS = {
     # workflow file -> the build step that compiles the extension libraries
-    "release-assets.yml": "Build extension libraries and installer",
     "release-packages.yml": "Build only the requested extension libraries",
 }
 
@@ -59,7 +58,7 @@ class AntigravityOAuthSecretWiring(unittest.TestCase):
         for name in RELEASE_BUILDS:
             with self.subTest(workflow=name):
                 text = read(name)
-                declaration = text[text.index("workflow_call:"): text.index("workflow_dispatch:")]
+                declaration = text[text.index("workflow_call:"): text.index("permissions:")]
                 self.assertIn("secrets:", declaration)
                 self.assertIn(ID + ":", declaration)
                 self.assertIn(SECRET + ":", declaration)
@@ -67,9 +66,7 @@ class AntigravityOAuthSecretWiring(unittest.TestCase):
 
         forwarding = {
             # caller workflow -> (job that calls a release workflow, expected callee)
-            "release-cargo.yml": ("assets", "release-assets.yml"),
-            "release-unix.yml": ("build", "release-assets.yml"),
-            "release-assets.yml": ("backfill", "release-packages.yml"),
+            "release-assets.yml": ("packages", "release-packages.yml"),
         }
         for caller, (job, callee) in forwarding.items():
             with self.subTest(caller=caller):

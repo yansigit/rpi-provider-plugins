@@ -23,7 +23,7 @@ class PrebuiltAssetsTests(unittest.TestCase):
         self.tag = "rpi-demo-v1.2.3"
         self.args = argparse.Namespace(output=str(self.root), tags=json.dumps([self.tag]),
                                       source_ref="a" * 40, bundle_tag="rpi-packages-aaaaaaaaaaaa",
-                                      repository="pi-rust/rpi-package")
+                                      repository="yansigit/rpi-provider-plugins")
         self.sdk = {"version": "0.3.20", "plugin_abi": 4}
         for target in sorted(assets.TARGETS):
             archive = self.root / f"rpi-demo-1.2.3-{target}.zip"
@@ -34,7 +34,7 @@ class PrebuiltAssetsTests(unittest.TestCase):
             distribution["library"] = {"path": library.name, "sha256": assets.digest(library)}
             assets.write_json(self.root / f"rpi-demo.{target}.json", {
                 "schema_version": 1, "name": "rpi-demo", "version": "1.2.3",
-                "repository": "https://github.com/pi-rust/rpi-package", "tag": self.tag,
+                "repository": "https://github.com/yansigit/rpi-provider-plugins", "tag": self.tag,
                 "source_commit": self.args.source_ref, "sdk": self.sdk,
                 "target": target, "distribution": distribution,
             })
@@ -244,7 +244,7 @@ class PrebuiltAssetsTests(unittest.TestCase):
         library = release / "librpi_demo.so"
         library.write_bytes(b"native library")
         package.update({
-            "id": "demo", "version": "1.2.3", "repository": "https://github.com/pi-rust/rpi-package",
+            "id": "demo", "version": "1.2.3", "repository": "https://github.com/yansigit/rpi-provider-plugins",
             "publish": [], "targets": [{"name": "rpi_demo", "crate_types": ["cdylib"]}],
         })
         metadata = {
@@ -268,7 +268,7 @@ class PrebuiltAssetsTests(unittest.TestCase):
             self.assertEqual(set(packaged.getnames()), {"librpi_demo.so", "runtime/main.mjs", "runtime/dist/a.js"})
 
     def test_workflow_builds_every_target_required_by_the_manifest(self):
-        workflow = pathlib.Path(__file__).parents[1] / "workflows/release-assets.yml"
+        workflow = pathlib.Path(__file__).parents[1] / "workflows/release-packages.yml"
         self.assertEqual(set(re.findall(r"target: ([a-z0-9_-]+)", workflow.read_text())), assets.TARGETS)
 
     def test_sdk_abi_comes_from_the_resolved_sdk_source(self):
