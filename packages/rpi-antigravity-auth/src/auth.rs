@@ -11,10 +11,10 @@ use url::Url;
 pub mod json_error;
 pub mod network;
 
-pub const CLIENT_ID: &str =
-    "antigravity-oauth-client-id.invalid";
-// Public installed-application client identity, retained from the MIT upstream source.
-pub const CLIENT_SECRET: &str = "antigravity-oauth-client-secret-placeholder";
+/// Build-time and runtime variable names for the Antigravity OAuth client. The package
+/// ships no client identity: builds and runtimes must supply both or OAuth fails closed.
+pub const CLIENT_ID_ENV: &str = "RPI_ANTIGRAVITY_OAUTH_CLIENT_ID";
+pub const CLIENT_SECRET_ENV: &str = "RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET";
 pub const REDIRECT_URI: &str = "http://localhost:51121/oauth-callback";
 pub const TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
 pub const USERINFO_URL: &str = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
@@ -32,6 +32,79 @@ const SCOPES: [&str; 5] = [
     "https://www.googleapis.com/auth/cclog",
     "https://www.googleapis.com/auth/experimentsandconfigs",
 ];
+
+/// Client values captured by `option_env!` when this crate is compiled.
+#[derive(Clone, Copy)]
+pub struct BuildClient {
+    pub id: Option<&'static str>,
+    pub secret: Option<&'static str>,
+}
+impl BuildClient {
+    pub const COMPILED: BuildClient = BuildClient {
+        id: option_env!("RPI_ANTIGRAVITY_OAUTH_CLIENT_ID"),
+        secret: option_env!("RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET"),
+    };
+    pub const NONE: BuildClient = BuildClient {
+        id: None,
+        secret: None,
+    };
+}
+
+/// Where the OAuth client comes from. Production uses `environment()`; tests inject
+/// explicit values so their results never depend on how the crate was built.
+#[derive(Clone, Copy)]
+pub struct ClientSource {
+    pub build: BuildClient,
+    pub runtime: fn(&str) -> Option<String>,
+}
+impl ClientSource {
+    pub fn environment() -> Self {
+        Self {
+            build: BuildClient::COMPILED,
+            runtime: runtime_variable,
+        }
+    }
+    pub const fn configured(id: &'static str, secret: &'static str) -> Self {
+        Self {
+            build: BuildClient {
+                id: Some(id),
+                secret: Some(secret),
+            },
+            runtime: no_runtime_variable,
+        }
+    }
+    /// Build-time values win over runtime variables; empty or blank values count as unset.
+    pub fn resolve(self) -> Result<OAuthClient, String> {
+        let pick = |build: Option<&str>, name: &str| {
+            build
+                .filter(|value| !value.trim().is_empty())
+                .map(str::to_owned)
+                .or_else(|| (self.runtime)(name).filter(|value| !value.trim().is_empty()))
+        };
+        match (
+            pick(self.build.id, CLIENT_ID_ENV),
+            pick(self.build.secret, CLIENT_SECRET_ENV),
+        ) {
+            (Some(id), Some(secret)) => Ok(OAuthClient { id, secret }),
+            _ => Err(format!(
+                "Antigravity OAuth is not configured: set {CLIENT_ID_ENV} and {CLIENT_SECRET_ENV} when building rpi-antigravity-auth, or export both in the runtime environment."
+            )),
+        }
+    }
+}
+fn runtime_variable(name: &str) -> Option<String> {
+    std::env::var(name).ok()
+}
+fn no_runtime_variable(_name: &str) -> Option<String> {
+    None
+}
+
+/// A resolved OAuth client. Only `ClientSource::resolve` constructs one, and it is
+/// deliberately not `Debug`, so the secret cannot reach a log through formatting.
+pub struct OAuthClient {
+    id: String,
+    secret: String,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -110,19 +183,25 @@ pub struct Authorization {
     pub verifier: String,
     pub project_id: String,
 }
-pub fn authorize(project: &str) -> Result<Authorization, String> {
+pub fn authorize(project: &str, source: ClientSource) -> Result<Authorization, String> {
     let mut entropy = [0; 32];
     getrandom::getrandom(&mut entropy).map_err(|error| error.to_string())?;
-    Ok(authorize_with_entropy(project, &entropy))
+    authorize_with_entropy(project, &entropy, source)
 }
 /// Entropy is injected only at the generation boundary; production uses the OS CSPRNG.
-pub fn authorize_with_entropy(project: &str, entropy: &[u8; 32]) -> Authorization {
+/// Fails before building any URL when the client is not configured.
+pub fn authorize_with_entropy(
+    project: &str,
+    entropy: &[u8; 32],
+    source: ClientSource,
+) -> Result<Authorization, String> {
+    let client = source.resolve()?;
     let verifier = URL_SAFE_NO_PAD.encode(entropy);
     let challenge = URL_SAFE_NO_PAD.encode(Sha256::digest(verifier.as_bytes()));
     let state = URL_SAFE_NO_PAD.encode(describe(&json!({"verifier":verifier,"projectId":project})));
     let mut url = Url::parse("https://accounts.google.com/o/oauth2/v2/auth").unwrap();
     url.query_pairs_mut().extend_pairs([
-        ("client_id", CLIENT_ID),
+        ("client_id", client.id.as_str()),
         ("response_type", "code"),
         ("redirect_uri", REDIRECT_URI),
         ("scope", &SCOPES.join(" ")),
@@ -132,11 +211,11 @@ pub fn authorize_with_entropy(project: &str, entropy: &[u8; 32]) -> Authorizatio
         ("access_type", "offline"),
         ("prompt", "consent"),
     ]);
-    Authorization {
+    Ok(Authorization {
         url: url.into(),
         verifier,
         project_id: project.into(),
-    }
+    })
 }
 pub fn callback_input(input: &str, authorization_url: &str) -> (String, String) {
     let mut code = trim(input).to_owned();
@@ -279,10 +358,15 @@ pub fn bootstrap_headers(access: &str, user_agent: String) -> Vec<(String, Strin
     ]
 }
 
-pub async fn refresh(port: &impl Port, packed: &str) -> Result<Value, String> {
+pub async fn refresh(
+    port: &impl Port,
+    source: ClientSource,
+    packed: &str,
+) -> Result<Value, String> {
     if packed.starts_with(CUSTODY_REFRESH_PREFIX) {
         return Err("Pi holds the Antigravity vault placeholder, not a login. Run /login, or serve Antigravity from the vault.".into());
     }
+    let client = source.resolve()?;
     let (refresh, suffix) = packed
         .find('|')
         .map_or((packed, ""), |index| (&packed[..index], &packed[index..]));
@@ -300,8 +384,8 @@ pub async fn refresh(port: &impl Port, packed: &str) -> Result<Value, String> {
             body: Some(form(&[
                 ("grant_type", "refresh_token"),
                 ("refresh_token", refresh),
-                ("client_id", CLIENT_ID),
-                ("client_secret", CLIENT_SECRET),
+                ("client_id", client.id.as_str()),
+                ("client_secret", client.secret.as_str()),
             ])),
         })
         .await?;
@@ -332,8 +416,14 @@ pub async fn refresh(port: &impl Port, packed: &str) -> Result<Value, String> {
     Ok(result)
 }
 
-pub async fn exchange(port: &impl Port, gate: &impl Admission, code: &str, state: &str) -> Value {
-    match exchange_inner(port, gate, code, state).await {
+pub async fn exchange(
+    port: &impl Port,
+    gate: &impl Admission,
+    source: ClientSource,
+    code: &str,
+    state: &str,
+) -> Value {
+    match exchange_inner(port, gate, source, code, state).await {
         Ok(value) => value,
         Err(error) => {
             json!({"type":"failed","error":if gate.cancelled() { EXCHANGE_REFUSED.to_owned() } else { error }})
@@ -343,9 +433,11 @@ pub async fn exchange(port: &impl Port, gate: &impl Admission, code: &str, state
 async fn exchange_inner(
     port: &impl Port,
     gate: &impl Admission,
+    source: ClientSource,
     code: &str,
     state: &str,
 ) -> Result<Value, String> {
+    let client = source.resolve()?;
     let (verifier, project) = decode_state(state)?;
     admit(gate).await?;
     let started = port.now_ms();
@@ -365,8 +457,8 @@ async fn exchange_inner(
                 ("User-Agent".into(), port.user_agent()),
             ],
             body: Some(form(&[
-                ("client_id", CLIENT_ID),
-                ("client_secret", CLIENT_SECRET),
+                ("client_id", client.id.as_str()),
+                ("client_secret", client.secret.as_str()),
                 ("code", code),
                 ("grant_type", "authorization_code"),
                 ("redirect_uri", REDIRECT_URI),

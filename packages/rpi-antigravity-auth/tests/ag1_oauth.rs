@@ -2,13 +2,20 @@
 //! units, cache eviction and error redaction compared to the unchanged upstream
 //! Pi 1.3.0 reference (tests/fixtures/ag1-oauth.json).
 use rpi_antigravity_auth::{
-    auth::{self, Admission},
+    auth::{self, Admission, ClientSource},
     project::{self, ProjectStore},
     redaction,
 };
 use serde_json::{json, Value};
 use std::sync::Arc;
 mod common;
+
+/// The placeholder pair the fixture was scrubbed to; injected so the result does not
+/// depend on the build or runtime OAuth environment.
+const FIXTURE_CLIENT: ClientSource = ClientSource::configured(
+    "antigravity-oauth-client-id.invalid",
+    "antigravity-oauth-client-secret-placeholder",
+);
 
 fn fixture() -> Value {
     serde_json::from_str(include_str!("fixtures/ag1-oauth.json")).unwrap()
@@ -34,6 +41,7 @@ async fn malformed_oauth_bodies_and_expiry_units_match_original() {
         let result = auth::exchange(
             &port,
             &Open,
+            FIXTURE_CLIENT,
             case["code"].as_str().unwrap(),
             case["state"].as_str().unwrap(),
         )
@@ -52,7 +60,8 @@ async fn malformed_oauth_bodies_and_expiry_units_match_original() {
     }
     for case in f["refresh"].as_array().unwrap() {
         let port = common::script(f["clock"].as_f64().unwrap(), case);
-        let result = match auth::refresh(&port, case["packed"].as_str().unwrap()).await {
+        let packed = case["packed"].as_str().unwrap();
+        let result = match auth::refresh(&port, FIXTURE_CLIENT, packed).await {
             Ok(value) => json!({"value": value}),
             Err(error) => json!({"error": error}),
         };

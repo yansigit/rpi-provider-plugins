@@ -1,8 +1,15 @@
-use rpi_antigravity_auth::auth::{self, Admission};
+use rpi_antigravity_auth::auth::{self, Admission, ClientSource};
 use serde_json::{json, Value};
 use std::sync::{Arc, Mutex};
 mod common;
 use common::script;
+
+/// The placeholder pair the fixtures were scrubbed to. Injected explicitly so these
+/// comparisons never depend on the build or runtime OAuth environment.
+const FIXTURE_CLIENT: ClientSource = ClientSource::configured(
+    "antigravity-oauth-client-id.invalid",
+    "antigravity-oauth-client-secret-placeholder",
+);
 
 fn fixture() -> Value {
     serde_json::from_str(include_str!("fixtures/auth.json")).unwrap()
@@ -14,10 +21,14 @@ fn pkce_packing_expiry_and_cache_match_original() {
     for case in f["authorizations"].as_array().unwrap() {
         let entropy: [u8; 32] = serde_json::from_value(case["entropy"].clone()).unwrap();
         assert_eq!(
-            serde_json::to_value(auth::authorize_with_entropy(
-                case["project"].as_str().unwrap(),
-                &entropy
-            ))
+            serde_json::to_value(
+                auth::authorize_with_entropy(
+                    case["project"].as_str().unwrap(),
+                    &entropy,
+                    FIXTURE_CLIENT
+                )
+                .unwrap()
+            )
             .unwrap(),
             case["result"]
         );
@@ -70,12 +81,13 @@ async fn oauth_requests_credential_results_and_admission_order_match_original() 
             auth::exchange(
                 &port,
                 &gate,
+                FIXTURE_CLIENT,
                 case["code"].as_str().unwrap(),
                 case["state"].as_str().unwrap(),
             )
             .await
         } else {
-            match auth::refresh(&port, case["packed"].as_str().unwrap()).await {
+            match auth::refresh(&port, FIXTURE_CLIENT, case["packed"].as_str().unwrap()).await {
                 Ok(value) => json!({"value":value}),
                 Err(error) => json!({"error":error}),
             }
@@ -117,7 +129,7 @@ async fn pi_callback_url_and_code_inputs_match_integrated_host() {
             trace: port.trace.clone(),
             record: false,
         };
-        let result = auth::exchange(&port, &gate, &code, &state).await;
+        let result = auth::exchange(&port, &gate, FIXTURE_CLIENT, &code, &state).await;
         let mut credentials = json!({});
         for field in ["refresh", "access", "expires"] {
             if let Some(value) = result.get(field) {

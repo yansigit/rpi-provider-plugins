@@ -391,7 +391,7 @@ async fn handle_auth(
             json!({"kind":"input","title":"Enter Gemini API key","secret":true,"allowEmpty":true,"continuation":{"method":"api_key"}}),
         ),
         Some("login") if input["methodId"] == "oauth" => {
-            let authorization = auth::authorize("")?;
+            let authorization = auth::authorize("", auth::ClientSource::environment())?;
             (
                 "interaction",
                 json!({"kind":"input","title":"Paste the Antigravity OAuth callback URL or code:","url":authorization.url,"allowEmpty":true,"continuation":{"method":"oauth","url":authorization.url}}),
@@ -412,7 +412,14 @@ async fn handle_auth(
                 .ok_or("Invalid Antigravity OAuth continuation")?;
             let (code, state) = auth::callback_input(value, url);
             let port = Network::new(std::env::vars().collect(), signal)?;
-            let result = auth::exchange(&port, &gate, &code, &state).await;
+            let result = auth::exchange(
+                &port,
+                &gate,
+                auth::ClientSource::environment(),
+                &code,
+                &state,
+            )
+            .await;
             if result["type"] != "success" {
                 return Err(format!(
                     "Antigravity OAuth exchange failed: {}",
@@ -429,7 +436,10 @@ async fn handle_auth(
                 .as_str()
                 .ok_or("Invalid Antigravity refresh credential")?;
             let port = Network::new(std::env::vars().collect(), signal)?;
-            ("credential", auth::refresh(&port, refresh).await?)
+            (
+                "credential",
+                auth::refresh(&port, auth::ClientSource::environment(), refresh).await?,
+            )
         }
         Some("toAuth") => {
             let access = input["credential"]["access"]
