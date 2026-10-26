@@ -22,7 +22,10 @@ import tomllib
 
 PACKAGES = ["rpi-antigravity-auth", "rpi-cursor-sdk", "rpi-multiprovider"]
 HOST_CRATES = ["rpi-ai", "rpi-plugin-sdk", "rpi-telemetry"]
-BASE = "f96e0b7"
+# Registry baseline: the commit that introduced this repository's pruned root Cargo.lock.
+# The monorepo baseline f96e0b7 predates the extraction and is not in this history.
+# docs/provider-parity-verification.md explains why the baseline is the pruned lock.
+BASE = "b67b572062f317a8bf97e66f500ce1c59a85b962"
 
 
 def checkout_root(start=None):

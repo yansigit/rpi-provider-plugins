@@ -149,8 +149,8 @@ checkout with `--host-checkout`, which it asserts is at that pinned SHA, clean, 
 unchanged from the layered pins. Logs default to a per-checkout temporary directory
 (`PARITY_EVIDENCE_LOGS` overrides it) so lanes never read each other's evidence. It
 checks that registry dependency versions/checksums did not change relative to
-`f96e0b7` (the registry baseline commit, "build: restore rpi-providers to the workspace"), hashes all tracked files in the three resolved host crates, verifies their
-checkout HEAD and cleanliness, and records every binary's SHA-256. It never runs a
+`b67b572` (the registry baseline: the commit that introduced this repository's pruned root `Cargo.lock`), hashes all tracked files in the three resolved host crates, verifies their
+checkout HEAD and cleanliness, and records every binary's SHA-256. The baseline is the pruned lock, not the monorepo lock it was cut from: pruning removes entries that the three packages no longer reach, and changes no registry version or checksum, so comparing against the pre-prune lock would report every removed entry as a change. Re-pins are still compared for registry changes, now against this commit. It never runs a
 build, reads credentials, or accesses the network.
 
 After preserving the mutation-check logs described below (pass `--logs "$LOGS"`:
