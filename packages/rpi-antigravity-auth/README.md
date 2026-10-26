@@ -6,6 +6,33 @@ its `google` identity, six chat models, displayed zero prices, tier defaults and
 retired model classification. The native catalog, auth callbacks and local stream driver are connected. Vault custody and commands
 are still being implemented; see [PARITY.md](PARITY.md).
 
+## OAuth client configuration
+
+Antigravity sign-in needs an OAuth client identity. This repository does not contain one,
+so the package reads two values, each from the build environment or, failing that, from the
+runtime environment:
+
+- `RPI_ANTIGRAVITY_OAUTH_CLIENT_ID`
+- `RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET`
+
+Build-time values win over runtime values, and an empty or blank value counts as unset.
+When either value is missing, login, token exchange and refresh fail before any request is
+sent, and the error names both variables. Local build:
+
+```sh
+RPI_ANTIGRAVITY_OAUTH_CLIENT_ID=<client id> \
+RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET=<client secret> \
+  cargo build -p rpi-antigravity-auth --release
+```
+
+The values are compiled into the library when they are set at build time, so treat such a
+build artifact as sensitive. Release workflows pass them from repository secrets and fail
+before building if either secret is empty; pull-request and CI test runs do not need them,
+because the tests inject their own client values. The reference generators
+(`scripts/ag1-oauth-reference.mjs` and `scripts/auth-reference.ts`) need the upstream values
+as `RPI_REFERENCE_OAUTH_CLIENT_ID` and `RPI_REFERENCE_OAUTH_CLIENT_SECRET` so that they can
+map those values to the scrubbed placeholders in the fixtures; they fail when either is missing.
+
 Request conversion also matches the original text, image, signed thinking/tool
 history, cross-model signature removal, tool-result grouping and Gemini schema
 transformations. Pi 1.3.0 system-message deltas determine the final prompt and
