@@ -7,11 +7,16 @@ Usage: python3 .github/scripts/refresh-i02-evidence.py [--logs DIR] [--write]
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
+# Local inputs default to siblings of this repository (the lane layout under ~/Projects);
+# RPI_I02_TARGETS and RPI_I02_HOST_CHECKOUT override them.
+TARGETS = Path(os.environ.get("RPI_I02_TARGETS", ROOT.parent / ".targets"))
+HOST_CHECKOUT = Path(os.environ.get("RPI_I02_HOST_CHECKOUT", ROOT.parent / "pi-rust--host-e9c0526"))
 OUTPUT = ROOT / "docs/evidence/i02-production.json"
 PIN = "e9c052653975c1d648092ab52e817a0b2f4b575c"
 INPUTS = [
@@ -94,12 +99,12 @@ def render(logs):
         mutations[name] = sha(logs / name)
     libraries = {}
     for tc in ["178", "195"]:
-        directory = Path(f"/home/user/Projects/.targets/i02-guards-{tc}/debug")
+        directory = TARGETS / f"i02-guards-{tc}/debug"
         for package in ["cursor_sdk", "antigravity_auth", "multiprovider"]:
             path = directory / f"librpi_{package}.so"
             libraries[str(path)] = sha(path)
-    host = Path("/home/user/Projects/.targets/host-e9c0526-195/debug/rpi")
-    checkout = Path("/home/user/Projects/pi-rust--host-e9c0526")
+    host = TARGETS / "host-e9c0526-195/debug/rpi"
+    checkout = HOST_CHECKOUT
     assert subprocess.check_output(["git", "-C", str(checkout), "rev-parse", "HEAD"], text=True).strip() == PIN
     return json.dumps({"ledger": "I02", "hostPin": PIN, "hostBinarySha256": sha(host), "baseline": {"passed": 256, "ignored": 24},
                        "cohortAccounting": "259 + 8 separate fresh-DLL real-host cases = 267; three original lane tests plus eight review-fix tests; no new ignores",

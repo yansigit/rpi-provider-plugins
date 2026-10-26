@@ -16,7 +16,7 @@ the upstream MIT-licensed adapter and its license notice.
 
 The pinned SDK's `LICENSE.md` reserves rights to Anysphere and points at the
 Cursor Terms of Service. The distribution review in
-`pi-rust/docs/provider-parity/cursor-sdk-distribution.md` found no independent
+[`cursor-sdk-distribution.md`](https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/cursor-sdk-distribution.md) in the pinned host found no independent
 redistribution grant, so rpi release archives keep the proprietary SDK and its
 platform binaries out of every archive.
 

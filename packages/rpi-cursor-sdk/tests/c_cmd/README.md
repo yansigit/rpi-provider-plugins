@@ -13,7 +13,7 @@ Differential acceptance for ledger row C08:
 * **reference** — the unchanged pinned `pi-cursor-sdk@0.5.3` sources under
   `provider-references/cursor`. Every imported upstream file's sha256 is asserted
   before the import (the hashes are also pinned in
-  `pi-rust/docs/provider-parity/file-mapping.json`). A mismatch aborts.
+  [`docs/provider-parity/file-mapping.json`](https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/file-mapping.json) in the pinned host). A mismatch aborts.
 * **candidate** — the retained rpi worker port under `worker/src` (the C08
   `portFiles` in the ledger mapping).
 

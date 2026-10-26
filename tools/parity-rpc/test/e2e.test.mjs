@@ -21,10 +21,15 @@ const SCENARIO = path.join(TOOL, "fixtures", "scenarios", "prompt-basic.json");
 const EXPECTED = path.join(TOOL, "fixtures", "expected", "prompt-basic.summary.json");
 const REPLY = "Hello from the scripted provider.";
 
+// Local inputs default to siblings of this repository (../provider-references and the lane
+// target directory ../.targets); RPI_PROVIDER_REFERENCES, PARITY_PI_CLI and PARITY_RPI_BIN override them.
+const PROJECTS_DIR = path.resolve(TOOL, "..", "..", "..");
+const PROVIDER_REFERENCES =
+  process.env.RPI_PROVIDER_REFERENCES ?? path.join(PROJECTS_DIR, "provider-references");
 const PI_CLI =
   process.env.PARITY_PI_CLI ??
-  "/home/user/Projects/provider-references/integrated/node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js";
-const RPI_BIN = process.env.PARITY_RPI_BIN ?? "/home/user/Projects/.targets/x-rpc/debug/rpi";
+  path.join(PROVIDER_REFERENCES, "integrated/node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js");
+const RPI_BIN = process.env.PARITY_RPI_BIN ?? path.join(PROJECTS_DIR, ".targets/x-rpc/debug/rpi");
 
 test("prompt-basic runs on real Pi and rpi and pins their known divergences", async () => {
   assert.ok(existsSync(PI_CLI), `Pi cli.js not found at ${PI_CLI} (set PARITY_PI_CLI)`);

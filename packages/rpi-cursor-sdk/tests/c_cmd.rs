@@ -17,7 +17,8 @@ use serde_json::Value;
 const EVIDENCE: &str = include_str!("c_cmd-evidence.json");
 
 /// sha256 of every upstream file the reference script imports. These are also the
-/// hashes pinned in `pi-rust/docs/provider-parity/file-mapping.json`.
+/// hashes pinned in `docs/provider-parity/file-mapping.json` of the host at
+/// https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/file-mapping.json.
 const UPSTREAM_HASHES: &[(&str, &str)] = &[
     ("src/cursor-config.ts", "1721a93ae3266d87b78ebf406c46cf71cb4d63b7fc476cded717fd43ec341117"),
     ("src/cursor-setting-sources.ts", "aa14f857e1825cb6589bc4683105b691ee6212dc631034feb7623bb47d53e4a9"),

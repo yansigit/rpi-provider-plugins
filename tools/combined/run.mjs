@@ -166,11 +166,17 @@ class RunError extends Error {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Local inputs default to siblings of this repository (../provider-references and
+// ../pi-rust under the same parent directory); each has an environment override.
+const PROJECTS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+const PROVIDER_REFERENCES =
+  process.env.RPI_PROVIDER_REFERENCES ?? path.join(PROJECTS_DIR, "provider-references");
+
 function parseArgs(argv) {
   const options = {
     pi: process.env.PARITY_PI_CLI ??
-      "/home/user/Projects/provider-references/integrated/node_modules/@earendil-works/pi-coding-agent/dist/cli.js",
-    rpi: process.env.PARITY_RPI_BIN ?? "/home/user/Projects/pi-rust/target/debug/rpi",
+      path.join(PROVIDER_REFERENCES, "integrated/node_modules/@earendil-works/pi-coding-agent/dist/cli.js"),
+    rpi: process.env.PARITY_RPI_BIN ?? path.join(PROJECTS_DIR, "pi-rust/target/debug/rpi"),
     rpiLibs: {
       antigravity: process.env.PARITY_RPI_ANTIGRAVITY ?? "",
       cursor: process.env.PARITY_RPI_CURSOR ?? "",
@@ -179,13 +185,13 @@ function parseArgs(argv) {
     piExtensions: {
       antigravity:
         process.env.PARITY_PI_ANTIGRAVITY ??
-        "/home/user/Projects/provider-references/integrated/node_modules/@cortexkit/pi-antigravity-auth",
+        path.join(PROVIDER_REFERENCES, "integrated/node_modules/@cortexkit/pi-antigravity-auth"),
       cursor:
         process.env.PARITY_PI_CURSOR ??
-        "/home/user/Projects/provider-references/integrated/node_modules/pi-cursor-sdk",
+        path.join(PROVIDER_REFERENCES, "integrated/node_modules/pi-cursor-sdk"),
       multiprovider:
         process.env.PARITY_PI_MULTIPROVIDER ??
-        "/home/user/Projects/provider-references/integrated/node_modules/pi-multiprovider/extensions/multiprovider.ts",
+        path.join(PROVIDER_REFERENCES, "integrated/node_modules/pi-multiprovider/extensions/multiprovider.ts"),
     },
     work: null,
     write: false,

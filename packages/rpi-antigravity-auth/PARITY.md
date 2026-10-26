@@ -5,7 +5,7 @@ Provider identity is `google`. Source behavior takes precedence over README text
 The library loads on Linux; the package is not parity complete or ready for release.
 
 The complete source/test declaration inventory is maintained in the host fork at
-`docs/provider-parity/inventory.jsonl`; its conservative Antigravity import closure is recorded there; generated test
+[`docs/provider-parity/inventory.jsonl`](https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/inventory.jsonl); its conservative Antigravity import closure is recorded there; generated test
 declarations and complete acceptance coverage still require review. This table assigns the Pi-facing behavior to concrete
 port and acceptance files before implementation. Each row remains pending until
 all its source behavior and tests have passing evidence.

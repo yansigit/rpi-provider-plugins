@@ -3,7 +3,7 @@
 How each Pi UI call made by the upstream pool manager (`extensions/pool-manager.ts`),
 the settings-view primitives (`extensions/settings-ui.ts`) and the `/vprovider`
 editor (`extensions/multiprovider.ts`) is projected to a native dialog control.
-The native contract is `pi-rust/docs/provider-parity/native-dialogs.md`.
+The native contract is [`native-dialogs.md`](https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/native-dialogs.md) in the pinned host.
 
 > Merge note: lane m-cmd-a1 wrote `docs/presentation-map.md` for
 > `/multilogin`, `/multilogout`, `/accounts` and `/switch-account` on the same

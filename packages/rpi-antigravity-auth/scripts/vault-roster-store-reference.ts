@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {mkdtemp,writeFile,readFile,readdir,rm} from 'node:fs/promises';
 import {resolve,join} from 'node:path';
+import {homedir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 const root=resolve(process.env.RPI_REFERENCE_DIR!);
 const {refreshVaultRoster,mutateVaultRoster}=await import(pathToFileURL(join(root,'packages/core/src/common-auth-embedded/claustrum/roster.js')).href);
@@ -10,7 +11,7 @@ const initial={version:1,view:'old',complete:true,rows:[],declined:[]};
 const inventory={view:'new',credentials:[{credentialId:'id',credentialType:'oauth',state:'active',accountIdentity:'account'}],skipped:[]};
 const cases:any[]=[];
 for(const name of ['fresh','same','busy','busy-without-roster','busy-empty-view','inactive-before','inactive-after','discovery-error','cancel-before','cancel-discovery','lost-discovery-lease','invalid-store','mutate','no-change','change-error','fence-error','lost-write-lease-in-change','lost-write-lease-at-rename','write-lock-timeout']) {
- const dir=await mkdtemp('/home/user/provider-test-tmp/roster-store-reference-'),path=join(dir,'roster.json');
+ const dir=await mkdtemp(join(process.env.PROVIDER_TEST_TMP ?? join(homedir(),'provider-test-tmp'),'roster-store-reference-')),path=join(dir,'roster.json');
  const trace:any[]=[];const abort=new AbortController();let calls=0;const mutation=name.startsWith('mutate')||['no-change','change-error','fence-error','lost-write-lease-in-change','lost-write-lease-at-rename','write-lock-timeout'].includes(name);
  const start=name==='fresh'||name==='busy-without-roster'?undefined:name==='busy-empty-view'?{...initial,view:''}:name==='same'?{version:1,view:'new',complete:true,rows:[{routeId:'vault:id~9af211329b',credentialId:'id',credentialType:'oauth',accountIdentity:'account',state:'active',label:'id',enabled:true,addedAt:1000}],declined:[]}:initial;
  if(start!==undefined)await writeFile(path,JSON.stringify(start)+'\n');

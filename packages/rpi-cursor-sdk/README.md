@@ -2,7 +2,7 @@
 
 Integration fork of `fitchmultz/pi-cursor-sdk@f337dc4bb7cea936c52e69a7fe08e7e376c8467b`, retaining its MIT-licensed adapter and locked baseline tests under `worker/`. `upstream.json` records the Git blob identity of every retained upstream file. The SDK stays an external, exact `@cursor/sdk@1.0.37` dependency; release archives must not contain its implementation or platform binaries.
 
-Implementation is in progress. This package is not yet installable or parity-complete. The authoritative feature ledger is `pi-rust/docs/provider-parity/README.md` and its inventory. Passing a transport test does not qualify adapter behavior.
+Implementation is in progress. This package is not yet installable or parity-complete. The authoritative feature ledger is [`docs/provider-parity/README.md`](https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/README.md) in the pinned host and its inventory. Passing a transport test does not qualify adapter behavior.
 
 The implementation sequence is:
 
@@ -219,7 +219,7 @@ compactions must finish their tracked operation. The host's installed-library
 test runs 70 consecutive cancelled compactions, exceeding the worker's 64 live
 operation limit, and verifies shutdown and reaping. The host records the Pi 1.3.0
 lifecycle projection and remaining compaction gaps in
-`docs/provider-parity/host-compaction-results.json`.
+[`docs/provider-parity/host-compaction-results.json`](https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/host-compaction-results.json).
 
 `events.selectionDetails` supplies committed name changes and explicit
 set/cycle/restore model selections. Public event models exclude host credential

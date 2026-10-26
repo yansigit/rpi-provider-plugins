@@ -3,7 +3,7 @@
 //! native dialogs port and through scripted differential fixtures.
 //!
 //! Dialog controls are the host's native dialog objects (`kind`: `input`,
-//! `select`, `confirm`, `settings`; see pi-rust `docs/provider-parity/native-dialogs.md`).
+//! `select`, `confirm`, `settings`; see `docs/provider-parity/native-dialogs.md` at https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/native-dialogs.md).
 //! Replies are the host's validated answers, or `None` when the user cancels.
 //! Pi's custom TUI components are mapped to these controls as recorded in
 //! `docs/presentation-map.md`.

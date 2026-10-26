@@ -1,6 +1,6 @@
 // Pi-reachable consumer methods, unchanged common-auth and real private files.
 import {mkdtemp,writeFile,readFile,rm,chmod} from 'node:fs/promises';
-import {join,resolve} from 'node:path';import {pathToFileURL} from 'node:url';import {setImmediate as immediate} from 'node:timers/promises';
+import {join,resolve} from 'node:path';import {homedir} from 'node:os';import {pathToFileURL} from 'node:url';import {setImmediate as immediate} from 'node:timers/promises';
 const root=resolve(process.env.RPI_REFERENCE_DIR!);const base=join(root,'packages/core/src/common-auth-embedded/claustrum');
 const {ClaustrumConsumer}=await import(pathToFileURL(join(base,'consumer.js')).href);
 const {ClaustrumConsumerError}=await import(pathToFileURL(join(base,'errors.js')).href);
@@ -12,7 +12,7 @@ const failure=(value:any)=>value?.code?new ClaustrumCredentialError(value.code,v
 const err=(e:any)=>({name:e.name,message:e.message,...(e.kind!==undefined&&{kind:e.kind}),...(e.code!==undefined&&{code:e.code}),...(e.class!==undefined&&{class:e.class}),...(e.action!==undefined&&{action:e.action})});
 const cases:any[]=[];
 async function run(name:string,steps:any[]){
- const dir=await mkdtemp('/home/user/provider-test-tmp/consumer-reference-'),rosterPath=join(dir,'roster.json'),tokenPath=join(dir,'token.json');await writeFile(tokenPath,JSON.stringify(token),{mode:0o600});
+ const dir=await mkdtemp(join(process.env.PROVIDER_TEST_TMP ?? join(homedir(),'provider-test-tmp'),'consumer-reference-')),rosterPath=join(dir,'roster.json'),tokenPath=join(dir,'token.json');await writeFile(tokenPath,JSON.stringify(token),{mode:0o600});
  let active:any=true,now=1000;const responses:any={connect:[],list:[],get:[],report:[]},calls:any[]=[],held=new Map<string,()=>void>(),attempts=new Map<string,any>(),pending=new Map<string,Promise<any>>();let clientId=0;
  async function response(op:string,fallback:any){const spec=responses[op].shift()??{};if(spec.hold)await new Promise<void>(r=>held.set(spec.hold,r));if(spec.error)throw failure(spec.error);return spec.value??fallback;}
  const consumer=new ClaustrumConsumer({rosterPath,tokenPath,family:{refreshAdapter:'antigravity',category:'antigravity-native',apiKeys:false},requireAssertion:true,now:()=>now,

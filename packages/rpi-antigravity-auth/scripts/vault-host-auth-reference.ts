@@ -1,5 +1,6 @@
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
+import {homedir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 const root=resolve(process.env.RPI_REFERENCE_DIR!),host=resolve(process.env.RPI_REFERENCE_HOST!);
 const load=async(path:string)=>import(pathToFileURL(path).href);
@@ -8,7 +9,7 @@ const claustrum=await load(join(root,'packages/core/src/common-auth-embedded/cla
 const {composeModelProvider}=await load(join(host,'node_modules/@earendil-works/pi-coding-agent/dist/core/provider-composer.js'));
 const {resolveProviderAuth}=await load(join(host,'node_modules/@earendil-works/pi-ai/dist/auth/resolve.js'));
 const {googleProvider}=await load(join(host,'node_modules/@earendil-works/pi-ai/dist/providers/google.js'));
-const dir=await mkdtemp('/home/user/provider-test-tmp/vault-host-auth-');
+const dir=await mkdtemp(join(process.env.PROVIDER_TEST_TMP ?? join(homedir(),'provider-test-tmp'),'vault-host-auth-'));
 const cases:any[]=[];
 try {
  for(const mode of ['local','custody','refusing']){

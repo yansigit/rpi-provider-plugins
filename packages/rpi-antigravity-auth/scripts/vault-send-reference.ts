@@ -1,5 +1,5 @@
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises';
-import {join,resolve} from 'node:path';import {pathToFileURL} from 'node:url';import {setImmediate as immediate} from 'node:timers/promises';
+import {join,resolve} from 'node:path';import {homedir} from 'node:os';import {pathToFileURL} from 'node:url';import {setImmediate as immediate} from 'node:timers/promises';
 const root=resolve(process.env.RPI_REFERENCE_DIR!),base=join(root,'packages/core/src');
 const {createAntigravityVaultAccountSource}=await import(pathToFileURL(join(base,'vault-account-source.ts')).href);
 const claustrum=await import(pathToFileURL(join(base,'common-auth-embedded/claustrum/index.js')).href);
@@ -13,7 +13,7 @@ const error=(e:any)=>({name:e.name,message:e.message,...(e.kind!==undefined&&{ki
 const fail=(v:any)=>new claustrum.ClaustrumCredentialError(v.code??'not_found',v.class??'permanent',(v.class??'permanent')==='permanent'?'gone':'retry');
 const cases:any[]=[],validations:any[]=[],routeCases:any[]=[];
 async function run(name:string,steps:any[]){
- const dir=await mkdtemp('/home/user/provider-test-tmp/vault-send-'),rosterPath=join(dir,'roster.json'),tokenPath=join(dir,'token.json');await writeFile(tokenPath,JSON.stringify(token),{mode:0o600});
+ const dir=await mkdtemp(join(process.env.PROVIDER_TEST_TMP ?? join(homedir(),'provider-test-tmp'),'vault-send-')),rosterPath=join(dir,'roster.json'),tokenPath=join(dir,'token.json');await writeFile(tokenPath,JSON.stringify(token),{mode:0o600});
  const calls:any[]=[],responses:any={list:[],get:[],report:[]};let active=true,clientId=0;const signal=new AbortController();const admissions=new Map<string,any>();
  const reply=(op:string,fallback:any)=>{const v=responses[op].shift()??{};if(v.error)throw fail(v.error);return v.value??fallback;};
  const options={claustrum,host:'pi',rosterPath,tokenPath,reporterSource:'direct',now:()=>1000,isCustodyActive:async()=>{calls.push(['active']);return active;},

@@ -1,5 +1,5 @@
 //! `extensions/settings-ui.ts`, projected onto the native `settings`, `select`
-//! and `input` dialog controls (`pi-rust/docs/provider-parity/native-dialogs.md`).
+//! and `input` dialog controls (https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/native-dialogs.md).
 //!
 //! The upstream module builds Pi TUI components; the port builds the declarative
 //! controls a native client renders. Theme colors are dropped (the native

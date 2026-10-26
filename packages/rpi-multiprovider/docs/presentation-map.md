@@ -1,7 +1,7 @@
 # Presentation map: `/multilogin`, `/multilogout`, `/accounts`, `/switch-account`
 
 How each Pi UI call made by the upstream command flows is projected to a native
-dialog control. The native contract is `pi-rust/docs/provider-parity/native-dialogs.md`;
+dialog control. The native contract is [`native-dialogs.md`](https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/native-dialogs.md) in the pinned host;
 the projection of `select`, `confirm`, `input` and `notify` is the one used by
 `rpi-antigravity-auth/scripts/native-menu-reference.ts`. The differential
 reference is `tests/commands-reference.ts`; its trace is the source of truth.

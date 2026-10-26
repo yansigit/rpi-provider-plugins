@@ -54,8 +54,10 @@ node tools/combined/run.mjs ... --write
 ```
 
 Defaults: `--pi` is the Pi 1.3.0 bundle under `provider-references/integrated`;
-`--rpi` is `/home/user/Projects/pi-rust/target/debug/rpi`; the extension/library
-paths can also be set with `PARITY_PI_*` / `PARITY_RPI_*` environment variables.
+`--rpi` is `../pi-rust/target/debug/rpi` relative to this repository. The
+reference checkout defaults to `../provider-references` and can be set with
+`RPI_PROVIDER_REFERENCES`; the extension/library paths can also be set with
+`PARITY_PI_*` / `PARITY_RPI_*` environment variables.
 
 Exit status `0` when every segment's self-checks pass and the pinned comparison
 is unchanged, `1` when a check or the pin differs, `2` on a run error.

@@ -54,7 +54,7 @@ const WORKER_SHARED = join(PACKAGE_ROOT, "worker/shared");
 const sha256File = (path) => createHash("sha256").update(readFileSync(path)).digest("hex");
 
 // Upstream files this script imports, with their pinned sha256 (also recorded in
-// pi-rust/docs/provider-parity/file-mapping.json). A mismatch aborts before import.
+// https://github.com/yansigit/pi-rust/blob/6064a7616217ebb2d90014787bf4f45ce9e597dc/docs/provider-parity/file-mapping.json). A mismatch aborts before import.
 const UPSTREAM_FILES = {
 	"src/cursor-config.ts": "1721a93ae3266d87b78ebf406c46cf71cb4d63b7fc476cded717fd43ec341117",
 	"src/cursor-setting-sources.ts": "aa14f857e1825cb6589bc4683105b691ee6212dc631034feb7623bb47d53e4a9",
