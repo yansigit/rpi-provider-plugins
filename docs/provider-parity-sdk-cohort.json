@@ -3,8 +3,8 @@
   "status": "scoped-pass",
   "scope": "Offline provider cohort only; no live services, full workspace, or G1/G2 acceptance claimed.",
   "hostTarget": "6064a7616217ebb2d90014787bf4f45ce9e597dc",
-  "packageBase": "f96e0b7f68636d1f66ce7b609a492d110b405758",
-  "lane": "lane/pkg-scrubbed",
+  "packageBase": "b67b572062f317a8bf97e66f500ce1c59a85b962",
+  "lane": "main",
   "worktree": "<root>",
   "generator": ".github/scripts/refresh-provider-parity-evidence.py",
   "pinResolution": {
@@ -28,8 +28,8 @@
     ]
   },
   "packageFiles": {
-    "files": 1022,
-    "sha256": "6ea12fd0356c676953ef8825f9809562991a3cbffd4b45fe2e0ed1adff0c919c"
+    "files": 1024,
+    "sha256": "8db9a5099de14ee27cc536293a461a34b828bf707252de01e01e799b4d1b5a7e"
   },
   "pinFiles": [
     {
@@ -49,8 +49,8 @@
     },
     {
       "path": "<root>/Cargo.lock",
-      "bytes": 115728,
-      "sha256": "84d2114983479013b569badc9ada6d382ce536af2c28ad68a9a2e222fca0679c"
+      "bytes": 64784,
+      "sha256": "88d5e32c6d22b611b6ed3de4c52641f36ec529fa8d1ab31e9f033b7f72812f06"
     }
   ],
   "toolchains": {
@@ -99,19 +99,19 @@
       ],
       "cdylibs": [
         {
-          "path": "<home>/Projects/.targets/pkg-final-178/debug/librpi_antigravity_auth.so",
-          "bytes": 186236200,
-          "sha256": "c5f5f3b97e0bbc5c4fe589b8992e010c6df1fb69c7571d54ab93ba7b851661bc"
+          "path": "<home>/Projects/.targets/pp-178/debug/librpi_antigravity_auth.so",
+          "bytes": 186236208,
+          "sha256": "221e75b1cdb9281ea5875101a237cb99eecc5afc2d1f9bd44d4f96818a3cf334"
         },
         {
-          "path": "<home>/Projects/.targets/pkg-final-178/debug/librpi_cursor_sdk.so",
+          "path": "<home>/Projects/.targets/pp-178/debug/librpi_cursor_sdk.so",
           "bytes": 111116304,
-          "sha256": "09573afca5f77693cccf5d799348209371bb5fba02bba213584b76a2a1ffbaba"
+          "sha256": "0d9215968eed24fc5d8aba80b21a489f1e08e27f3a1f9a388a969248cfa8a3dc"
         },
         {
-          "path": "<home>/Projects/.targets/pkg-final-178/debug/librpi_multiprovider.so",
+          "path": "<home>/Projects/.targets/pp-178/debug/librpi_multiprovider.so",
           "bytes": 131797864,
-          "sha256": "259f2464edd33c658ffd393b7977f7c01b87db6b3b814f0a83418e012cb4a031"
+          "sha256": "95ae4463e150458d88855baf66291c03ad38d43cf5375f8dc0f699caa840db40"
         }
       ],
       "nativeLoading": {
@@ -165,19 +165,19 @@
       ],
       "cdylibs": [
         {
-          "path": "<home>/Projects/.targets/pkg-final-195/debug/librpi_antigravity_auth.so",
-          "bytes": 179248928,
-          "sha256": "9f8fd14afac7a335e39738f69c12f3b5d2e08c98d2534a79ce18376d158743e7"
+          "path": "<home>/Projects/.targets/pp-195/debug/librpi_antigravity_auth.so",
+          "bytes": 179248936,
+          "sha256": "af365e8c436a3e1069f68744f1ba1a6e9616bdfd705b05aafcdd2a77ee0ec630"
         },
         {
-          "path": "<home>/Projects/.targets/pkg-final-195/debug/librpi_cursor_sdk.so",
+          "path": "<home>/Projects/.targets/pp-195/debug/librpi_cursor_sdk.so",
           "bytes": 106544064,
-          "sha256": "96e45644eef367159ea92d8da2a93c5454dcfc1972723074e282f8832086a8a5"
+          "sha256": "4840757093010d38f152ded05f4e29368b917b0af67770784ab4b7ccfb827607"
         },
         {
-          "path": "<home>/Projects/.targets/pkg-final-195/debug/librpi_multiprovider.so",
-          "bytes": 126310392,
-          "sha256": "7a9a5593255a96693c87421dc78286354944bf927dac3ed47a58aaa8fa4f2a12"
+          "path": "<home>/Projects/.targets/pp-195/debug/librpi_multiprovider.so",
+          "bytes": 126310400,
+          "sha256": "ce13bad2c246140e48cf9d87bdc6587c9677e1fb9ddcefa0eb426527fbbcb491"
         }
       ],
       "nativeLoading": {
@@ -245,104 +245,104 @@
   ],
   "logs": [
     {
-      "path": "/tmp/pkgscrub-logs/test-178-final.log",
-      "bytes": 45374,
-      "sha256": "697b210e6018311cef6740cca40a42589a3efab07fc6826fc906e5e51991d0ca"
+      "path": "/tmp/pp-logs/test-178-final.log",
+      "bytes": 46550,
+      "sha256": "b7c6d4cb455ce80e562290dcda767d59a3980516ab469e57cef824910c5d6963"
     },
     {
-      "path": "/tmp/pkgscrub-logs/test-195-final.log",
-      "bytes": 45078,
-      "sha256": "27a0c1eb65b3cfc9d5fab520843be632513f05fb3af2ab0e8c84f76621935758"
+      "path": "/tmp/pp-logs/test-195-final.log",
+      "bytes": 45611,
+      "sha256": "9ccd3e7679a540198c5c3d5730ab8291c786c8c61bfe75e3edea6fdaf0464fb6"
     },
     {
-      "path": "/tmp/pkgscrub-logs/build-cdylib-178.log",
-      "bytes": 490,
-      "sha256": "5a05ca5aad4b5e85ea977426ba93c2983230a0b6a7a280f2313d7ac00c65b360"
+      "path": "/tmp/pp-logs/build-cdylib-178.log",
+      "bytes": 1228,
+      "sha256": "b49b7587f824f2d27e463e8ec93db48e2d7e0d89ea46912eeec913b5f0912f0e"
     },
     {
-      "path": "/tmp/pkgscrub-logs/artifacts-178.jsonl",
-      "bytes": 208926,
-      "sha256": "12fc5f7886c585b7bca300a3b2067fedd2ae56627d181aad3f16302ef531b6d8"
+      "path": "/tmp/pp-logs/artifacts-178.jsonl",
+      "bytes": 205595,
+      "sha256": "e117905446ad2cae46da2bd98fafca649a00f230367a41dd0ef38928ab7d4735"
     },
     {
-      "path": "/tmp/pkgscrub-logs/mp-native-178.log",
-      "bytes": 3651,
-      "sha256": "7294da972ebbce1719c29c5f11ef4d24ca10452777f3a2d1ceda666c55e3b8c1"
+      "path": "/tmp/pp-logs/mp-native-178.log",
+      "bytes": 3646,
+      "sha256": "84aac5fb6f3aef0825631095a0515f1da319ede64d9758d23c6127b6e350a663"
     },
     {
-      "path": "/tmp/pkgscrub-logs/r02-native-178.log",
-      "bytes": 775,
-      "sha256": "aa11afc0ed95555f47a7755ddbd532cf2eabb562c2b12bc9498939e045980146"
+      "path": "/tmp/pp-logs/r02-native-178.log",
+      "bytes": 2102,
+      "sha256": "2ff1abdbf9ddfe23c469873e8a942762d32222a659eab06b396d866c2a6e85bc"
     },
     {
-      "path": "/tmp/pkgscrub-logs/build-cdylib-195.log",
-      "bytes": 490,
-      "sha256": "eff26725581c13c4233826efed622dfc06ebacdc62347f441a77fd4dc5448e63"
+      "path": "/tmp/pp-logs/build-cdylib-195.log",
+      "bytes": 981,
+      "sha256": "361c2b198133bad174f620ed9e6ac3b9c399867967599c867a83e0e162dd2015"
     },
     {
-      "path": "/tmp/pkgscrub-logs/artifacts-195.jsonl",
-      "bytes": 208807,
-      "sha256": "4b65723fcb8ca4de72c7575ceb41217efd6ba0ee3d4f07ed57f8c5ccc509bff8"
+      "path": "/tmp/pp-logs/artifacts-195.jsonl",
+      "bytes": 205476,
+      "sha256": "bb729dc7cd5f893740e08d2f3232b85df487cbc803add90bc6b4a02a9b55f176"
     },
     {
-      "path": "/tmp/pkgscrub-logs/mp-native-195.log",
-      "bytes": 3651,
-      "sha256": "54d64f78c177c98bba3a6b27947daa366cb7d28e65ef7c5dae6644d23ae1bc95"
+      "path": "/tmp/pp-logs/mp-native-195.log",
+      "bytes": 3646,
+      "sha256": "3a6fe12eb2ded0dc94cb5ae5da22c302ebefeb798b5b4265bdf26156203356bb"
     },
     {
-      "path": "/tmp/pkgscrub-logs/r02-native-195.log",
-      "bytes": 774,
-      "sha256": "5797307a44a1f3215c6c4de8155840369f0253a66f05a5291fb26e887a6199c3"
+      "path": "/tmp/pp-logs/r02-native-195.log",
+      "bytes": 1455,
+      "sha256": "d160fbfe9a870bceabee7cba989539b13913e7862915e496b763d43e53b0a144"
     },
     {
-      "path": "/tmp/pkgscrub-logs/mutate-c-emit.log",
+      "path": "/tmp/pp-logs/mutate-c-emit.log",
       "bytes": 1196,
       "sha256": "9be3cb14650aee8d4501c6babfa9bf8403bf212a5364bcc5023eb750878c5247"
     },
     {
-      "path": "/tmp/pkgscrub-logs/mutate-receipt.log",
+      "path": "/tmp/pp-logs/mutate-receipt.log",
       "bytes": 1110,
       "sha256": "efec2deab74d5bb60e75e737fa2ee3ed0c8d9d546050a9c563fc5d04539a2d66"
     },
     {
-      "path": "/tmp/pkgscrub-logs/mutate-blocked-idle.log",
+      "path": "/tmp/pp-logs/mutate-blocked-idle.log",
       "bytes": 1095,
       "sha256": "e55ba7138fb5c71f2f49d043378560f0c4e1afb2ab49727f271f5526dd0b422f"
     },
     {
-      "path": "/tmp/pkgscrub-logs/mutate-body-order.log",
+      "path": "/tmp/pp-logs/mutate-body-order.log",
       "bytes": 47834528,
       "sha256": "fab6f0e0a3a8c0ad7fdbca7fc15ee88a04f100294e0d8b0b79ec16f738d03087"
     },
     {
-      "path": "/tmp/pkgscrub-logs/mutate-cursor-snapshot.log",
+      "path": "/tmp/pp-logs/mutate-cursor-snapshot.log",
       "bytes": 21046,
       "sha256": "eaa9ac48cc751552618162b96e36cc7748e66b55c5bbf6741ff1e6664066c813"
     },
     {
-      "path": "/tmp/pkgscrub-logs/cursor-node24-final.log",
-      "bytes": 926,
-      "sha256": "7621f0b6582b6ccb517dd8ebff2dfc85e1ab0090dd674cbf0aab13c017668616"
+      "path": "/tmp/pp-logs/cursor-node24-final.log",
+      "bytes": 925,
+      "sha256": "a768bcaa583628dd5d359efab6c107ad109793c30526d0d1369429161f572854"
     },
     {
-      "path": "/tmp/pkgscrub-logs/reference-mp-1.log",
+      "path": "/tmp/pp-logs/reference-mp-1.log",
       "bytes": 398,
-      "sha256": "8dbdbe59edab0ed91d3ceb03cbb706c2bd74213b034d8f6302e5810c033938df"
+      "sha256": "a6175e3603f70d1a2248ac574fe2d6bd3484df301c94ff429d67a5cb9aa5f36b"
     },
     {
-      "path": "/tmp/pkgscrub-logs/reference-mp-2.log",
+      "path": "/tmp/pp-logs/reference-mp-2.log",
       "bytes": 398,
-      "sha256": "14ced33785f667a11cf1b6b70b419ebd0f8838e63e3176538d2cc4e45567d0e2"
+      "sha256": "0f40f730e23edc84ec316cc15cf1d5a3d7a55563d58502370a445998d1f6a760"
     },
     {
-      "path": "/tmp/pkgscrub-logs/reference-cursor-1.log",
-      "bytes": 1201,
-      "sha256": "0cec0df1423b4e7f5b5346e11b86608868e34112aacd5f101d97ef5a974bd980"
+      "path": "/tmp/pp-logs/reference-cursor-1.log",
+      "bytes": 1203,
+      "sha256": "58f63388f39eae252df61a40456b8644e0fd8db7ab3ded448a37bb915a488fc9"
     },
     {
-      "path": "/tmp/pkgscrub-logs/reference-cursor-2.log",
-      "bytes": 1201,
-      "sha256": "0cec0df1423b4e7f5b5346e11b86608868e34112aacd5f101d97ef5a974bd980"
+      "path": "/tmp/pp-logs/reference-cursor-2.log",
+      "bytes": 1203,
+      "sha256": "58f63388f39eae252df61a40456b8644e0fd8db7ab3ded448a37bb915a488fc9"
     }
   ]
 }
