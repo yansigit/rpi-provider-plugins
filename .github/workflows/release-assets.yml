@@ -12,6 +12,12 @@ on:
       bundle_tag:
         type: string
         required: true
+    # Checked by the build job, which fails before compiling when either is empty.
+    secrets:
+      RPI_ANTIGRAVITY_OAUTH_CLIENT_ID:
+        required: false
+      RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET:
+        required: false
   workflow_dispatch:
     inputs:
       source_ref:
@@ -45,6 +51,9 @@ jobs:
     with:
       source_ref: ${{ inputs.source_ref }}
       package_releases: ${{ inputs.package_releases }}
+    secrets:
+      RPI_ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_ID }}
+      RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
 
   source:
     if: inputs.packages_only != true
@@ -90,6 +99,17 @@ jobs:
       run:
         shell: bash
     steps:
+      - name: Require the Antigravity OAuth client secrets
+        env:
+          RPI_ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_ID }}
+          RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
+        run: |
+          for name in RPI_ANTIGRAVITY_OAUTH_CLIENT_ID RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET; do
+            if [ -z "${!name//[[:space:]]/}" ]; then
+              echo "::error::Repository secret $name is empty. Release builds compile rpi-antigravity-auth, which needs it." >&2
+              exit 1
+            fi
+          done
       - name: Check out the exact release commit
         uses: actions/checkout@v4
         with:
@@ -125,6 +145,9 @@ jobs:
       - name: Test platform packaging
         run: cargo test --locked -p rpi-package-install
       - name: Build extension libraries and installer
+        env:
+          RPI_ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_ID }}
+          RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
         run: cargo build --release --workspace --locked
       - uses: actions/setup-node@v4
         with:

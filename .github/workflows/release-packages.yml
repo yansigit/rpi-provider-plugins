@@ -9,6 +9,12 @@ on:
       package_releases:
         required: true
         type: string
+    # Checked by the build job, which fails before compiling when either is empty.
+    secrets:
+      RPI_ANTIGRAVITY_OAUTH_CLIENT_ID:
+        required: false
+      RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET:
+        required: false
   workflow_dispatch:
     inputs:
       source_ref:
@@ -45,6 +51,17 @@ jobs:
       run:
         shell: bash
     steps:
+      - name: Require the Antigravity OAuth client secrets
+        env:
+          RPI_ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_ID }}
+          RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
+        run: |
+          for name in RPI_ANTIGRAVITY_OAUTH_CLIENT_ID RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET; do
+            if [ -z "${!name//[[:space:]]/}" ]; then
+              echo "::error::Repository secret $name is empty. Release builds compile rpi-antigravity-auth, which needs it." >&2
+              exit 1
+            fi
+          done
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.source_ref }}
@@ -79,6 +96,8 @@ jobs:
           node scripts/stage-package-runtime.mjs
       - name: Build only the requested extension libraries
         env:
+          RPI_ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_ID }}
+          RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.RPI_ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
           PACKAGE_RELEASES: ${{ inputs.package_releases }}
           TARGET: ${{ matrix.target }}
           SOURCE_REF: ${{ inputs.source_ref }}
