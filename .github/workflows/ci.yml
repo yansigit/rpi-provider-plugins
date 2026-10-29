@@ -51,7 +51,7 @@ jobs:
         run: cargo +1.78.0 check --locked --all-targets -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-multiprovider
 
       - name: Test on Rust 1.95
-        run: cargo +1.95.0 test --locked -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-cursor-lite -p rpi-multiprovider -- --skip real_dll
+        run: cargo +1.95.0 test --locked -p rpi-antigravity-auth -p rpi-cursor-sdk -p rpi-cursor-lite -p rpi-claude-agent -p rpi-multiprovider -- --skip real_dll
 
       - name: Check rustfmt on the files that are clean today
         # The provider crates still have formatting drift in other files (see

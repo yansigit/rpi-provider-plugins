@@ -94,6 +94,9 @@ packages/rpi-antigravity-auth/tests/vault_setup.rs
 packages/rpi-antigravity-auth/tests/vault_slot.rs
 packages/rpi-antigravity-auth/tests/vault_source.rs
 packages/rpi-antigravity-auth/tests/vault_subc.rs
+packages/rpi-claude-agent/src/lib.rs
+packages/rpi-claude-agent/tests/host.rs
+packages/rpi-claude-agent/tests/worker.rs
 packages/rpi-cursor-lite/src/lib.rs
 packages/rpi-cursor-lite/tests/host.rs
 packages/rpi-cursor-lite/tests/r02_native_loading.rs

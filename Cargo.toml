@@ -2,6 +2,7 @@
 members = [
     "crates/rpi-node-collation",
     "packages/rpi-antigravity-auth",
+    "packages/rpi-claude-agent",
     "packages/rpi-cursor-lite",
     "packages/rpi-cursor-sdk",
     "packages/rpi-multiprovider",
