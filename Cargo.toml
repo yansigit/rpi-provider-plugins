@@ -2,6 +2,7 @@
 members = [
     "crates/rpi-node-collation",
     "packages/rpi-antigravity-auth",
+    "packages/rpi-cursor-lite",
     "packages/rpi-cursor-sdk",
     "packages/rpi-multiprovider",
 ]
@@ -22,7 +23,7 @@ repository = "https://github.com/yansigit/rpi-provider-plugins"
 
 [workspace.dependencies]
 # The host SDK (rpi-plugin-sdk, rpi-ai) is pinned by git revision in each
-# package's own Cargo.toml, so this workspace never resolves a published SDK.
+# package's own Cargo.toml; only rpi-cursor-lite uses the published SDK.
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "sync", "time"] }

@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { isMinimalHost } from "./rpi/profile.js";
 import type { AgentModeOption, AgentOptions, LocalAgentOptions, LocalAgentStore, ModelSelection, SDKAgent, SettingSource } from "@cursor/sdk";
 import type { Context } from "@earendil-works/pi-ai";
 import { normalizeCursorCustomStoreRoot } from "./cursor-custom-store-path.js";
@@ -522,6 +523,8 @@ async function createSessionAgentEntry(
 			}),
 			...(bridgeRun?.mcpServers ? { mcpServers: bridgeRun.mcpServers } : {}),
 			...(params.agents && Object.keys(params.agents).length ? { agents: params.agents } : {}),
+			// A minimal host cannot veto Cursor's own tool calls, so its agents get no built-in tools (text only).
+			...(isMinimalHost() ? { tools: [] } : {}),
 		});
 		let agent: SDKAgent | undefined;
 		let effectiveSendState = sendState;

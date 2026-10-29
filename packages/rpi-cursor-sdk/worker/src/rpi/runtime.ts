@@ -12,6 +12,9 @@ import { NativeToolSurface, toolMetadata, type ToolSnapshot } from "./tool-surfa
 import { isNativeCursorToolName } from "../cursor-native-tool-names.js";
 import { scrubSensitiveText } from "../cursor-sensitive-text.js";
 import { nativeStreamOptions } from "./options.js";
+import { LocalHost } from "./local-host.js";
+import { setMinimalHost } from "./profile.js";
+import { initializeNativePaths } from "./paths.js";
 
 type Frame = ToolSnapshot & { context: ExtensionContext; effects: NativeEffects; request: HostRequest; origin: NativeSessionOrigin };
 function object(value: unknown): Record<string, unknown> {
@@ -56,7 +59,17 @@ export class NativeCursorRuntime {
 	private stopping = false;
 	private shutDown = false;
 	private closing?: Promise<void>;
-	constructor(private standing: WorkerCall, private locations: { cwd: string; sessionDir: string }) {
+	private local?: LocalHost;
+	private starting?: Promise<unknown>;
+	constructor(private standing: WorkerCall, private locations: { cwd: string; sessionDir: string }, minimal?: { agentDir: string }) {
+		if (minimal) {
+			// Minimal host profile: every native port is answered in-process (see local-host.ts).
+			// The staged bundle has its own copy of paths.js, so the launcher's call does not reach it.
+			initializeNativePaths(minimal.agentDir);
+			this.local = new LocalHost(locations.cwd);
+			this.standing = this.local.bind(standing);
+			setMinimalHost();
+		}
 		const frame = () => this.current();
 		this.extension = new NativeCursorExtension({
 			context: () => frame().context, flags: this.flags, events: createEventBus(),
@@ -149,6 +162,17 @@ export class NativeCursorRuntime {
 	async dispatch(method: string, raw: unknown, call: WorkerCall): Promise<unknown> {
 		if (this.stopping) throw new Error("Native Cursor runtime is shutting down");
 		const input = object(raw);
+		const local = this.local;
+		if (local) {
+			call = local.bind(call);
+			if (method === "provider.stream") {
+				local.model = object(input.model);
+				local.systemPrompt = typeof object(input.context).systemPrompt === "string" ? object(input.context).systemPrompt as string : "";
+				// No host sends session_start; the first stream starts the one local session.
+				try { await (this.starting ??= this.dispatch("extension.event", { event: { type: "session_start", reason: "startup" } }, call)); }
+				catch (error) { this.starting = undefined; throw error; }
+			}
+		}
 		switch (method) {
 			case "runtime.configure": await this.configure(call); return null;
 			case "provider.auth": return cursorNativeAuth(this.extension.provider(), text(input.action), input.input, call.signal);

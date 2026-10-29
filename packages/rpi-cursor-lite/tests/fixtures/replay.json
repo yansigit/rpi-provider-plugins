@@ -1,0 +1,67 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "replay",
+  "description": "Cursor runs its own shell tool; the replay must reach the host as text, never as a tool call.",
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "replay",
+      "expect": {
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Running the shell tool."
+          ]
+        },
+        {
+          "op": "nativeTool",
+          "callId": "call-shell-1",
+          "toolCall": {
+            "type": "shell",
+            "args": {
+              "command": "echo simulated"
+            },
+            "result": {
+              "status": "success",
+              "value": {
+                "exitCode": 0,
+                "signal": "",
+                "stdout": "simulated\n",
+                "stderr": "",
+                "executionTime": 1
+              }
+            }
+          }
+        },
+        {
+          "op": "text",
+          "chunks": [
+            "Done."
+          ]
+        }
+      ],
+      "outcome": {
+        "status": "finished",
+        "result": "Done."
+      }
+    }
+  ]
+}
