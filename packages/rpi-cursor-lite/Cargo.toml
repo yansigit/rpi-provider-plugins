@@ -2,20 +2,19 @@
 name = "rpi-cursor-lite"
 version.workspace = true
 edition.workspace = true
-# rpi-plugin-sdk 0.12.0 requires Rust 1.88.
-rust-version = "1.88"
+rust-version.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
-description = "Minimal Cursor provider for the published rpi plugin SDK, using the retained Node worker"
+description = "Minimal Cursor provider using the retained Node worker"
 publish = false
 
 [lib]
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-# The published SDK only: this package must load in an unmodified rpi 0.12 host.
-rpi-plugin-sdk = "=0.12.0"
+# The host SDK is pinned by git revision like every other provider package.
+rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "6064a7616217ebb2d90014787bf4f45ce9e597dc", default-features = false, features = ["provider"] }
 serde.workspace = true
 serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
 tokio = { workspace = true, features = ["net", "io-util", "process", "macros"] }

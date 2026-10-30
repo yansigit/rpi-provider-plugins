@@ -1517,7 +1517,7 @@ dependencies = [
  "getrandom 0.2.17",
  "regex",
  "reqwest",
- "rpi-plugin-sdk 0.9.2",
+ "rpi-plugin-sdk",
  "serde",
  "serde_json",
  "sha2",
@@ -1549,7 +1549,7 @@ dependencies = [
  "regex",
  "reqwest",
  "rpi-node-collation",
- "rpi-plugin-sdk 0.9.2",
+ "rpi-plugin-sdk",
  "serde",
  "serde_json",
  "sha2",
@@ -1571,7 +1571,7 @@ version = "0.1.9"
 dependencies = [
  "getrandom 0.2.17",
  "libc",
- "rpi-plugin-sdk 0.12.0",
+ "rpi-plugin-sdk",
  "serde",
  "serde_json",
  "tokio",
@@ -1585,7 +1585,7 @@ version = "0.1.9"
 dependencies = [
  "getrandom 0.2.17",
  "libc",
- "rpi-plugin-sdk 0.12.0",
+ "rpi-plugin-sdk",
  "serde",
  "serde_json",
  "tokio",
@@ -1601,7 +1601,7 @@ dependencies = [
  "fs2",
  "getrandom 0.2.17",
  "libc",
- "rpi-plugin-sdk 0.9.2",
+ "rpi-plugin-sdk",
  "serde",
  "serde_json",
  "sha2",
@@ -1621,7 +1621,7 @@ dependencies = [
  "regex",
  "rpi-ai",
  "rpi-node-collation",
- "rpi-plugin-sdk 0.9.2",
+ "rpi-plugin-sdk",
  "serde",
  "serde_json",
  "tokio",
@@ -1650,15 +1650,6 @@ dependencies = [
  "serde_json",
  "tokio",
  "tokio-util",
-]
-
-[[package]]
-name = "rpi-plugin-sdk"
-version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6d27415ca0a573e072ff5942f1c687da7e5974f7fd44a6a8b09d19b99493d66"
-dependencies = [
- "serde_json",
 ]
 
 [[package]]

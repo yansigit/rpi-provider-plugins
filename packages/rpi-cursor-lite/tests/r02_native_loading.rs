@@ -76,6 +76,18 @@ fn api() -> PluginApi {
         register_streaming_provider: Some(streaming),
         register_tool_with_wake: None,
         register_plugin_lifecycle: Some(lifecycle),
+        register_provider_auth: None,
+        register_credential_store: None,
+        register_provider_wrapper: None,
+        delegate_provider_stream: None,
+        provider_continuation: None,
+        native_request: None,
+        register_provider_runtime: None,
+        register_event_result_handler: None,
+        register_service: None,
+        native_context: None,
+        register_native_command: None,
+        register_owned_tool_with_wake: None,
     }
 }
 
