@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "crates/rpi-node-collation",
+    "packages/rpi-anthropic-auth",
     "packages/rpi-antigravity-auth",
     "packages/rpi-cursor-sdk",
     "packages/rpi-multiprovider",

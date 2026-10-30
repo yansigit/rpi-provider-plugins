@@ -1,12 +1,13 @@
 # rpi-provider-plugins
 
-Three provider plugins for the [rpi](https://github.com/yansigit/pi-rust) host,
+Four provider plugins for the [rpi](https://github.com/yansigit/pi-rust) host,
 written as native Rust libraries. Each one ports a Pi extension, and each package's
 README and parity ledger records how far the port has got.
 
 | Package | Ports | Status |
 | --- | --- | --- |
 | `rpi-antigravity-auth` | [cortexkit/antigravity-auth](https://github.com/cortexkit/antigravity-auth) by Jens (Antigravity provider, OAuth sign-in, account vault) | Not parity complete. See [`PARITY.md`](packages/rpi-antigravity-auth/PARITY.md). |
+| `rpi-anthropic-auth` | [leohenon/pi-anthropic-oauth](https://github.com/leohenon/pi-anthropic-oauth) 0.3.6 by Leo Henon (Claude Pro/Max provider over the Claude Code wire protocol) | Not parity complete. See [`PARITY.md`](packages/rpi-anthropic-auth/PARITY.md). |
 | `rpi-multiprovider` | [monotykamary/pi-multiprovider](https://github.com/monotykamary/pi-multiprovider) 0.11.3 by the pi-multiprovider contributors (multi-account routing, virtual providers) | Partial integration. See [its README](packages/rpi-multiprovider/README.md). |
 | `rpi-cursor-sdk` | [fitchmultz/pi-cursor-sdk](https://github.com/fitchmultz/pi-cursor-sdk) by Mitch Fultz (Cursor Agents SDK adapter). The Node worker is retained. | Not yet installable or parity complete. See [its README](packages/rpi-cursor-sdk/README.md). |
 

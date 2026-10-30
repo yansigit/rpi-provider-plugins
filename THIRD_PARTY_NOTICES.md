@@ -1,6 +1,6 @@
 # Third-party notices
 
-This repository ports three Pi extensions to native Rust plugins and carries
+This repository ports four Pi extensions to native Rust plugins and carries
 vendored crates, data derived from Unicode and Node.js, and pinned dependencies.
 Each component keeps its own license. The MIT notices below are reproduced in the
 files named in the table; those files are authoritative.
@@ -10,14 +10,16 @@ files named in the table; those files are authoritative.
 | Component | Upstream and copyright holder | Revision | License | Notice file |
 | --- | --- | --- | --- | --- |
 | rpi-antigravity-auth | [cortexkit/antigravity-auth](https://github.com/cortexkit/antigravity-auth), Copyright (c) 2025 Jens | `a97f9055017f3c1546afbfe61a19d50b428be3d8` | MIT | `packages/rpi-antigravity-auth/LICENSE.upstream` |
+| rpi-anthropic-auth | [leohenon/pi-anthropic-oauth](https://github.com/leohenon/pi-anthropic-oauth) (0.3.6), Copyright (c) 2026 Leo Henon | `3709dcb7bce5de10670f3a8912c4e14327f93594` | MIT | `packages/rpi-anthropic-auth/LICENSE.upstream` |
 | rpi-multiprovider | [monotykamary/pi-multiprovider](https://github.com/monotykamary/pi-multiprovider) (0.11.3), Copyright (c) 2026 pi-multiprovider contributors | `bd97d65a36f541935dc91e33ba15d7910a30f9d7` | MIT | `packages/rpi-multiprovider/LICENSE` |
 | rpi-cursor-sdk, worker adapter | [fitchmultz/pi-cursor-sdk](https://github.com/fitchmultz/pi-cursor-sdk), Copyright (c) 2026 Mitch Fultz | `f337dc4bb7cea936c52e69a7fe08e7e376c8467b` | MIT | `packages/rpi-cursor-sdk/worker/LICENSE` and `packages/rpi-cursor-sdk/runtime/LICENSE` |
 
-The Rust ports of antigravity-auth and cursor-sdk are additionally covered by the
-MIT license in their package directories (`packages/rpi-antigravity-auth/LICENSE`
+The Rust ports of anthropic-auth, antigravity-auth and cursor-sdk are additionally
+covered by the MIT license in their package directories
+(`packages/rpi-anthropic-auth/LICENSE`, `packages/rpi-antigravity-auth/LICENSE`
 and `packages/rpi-cursor-sdk/LICENSE`), copyright Aiden Yoon.
 
-The behavioral reference for all three is Pi 1.3.0 by Mario Zechner
+The behavioral reference for all of them is Pi 1.3.0 by Mario Zechner
 ([earendil-works/pi](https://github.com/earendil-works/pi)), MIT licensed. It is
 not part of this repository; the parity tests read it from a local checkout.
 
@@ -45,7 +47,7 @@ revisions and the local changes.
 
 ## Pinned host SDK
 
-The three plugins compile against the rpi plugin SDK, `rpi-plugin-sdk` (and
+The four plugins compile against the rpi plugin SDK, `rpi-plugin-sdk` (and
 `rpi-ai` and `rpi-telemetry` through it), from the pi-rust fork at
 [yansigit/pi-rust](https://github.com/yansigit/pi-rust) revision
 `6064a7616217ebb2d90014787bf4f45ce9e597dc`. The SDK is a git dependency and is not

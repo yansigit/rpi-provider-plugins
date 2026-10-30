@@ -1510,6 +1510,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpi-anthropic-auth"
+version = "0.1.9"
+dependencies = [
+ "base64",
+ "getrandom 0.2.17",
+ "regex",
+ "reqwest",
+ "rpi-plugin-sdk",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tokio",
+ "tokio-util",
+ "url",
+]
+
+[[package]]
 name = "rpi-antigravity-auth"
 version = "0.1.9"
 dependencies = [
