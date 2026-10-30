@@ -21,6 +21,16 @@
     "repository": "https://github.com/yansigit/rpi-provider-plugins"
   },
   {
+    "name": "rpi-anthropic-auth",
+    "version": "0.1.9",
+    "type": "extension",
+    "tool": "/anthropic-auth-status + /anthropic-usage",
+    "inspiredBy": "leohenon/pi-anthropic-oauth (Claude Pro/Max provider)",
+    "sourceDownloadsPerMonth": null,
+    "install": "rpi install rpi-anthropic-auth --path packages/rpi-anthropic-auth",
+    "repository": "https://github.com/yansigit/rpi-provider-plugins"
+  },
+  {
     "name": "rpi-multiprovider",
     "version": "0.1.9",
     "type": "extension",

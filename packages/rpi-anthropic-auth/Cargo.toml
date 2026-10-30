@@ -1,0 +1,30 @@
+[package]
+name = "rpi-anthropic-auth"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Claude Pro/Max OAuth login and refresh for the Anthropic provider in rpi"
+publish = false
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+rpi-plugin-sdk = { git = "https://github.com/yansigit/pi-rust", rev = "6064a7616217ebb2d90014787bf4f45ce9e597dc", default-features = false, features = ["provider"] }
+serde.workspace = true
+serde_json.workspace = true
+url.workspace = true
+tokio.workspace = true
+tokio-util = { version = "0.7", features = ["rt"] }
+reqwest = { workspace = true, features = ["json", "rustls-tls"] }
+sha2 = "0.10"
+base64 = "0.22"
+getrandom = "0.2"
+# Section-aware system prompt sanitizer and tool-name rewriting.
+regex = "1"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
