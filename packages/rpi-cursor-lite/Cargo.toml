@@ -1,0 +1,29 @@
+[package]
+name = "rpi-cursor-lite"
+version.workspace = true
+edition.workspace = true
+# rpi-plugin-sdk 0.12.0 requires Rust 1.88.
+rust-version = "1.88"
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Minimal Cursor provider for the published rpi plugin SDK, using the retained Node worker"
+publish = false
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+# The published SDK only: this package must load in an unmodified rpi 0.12 host.
+rpi-plugin-sdk = "=0.12.0"
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "float_roundtrip"] }
+tokio = { workspace = true, features = ["net", "io-util", "process", "macros"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+getrandom = "0.2"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_Storage_FileSystem", "Win32_System_LibraryLoader"] }

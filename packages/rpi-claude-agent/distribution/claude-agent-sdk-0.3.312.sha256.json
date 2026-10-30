@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "note": "The pinned Claude Agent SDK. worker/package-lock.json pins every package by sha512 integrity; these are the sha256 of the npm tarballs and of the bundled Claude Code executable that scripts/stage.sh installs on linux-x64. The packages are Anthropic's proprietary software and are installed from npm, never committed.",
+  "packages": [
+    {
+      "name": "@anthropic-ai/claude-agent-sdk",
+      "version": "0.3.312",
+      "tarball_sha256": "98a6c27b00b273fa0598b80540aa152d9fb58b6a1ac885b5993381e98469926d"
+    },
+    {
+      "name": "@anthropic-ai/claude-agent-sdk-linux-x64",
+      "version": "0.3.312",
+      "tarball_sha256": "5399c84c98bc4f04771815ef1a7b918ea02ef6e1faa28a2ba9de3ae2f7e6f405",
+      "files": {
+        "claude": "4f4178ce41d83e23341ebfbaecdbcf8ea6bf7baea0690025abe49eeec3a5d01d"
+      }
+    }
+  ]
+}

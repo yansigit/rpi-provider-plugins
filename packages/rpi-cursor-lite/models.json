@@ -1,0 +1,6971 @@
+[
+  {
+    "id": "auto-smart",
+    "name": "Auto",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-fable-5@300k",
+    "name": "Claude Fable 5 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-fable-5@1m",
+    "name": "Claude Fable 5 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "fable@300k",
+    "name": "Claude Fable 5 (fable) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "fable@1m",
+    "name": "Claude Fable 5 (fable) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "fable-5@300k",
+    "name": "Claude Fable 5 (fable-5) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "fable-5@1m",
+    "name": "Claude Fable 5 (fable-5) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-fable-5-1@300k",
+    "name": "Claude Fable 5.1 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-fable-5-1@1m",
+    "name": "Claude Fable 5.1 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "fable-5-1@300k",
+    "name": "Claude Fable 5.1 (fable-5-1) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "fable-5-1@1m",
+    "name": "Claude Fable 5.1 (fable-5-1) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-haiku-4-5",
+    "name": "Claude Haiku 4.5",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "haiku-latest",
+    "name": "Claude Haiku 4.5 (haiku-latest)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "haiku",
+    "name": "Claude Haiku 4.5 (haiku)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "haiku-4.5",
+    "name": "Claude Haiku 4.5 (haiku-4.5)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "haiku-4-5",
+    "name": "Claude Haiku 4.5 (haiku-4-5)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-haiku-5-5@300k",
+    "name": "Claude Haiku 5.5 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-haiku-5-5@1m",
+    "name": "Claude Haiku 5.5 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-5",
+    "name": "Claude Opus 4.5",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.5",
+    "name": "Claude Opus 4.5 (opus-4.5)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-5",
+    "name": "Claude Opus 4.5 (opus-4-5)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-6@200k",
+    "name": "Claude Opus 4.6 @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-6@1m",
+    "name": "Claude Opus 4.6 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.6@200k",
+    "name": "Claude Opus 4.6 (opus-4.6) @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.6@1m",
+    "name": "Claude Opus 4.6 (opus-4.6) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-6@200k",
+    "name": "Claude Opus 4.6 (opus-4-6) @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-6@1m",
+    "name": "Claude Opus 4.6 (opus-4-6) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-7@300k",
+    "name": "Claude Opus 4.7 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-7@300k:fast",
+    "name": "Claude Opus 4.7 (fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-7@300k:slow",
+    "name": "Claude Opus 4.7 (slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-7@1m",
+    "name": "Claude Opus 4.7 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-7@1m:fast",
+    "name": "Claude Opus 4.7 (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-7@1m:slow",
+    "name": "Claude Opus 4.7 (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.7@300k",
+    "name": "Claude Opus 4.7 (opus-4.7) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.7@300k:fast",
+    "name": "Claude Opus 4.7 (opus-4.7, fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.7@300k:slow",
+    "name": "Claude Opus 4.7 (opus-4.7, slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.7@1m",
+    "name": "Claude Opus 4.7 (opus-4.7) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.7@1m:fast",
+    "name": "Claude Opus 4.7 (opus-4.7, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.7@1m:slow",
+    "name": "Claude Opus 4.7 (opus-4.7, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-7@300k",
+    "name": "Claude Opus 4.7 (opus-4-7) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-7@300k:fast",
+    "name": "Claude Opus 4.7 (opus-4-7, fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-7@300k:slow",
+    "name": "Claude Opus 4.7 (opus-4-7, slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-7@1m",
+    "name": "Claude Opus 4.7 (opus-4-7) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-7@1m:fast",
+    "name": "Claude Opus 4.7 (opus-4-7, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-7@1m:slow",
+    "name": "Claude Opus 4.7 (opus-4-7, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-8@300k",
+    "name": "Claude Opus 4.8 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-8@300k:fast",
+    "name": "Claude Opus 4.8 (fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-8@300k:slow",
+    "name": "Claude Opus 4.8 (slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-8@1m",
+    "name": "Claude Opus 4.8 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-8@1m:fast",
+    "name": "Claude Opus 4.8 (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-4-8@1m:slow",
+    "name": "Claude Opus 4.8 (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.8@300k",
+    "name": "Claude Opus 4.8 (opus-4.8) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.8@300k:fast",
+    "name": "Claude Opus 4.8 (opus-4.8, fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.8@300k:slow",
+    "name": "Claude Opus 4.8 (opus-4.8, slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.8@1m",
+    "name": "Claude Opus 4.8 (opus-4.8) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.8@1m:fast",
+    "name": "Claude Opus 4.8 (opus-4.8, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4.8@1m:slow",
+    "name": "Claude Opus 4.8 (opus-4.8, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-8@300k",
+    "name": "Claude Opus 4.8 (opus-4-8) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-8@300k:fast",
+    "name": "Claude Opus 4.8 (opus-4-8, fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-8@300k:slow",
+    "name": "Claude Opus 4.8 (opus-4-8, slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-8@1m",
+    "name": "Claude Opus 4.8 (opus-4-8) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-8@1m:fast",
+    "name": "Claude Opus 4.8 (opus-4-8, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-4-8@1m:slow",
+    "name": "Claude Opus 4.8 (opus-4-8, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5@300k",
+    "name": "Claude Opus 5 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5@300k:fast",
+    "name": "Claude Opus 5 (fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5@300k:slow",
+    "name": "Claude Opus 5 (slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5@1m",
+    "name": "Claude Opus 5 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5@1m:fast",
+    "name": "Claude Opus 5 (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5@1m:slow",
+    "name": "Claude Opus 5 (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5@300k",
+    "name": "Claude Opus 5 (opus-5) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5@300k:fast",
+    "name": "Claude Opus 5 (opus-5, fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5@300k:slow",
+    "name": "Claude Opus 5 (opus-5, slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5@1m",
+    "name": "Claude Opus 5 (opus-5) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5@1m:fast",
+    "name": "Claude Opus 5 (opus-5, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5@1m:slow",
+    "name": "Claude Opus 5 (opus-5, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5-5@300k",
+    "name": "Claude Opus 5.5 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5-5@300k:fast",
+    "name": "Claude Opus 5.5 (fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5-5@300k:slow",
+    "name": "Claude Opus 5.5 (slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5-5@1m",
+    "name": "Claude Opus 5.5 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5-5@1m:fast",
+    "name": "Claude Opus 5.5 (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-opus-5-5@1m:slow",
+    "name": "Claude Opus 5.5 (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5.5@300k",
+    "name": "Claude Opus 5.5 (opus-5.5) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5.5@300k:fast",
+    "name": "Claude Opus 5.5 (opus-5.5, fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5.5@300k:slow",
+    "name": "Claude Opus 5.5 (opus-5.5, slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5.5@1m",
+    "name": "Claude Opus 5.5 (opus-5.5) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5.5@1m:fast",
+    "name": "Claude Opus 5.5 (opus-5.5, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5.5@1m:slow",
+    "name": "Claude Opus 5.5 (opus-5.5, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5-5@300k",
+    "name": "Claude Opus 5.5 (opus-5-5) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5-5@300k:fast",
+    "name": "Claude Opus 5.5 (opus-5-5, fast) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5-5@300k:slow",
+    "name": "Claude Opus 5.5 (opus-5-5, slow) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5-5@1m",
+    "name": "Claude Opus 5.5 (opus-5-5) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5-5@1m:fast",
+    "name": "Claude Opus 5.5 (opus-5-5, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "opus-5-5@1m:slow",
+    "name": "Claude Opus 5.5 (opus-5-5, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-sonnet-4@200k",
+    "name": "Claude Sonnet 4 @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-4@200k",
+    "name": "Claude Sonnet 4 (sonnet-4) @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-sonnet-4-5@200k",
+    "name": "Claude Sonnet 4.5 @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-4.5@200k",
+    "name": "Claude Sonnet 4.5 (sonnet-4.5) @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-4-5@200k",
+    "name": "Claude Sonnet 4.5 (sonnet-4-5) @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "true",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-sonnet-4-6@200k",
+    "name": "Claude Sonnet 4.6 @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-sonnet-4-6@1m",
+    "name": "Claude Sonnet 4.6 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-4.6@200k",
+    "name": "Claude Sonnet 4.6 (sonnet-4.6) @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-4.6@1m",
+    "name": "Claude Sonnet 4.6 (sonnet-4.6) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-4-6@200k",
+    "name": "Claude Sonnet 4.6 (sonnet-4-6) @ 200k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-4-6@1m",
+    "name": "Claude Sonnet 4.6 (sonnet-4-6) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-sonnet-5@300k",
+    "name": "Claude Sonnet 5 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-sonnet-5@1m",
+    "name": "Claude Sonnet 5 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-5@300k",
+    "name": "Claude Sonnet 5 (sonnet-5) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "sonnet-5@1m",
+    "name": "Claude Sonnet 5 (sonnet-5) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "false",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-sonnet-5-5@300k",
+    "name": "Claude Sonnet 5.5 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "claude-sonnet-5-5@1m",
+    "name": "Claude Sonnet 5.5 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2",
+    "name": "Composer 2",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2:fast",
+    "name": "Composer 2 (fast)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2:slow",
+    "name": "Composer 2 (slow)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2.5",
+    "name": "Composer 2.5",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2.5:fast",
+    "name": "Composer 2.5 (fast)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2.5:slow",
+    "name": "Composer 2.5 (slow)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-latest",
+    "name": "Composer 2.5 (composer-latest)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-latest:fast",
+    "name": "Composer 2.5 (composer-latest, fast)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-latest:slow",
+    "name": "Composer 2.5 (composer-latest, slow)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer",
+    "name": "Composer 2.5 (composer)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer:fast",
+    "name": "Composer 2.5 (composer, fast)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer:slow",
+    "name": "Composer 2.5 (composer, slow)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2-5",
+    "name": "Composer 2.5 (composer-2-5)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2-5:fast",
+    "name": "Composer 2.5 (composer-2-5, fast)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "composer-2-5:slow",
+    "name": "Composer 2.5 (composer-2-5, slow)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "default",
+    "name": "Auto",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "auto",
+    "name": "Auto (auto)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-2.5-flash",
+    "name": "Gemini 2.5 Flash",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-3-flash",
+    "name": "Gemini 3 Flash",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-3.1-pro",
+    "name": "Gemini 3.1 Pro",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-latest",
+    "name": "Gemini 3.1 Pro (gemini-latest)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-pro-latest",
+    "name": "Gemini 3.1 Pro (gemini-pro-latest)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini",
+    "name": "Gemini 3.1 Pro (gemini)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-pro",
+    "name": "Gemini 3.1 Pro (gemini-pro)",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-3.5-flash",
+    "name": "Gemini 3.5 Flash",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-3.6-flash",
+    "name": "Gemini 3.6 Flash",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-3.7-flash",
+    "name": "Gemini 3.7 Flash",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gemini-3.8-flash",
+    "name": "Gemini 3.8 Flash",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "glm-5.2",
+    "name": "GLM 5.2",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": null,
+      "medium": null,
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "glm-5p3",
+    "name": "GLM 5.3",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": null,
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "glm-5p3-flash",
+    "name": "GLM 5.3 Flash",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": null,
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-mini",
+    "name": "GPT-5 Mini",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.1",
+    "name": "GPT-5.1",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.2",
+    "name": "GPT-5.2",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.2:fast",
+    "name": "GPT-5.2 (fast)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.2:slow",
+    "name": "GPT-5.2 (slow)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.3-codex",
+    "name": "Codex 5.3",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.3-codex:fast",
+    "name": "Codex 5.3 (fast)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.3-codex:slow",
+    "name": "Codex 5.3 (slow)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex-latest",
+    "name": "Codex 5.3 (codex-latest)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex-latest:fast",
+    "name": "Codex 5.3 (codex-latest, fast)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex-latest:slow",
+    "name": "Codex 5.3 (codex-latest, slow)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex",
+    "name": "Codex 5.3 (codex)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex:fast",
+    "name": "Codex 5.3 (codex, fast)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex:slow",
+    "name": "Codex 5.3 (codex, slow)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex-5.3",
+    "name": "Codex 5.3 (codex-5.3)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex-5.3:fast",
+    "name": "Codex 5.3 (codex-5.3, fast)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "codex-5.3:slow",
+    "name": "Codex 5.3 (codex-5.3, slow)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.4@272k",
+    "name": "GPT-5.4 @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.4@272k:fast",
+    "name": "GPT-5.4 (fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.4@272k:slow",
+    "name": "GPT-5.4 (slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.4@1m",
+    "name": "GPT-5.4 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.4@1m:fast",
+    "name": "GPT-5.4 (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.4@1m:slow",
+    "name": "GPT-5.4 (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.4-mini",
+    "name": "GPT-5.4 Mini",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-mini-latest",
+    "name": "GPT-5.4 Mini (gpt-mini-latest)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.4-nano",
+    "name": "GPT-5.4 Nano",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-nano-latest",
+    "name": "GPT-5.4 Nano (gpt-nano-latest)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-nano",
+    "name": "GPT-5.4 Nano (gpt-nano)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.5@272k",
+    "name": "GPT-5.5 @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.5@272k:fast",
+    "name": "GPT-5.5 (fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.5@272k:slow",
+    "name": "GPT-5.5 (slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.5@1m",
+    "name": "GPT-5.5 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.5@1m:fast",
+    "name": "GPT-5.5 (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.5@1m:slow",
+    "name": "GPT-5.5 (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-5@272k",
+    "name": "GPT-5.5 (gpt-5-5) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-5@272k:fast",
+    "name": "GPT-5.5 (gpt-5-5, fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-5@272k:slow",
+    "name": "GPT-5.5 (gpt-5-5, slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-5@1m",
+    "name": "GPT-5.5 (gpt-5-5) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-5@1m:fast",
+    "name": "GPT-5.5 (gpt-5-5, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-5@1m:slow",
+    "name": "GPT-5.5 (gpt-5-5, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "extra-high",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-luna@272k",
+    "name": "GPT-5.6 Luna @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-luna@272k:fast",
+    "name": "GPT-5.6 Luna (fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-luna@272k:slow",
+    "name": "GPT-5.6 Luna (slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-luna@1m",
+    "name": "GPT-5.6 Luna @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-luna@1m:fast",
+    "name": "GPT-5.6 Luna (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-luna@1m:slow",
+    "name": "GPT-5.6 Luna (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-luna@272k",
+    "name": "GPT-5.6 Luna (gpt-5-6-luna) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-luna@272k:fast",
+    "name": "GPT-5.6 Luna (gpt-5-6-luna, fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-luna@272k:slow",
+    "name": "GPT-5.6 Luna (gpt-5-6-luna, slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-luna@1m",
+    "name": "GPT-5.6 Luna (gpt-5-6-luna) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-luna@1m:fast",
+    "name": "GPT-5.6 Luna (gpt-5-6-luna, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-luna@1m:slow",
+    "name": "GPT-5.6 Luna (gpt-5-6-luna, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-sol@272k",
+    "name": "GPT-5.6 Sol @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-sol@272k:fast",
+    "name": "GPT-5.6 Sol (fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-sol@272k:slow",
+    "name": "GPT-5.6 Sol (slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-sol@1m",
+    "name": "GPT-5.6 Sol @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-sol@1m:fast",
+    "name": "GPT-5.6 Sol (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-sol@1m:slow",
+    "name": "GPT-5.6 Sol (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-latest@272k",
+    "name": "GPT-5.6 Sol (gpt-latest) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-latest@272k:fast",
+    "name": "GPT-5.6 Sol (gpt-latest, fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-latest@272k:slow",
+    "name": "GPT-5.6 Sol (gpt-latest, slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-latest@1m",
+    "name": "GPT-5.6 Sol (gpt-latest) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-latest@1m:fast",
+    "name": "GPT-5.6 Sol (gpt-latest, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-latest@1m:slow",
+    "name": "GPT-5.6 Sol (gpt-latest, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-sol@272k",
+    "name": "GPT-5.6 Sol (gpt-5-6-sol) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-sol@272k:fast",
+    "name": "GPT-5.6 Sol (gpt-5-6-sol, fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-sol@272k:slow",
+    "name": "GPT-5.6 Sol (gpt-5-6-sol, slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-sol@1m",
+    "name": "GPT-5.6 Sol (gpt-5-6-sol) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-sol@1m:fast",
+    "name": "GPT-5.6 Sol (gpt-5-6-sol, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-sol@1m:slow",
+    "name": "GPT-5.6 Sol (gpt-5-6-sol, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6@272k",
+    "name": "GPT-5.6 Sol (gpt-5.6) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6@272k:fast",
+    "name": "GPT-5.6 Sol (gpt-5.6, fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6@272k:slow",
+    "name": "GPT-5.6 Sol (gpt-5.6, slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6@1m",
+    "name": "GPT-5.6 Sol (gpt-5.6) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6@1m:fast",
+    "name": "GPT-5.6 Sol (gpt-5.6, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6@1m:slow",
+    "name": "GPT-5.6 Sol (gpt-5.6, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-terra@272k",
+    "name": "GPT-5.6 Terra @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-terra@272k:fast",
+    "name": "GPT-5.6 Terra (fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-terra@272k:slow",
+    "name": "GPT-5.6 Terra (slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-terra@1m",
+    "name": "GPT-5.6 Terra @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-terra@1m:fast",
+    "name": "GPT-5.6 Terra (fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5.6-terra@1m:slow",
+    "name": "GPT-5.6 Terra (slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-terra@272k",
+    "name": "GPT-5.6 Terra (gpt-5-6-terra) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-terra@272k:fast",
+    "name": "GPT-5.6 Terra (gpt-5-6-terra, fast) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-terra@272k:slow",
+    "name": "GPT-5.6 Terra (gpt-5-6-terra, slow) @ 272k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 272000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-terra@1m",
+    "name": "GPT-5.6 Terra (gpt-5-6-terra) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-terra@1m:fast",
+    "name": "GPT-5.6 Terra (gpt-5-6-terra, fast) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "gpt-5-6-terra@1m:slow",
+    "name": "GPT-5.6 Terra (gpt-5-6-terra, slow) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": "none",
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.5",
+    "name": "Grok 4.5",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.5:fast",
+    "name": "Grok 4.5 (fast)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.5:slow",
+    "name": "Grok 4.5 (slow)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": null,
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.6",
+    "name": "Grok 4.6",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.6:fast",
+    "name": "Grok 4.6 (fast)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.6:slow",
+    "name": "Grok 4.6 (slow)",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.7@256k",
+    "name": "Grok 4.7 @ 256k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.7@256k:fast",
+    "name": "Grok 4.7 (fast) @ 256k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.7@256k:slow",
+    "name": "Grok 4.7 (slow) @ 256k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 256000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.7@500k",
+    "name": "Grok 4.7 @ 500k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 500000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.7@500k:fast",
+    "name": "Grok 4.7 (fast) @ 500k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 500000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "grok-4.7@500k:slow",
+    "name": "Grok 4.7 (slow) @ 500k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": null
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 500000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "kimi-k2.7-code",
+    "name": "Kimi K2.7 Code",
+    "reasoning": false,
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "kimi-k3",
+    "name": "Kimi K3",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": null,
+      "low": "low",
+      "medium": null,
+      "high": "high",
+      "xhigh": null,
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 200000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "muse-spark-1.3@300k",
+    "name": "Muse Spark 1.3 @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "muse-spark-1.3@1m",
+    "name": "Muse Spark 1.3 @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "muse-spark@300k",
+    "name": "Muse Spark 1.3 (muse-spark) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "muse-spark@1m",
+    "name": "Muse Spark 1.3 (muse-spark) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "muse@300k",
+    "name": "Muse Spark 1.3 (muse) @ 300k",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 300000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  },
+  {
+    "id": "muse@1m",
+    "name": "Muse Spark 1.3 (muse) @ 1m",
+    "reasoning": true,
+    "thinkingLevelMap": {
+      "off": null,
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "xhigh",
+      "max": "max"
+    },
+    "input": [
+      "text",
+      "image"
+    ],
+    "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0
+    },
+    "contextWindow": 1000000,
+    "maxTokens": 16384,
+    "provider": "cursor",
+    "api": "cursor-sdk",
+    "baseUrl": "https://cursor.com"
+  }
+]

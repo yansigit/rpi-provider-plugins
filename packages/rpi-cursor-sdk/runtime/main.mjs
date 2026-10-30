@@ -14,9 +14,10 @@ const peer = new WorkerPeer(await readBootstrap(), async (method, input, call) =
 	if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("Invalid native Cursor bootstrap");
 	const paths = input;
 	if (typeof paths.agentDir !== "string" || typeof paths.cwd !== "string" || typeof paths.sessionDir !== "string") throw new Error("Invalid native Cursor locations");
+	if (paths.profile !== undefined && paths.profile !== "minimal") throw new Error("Invalid native Cursor host profile");
 	initializeNativePaths(paths.agentDir);
 	const { NativeCursorRuntime } = await import("./dist/rpi/runtime.js");
-	runtime = new NativeCursorRuntime(call, { cwd: paths.cwd, sessionDir: paths.sessionDir });
+	runtime = new NativeCursorRuntime(call, { cwd: paths.cwd, sessionDir: paths.sessionDir }, paths.profile === "minimal" ? { agentDir: paths.agentDir } : undefined);
 	try {
 		const manifest = await runtime.load();
 		call.emit({ type: "ready", manifest });

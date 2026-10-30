@@ -1,0 +1,43 @@
+{
+  "schema": "rpi-cursor-fake-sdk/1",
+  "name": "hang",
+  "description": "A turn that never finishes until it is cancelled.",
+  "auth": {
+    "apiKey": "offline-fixture"
+  },
+  "models": [
+    {
+      "id": "composer-2",
+      "displayName": "Composer 2",
+      "variants": [
+        {
+          "params": [],
+          "displayName": "Composer 2",
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "name": "hang",
+      "expect": {
+        "modelId": "composer-2"
+      },
+      "steps": [
+        {
+          "op": "text",
+          "chunks": [
+            "Working"
+          ]
+        },
+        {
+          "op": "hang"
+        }
+      ],
+      "outcome": {
+        "status": "cancelled"
+      }
+    }
+  ]
+}
