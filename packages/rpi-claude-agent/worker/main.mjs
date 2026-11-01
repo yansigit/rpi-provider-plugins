@@ -25,6 +25,8 @@ const CAPACITY = 64;
 const PAYLOAD_BYTES = 4 * 1024 * 1024;
 // An idle query stops after this; the next request resumes its saved session.
 const IDLE_MS = Number(process.env.RPI_CLAUDE_AGENT_IDLE_MS) || 5 * 60_000;
+// A query waiting for an rpi tool result is not idle, but one rpi never answers stops after this.
+const TOOL_WAIT_MS = Number(process.env.RPI_CLAUDE_AGENT_TOOL_WAIT_MS) || 60 * 60_000;
 const STOP_MS = 3000;
 
 // ---- wire ------------------------------------------------------------------
@@ -186,36 +188,41 @@ function chain(messages) {
 function after(point, messages, hashes) {
 	if (!point || point.n >= messages.length || hashes[point.n] !== point.hash) return;
 	let start = point.n;
-	// After an interrupted reply, Claude's session holds its own partial reply, not rpi's copy.
-	while (point.interrupted && messages[start]?.role === "assistant" && !messages[start].content.some(block => block.type === "toolCall")) start++;
+	// After an interrupted reply, Claude's session holds its own partial reply, not rpi's copy
+	// of it (aborted or failed) nor the results of tool calls in that copy.
+	const calls = new Set();
+	for (; point.interrupted; start++) {
+		const message = messages[start];
+		if (message?.role === "assistant" && ["aborted", "error"].includes(message.stopReason)) {
+			for (const block of message.content) if (block.type === "toolCall") calls.add(block.id);
+		} else if (!(message?.role === "toolResult" && calls.has(message.toolCallId))) break;
+	}
 	return start < messages.length ? start : undefined;
 }
 
-const records = new Map();
 const recordPath = session => join(agentDir, "claude-code", "rpi-sessions", `${createHash("sha256").update(session).digest("hex")}.json`);
 
 /** { claude, account, head: { n, hash, open?, interrupted? }, checkpoints: [{ n, hash, uuid }] }; never the token. */
+// Read every time: another rpi process may continue the same session.
 function loadRecord(session) {
-	if (!records.has(session)) {
-		let record;
-		try { record = JSON.parse(readFileSync(recordPath(session), "utf8")); } catch { /* none yet */ }
-		records.set(session, record);
-	}
-	return records.get(session);
+	try {
+		const record = JSON.parse(readFileSync(recordPath(session), "utf8"));
+		if (typeof record?.claude === "string" && Array.isArray(record.checkpoints)) return record;
+	} catch { /* none yet, or unreadable: start fresh */ }
 }
 
 // shortcut: the record keeps every checkpoint and is rewritten each turn, trim old checkpoints if long sessions make it slow.
 function saveRecord(session, record) {
-	records.set(session, record);
 	const path = recordPath(session);
+	const temporary = `${path}.${process.pid}.${randomUUID()}.tmp`;
 	try {
 		mkdirSync(dirname(path), { recursive: true });
-		writeFileSync(`${path}.tmp`, JSON.stringify(record));
-		renameSync(`${path}.tmp`, path);
+		writeFileSync(temporary, JSON.stringify(record));
+		renameSync(temporary, path);
 	} catch { /* a lost record only costs a fresh start */ }
 }
 
-/** Copy a Claude session up to a message; the copy gets fresh uuids, so map them and check the copy. */
+/** Copy a Claude session up to a message; the verbatim copy gets fresh uuids, so map them. */
 async function fork(claude, uuid) {
 	const source = await sdk.getSessionMessages(claude);
 	const end = source.findIndex(entry => entry.uuid === uuid);
@@ -223,7 +230,7 @@ async function fork(claude, uuid) {
 	const { sessionId } = await sdk.forkSession(claude, { upToMessageId: uuid });
 	try {
 		const copied = await sdk.getSessionMessages(sessionId);
-		if (copied.length !== end + 1 || copied.some((entry, i) => entry.type !== source[i].type || JSON.stringify(entry.message) !== JSON.stringify(source[i].message))) throw new Error("Claude fork changed the copied conversation");
+		if (copied.length !== end + 1) throw new Error("Claude fork did not keep the requested history");
 		return { claude: sessionId, uuids: new Map(copied.map((entry, i) => [source[i].uuid, entry.uuid])) };
 	} catch (error) {
 		await sdk.deleteSession(sessionId).catch(() => {});
@@ -238,18 +245,21 @@ async function fork(claude, uuid) {
  * prompt, tool or effort change resumes too; a different token starts fresh.
  */
 async function plan(session, messages, hashes, apiKey) {
-	const fresh = { claude: randomUUID(), start: 0, checkpoints: [] };
 	const record = loadRecord(session);
+	// A replaced Claude session is deleted once the new record no longer refers to it.
+	const fresh = { claude: randomUUID(), start: 0, checkpoints: [], superseded: record?.claude };
 	if (!record || record.account !== hash([record.claude, apiKey])) return fresh;
-	// A head with an open tool call cannot resume: the call's result would arrive as text.
+	// An open head (a tool call waiting for its result, or a turn that never settled)
+	// cannot resume: Claude's session may already hold what would be sent again.
 	const start = record.head?.open ? undefined : after(record.head, messages, hashes);
-	if (start !== undefined && await sdk.getSessionInfo(record.claude).catch(() => undefined)) return { claude: record.claude, resume: true, start, checkpoints: record.checkpoints };
+	// getSessionInfo is no test: it reports no session when every user message starts with a tag.
+	if (start !== undefined && (await sdk.getSessionMessages(record.claude).catch(() => [])).length) return { claude: record.claude, resume: true, start, checkpoints: record.checkpoints };
 	// Checkpoints follow complete replies only, so a fork never cuts between a tool call and its result.
 	const point = record.checkpoints.findLast(checkpoint => after(checkpoint, messages, hashes) !== undefined);
 	const branch = point && await fork(record.claude, point.uuid).catch(() => undefined);
 	if (!branch) return fresh;
 	const checkpoints = record.checkpoints.filter(checkpoint => checkpoint.n <= point.n && branch.uuids.has(checkpoint.uuid)).map(checkpoint => ({ ...checkpoint, uuid: branch.uuids.get(checkpoint.uuid) }));
-	return { claude: branch.claude, resume: true, start: point.n, checkpoints };
+	return { claude: branch.claude, resume: true, start: point.n, checkpoints, superseded: record.claude };
 }
 
 function usage() {
@@ -297,8 +307,9 @@ const RUNTIME_NOTE = "<runtime_info>You are running in rpi through the Claude Co
  * Split rpi's system prompt into what Claude Code should get on top of its own
  * prompt and the session's working directory. rpi composes base, appended
  * text, <project_context>, the skills listing and the cwd. The default
- * scaffold (base) and the cwd go: Claude Code writes its own of both. A custom
- * base stays. If the scaffold's end cannot be found, nothing is dropped.
+ * scaffold's intro and tool list and the cwd go: Claude Code writes its own.
+ * Its guidelines and a custom base stay. If the scaffold's Guidelines section
+ * cannot be found, nothing is dropped.
  */
 export function splitSystemPrompt(prompt = "") {
 	let rest = prompt, cwd;
@@ -307,12 +318,13 @@ export function splitSystemPrompt(prompt = "") {
 	if (tail) { cwd = tail[1]; rest = rest.slice(0, tail.index); }
 	const guidelines = rest.startsWith(SCAFFOLD) ? rest.indexOf("\nGuidelines:\n") : -1;
 	if (guidelines >= 0) {
+		// The intro and the tool list go; the guidelines stay, since extension tools' guidance lives only there.
 		let end = rest.indexOf("\n\n", guidelines + 1);
 		if (end < 0) end = rest.length;
 		// Released rpi (0.12 to 0.15) ends the scaffold with its cwd line instead.
 		const line = /^\n\nCurrent working directory: ([^\n]*)/.exec(rest.slice(end));
-		if (line) { cwd ??= line[1]; end += line[0].length; }
-		rest = rest.slice(end);
+		if (line) cwd ??= line[1];
+		rest = rest.slice(guidelines + 1, end) + rest.slice(end + (line?.[0].length ?? 0));
 	}
 	return { append: [RUNTIME_NOTE, rest.trim()].filter(Boolean).join("\n\n"), cwd };
 }
@@ -417,9 +429,12 @@ class Live {
 		clearTimeout(this.idle);
 		this.stopping ??= (async () => {
 			if (this.busy) await Promise.race([this.query.interrupt().catch(() => {}), sleep(STOP_MS)]);
+			// Release tool calls rpi will no longer answer, so nothing waits on them.
+			for (const call of this.calls.values()) call.resolve({ content: [{ type: "text", text: "The rpi turn ended." }], isError: true });
 			this.input.push(null);
 			await Promise.race([this.done.promise, sleep(STOP_MS)]);
 			try { this.query.close(); } catch { /* already closed */ }
+			if (exits.get(this.session) === this.stopping) exits.delete(this.session);
 		})();
 		// The next query for this session waits, so two processes never write one Claude session.
 		exits.set(this.session, this.stopping);
@@ -435,7 +450,8 @@ function schema(parameters) {
 /** Does this context extend the live query by exactly what it is waiting for? */
 function continuation(live, key, messages, hashes) {
 	if (!live || live.key !== key || messages.length <= live.count) return;
-	if (hashes[live.count - 1] !== live.prefix || messages[live.count - 1].role !== "assistant") return;
+	// The reply rpi kept must be the one Claude gave, not another model's answer to the same input.
+	if (hashes[live.count] !== live.reply) return;
 	const rest = messages.slice(live.count);
 	if (live.toolIds.length) {
 		const ids = rest.map(message => message.role === "toolResult" && message.toolCallId);
@@ -451,7 +467,10 @@ async function stream({ model, context, options }, { emit, signal }) {
 	const scrub = value => (apiKey ? String(value).split(apiKey).join("[redacted]") : String(value));
 	const fail = (reason, error) => ({ ...message, stopReason: reason, errorMessage: scrub(error) });
 	if (!apiKey) return fail("error", "claude-code needs a token: run `claude setup-token`, then `rpi auth login --provider claude-code` (or set CLAUDE_CODE_OAUTH_TOKEN).");
-	const session = options.sessionId ?? "default";
+	// Chats keep Claude's session; compaction, summaries and titles (another purpose) do not.
+	// shortcut: released hosts (0.12 to 0.15) send no identity, so their side calls are kept like chats, drop the fallback once every host sends one.
+	const chat = !!options.sessionId && (options.identity?.purpose ?? "prompt") === "prompt";
+	const session = chat ? options.sessionId : `side:${options.sessionId ?? ""}`;
 	const messages = context.messages ?? [];
 	// rpi's thinking level; "off" and "minimal" keep the model's lowest effort.
 	const effort = { off: "low", minimal: "low", low: "low", medium: "medium", high: "high", xhigh: "xhigh", max: "max" }[String(options.reasoning).toLowerCase()];
@@ -460,16 +479,22 @@ async function stream({ model, context, options }, { emit, signal }) {
 	let live = sessions.get(session);
 	clearTimeout(live?.idle);
 	const next = continuation(live, key, messages, hashes);
+	let target;
 	if (!next) {
 		await live?.stop();
 		await exits.get(session);
-		const target = options.sessionId ? await plan(session, messages, hashes, apiKey) : { start: 0, checkpoints: [] };
-		live = new Live(key, model, context, apiKey, effort, options.sessionId && target);
+		target = chat ? await plan(session, messages, hashes, apiKey) : { start: 0, checkpoints: [] };
+		live = new Live(key, model, context, apiKey, effort, chat && target);
 		live.session = session;
 		live.checkpoints = target.checkpoints;
 		sessions.set(session, live);
-		live.send(catchUp(messages.slice(target.start)));
-	} else if (next.user) live.send(userContent(next.user.content));
+	}
+	const record = head => live.target && saveRecord(session, { claude: live.target.claude, account: hash([live.target.claude, apiKey]), head, checkpoints: live.checkpoints });
+	// In flight: Claude Code saves new input at once, so a turn that never settles (a crash) must not be resumed and sent again.
+	record({ n: messages.length, hash: hashes.at(-1), open: true });
+	if (target?.superseded && target.superseded !== target.claude) await sdk.deleteSession(target.superseded).catch(() => {});
+	if (target) live.send(catchUp(messages.slice(target.start)));
+	else if (next.user) live.send(userContent(next.user.content));
 	else for (const result of next.results) {
 		live.result(result.toolCallId).resolve({
 			content: result.content.map(block => block.type === "image" ? { type: "image", data: block.data, mimeType: block.mimeType } : { type: "text", text: block.text ?? "" }),
@@ -477,7 +502,6 @@ async function stream({ model, context, options }, { emit, signal }) {
 		});
 	}
 	live.toolIds = [];
-	live.prefix = hashes.at(-1);
 	live.count = messages.length + 1;
 	live.busy = true;
 	live.uuid = undefined;
@@ -485,17 +509,20 @@ async function stream({ model, context, options }, { emit, signal }) {
 	/** Record where Claude's session now stands, then stop the query or let it idle. */
 	const settle = async (state, result) => {
 		const reply = { n: messages.length + 1, hash: link(hashes.at(-1), result) };
+		live.reply = reply.hash;
 		const head = state === "stop" ? reply
 			: state === "tooluse" ? { ...reply, open: true }
 				: { n: messages.length, hash: hashes.at(-1), interrupted: true };
 		if (state === "stop" && live.uuid) live.checkpoints.push({ ...reply, uuid: live.uuid });
-		if (live.target) saveRecord(session, { claude: live.target.claude, account: hash([live.target.claude, apiKey]), head, checkpoints: live.checkpoints });
-		if (state === "tooluse") return result;
+		record(head);
+		if (state === "tooluse") {
+			live.idle = setTimeout(() => live.stop(), TOOL_WAIT_MS);
+			return result;
+		}
 		// Only an aborted turn is still running; stop() interrupts it.
 		live.busy = state === "aborted";
-		// A pending rpi tool call keeps the query alive however long the tool runs.
-		// shortcut: a tool call rpi never answers keeps its query until the worker exits, arm the idle stop when the host reports the session idle.
-		if (state === "stop") live.idle = setTimeout(() => live.stop(), IDLE_MS);
+		// A side call's query ends with its reply.
+		if (state === "stop" && chat) live.idle = setTimeout(() => live.stop(), IDLE_MS);
 		else await live.stop();
 		return result;
 	};

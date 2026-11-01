@@ -41,9 +41,11 @@ subscription token is the credential that is used.
 
 - Claude gets Claude Code's own system prompt (`preset: "claude_code"`), with a
   one-line note that it runs in rpi appended, followed by rpi's own instructions:
-  appended prompt text, project context files and the skills listing. rpi's
-  default prompt scaffold and its working-directory line are dropped, because
-  Claude Code writes its own; a custom `--system-prompt` or `SYSTEM.md` is kept.
+  the guidelines of rpi's default prompt (where extension tools add their
+  guidance), appended prompt text, project context files and the skills listing.
+  The default prompt's introduction and tool list and its working-directory line
+  are dropped, because Claude Code writes its own; a custom `--system-prompt` or
+  `SYSTEM.md` is kept.
   The working directory from rpi's prompt is passed as the SDK's `cwd`.
 - Claude Code's built-in tools are off (`tools: []`), and only rpi's tools are
   allowed (`permissionMode: "dontAsk"`, `allowedTools: ["mcp__rpi__*"]`), so
@@ -65,30 +67,37 @@ subscription token is the credential that is used.
   each reply the worker
   records which point of rpi's history matches which message of Claude's session,
   in `<agent dir>/claude-code/rpi-sessions/<sha256 of the rpi session id>.json`
-  (no token in it).
-- One live query is kept per rpi session. It stops after 5 minutes idle, but never
-  while one of Claude's tool calls waits for its result. A request the live query
-  cannot continue starts a new one:
+  (no token in it). A Claude session the record no longer refers to (after a fork
+  or a fresh start) is deleted.
+- One live query is kept per rpi session. It stops after 5 minutes idle; while one
+  of Claude's tool calls waits for its result it is not idle, and stops only if
+  the result has not come after an hour. A request the live query cannot continue
+  (including one whose last reply is not the one Claude gave) starts a new one:
   - if rpi's history still contains everything Claude saw (after an idle stop, an
     rpi restart, or a model, effort, system prompt or tool set change), it resumes
     Claude's session and sends only what Claude missed;
-  - after an edit, undo or compaction, it forks Claude's session at the last reply
-    both histories share (never between a tool call and its result) and sends what
-    follows;
+  - after an edit, undo or compaction, or when the last turn never finished (a
+    crash, or a tool call whose query was stopped), it forks Claude's session at
+    the last complete reply both histories share (never between a tool call and
+    its result) and sends what follows;
   - otherwise, or with a different token, it starts a new Claude session from the
     whole history.
 
   When what Claude missed is more than new user input (for example replies another
   model wrote), the missed turns are sent as text, without thinking, inside one
   `<conversation-checkpoint>` user message, followed by the new user input.
-  Requests without an rpi session id are not saved.
+  Requests without an rpi session id, and requests the host marks as something
+  other than a prompt (compaction, summaries, titles), are not saved, and their
+  query ends with the reply. Released rpi hosts (0.12 to 0.15) do not mark
+  requests, so there every request with a session id is saved.
 - Text and thinking stream as deltas; thinking is adaptive with summaries.
   rpi's thinking level maps to the SDK's effort.
 - Claude Code reports a response's usage several times while it streams. Each
   response counts once: output adds up across the turn's responses, and input and
   cache tokens are the last response's, which is the context in use.
 - Cancel interrupts the query and the turn ends as aborted. Claude's session keeps
-  its partial reply, and the next request continues that session.
+  its partial reply, and the next request continues that session without resending
+  rpi's copy of the partial reply or the results of tool calls in it.
 - A rejected rate limit or usage limit ends the turn with an error whose text starts
   with `rate_limited; resets_at=<unix seconds> ` (or `rate_limited; ` when the reset
   time is unknown), for Zephyr's account pool.

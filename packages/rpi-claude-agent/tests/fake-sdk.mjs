@@ -14,8 +14,12 @@ const store = dir => join(dir, "fake-sessions.json");
 const load = dir => { try { return JSON.parse(readFileSync(store(dir), "utf8")); } catch { return {}; } };
 const save = (dir, sessions) => { mkdirSync(dir, { recursive: true }); writeFileSync(store(dir), JSON.stringify(sessions)); };
 export async function getSessionMessages(id) { return load(process.env.CLAUDE_CONFIG_DIR)[id] ?? []; }
-export async function getSessionInfo(id) { return load(process.env.CLAUDE_CONFIG_DIR)[id] ? { sessionId: id } : undefined; }
-export async function deleteSession(id) { const all = load(process.env.CLAUDE_CONFIG_DIR); delete all[id]; save(process.env.CLAUDE_CONFIG_DIR, all); }
+export async function deleteSession(id) {
+	const all = load(process.env.CLAUDE_CONFIG_DIR);
+	delete all[id];
+	save(process.env.CLAUDE_CONFIG_DIR, all);
+	log({ event: "delete", id });
+}
 export async function forkSession(id, { upToMessageId }) {
 	const all = load(process.env.CLAUDE_CONFIG_DIR);
 	const source = all[id];
@@ -59,15 +63,18 @@ export function query({ prompt, options }) {
 		...text.match(/.{1,6}/g).map(chunk => ev({ type: "content_block_delta", index, delta: { type: "text_delta", text: chunk } })),
 		ev({ type: "content_block_stop", index }),
 	];
-	// Like Claude Code: usage at message_start, again in message_delta, and again on the assistant message.
+	// Like Claude Code: usage at message_start, on each block's assistant message (sent
+	// before its content_block_stop, one transcript entry per block), and in message_delta.
 	const response = (blocks, stop, usage = { input_tokens: 10, cache_read_input_tokens: 2, output_tokens: 5 }) => {
 		const id = `msg_${n}_${++responses}`;
+		const partial = { ...usage, output_tokens: 1 };
 		return [
-			ev({ type: "message_start", message: { id, usage: { ...usage, output_tokens: 1 } } }),
-			...blocks,
+			ev({ type: "message_start", message: { id, usage: partial } }),
+			...blocks.flatMap(event => event.event?.type === "content_block_stop"
+				? [{ type: "assistant", message: { id, role: "assistant", content: [], usage: partial }, ...base, uuid: record("assistant", { id, block: event.event.index }) }, event]
+				: [event]),
 			ev({ type: "message_delta", delta: { stop_reason: stop }, usage }),
 			ev({ type: "message_stop" }),
-			{ type: "assistant", message: { id, role: "assistant", content: [], usage }, ...base, uuid: record("assistant", { id }) },
 		];
 	};
 	const success = { type: "result", subtype: "success", is_error: false, result: "", ...base };
@@ -78,11 +85,13 @@ export function query({ prompt, options }) {
 		}
 		for await (const user of prompt) {
 			const said = typeof user.message.content === "string" ? user.message.content : user.message.content.map(b => b.text ?? "").join("");
+			// React to the new input, not to history inside a checkpoint.
+			const cue = said.split("</conversation-checkpoint>").at(-1);
 			// How much of this Claude session existed before this message.
 			const seen = (load(env.CLAUDE_CONFIG_DIR)[session] ?? []).length;
 			record("user", user.message);
 			log({ event: "user", n, text: said, session, seen });
-			if (said.includes("use a tool")) {
+			if (cue.includes("use a tool")) {
 				yield* response([
 					...textBlock(0, "Reading."),
 					ev({ type: "content_block_start", index: 1, content_block: { type: "tool_use", id: "toolu_1", name: "mcp__rpi__read", input: {} } }),
@@ -95,7 +104,7 @@ export function query({ prompt, options }) {
 				log({ event: "tool_result", n, result });
 				yield* response(textBlock(0, `Tool said: ${result.content[0].text}`), "end_turn");
 				yield success;
-			} else if (said.includes("twice")) {
+			} else if (cue.includes("twice")) {
 				// Two API responses in one turn: a call to a tool rpi did not offer, then text.
 				yield* response([
 					ev({ type: "content_block_start", index: 0, content_block: { type: "tool_use", id: "toolu_bash", name: "Bash", input: {} } }),
@@ -103,17 +112,17 @@ export function query({ prompt, options }) {
 				], "tool_use");
 				yield* response(textBlock(0, "Second answer"), "end_turn", { input_tokens: 20, cache_read_input_tokens: 12, cache_creation_input_tokens: 3, output_tokens: 7 });
 				yield success;
-			} else if (said.includes("hang")) {
+			} else if (cue.includes("hang")) {
 				yield* response(textBlock(0, "Working"), "end_turn").slice(0, 3);
 				await interruption;
 				log({ event: "interrupted", n });
 				yield { type: "result", subtype: "error_during_execution", is_error: true, errors: ["interrupted"], ...base };
-			} else if (said.includes("limit")) {
+			} else if (cue.includes("limit")) {
 				yield { type: "rate_limit_event", rate_limit_info: { status: "rejected", resetsAt: 1767225600, rateLimitType: "five_hour" }, ...base };
 				yield { type: "assistant", error: "rate_limit", message: { content: [{ type: "text", text: "You've hit your limit" }] }, ...base };
 				yield { type: "result", subtype: "success", is_error: true, result: "You've hit your limit", ...base };
 			} else {
-				yield* response(textBlock(0, `Echo: ${said.slice(-40)}`), "end_turn");
+				yield* response(textBlock(0, `Echo: ${cue.slice(-40)}`), "end_turn");
 				yield success;
 			}
 		}

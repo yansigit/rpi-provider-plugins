@@ -83,8 +83,17 @@ fn request_with(session: &str, messages: &[Value], key: Option<&str>, system: &s
 
 /// One `provider.stream`: every emitted chunk, then the final message.
 async fn stream(session: &Session, input: Value, cancel_on: Option<&str>) -> (Vec<Value>, Value) {
+    stream_with(session, input, cancel_on, Arc::new(AtomicBool::new(false))).await
+}
+
+/// [`stream`], also cancelled when the caller sets `cancelled`.
+async fn stream_with(
+    session: &Session,
+    input: Value,
+    cancel_on: Option<&str>,
+    cancelled: Arc<AtomicBool>,
+) -> (Vec<Value>, Value) {
     let signal = CancellationToken::new();
-    let cancelled = Arc::new(AtomicBool::new(false));
     let flag = cancelled.clone();
     let is_cancelled = move || flag.load(Ordering::SeqCst);
     let call = session
@@ -132,6 +141,41 @@ fn last_query(directory: &Directory) -> (Value, Value) {
     (query, user)
 }
 
+/// The saved record whose Claude session is `claude`.
+fn record_of(directory: &Directory, claude: &str) -> Option<(PathBuf, Value)> {
+    std::fs::read_dir(directory.0.join("agent/claude-code/rpi-sessions"))
+        .ok()?
+        .filter_map(|entry| {
+            let path = entry.ok()?.path();
+            let record: Value = serde_json::from_str(&std::fs::read_to_string(&path).ok()?).ok()?;
+            (record["claude"] == claude).then_some((path, record))
+        })
+        .next()
+}
+
+fn record_count(directory: &Directory) -> usize {
+    std::fs::read_dir(directory.0.join("agent/claude-code/rpi-sessions"))
+        .map(|dir| dir.count())
+        .unwrap_or(0)
+}
+
+fn identity(purpose: &str) -> Value {
+    json!({"sessionId":"host","operationId":"op","purpose":purpose,"turnId":null,"requestId":null})
+}
+
+fn other_model(text: &str) -> Value {
+    json!({"role":"assistant","content":[{"type":"thinking","thinking":"private plan"},{"type":"text","text":text}],"api":"openai-responses","provider":"openai","model":"gpt","usage":{},"stopReason":"stop","timestamp":3})
+}
+
+/// Polls until `done` holds, or fails after a few seconds.
+async fn eventually(what: &str, mut done: impl FnMut() -> bool) {
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while !done() {
+        assert!(Instant::now() < deadline, "timed out waiting for {what}");
+        tokio::time::sleep(Duration::from_millis(20)).await;
+    }
+}
+
 fn open_worker(
     directory: &Directory,
 ) -> impl std::future::Future<Output = Result<Session, String>> {
@@ -176,6 +220,7 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
     std::env::remove_var("CLAUDE_CONFIG_DIR");
     // Short enough to watch, long enough that the other steps never idle out.
     std::env::set_var("RPI_CLAUDE_AGENT_IDLE_MS", "1500");
+    std::env::set_var("RPI_CLAUDE_AGENT_TOOL_WAIT_MS", "4000");
     let entry = package().join("worker/main.mjs");
     let session = open_worker(&directory).await.unwrap();
     let mut seen = Vec::new();
@@ -293,6 +338,13 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
     let fork = entries.iter().rfind(|e| e["event"] == "fork").unwrap();
     assert_eq!(fork["from"], s1_claude.as_str());
     assert_eq!(fork["kept"], 2, "the first user message and reply");
+    // The record no longer needs the original, so it is deleted.
+    assert!(
+        entries
+            .iter()
+            .any(|e| e["event"] == "delete" && e["id"] == s1_claude.as_str()),
+        "{entries:?}"
+    );
     let (query, sent) = last_query(&directory);
     assert_eq!(query["options"]["resume"], fork["to"]);
     assert_eq!(sent["text"], "edited question");
@@ -303,7 +355,7 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
     // as one checkpoint message, without thinking, then the new user message.
     edited.push(reply);
     edited.push(user("ask another model"));
-    edited.push(json!({"role":"assistant","content":[{"type":"thinking","thinking":"private plan"},{"type":"text","text":"Other model answer"}],"api":"openai-responses","provider":"openai","model":"gpt","usage":{},"stopReason":"stop","timestamp":3}));
+    edited.push(other_model("Other model answer"));
     edited.push(user("back to claude"));
     let (_, reply) = stream(&session, request("s1", &edited, Some(SECRET)), None).await;
     assert_eq!(reply["stopReason"], "stop", "{reply}");
@@ -338,6 +390,53 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
     assert!(text.ends_with("and now?"), "{text}");
     assert_eq!(sent["seen"], 0);
 
+    // The same input answered by another model on a branch: the live query must
+    // not continue as if its own reply were there.
+    let mut first = request("branch", &[user("branch start")], Some(SECRET));
+    first["options"]["identity"] = identity("prompt");
+    let (_, _) = stream(&session, first, None).await;
+    let (started, _) = last_query(&directory);
+    assert_eq!(
+        started["options"]["persistSession"], true,
+        "a prompt is a chat"
+    );
+    let branched = [
+        user("branch start"),
+        other_model("Other branch reply"),
+        user("after branch"),
+    ];
+    let mut second = request("branch", &branched, Some(SECRET));
+    second["options"]["identity"] = identity("prompt");
+    let (_, reply) = stream(&session, second, None).await;
+    assert_eq!(text_of(&reply), "Echo: after branch", "{reply}");
+    let (query, sent) = last_query(&directory);
+    assert_ne!(query["n"], started["n"]);
+    assert!(query["options"].get("resume").is_none(), "{query}");
+    assert!(
+        sent["text"]
+            .as_str()
+            .unwrap()
+            .contains("[assistant]\nOther branch reply"),
+        "{sent}"
+    );
+
+    // Compaction, summaries and titles are not chats: nothing saved, and the query ends with the reply.
+    let records = record_count(&directory);
+    let mut side = request("compaction-call", &[user("summarize this")], Some(SECRET));
+    side["options"]["identity"] = identity("compaction");
+    let (_, reply) = stream(&session, side, None).await;
+    assert_eq!(reply["stopReason"], "stop", "{reply}");
+    let (query, _) = last_query(&directory);
+    assert_eq!(query["options"]["persistSession"], false);
+    assert!(
+        query["options"].get("sessionId").is_none() && query["options"].get("resume").is_none(),
+        "{query}"
+    );
+    assert!(log(&directory)
+        .iter()
+        .any(|e| e["event"] == "close" && e["n"] == query["n"]));
+    assert_eq!(record_count(&directory), records);
+
     // rpi's default scaffold and cwd give way to Claude Code's; the rest is appended.
     // Two API responses in one turn: output adds up, input is the last response's.
     let (_, twice) = stream(
@@ -355,7 +454,7 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
     let options = &entries.iter().rfind(|e| e["event"] == "query").unwrap()["options"];
     assert_eq!(
         options["systemPrompt"]["append"],
-        format!("{RUNTIME_NOTE}\n\nAPPENDED\n\n<project_context>\nproject notes\n</project_context>\n\nThe following skills provide specialized instructions.\n<available_skills>\n</available_skills>")
+        format!("{RUNTIME_NOTE}\n\nGuidelines:\n- Reply in the same language as the user's latest message (the conversation's language when\n  that message is too short to tell), unless the user asks for another.\n- Be concise in your responses\n\nAPPENDED\n\n<project_context>\nproject notes\n</project_context>\n\nThe following skills provide specialized instructions.\n<available_skills>\n</available_skills>")
     );
     assert_eq!(options["cwd"], "/work/default");
 
@@ -373,13 +472,29 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
     );
     seen.push(limited.to_string());
 
-    // Cancel interrupts the query and settles as aborted.
-    let (events, aborted) = stream(
-        &session,
-        request("s3", &[user("hang")], Some(SECRET)),
-        Some("Workin"),
-    )
-    .await;
+    // Cancel interrupts the query and settles as aborted. While the turn runs,
+    // its record is marked in flight, so a crash mid-turn never resumes it.
+    let cancel = Arc::new(AtomicBool::new(false));
+    let watch = async {
+        eventually("an in-flight record", || {
+            log(&directory)
+                .iter()
+                .rfind(|e| e["event"] == "user" && e["text"] == "hang")
+                .and_then(|e| record_of(&directory, e["session"].as_str()?))
+                .is_some_and(|(_, record)| record["head"]["open"] == true)
+        })
+        .await;
+        cancel.store(true, Ordering::SeqCst);
+    };
+    let ((events, aborted), ()) = tokio::join!(
+        stream_with(
+            &session,
+            request("s3", &[user("hang")], Some(SECRET)),
+            None,
+            cancel.clone()
+        ),
+        watch
+    );
     assert_eq!(aborted["stopReason"], "aborted", "{aborted}");
     let entries = log(&directory);
     assert!(
@@ -391,13 +506,89 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
 
     // The next request continues the same Claude session, which keeps its own
     // partial reply; rpi's copy of it is not sent again.
-    let after_abort = vec![user("hang"), aborted, user("after abort")];
+    // rpi's copy of the partial reply, with a tool call and its result, is skipped too.
+    let mut partial = aborted.clone();
+    partial["content"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"type":"toolCall","id":"toolu_partial","name":"read","arguments":{}}));
+    let after_abort = vec![
+        user("hang"),
+        partial,
+        json!({"role":"toolResult","toolCallId":"toolu_partial","toolName":"read","content":[{"type":"text","text":"aborted"}],"isError":true,"timestamp":2}),
+        user("after abort"),
+    ];
     let (_, reply) = stream(&session, request("s3", &after_abort, Some(SECRET)), None).await;
     assert_eq!(text_of(&reply), "Echo: after abort", "{reply}");
     let (query, sent) = last_query(&directory);
     assert_eq!(query["options"]["resume"], hung["options"]["sessionId"]);
     assert_eq!(sent["text"], "after abort");
     assert_eq!(sent["seen"], 2);
+
+    // A query waiting for a tool result outlives the idle stop; a backstop stops it.
+    let mut waiting = vec![user("hello wait")];
+    let (_, reply) = stream(&session, request("wait", &waiting, Some(SECRET)), None).await;
+    waiting.push(reply);
+    waiting.push(user("please use a tool"));
+    let (_, call) = stream(&session, request("wait", &waiting, Some(SECRET)), None).await;
+    assert_eq!(call["stopReason"], "tooluse", "{call}");
+    let (pending, _) = last_query(&directory);
+    let closed = |n: &Value| {
+        log(&directory)
+            .iter()
+            .any(|e| e["event"] == "close" && e["n"] == *n)
+    };
+    tokio::time::sleep(Duration::from_millis(2500)).await;
+    assert!(
+        !closed(&pending["n"]),
+        "the idle stop must wait for the tool result"
+    );
+    eventually("the tool-wait backstop", || closed(&pending["n"])).await;
+
+    // The tool call's result arrives after that: Claude's session forks at the
+    // reply before the call, and the call and its result arrive as text.
+    waiting.push(call);
+    waiting.push(json!({"role":"toolResult","toolCallId":"toolu_1","toolName":"read","content":[{"type":"text","text":"late body"}],"isError":false,"timestamp":2}));
+    let (_, reply) = stream(&session, request("wait", &waiting, Some(SECRET)), None).await;
+    assert_eq!(reply["stopReason"], "stop", "{reply}");
+    let entries = log(&directory);
+    let fork = entries.iter().rfind(|e| e["event"] == "fork").unwrap();
+    assert_eq!(fork["from"], pending["options"]["sessionId"]);
+    assert_eq!(fork["kept"], 2);
+    let (query, sent) = last_query(&directory);
+    assert_eq!(query["options"]["resume"], fork["to"]);
+    let text = sent["text"].as_str().unwrap();
+    assert!(
+        text.contains("[tool call read toolu_1]")
+            && text.contains("[tool result read toolu_1]\nlate body"),
+        "{text}"
+    );
+    assert_eq!(sent["seen"], 2);
+
+    // An unreadable record starts fresh rather than failing or using a stale copy.
+    let corrupt = vec![user("hello corrupt")];
+    let (_, reply) = stream(&session, request("corrupt", &corrupt, Some(SECRET)), None).await;
+    let (first_corrupt, _) = last_query(&directory);
+    let (path, _) = record_of(
+        &directory,
+        first_corrupt["options"]["sessionId"].as_str().unwrap(),
+    )
+    .unwrap();
+    std::fs::write(path, "not json").unwrap();
+    let mut changed = request(
+        "corrupt",
+        &[corrupt[0].clone(), reply, user("after corrupt")],
+        Some(SECRET),
+    );
+    changed["model"]["id"] = json!("claude-sonnet-5-5");
+    let (_, reply) = stream(&session, changed, None).await;
+    assert_eq!(text_of(&reply), "Echo: after corrupt", "{reply}");
+    let (query, _) = last_query(&directory);
+    assert!(query["options"].get("resume").is_none(), "{query}");
+    assert_ne!(
+        query["options"]["sessionId"],
+        first_corrupt["options"]["sessionId"]
+    );
 
     // An idle query stops; the next request resumes its session with only the new message.
     let mut idle = vec![user("first idle")];
@@ -512,12 +703,15 @@ fn system_prompt_split_keeps_everything_but_the_scaffold_and_cwd() {
     let script = r#"
 const { splitSystemPrompt } = await import(process.argv[1]);
 const note = "<runtime_info>You are running in rpi through the Claude Code harness. Mention this only when asked.</runtime_info>";
-const scaffold = "You are an expert coding assistant operating inside rpi, a coding agent harness. You help.\n\nGuidelines:\n- Be concise\n  continued";
+const scaffold = "You are an expert coding assistant operating inside rpi, a coding agent harness. You help.\n\nAvailable tools:\n- read  — Read files\n\nIn addition to the tools above, you may have access to other custom tools depending on the project.\n\nGuidelines:\n- Use docs before guessing\n- Be concise\n  continued";
+const kept = "Guidelines:\n- Use docs before guessing\n- Be concise\n  continued";
 const cases = [
   // Released rpi: the scaffold ends with its cwd line, then appended text and context.
-  [scaffold + "\n\nCurrent working directory: /old/style\n\nEXTRA\n\n<project_context>\nx\n</project_context>\n", note + "\n\nEXTRA\n\n<project_context>\nx\n</project_context>", "/old/style"],
-  // The scaffold alone.
-  [scaffold + "\n\n<cwd>\n/w\n</cwd>", note, "/w"],
+  [scaffold + "\n\nCurrent working directory: /old/style\n\nEXTRA\n\n<project_context>\nx\n</project_context>\n", note + "\n\n" + kept + "\n\nEXTRA\n\n<project_context>\nx\n</project_context>", "/old/style"],
+  // Released rpi, the scaffold alone.
+  [scaffold + "\n\nCurrent working directory: /old", note + "\n\n" + kept, "/old"],
+  // Current rpi: the scaffold alone with a <cwd> section.
+  [scaffold + "\n\n<cwd>\n/w\n</cwd>", note + "\n\n" + kept, "/w"],
   // No Guidelines boundary: nothing is dropped.
   ["You are an expert coding assistant operating inside rpi, a coding agent harness. Trimmed.", note + "\n\nYou are an expert coding assistant operating inside rpi, a coding agent harness. Trimmed.", undefined],
   // A custom prompt that mentions <cwd> mid-text keeps it.
