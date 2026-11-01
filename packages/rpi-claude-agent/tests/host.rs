@@ -238,11 +238,14 @@ node "$1" 18765 "$2/api.jsonl" &
 api=$!
 for _ in $(seq 50); do (exec 3<>/dev/tcp/127.0.0.1/18765) 2>/dev/null && break; sleep 0.1; done
 cd "$2/work"
-env -i PATH="$PATH" HOME="$2/home" TMPDIR="$2" RPI_CODING_AGENT_DIR="$2/agent" \
+run() {{ env -i PATH="$PATH" HOME="$2/home" TMPDIR="$2" RPI_CODING_AGENT_DIR="$2/agent" \
   CLAUDE_CODE_OAUTH_TOKEN={SECRET} ANTHROPIC_BASE_URL=http://127.0.0.1:18765 \
   CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
-  "$3" --local-only --offline --no-session --extensions-dir "$4" \
-  --model claude-code/claude-opus-5-5 --mode json -p "read note.txt"
+  "$3" --local-only --offline --extensions-dir "$4" \
+  --model claude-code/claude-opus-5-5 --mode json "${{@:5}}" </dev/null; }}
+run "$@" -p "read note.txt"
+# A second rpi process continues the session: Claude Code resumes its saved one.
+run "$@" --continue -p "second question"
 kill $api"#
     );
     let output = Command::new("unshare")
@@ -283,5 +286,28 @@ kill $api"#
     // Claude Code's own prompt carries rpi's note, and thinking is adaptive.
     assert!(api.contains("\"runtimeNote\":true"), "{api}");
     assert!(api.contains("\"thinking\":{\"type\":\"adaptive\""), "{api}");
+    // The second run resumed Claude's own session: one transcript, and the last
+    // request carries the earlier turns natively rather than as text.
+    let counts: Vec<u64> = api
+        .lines()
+        .filter_map(|line| serde_json::from_str::<Value>(line).ok()?["messages"].as_u64())
+        .collect();
+    assert_eq!(counts.len(), 3, "{api}");
+    assert!(counts[2] > counts[1], "{api}");
+    assert!(
+        api.contains("\"checkpoint\":false") && !api.contains("\"checkpoint\":true"),
+        "{api}"
+    );
+    let projects = root.0.join("agent/claude-code/projects");
+    let transcripts: Vec<_> = std::fs::read_dir(&projects)
+        .unwrap()
+        .flat_map(|dir| std::fs::read_dir(dir.unwrap().path()).unwrap())
+        .filter(|file| file.as_ref().unwrap().path().extension() == Some("jsonl".as_ref()))
+        .collect();
+    assert_eq!(transcripts.len(), 1, "{transcripts:?}");
+    for record in std::fs::read_dir(root.0.join("agent/claude-code/rpi-sessions")).unwrap() {
+        let record = std::fs::read_to_string(record.unwrap().path()).unwrap();
+        assert!(!record.contains(SECRET), "{record}");
+    }
     assert_no_worker_left(&plugin);
 }

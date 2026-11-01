@@ -4,9 +4,14 @@
 // Claude Code's own tools are off. rpi's tools are an in-process MCP server: when
 // Claude calls one, the handler stays pending, the rpi stream ends with a toolCall,
 // and the next stream call's toolResult resolves it so the same query continues.
-import { createHash } from "node:crypto";
+//
+// Each rpi session keeps one saved Claude Code session. A record of checkpoints
+// (rpi history hash -> Claude message uuid) lets a new query resume it, or fork
+// it after an edit, instead of replaying the whole history as text.
+import { createHash, randomUUID } from "node:crypto";
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { connect } from "node:net";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { z } from "zod";
 
 // Tests inject a fake SDK by path; production loads the pinned package.
@@ -18,6 +23,9 @@ const SERVER = "rpi";
 const PREFIX = `mcp__${SERVER}__`;
 const CAPACITY = 64;
 const PAYLOAD_BYTES = 4 * 1024 * 1024;
+// An idle query stops after this; the next request resumes its saved session.
+const IDLE_MS = Number(process.env.RPI_CLAUDE_AGENT_IDLE_MS) || 5 * 60_000;
+const STOP_MS = 3000;
 
 // ---- wire ------------------------------------------------------------------
 
@@ -100,6 +108,8 @@ function channel() {
 	};
 }
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 function deferred() {
 	let resolve;
 	const promise = new Promise(r => { resolve = r; });
@@ -120,18 +130,126 @@ function userContent(content) {
 		: { type: "text", text: block.text ?? "" });
 }
 
-/** A fresh query cannot replay rpi's history natively, so it reads it as text. */
-function transcript(messages) {
-	if (messages.length === 1 && messages[0].role === "user") return userContent(messages[0].content);
-	const lines = messages.map(message => {
+/**
+ * What Claude has not seen, as one user message: the new user input as is, after
+ * any earlier turns (replies from another model, a fresh start) rendered as text
+ * without thinking inside <conversation-checkpoint>, as OpenCode does.
+ */
+// shortcut: images inside the checkpoint are dropped (only the trailing user input keeps them), keep them as blocks when someone needs it.
+function catchUp(missed) {
+	let end = missed.length;
+	while (end > 0 && missed[end - 1].role === "user") end--;
+	const users = missed.slice(end).map(message => userContent(message.content));
+	if (end === 0 && users.length === 1) return users[0];
+	const lines = missed.slice(0, end).map(message => {
 		if (message.role === "user") return `[user]\n${text(message.content)}`;
 		if (message.role === "toolResult") return `[tool result ${message.toolName} ${message.toolCallId}${message.isError ? " error" : ""}]\n${text(message.content)}`;
 		return `[assistant]\n${message.content.map(block => block.type === "toolCall"
 			? `[tool call ${block.name} ${block.id}] ${JSON.stringify(block.arguments)}`
 			: block.type === "text" ? block.text : "").filter(Boolean).join("\n")}`;
 	});
-	const last = messages.at(-1)?.role === "user" ? "Reply to the last user message." : "Continue from the last tool result.";
-	return `This conversation is being resumed. The transcript so far:\n\n${lines.join("\n\n")}\n\n${last}`;
+	const blocks = [];
+	if (end > 0) blocks.push({ type: "text", text: `<conversation-checkpoint>\nThe following is conversation history from rpi that you have not seen. Treat it as prior conversation, not a new request. Continue with the user messages after this checkpoint.\n\n${lines.join("\n\n")}\n</conversation-checkpoint>` });
+	for (const content of users) blocks.push(...(typeof content === "string" ? [{ type: "text", text: content }] : content));
+	if (!users.length) blocks.push({ type: "text", text: "Continue from where the conversation left off." });
+	return blocks;
+}
+
+// ---- checkpoints -----------------------------------------------------------
+
+function canonical(value) {
+	if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+	if (value && typeof value === "object") return `{${Object.keys(value).sort().filter(key => value[key] !== undefined).map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(",")}}`;
+	return JSON.stringify(value) ?? "null";
+}
+
+/** What both histories must agree on: not thinking, usage, timestamps or the model. */
+function visible(message) {
+	const content = typeof message.content === "string" ? [{ type: "text", text: message.content }] : message.content ?? [];
+	const parts = content.filter(block => block.type !== "thinking" && !(block.type === "text" && !block.text)).map(block =>
+		block.type === "text" ? block.text
+			: block.type === "toolCall" ? { call: block.id, name: block.name, arguments: block.arguments }
+				: block.type === "image" ? { image: block.mimeType, data: block.data } : block);
+	return { role: message.role, parts, id: message.toolCallId, error: message.role === "toolResult" ? !!message.isError : undefined };
+}
+
+const link = (previous, message) => createHash("sha256").update(previous).update(canonical(visible(message))).digest("hex");
+
+/** hashes[n] identifies the first n messages of rpi's history. */
+function chain(messages) {
+	const hashes = [""];
+	for (const message of messages) hashes.push(link(hashes.at(-1), message));
+	return hashes;
+}
+
+/** Where `point`'s history continues in `messages`, if it is a prefix with something after it. */
+function after(point, messages, hashes) {
+	if (!point || point.n >= messages.length || hashes[point.n] !== point.hash) return;
+	let start = point.n;
+	// After an interrupted reply, Claude's session holds its own partial reply, not rpi's copy.
+	while (point.interrupted && messages[start]?.role === "assistant" && !messages[start].content.some(block => block.type === "toolCall")) start++;
+	return start < messages.length ? start : undefined;
+}
+
+const records = new Map();
+const recordPath = session => join(agentDir, "claude-code", "rpi-sessions", `${createHash("sha256").update(session).digest("hex")}.json`);
+
+/** { claude, account, head: { n, hash, open?, interrupted? }, checkpoints: [{ n, hash, uuid }] }; never the token. */
+function loadRecord(session) {
+	if (!records.has(session)) {
+		let record;
+		try { record = JSON.parse(readFileSync(recordPath(session), "utf8")); } catch { /* none yet */ }
+		records.set(session, record);
+	}
+	return records.get(session);
+}
+
+// shortcut: the record keeps every checkpoint and is rewritten each turn, trim old checkpoints if long sessions make it slow.
+function saveRecord(session, record) {
+	records.set(session, record);
+	const path = recordPath(session);
+	try {
+		mkdirSync(dirname(path), { recursive: true });
+		writeFileSync(`${path}.tmp`, JSON.stringify(record));
+		renameSync(`${path}.tmp`, path);
+	} catch { /* a lost record only costs a fresh start */ }
+}
+
+/** Copy a Claude session up to a message; the copy gets fresh uuids, so map them and check the copy. */
+async function fork(claude, uuid) {
+	const source = await sdk.getSessionMessages(claude);
+	const end = source.findIndex(entry => entry.uuid === uuid);
+	if (end < 0) return;
+	const { sessionId } = await sdk.forkSession(claude, { upToMessageId: uuid });
+	try {
+		const copied = await sdk.getSessionMessages(sessionId);
+		if (copied.length !== end + 1 || copied.some((entry, i) => entry.type !== source[i].type || JSON.stringify(entry.message) !== JSON.stringify(source[i].message))) throw new Error("Claude fork changed the copied conversation");
+		return { claude: sessionId, uuids: new Map(copied.map((entry, i) => [source[i].uuid, entry.uuid])) };
+	} catch (error) {
+		await sdk.deleteSession(sessionId).catch(() => {});
+		throw error;
+	}
+}
+
+/**
+ * Which Claude session a new query continues, and from which rpi message on:
+ * resume when the recorded history is a prefix, fork at the last shared
+ * checkpoint after an edit, undo or compaction, otherwise start fresh. A model,
+ * prompt, tool or effort change resumes too; a different token starts fresh.
+ */
+async function plan(session, messages, hashes, apiKey) {
+	const fresh = { claude: randomUUID(), start: 0, checkpoints: [] };
+	const record = loadRecord(session);
+	if (!record || record.account !== hash([record.claude, apiKey])) return fresh;
+	// A head with an open tool call cannot resume: the call's result would arrive as text.
+	const start = record.head?.open ? undefined : after(record.head, messages, hashes);
+	if (start !== undefined && await sdk.getSessionInfo(record.claude).catch(() => undefined)) return { claude: record.claude, resume: true, start, checkpoints: record.checkpoints };
+	// Checkpoints follow complete replies only, so a fork never cuts between a tool call and its result.
+	const point = record.checkpoints.findLast(checkpoint => after(checkpoint, messages, hashes) !== undefined);
+	const branch = point && await fork(record.claude, point.uuid).catch(() => undefined);
+	if (!branch) return fresh;
+	const checkpoints = record.checkpoints.filter(checkpoint => checkpoint.n <= point.n && branch.uuids.has(checkpoint.uuid)).map(checkpoint => ({ ...checkpoint, uuid: branch.uuids.get(checkpoint.uuid) }));
+	return { claude: branch.claude, resume: true, start: point.n, checkpoints };
 }
 
 function usage() {
@@ -217,11 +335,14 @@ const CLEARED_ENV = ["CLAUDE_CODE_SIMPLE", "CLAUDE_CODE_EFFORT_LEVEL", "MCP_TOOL
 // ---- live queries ----------------------------------------------------------
 
 const sessions = new Map();
+const exits = new Map();
 let agentDir, workDir;
 
 class Live {
-	constructor(key, model, context, apiKey, effort) {
+	constructor(key, model, context, apiKey, effort, target) {
 		this.key = key;
+		this.target = target;
+		this.done = deferred();
 		this.inbox = channel();
 		this.input = channel();
 		this.calls = new Map();
@@ -252,7 +373,9 @@ class Live {
 				settings: { disableAllHooks: true },
 				skills: [],
 				strictMcpConfig: true,
-				persistSession: false,
+				// Chats keep a Claude session to resume; requests without an rpi session id do not.
+				persistSession: !!target,
+				...(target && (target.resume ? { resume: target.claude } : { sessionId: target.claude })),
 				mcpServers: { [SERVER]: sdk.createSdkMcpServer({ name: SERVER, tools }) },
 				// Only rpi's tools run; dontAsk denies anything else without asking.
 				permissionMode: "dontAsk",
@@ -270,6 +393,7 @@ class Live {
 			try { for await (const message of this.query) this.inbox.push(message); }
 			catch (error) { this.inbox.push({ type: "worker_error", error }); }
 			this.inbox.push({ type: "worker_end" });
+			this.done.resolve();
 		})();
 	}
 	/** The MCP handler: pending until rpi returns this call's toolResult. */
@@ -287,10 +411,19 @@ class Live {
 	send(content) {
 		this.input.push({ type: "user", message: { role: "user", content }, parent_tool_use_id: null });
 	}
-	close() {
-		sessions.delete(this.session);
-		this.input.push(null);
-		try { this.query.close(); } catch { /* already closed */ }
+	/** Let Claude Code finish writing its session and exit, then make sure it has. */
+	stop() {
+		if (sessions.get(this.session) === this) sessions.delete(this.session);
+		clearTimeout(this.idle);
+		this.stopping ??= (async () => {
+			if (this.busy) await Promise.race([this.query.interrupt().catch(() => {}), sleep(STOP_MS)]);
+			this.input.push(null);
+			await Promise.race([this.done.promise, sleep(STOP_MS)]);
+			try { this.query.close(); } catch { /* already closed */ }
+		})();
+		// The next query for this session waits, so two processes never write one Claude session.
+		exits.set(this.session, this.stopping);
+		return this.stopping;
 	}
 }
 
@@ -300,9 +433,9 @@ function schema(parameters) {
 }
 
 /** Does this context extend the live query by exactly what it is waiting for? */
-function continuation(live, key, messages) {
+function continuation(live, key, messages, hashes) {
 	if (!live || live.key !== key || messages.length <= live.count) return;
-	if (hash(messages.slice(0, live.count - 1)) !== live.prefix || messages[live.count - 1].role !== "assistant") return;
+	if (hashes[live.count - 1] !== live.prefix || messages[live.count - 1].role !== "assistant") return;
 	const rest = messages.slice(live.count);
 	if (live.toolIds.length) {
 		const ids = rest.map(message => message.role === "toolResult" && message.toolCallId);
@@ -323,14 +456,19 @@ async function stream({ model, context, options }, { emit, signal }) {
 	// rpi's thinking level; "off" and "minimal" keep the model's lowest effort.
 	const effort = { off: "low", minimal: "low", low: "low", medium: "medium", high: "high", xhigh: "xhigh", max: "max" }[String(options.reasoning).toLowerCase()];
 	const key = hash([model.id, context.systemPrompt ?? "", context.tools ?? [], apiKey, effort]);
+	const hashes = chain(messages);
 	let live = sessions.get(session);
-	const next = continuation(live, key, messages);
+	clearTimeout(live?.idle);
+	const next = continuation(live, key, messages, hashes);
 	if (!next) {
-		live?.close();
-		live = new Live(key, model, context, apiKey, effort);
+		await live?.stop();
+		await exits.get(session);
+		const target = options.sessionId ? await plan(session, messages, hashes, apiKey) : { start: 0, checkpoints: [] };
+		live = new Live(key, model, context, apiKey, effort, options.sessionId && target);
 		live.session = session;
+		live.checkpoints = target.checkpoints;
 		sessions.set(session, live);
-		live.send(transcript(messages));
+		live.send(catchUp(messages.slice(target.start)));
 	} else if (next.user) live.send(userContent(next.user.content));
 	else for (const result of next.results) {
 		live.result(result.toolCallId).resolve({
@@ -339,8 +477,28 @@ async function stream({ model, context, options }, { emit, signal }) {
 		});
 	}
 	live.toolIds = [];
-	live.prefix = hash(messages);
+	live.prefix = hashes.at(-1);
 	live.count = messages.length + 1;
+	live.busy = true;
+	live.uuid = undefined;
+
+	/** Record where Claude's session now stands, then stop the query or let it idle. */
+	const settle = async (state, result) => {
+		const reply = { n: messages.length + 1, hash: link(hashes.at(-1), result) };
+		const head = state === "stop" ? reply
+			: state === "tooluse" ? { ...reply, open: true }
+				: { n: messages.length, hash: hashes.at(-1), interrupted: true };
+		if (state === "stop" && live.uuid) live.checkpoints.push({ ...reply, uuid: live.uuid });
+		if (live.target) saveRecord(session, { claude: live.target.claude, account: hash([live.target.claude, apiKey]), head, checkpoints: live.checkpoints });
+		if (state === "tooluse") return result;
+		// Only an aborted turn is still running; stop() interrupts it.
+		live.busy = state === "aborted";
+		// A pending rpi tool call keeps the query alive however long the tool runs.
+		// shortcut: a tool call rpi never answers keeps its query until the worker exits, arm the idle stop when the host reports the session idle.
+		if (state === "stop") live.idle = setTimeout(() => live.stop(), IDLE_MS);
+		else await live.stop();
+		return result;
+	};
 
 	const aborted = new Promise(resolve => signal.addEventListener("abort", resolve, { once: true }));
 	const blocks = new Map();
@@ -350,32 +508,30 @@ async function stream({ model, context, options }, { emit, signal }) {
 	try {
 		for (;;) {
 			const sdkMessage = await Promise.race([live.inbox.next(), aborted.then(() => undefined)]);
-			if (signal.aborted) {
-				await Promise.race([live.query.interrupt().catch(() => {}), new Promise(resolve => setTimeout(resolve, 2000))]);
-				live.close();
-				return { ...message, stopReason: "aborted", errorMessage: "Request was aborted" };
-			}
+			// Claude keeps its partial reply in its session; the next request resumes it.
+			if (signal.aborted) return await settle("aborted", { ...message, stopReason: "aborted", errorMessage: "Request was aborted" });
 			if (sdkMessage.type === "worker_error" || sdkMessage.type === "worker_end") {
-				live.close();
-				return fail("error", `Claude Code stopped: ${sdkMessage.error?.message ?? "the query ended"}`);
+				return await settle("error", fail("error", `Claude Code stopped: ${sdkMessage.error?.message ?? "the query ended"}`));
 			}
 			if (sdkMessage.type === "rate_limit_event" && sdkMessage.rate_limit_info?.status === "rejected") {
 				rateLimited = true;
 				resetsAt = sdkMessage.rate_limit_info.resetsAt;
 			}
-			if (sdkMessage.type === "assistant" && !sdkMessage.parent_tool_use_id) counter.update(sdkMessage.message?.id, sdkMessage.message?.usage);
+			if (sdkMessage.type === "assistant" && !sdkMessage.parent_tool_use_id && !sdkMessage.error) {
+				counter.update(sdkMessage.message?.id, sdkMessage.message?.usage);
+				live.uuid = sdkMessage.uuid;
+			}
 			if (sdkMessage.type === "assistant" && sdkMessage.error && !sdkMessage.parent_tool_use_id) {
 				apiError = text(sdkMessage.message?.content) || sdkMessage.error;
 				rateLimited ||= sdkMessage.error === "rate_limit";
 			}
 			if (sdkMessage.type === "result") {
-				if (!sdkMessage.is_error && sdkMessage.subtype === "success" && !apiError) return { ...message, stopReason: "stop" };
+				if (!sdkMessage.is_error && sdkMessage.subtype === "success" && !apiError) return await settle("stop", { ...message, stopReason: "stop" });
 				const error = apiError ?? (sdkMessage.result || sdkMessage.errors?.join("; ") || sdkMessage.subtype);
-				live.close();
-				if (!rateLimited) return fail("error", error);
+				if (!rateLimited) return await settle("error", fail("error", error));
 				// Shared contract with Zephyr's account pool.
 				const seconds = resetsAt > 1e12 ? Math.floor(resetsAt / 1000) : resetsAt;
-				return fail("error", `rate_limited; ${seconds ? `resets_at=${seconds} ` : ""}${error}`);
+				return await settle("error", fail("error", `rate_limited; ${seconds ? `resets_at=${seconds} ` : ""}${error}`));
 			}
 			if (sdkMessage.type !== "stream_event" || sdkMessage.parent_tool_use_id) continue;
 			const event = sdkMessage.event;
@@ -431,7 +587,7 @@ async function stream({ model, context, options }, { emit, signal }) {
 					counter.update(response, event.usage);
 					break;
 				case "message_stop":
-					if (stopReason === "tool_use" && live.toolIds.length) return { ...message, stopReason: "tooluse" };
+					if (stopReason === "tool_use" && live.toolIds.length) return await settle("tooluse", { ...message, stopReason: "tooluse" });
 					break;
 			}
 		}
@@ -443,7 +599,7 @@ async function stream({ model, context, options }, { emit, signal }) {
 // ---- entry -----------------------------------------------------------------
 
 function closeAll() {
-	for (const live of [...sessions.values()]) live.close();
+	return Promise.all([...sessions.values()].map(live => live.stop()));
 }
 
 // Tests import this module for its pure helpers; only `node main.mjs` serves.
@@ -454,9 +610,11 @@ if (import.meta.main !== false) {
 			case "runtime.open":
 				agentDir = input.agentDir;
 				workDir = input.cwd;
+				// The SDK's session functions (fork, info) read the same Claude Code state as the queries.
+				process.env.CLAUDE_CONFIG_DIR ??= join(agentDir, "claude-code");
 				await call.emit({ type: "ready", manifest: {} });
 				await new Promise(resolve => call.signal.addEventListener("abort", resolve, { once: true }));
-				closeAll();
+				await closeAll();
 				return null;
 			case "runtime.configure": return {};
 			case "provider.stream": return await stream(input, call);
@@ -464,6 +622,6 @@ if (import.meta.main !== false) {
 		}
 	});
 	await closed;
-	closeAll();
+	await closeAll();
 	process.exit(0);
 }

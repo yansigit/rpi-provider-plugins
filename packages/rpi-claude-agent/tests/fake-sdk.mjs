@@ -1,10 +1,31 @@
 // Fake @anthropic-ai/claude-agent-sdk, loaded with RPI_CLAUDE_AGENT_SDK=<this file>.
 // It reacts to the user text and logs each query and user message as JSON lines
-// to RPI_CLAUDE_FAKE_LOG. Anthropic's service is never contacted.
-import { appendFileSync } from "node:fs";
+// to RPI_CLAUDE_FAKE_LOG. Saved sessions are one JSON file in CLAUDE_CONFIG_DIR.
+// Anthropic's service is never contacted.
+import { randomUUID } from "node:crypto";
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
 let queries = 0;
 const log = entry => process.env.RPI_CLAUDE_FAKE_LOG && appendFileSync(process.env.RPI_CLAUDE_FAKE_LOG, JSON.stringify(entry) + "\n");
+
+// Claude Code's saved sessions: id -> [{ type, uuid, message }].
+const store = dir => join(dir, "fake-sessions.json");
+const load = dir => { try { return JSON.parse(readFileSync(store(dir), "utf8")); } catch { return {}; } };
+const save = (dir, sessions) => { mkdirSync(dir, { recursive: true }); writeFileSync(store(dir), JSON.stringify(sessions)); };
+export async function getSessionMessages(id) { return load(process.env.CLAUDE_CONFIG_DIR)[id] ?? []; }
+export async function getSessionInfo(id) { return load(process.env.CLAUDE_CONFIG_DIR)[id] ? { sessionId: id } : undefined; }
+export async function deleteSession(id) { const all = load(process.env.CLAUDE_CONFIG_DIR); delete all[id]; save(process.env.CLAUDE_CONFIG_DIR, all); }
+export async function forkSession(id, { upToMessageId }) {
+	const all = load(process.env.CLAUDE_CONFIG_DIR);
+	const source = all[id];
+	const copy = source.slice(0, source.findIndex(entry => entry.uuid === upToMessageId) + 1).map(entry => ({ ...entry, uuid: randomUUID() }));
+	const sessionId = randomUUID();
+	all[sessionId] = copy;
+	save(process.env.CLAUDE_CONFIG_DIR, all);
+	log({ event: "fork", from: id, to: sessionId, kept: copy.length });
+	return { sessionId };
+}
 
 export function tool(name, description, inputSchema, handler) { return { name, description, inputSchema, handler }; }
 export function createSdkMcpServer({ name, tools }) { return { type: "sdk", name, tools }; }
@@ -20,6 +41,16 @@ export function query({ prompt, options }) {
 		apiKeyInEnv: "ANTHROPIC_API_KEY" in env, configDir: env.CLAUDE_CONFIG_DIR,
 		env: Object.fromEntries(ENV.filter(name => name in env).map(name => [name, env[name]])) });
 	let interrupted, closed = false, responses = 0;
+	// The session this query writes, as Claude Code would with persistSession.
+	const session = options.resume ?? options.sessionId ?? randomUUID();
+	const record = (type, message) => {
+		const uuid = randomUUID();
+		if (!options.persistSession) return uuid;
+		const all = load(env.CLAUDE_CONFIG_DIR);
+		(all[session] ??= []).push({ type, uuid, message });
+		save(env.CLAUDE_CONFIG_DIR, all);
+		return uuid;
+	};
 	const interruption = new Promise(resolve => { interrupted = resolve; });
 	const base = { parent_tool_use_id: null, uuid: "u", session_id: "s" };
 	const ev = event => ({ type: "stream_event", event, ...base });
@@ -36,14 +67,21 @@ export function query({ prompt, options }) {
 			...blocks,
 			ev({ type: "message_delta", delta: { stop_reason: stop }, usage }),
 			ev({ type: "message_stop" }),
-			{ type: "assistant", message: { id, role: "assistant", content: [], usage }, ...base },
+			{ type: "assistant", message: { id, role: "assistant", content: [], usage }, ...base, uuid: record("assistant", { id }) },
 		];
 	};
 	const success = { type: "result", subtype: "success", is_error: false, result: "", ...base };
 	async function* run() {
+		if (options.resume && !load(env.CLAUDE_CONFIG_DIR)[options.resume]) {
+			yield { type: "result", subtype: "error_during_execution", is_error: true, errors: ["No conversation found"], ...base };
+			return;
+		}
 		for await (const user of prompt) {
 			const said = typeof user.message.content === "string" ? user.message.content : user.message.content.map(b => b.text ?? "").join("");
-			log({ event: "user", n, text: said });
+			// How much of this Claude session existed before this message.
+			const seen = (load(env.CLAUDE_CONFIG_DIR)[session] ?? []).length;
+			record("user", user.message);
+			log({ event: "user", n, text: said, session, seen });
 			if (said.includes("use a tool")) {
 				yield* response([
 					...textBlock(0, "Reading."),

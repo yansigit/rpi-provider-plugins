@@ -8,6 +8,7 @@ import { appendFileSync } from "node:fs";
 
 const [port, logFile] = process.argv.slice(2);
 const log = line => appendFileSync(logFile, line + "\n");
+let responses = 0;
 createServer((request, response) => {
 	let body = "";
 	request.on("data", chunk => { body += chunk; });
@@ -19,14 +20,15 @@ createServer((request, response) => {
 		}
 		const json = JSON.parse(body || "{}");
 		const history = JSON.stringify(json.messages);
-		log(JSON.stringify({ model: json.model, tools: (json.tools ?? []).map(tool => tool.name), runtimeNote: JSON.stringify(json.system ?? "").includes("<runtime_info>You are running in rpi"), thinking: json.thinking }));
+		log(JSON.stringify({ model: json.model, messages: (json.messages ?? []).length, checkpoint: history.includes("conversation-checkpoint"), tools: (json.tools ?? []).map(tool => tool.name), runtimeNote: JSON.stringify(json.system ?? "").includes("<runtime_info>You are running in rpi"), thinking: json.thinking }));
 		if (!json.stream) {
 			response.writeHead(200, { "content-type": "application/json" });
 			return response.end(JSON.stringify({ id: "msg_0", type: "message", role: "assistant", model: json.model, content: [{ type: "text", text: "ok" }], stop_reason: "end_turn", usage: { input_tokens: 1, output_tokens: 1 } }));
 		}
 		response.writeHead(200, { "content-type": "text/event-stream" });
 		const event = (type, data) => response.write(`event: ${type}\ndata: ${JSON.stringify({ type, ...data })}\n\n`);
-		event("message_start", { message: { id: "msg_1", type: "message", role: "assistant", model: json.model, content: [], stop_reason: null, usage: { input_tokens: 7, output_tokens: 1 } } });
+		// Claude Code joins assistant entries that share a message id, so each response gets its own.
+		event("message_start", { message: { id: `msg_${++responses}`, type: "message", role: "assistant", model: json.model, content: [], stop_reason: null, usage: { input_tokens: 7, output_tokens: 1 } } });
 		if (!history.includes("tool_result")) {
 			event("content_block_start", { index: 0, content_block: { type: "tool_use", id: "toolu_offline_1", name: "mcp__rpi__read", input: {} } });
 			event("content_block_delta", { index: 0, delta: { type: "input_json_delta", partial_json: '{"path":"note.txt"}' } });

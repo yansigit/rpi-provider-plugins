@@ -59,16 +59,36 @@ subscription token is the credential that is used.
   (the `mcp__rpi__` prefix stripped), rpi runs the tool under its own policy, and
   the `toolResult` on the next turn answers the pending call, so the same Agent SDK
   query continues.
-- One live query is kept per rpi session. If the conversation no longer matches it
-  (another session, edited or compacted history, a different model, tool set or
-  system prompt, a restart), the old query is closed and a new one starts from the
-  transcript rendered as text.
+- rpi's history is the source of truth; Claude Code also saves its own session
+  for each rpi session (under `<agent dir>/claude-code`), so a new query can give
+  Claude its earlier turns natively, thinking included, instead of as text. After
+  each reply the worker
+  records which point of rpi's history matches which message of Claude's session,
+  in `<agent dir>/claude-code/rpi-sessions/<sha256 of the rpi session id>.json`
+  (no token in it).
+- One live query is kept per rpi session. It stops after 5 minutes idle, but never
+  while one of Claude's tool calls waits for its result. A request the live query
+  cannot continue starts a new one:
+  - if rpi's history still contains everything Claude saw (after an idle stop, an
+    rpi restart, or a model, effort, system prompt or tool set change), it resumes
+    Claude's session and sends only what Claude missed;
+  - after an edit, undo or compaction, it forks Claude's session at the last reply
+    both histories share (never between a tool call and its result) and sends what
+    follows;
+  - otherwise, or with a different token, it starts a new Claude session from the
+    whole history.
+
+  When what Claude missed is more than new user input (for example replies another
+  model wrote), the missed turns are sent as text, without thinking, inside one
+  `<conversation-checkpoint>` user message, followed by the new user input.
+  Requests without an rpi session id are not saved.
 - Text and thinking stream as deltas; thinking is adaptive with summaries.
   rpi's thinking level maps to the SDK's effort.
 - Claude Code reports a response's usage several times while it streams. Each
   response counts once: output adds up across the turn's responses, and input and
   cache tokens are the last response's, which is the context in use.
-- Cancel interrupts the query and the turn ends as aborted.
+- Cancel interrupts the query and the turn ends as aborted. Claude's session keeps
+  its partial reply, and the next request continues that session.
 - A rejected rate limit or usage limit ends the turn with an error whose text starts
   with `rate_limited; resets_at=<unix seconds> ` (or `rate_limited; ` when the reset
   time is unknown), for Zephyr's account pool.

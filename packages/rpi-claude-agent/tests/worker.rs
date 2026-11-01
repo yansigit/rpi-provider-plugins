@@ -18,6 +18,7 @@ use std::{
 use tokio_util::sync::CancellationToken;
 
 const SECRET: &str = "sk-ant-oat01-offline-fixture-secret";
+const OTHER: &str = "sk-ant-oat01-offline-other-account";
 
 fn package() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -115,6 +116,38 @@ fn log(directory: &Directory) -> Vec<Value> {
         .collect()
 }
 
+/// The last query the fake SDK started, and the text of its last user message.
+fn last_query(directory: &Directory) -> (Value, Value) {
+    let entries = log(directory);
+    let query = entries
+        .iter()
+        .rfind(|e| e["event"] == "query")
+        .unwrap()
+        .clone();
+    let user = entries
+        .iter()
+        .rfind(|e| e["event"] == "user" && e["n"] == query["n"])
+        .cloned()
+        .unwrap_or_default();
+    (query, user)
+}
+
+fn open_worker(
+    directory: &Directory,
+) -> impl std::future::Future<Output = Result<Session, String>> {
+    Session::open(
+        WorkerConfig {
+            node: std::env::var_os("RPI_CLAUDE_AGENT_NODE")
+                .map(PathBuf::from)
+                .unwrap_or_else(|| "node".into()),
+            entry: package().join("worker/main.mjs"),
+            cwd: directory.0.clone(),
+        },
+        json!({"agentDir":directory.0.join("agent"),"cwd":directory.0}),
+        Arc::new(Router),
+    )
+}
+
 fn text_of(message: &Value) -> String {
     message["content"]
         .as_array()
@@ -141,20 +174,10 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
         std::env::set_var(name, "from-the-shell");
     }
     std::env::remove_var("CLAUDE_CONFIG_DIR");
+    // Short enough to watch, long enough that the other steps never idle out.
+    std::env::set_var("RPI_CLAUDE_AGENT_IDLE_MS", "1500");
     let entry = package().join("worker/main.mjs");
-    let session = Session::open(
-        WorkerConfig {
-            node: std::env::var_os("RPI_CLAUDE_AGENT_NODE")
-                .map(PathBuf::from)
-                .unwrap_or_else(|| "node".into()),
-            entry: entry.clone(),
-            cwd: directory.0.clone(),
-        },
-        json!({"agentDir":directory.0.join("agent"),"cwd":directory.0}),
-        Arc::new(Router),
-    )
-    .await
-    .unwrap();
+    let session = open_worker(&directory).await.unwrap();
     let mut seen = Vec::new();
 
     // Text streams as deltas and the final message carries usage. The fake
@@ -231,6 +254,11 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
     );
     assert_eq!(options["cwd"], "/work/project");
     assert_eq!(options["mcpTools"], json!(["read"]));
+    // A chat keeps a Claude session of its own.
+    assert_eq!(options["persistSession"], true);
+    assert!(options.get("resume").is_none(), "{options}");
+    let s1_claude = options["sessionId"].as_str().unwrap().to_owned();
+    assert_eq!(s1_claude.len(), 36, "{options}");
     assert_eq!(
         query["env"],
         json!({
@@ -251,26 +279,64 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
         directory.0.join("agent/claude-code").display().to_string()
     );
 
-    // A history the live query did not produce starts a fresh query from a transcript.
-    let edited = vec![
+    // An edit forks Claude's session at the last checkpoint both histories
+    // share (after "Echo: hello") and sends only what follows it.
+    let mut edited = vec![
+        history[0].clone(),
+        history[1].clone(),
+        user("edited question"),
+    ];
+    let (_, reply) = stream(&session, request("s1", &edited, Some(SECRET)), None).await;
+    assert_eq!(text_of(&reply), "Echo: edited question", "{reply}");
+    let entries = log(&directory);
+    assert!(entries.iter().any(|e| e["event"] == "close" && e["n"] == 1));
+    let fork = entries.iter().rfind(|e| e["event"] == "fork").unwrap();
+    assert_eq!(fork["from"], s1_claude.as_str());
+    assert_eq!(fork["kept"], 2, "the first user message and reply");
+    let (query, sent) = last_query(&directory);
+    assert_eq!(query["options"]["resume"], fork["to"]);
+    assert_eq!(sent["text"], "edited question");
+    assert_eq!(sent["seen"], 2);
+    let forked = fork["to"].clone();
+
+    // Another model answered in between: Claude resumes and gets what it missed
+    // as one checkpoint message, without thinking, then the new user message.
+    edited.push(reply);
+    edited.push(user("ask another model"));
+    edited.push(json!({"role":"assistant","content":[{"type":"thinking","thinking":"private plan"},{"type":"text","text":"Other model answer"}],"api":"openai-responses","provider":"openai","model":"gpt","usage":{},"stopReason":"stop","timestamp":3}));
+    edited.push(user("back to claude"));
+    let (_, reply) = stream(&session, request("s1", &edited, Some(SECRET)), None).await;
+    assert_eq!(reply["stopReason"], "stop", "{reply}");
+    let (query, sent) = last_query(&directory);
+    assert_eq!(query["options"]["resume"], forked);
+    let text = sent["text"].as_str().unwrap();
+    assert!(
+        text.starts_with("<conversation-checkpoint>")
+            && text.contains("[user]\nask another model")
+            && text.contains("[assistant]\nOther model answer\n</conversation-checkpoint>")
+            && text.ends_with("back to claude"),
+        "{text}"
+    );
+    assert!(
+        !text.contains("private plan") && !text.contains("edited question"),
+        "{text}"
+    );
+    assert_eq!(sent["seen"], 4);
+
+    // A history no checkpoint matches starts a fresh Claude session from the whole history.
+    let fresh = vec![
         user("a different start"),
         history[1].clone(),
         user("and now?"),
     ];
-    let (_, reply) = stream(&session, request("s1", &edited, Some(SECRET)), None).await;
+    let (_, reply) = stream(&session, request("s1", &fresh, Some(SECRET)), None).await;
     assert_eq!(reply["stopReason"], "stop", "{reply}");
-    let entries = log(&directory);
-    assert_eq!(entries.iter().filter(|e| e["event"] == "query").count(), 2);
-    assert!(entries.iter().any(|e| e["event"] == "close" && e["n"] == 1));
-    let prompt = entries
-        .iter()
-        .rfind(|e| e["event"] == "user" && e["n"] == 2)
-        .unwrap()["text"]
-        .as_str()
-        .unwrap()
-        .to_owned();
-    assert!(prompt.contains("being resumed"), "{prompt}");
-    assert!(prompt.contains("[user]\na different start"), "{prompt}");
+    let (query, sent) = last_query(&directory);
+    assert!(query["options"].get("resume").is_none(), "{query}");
+    let text = sent["text"].as_str().unwrap();
+    assert!(text.contains("[user]\na different start"), "{text}");
+    assert!(text.ends_with("and now?"), "{text}");
+    assert_eq!(sent["seen"], 0);
 
     // rpi's default scaffold and cwd give way to Claude Code's; the rest is appended.
     // Two API responses in one turn: output adds up, input is the last response's.
@@ -320,7 +386,66 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
         entries.iter().any(|e| e["event"] == "interrupted"),
         "{entries:?}"
     );
+    let (hung, _) = last_query(&directory);
     seen.push(format!("{events:?}{aborted}"));
+
+    // The next request continues the same Claude session, which keeps its own
+    // partial reply; rpi's copy of it is not sent again.
+    let after_abort = vec![user("hang"), aborted, user("after abort")];
+    let (_, reply) = stream(&session, request("s3", &after_abort, Some(SECRET)), None).await;
+    assert_eq!(text_of(&reply), "Echo: after abort", "{reply}");
+    let (query, sent) = last_query(&directory);
+    assert_eq!(query["options"]["resume"], hung["options"]["sessionId"]);
+    assert_eq!(sent["text"], "after abort");
+    assert_eq!(sent["seen"], 2);
+
+    // An idle query stops; the next request resumes its session with only the new message.
+    let mut idle = vec![user("first idle")];
+    let (_, reply) = stream(&session, request("idle", &idle, Some(SECRET)), None).await;
+    let (first, _) = last_query(&directory);
+    tokio::time::sleep(Duration::from_millis(2500)).await;
+    assert!(
+        log(&directory)
+            .iter()
+            .any(|e| e["event"] == "close" && e["n"] == first["n"]),
+        "the idle query stopped"
+    );
+    idle.push(reply);
+    idle.push(user("after idle"));
+    let (_, reply) = stream(&session, request("idle", &idle, Some(SECRET)), None).await;
+    let (query, sent) = last_query(&directory);
+    assert_ne!(query["n"], first["n"]);
+    let claude = first["options"]["sessionId"].clone();
+    assert_eq!(query["options"]["resume"], claude);
+    assert_eq!(sent["text"], "after idle");
+    assert_eq!(sent["seen"], 2);
+
+    // A different model restarts Claude Code on the same Claude session.
+    idle.push(reply);
+    idle.push(user("on sonnet"));
+    let mut sonnet = request("idle", &idle, Some(SECRET));
+    sonnet["model"]["id"] = json!("claude-sonnet-5-5");
+    let (_, reply) = stream(&session, sonnet, None).await;
+    let (query, sent) = last_query(&directory);
+    assert_eq!(query["options"]["model"], "claude-sonnet-5-5");
+    assert_eq!(query["options"]["resume"], claude);
+    assert_eq!(sent["text"], "on sonnet");
+
+    // A different token starts a fresh Claude session.
+    idle.push(reply);
+    idle.push(user("new account"));
+    let (_, reply) = stream(&session, request("idle", &idle, Some(OTHER)), None).await;
+    assert_eq!(reply["stopReason"], "stop", "{reply}");
+    let (query, sent) = last_query(&directory);
+    assert!(query["options"].get("resume").is_none(), "{query}");
+    assert_ne!(query["options"]["sessionId"], claude);
+    let other_claude = query["options"]["sessionId"].clone();
+    assert!(sent["text"]
+        .as_str()
+        .unwrap()
+        .contains("[user]\nfirst idle"));
+    assert_eq!(sent["seen"], 0);
+    idle.push(reply);
 
     // No token: a clear error, and no query.
     let (_, missing) = stream(&session, request("s4", &[user("hello")], None), None).await;
@@ -331,6 +456,32 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
         .contains("claude setup-token"));
 
     session.close().await.unwrap();
+
+    // A new worker (an rpi restart) resumes from the saved record.
+    idle.push(user("after restart"));
+    let restarted = open_worker(&directory).await.unwrap();
+    let (_, reply) = stream(&restarted, request("idle", &idle, Some(OTHER)), None).await;
+    assert_eq!(text_of(&reply), "Echo: after restart", "{reply}");
+    let (query, sent) = last_query(&directory);
+    assert_eq!(query["options"]["resume"], other_claude);
+    assert_eq!(sent["text"], "after restart");
+    restarted.close().await.unwrap();
+
+    // The records never hold a token.
+    let records: Vec<String> =
+        std::fs::read_dir(directory.0.join("agent/claude-code/rpi-sessions"))
+            .unwrap()
+            .map(|entry| std::fs::read_to_string(entry.unwrap().path()).unwrap())
+            .collect();
+    assert!(records.len() >= 4, "{records:?}");
+    for record in records {
+        assert!(record.contains("checkpoints"), "{record}");
+        assert!(
+            !record.contains(SECRET) && !record.contains(OTHER),
+            "{record}"
+        );
+    }
+
     for output in seen {
         assert!(!output.contains(SECRET), "token leaked: {output}");
     }
