@@ -468,8 +468,9 @@ async function stream({ model, context, options }, { emit, signal }) {
 	const fail = (reason, error) => ({ ...message, stopReason: reason, errorMessage: scrub(error) });
 	if (!apiKey) return fail("error", "claude-code needs a token: run `claude setup-token`, then `rpi auth login --provider claude-code` (or set CLAUDE_CODE_OAUTH_TOKEN).");
 	// Chats keep Claude's session; compaction, summaries and titles (another purpose) do not.
-	// shortcut: released hosts (0.12 to 0.15) send no identity, so their side calls are kept like chats, drop the fallback once every host sends one.
-	const chat = !!options.sessionId && (options.identity?.purpose ?? "prompt") === "prompt";
+	// Released hosts (0.12 to 0.15) send no identity; their side calls are the only requests without tools.
+	const purpose = options.identity?.purpose ?? ((context.tools ?? []).length ? "prompt" : "side");
+	const chat = !!options.sessionId && purpose === "prompt";
 	const session = chat ? options.sessionId : `side:${options.sessionId ?? ""}`;
 	const messages = context.messages ?? [];
 	// rpi's thinking level; "off" and "minimal" keep the model's lowest effort.

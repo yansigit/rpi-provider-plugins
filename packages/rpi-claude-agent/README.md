@@ -89,7 +89,7 @@ subscription token is the credential that is used.
   Requests without an rpi session id, and requests the host marks as something
   other than a prompt (compaction, summaries, titles), are not saved, and their
   query ends with the reply. Released rpi hosts (0.12 to 0.15) do not mark
-  requests, so there every request with a session id is saved.
+  requests, so there a request without tools counts as a side call.
 - Text and thinking stream as deltas; thinking is adaptive with summaries.
   rpi's thinking level maps to the SDK's effort.
 - Claude Code reports a response's usage several times while it streams. Each

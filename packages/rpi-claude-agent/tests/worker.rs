@@ -437,6 +437,15 @@ async fn the_worker_streams_bridges_tools_resumes_and_cancels() {
         .any(|e| e["event"] == "close" && e["n"] == query["n"]));
     assert_eq!(record_count(&directory), records);
 
+    // Released hosts send no identity: a request without tools is their compaction call.
+    let mut side = request("compaction-call-released", &[user("summarize this")], Some(SECRET));
+    side["context"]["tools"] = json!([]);
+    let (_, reply) = stream(&session, side, None).await;
+    assert_eq!(reply["stopReason"], "stop", "{reply}");
+    let (query, _) = last_query(&directory);
+    assert_eq!(query["options"]["persistSession"], false, "{query}");
+    assert_eq!(record_count(&directory), records);
+
     // rpi's default scaffold and cwd give way to Claude Code's; the rest is appended.
     // Two API responses in one turn: output adds up, input is the last response's.
     let (_, twice) = stream(
