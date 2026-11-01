@@ -280,5 +280,8 @@ kill $api"#
         assert!(!api.contains(builtin), "{builtin} offered: {api}");
     }
     assert!(api.contains("\"bearer\":true") && !api.contains("\"apiKeyHeader\":true"));
+    // Claude Code's own prompt carries rpi's note, and thinking is adaptive.
+    assert!(api.contains("\"runtimeNote\":true"), "{api}");
+    assert!(api.contains("\"thinking\":{\"type\":\"adaptive\""), "{api}");
     assert_no_worker_left(&plugin);
 }

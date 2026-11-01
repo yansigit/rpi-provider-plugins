@@ -19,7 +19,7 @@ createServer((request, response) => {
 		}
 		const json = JSON.parse(body || "{}");
 		const history = JSON.stringify(json.messages);
-		log(JSON.stringify({ model: json.model, tools: (json.tools ?? []).map(tool => tool.name) }));
+		log(JSON.stringify({ model: json.model, tools: (json.tools ?? []).map(tool => tool.name), runtimeNote: JSON.stringify(json.system ?? "").includes("<runtime_info>You are running in rpi"), thinking: json.thinking }));
 		if (!json.stream) {
 			response.writeHead(200, { "content-type": "application/json" });
 			return response.end(JSON.stringify({ id: "msg_0", type: "message", role: "assistant", model: json.model, content: [{ type: "text", text: "ok" }], stop_reason: "end_turn", usage: { input_tokens: 1, output_tokens: 1 } }));

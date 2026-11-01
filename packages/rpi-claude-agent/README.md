@@ -7,8 +7,9 @@ runs the official Claude Code runtime, authenticated with your own token from
 `claude setup-token`.
 
 It does not implement its own OAuth flow, reuse Claude Code's client id, or imitate
-Claude Code's headers or system prompt. The only credential it handles is the token
-you paste, which it passes to the SDK as `CLAUDE_CODE_OAUTH_TOKEN`.
+Claude Code's headers. The system prompt is Claude Code's own, from the SDK's
+`claude_code` preset. The only credential it handles is the token you paste, which
+it passes to the SDK as `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ## Install
 
@@ -38,9 +39,21 @@ subscription token is the credential that is used.
 
 ## How it works
 
-- Claude Code's built-in tools are off (`tools: []`), no settings files are read
-  (`settingSources: []`), and the permission handler denies anything that is not
-  one of rpi's tools.
+- Claude gets Claude Code's own system prompt (`preset: "claude_code"`), with a
+  one-line note that it runs in rpi appended, followed by rpi's own instructions:
+  appended prompt text, project context files and the skills listing. rpi's
+  default prompt scaffold and its working-directory line are dropped, because
+  Claude Code writes its own; a custom `--system-prompt` or `SYSTEM.md` is kept.
+  The working directory from rpi's prompt is passed as the SDK's `cwd`.
+- Claude Code's built-in tools are off (`tools: []`), and only rpi's tools are
+  allowed (`permissionMode: "dontAsk"`, `allowedTools: ["mcp__rpi__*"]`), so
+  anything else is refused without asking.
+- Claude Code reads none of the user's Claude settings: no settings files
+  (`settingSources: []`), hooks, skills, CLAUDE.md files, auto memory, auto
+  compaction, away summaries, tool search or advisor tool. Prompts are sent
+  verbatim. `CLAUDE_CODE_SIMPLE`, `CLAUDE_CODE_EFFORT_LEVEL` and `MCP_TOOL_TIMEOUT`
+  are cleared from Claude Code's environment, and MCP tool output may be up to
+  200k tokens so rpi's own truncation applies.
 - rpi's tools for the turn are offered to Claude as an in-process MCP server named
   `rpi`. When Claude calls one, the provider stream ends with an rpi `toolCall`
   (the `mcp__rpi__` prefix stripped), rpi runs the tool under its own policy, and
@@ -50,7 +63,11 @@ subscription token is the credential that is used.
   (another session, edited or compacted history, a different model, tool set or
   system prompt, a restart), the old query is closed and a new one starts from the
   transcript rendered as text.
-- Text and thinking stream as deltas. rpi's thinking level maps to the SDK's effort.
+- Text and thinking stream as deltas; thinking is adaptive with summaries.
+  rpi's thinking level maps to the SDK's effort.
+- Claude Code reports a response's usage several times while it streams. Each
+  response counts once: output adds up across the turn's responses, and input and
+  cache tokens are the last response's, which is the context in use.
 - Cancel interrupts the query and the turn ends as aborted.
 - A rejected rate limit or usage limit ends the turn with an error whose text starts
   with `rate_limited; resets_at=<unix seconds> ` (or `rate_limited; ` when the reset

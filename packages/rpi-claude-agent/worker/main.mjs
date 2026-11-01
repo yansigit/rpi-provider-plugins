@@ -138,10 +138,86 @@ function usage() {
 	return { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } };
 }
 
+/**
+ * Claude Code reports one API response's usage several times while it streams.
+ * Keep each response's highest counts; output sums the responses, and input and
+ * cache are the last response's (the context it occupies), as OpenCode does.
+ */
+function usageCounter() {
+	const responses = new Map();
+	let last;
+	return {
+		update(id, u) {
+			if (!u) return;
+			let counts = responses.get(id);
+			if (!counts) {
+				counts = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+				responses.set(id, counts);
+				last = id;
+			}
+			counts.input = Math.max(counts.input, u.input_tokens ?? 0);
+			counts.output = Math.max(counts.output, u.output_tokens ?? 0);
+			counts.cacheRead = Math.max(counts.cacheRead, u.cache_read_input_tokens ?? 0);
+			counts.cacheWrite = Math.max(counts.cacheWrite, u.cache_creation_input_tokens ?? 0);
+		},
+		write(target) {
+			const lastCall = responses.get(last) ?? { input: 0, cacheRead: 0, cacheWrite: 0 };
+			target.input = lastCall.input;
+			target.cacheRead = lastCall.cacheRead;
+			target.cacheWrite = lastCall.cacheWrite;
+			target.output = [...responses.values()].reduce((sum, counts) => sum + counts.output, 0);
+			target.totalTokens = target.input + target.output + target.cacheRead + target.cacheWrite;
+		},
+	};
+}
+
+// rpi's built-in prompt scaffold, which Claude Code's own prompt replaces.
+const SCAFFOLD = "You are an expert coding assistant operating inside rpi, a coding agent harness.";
+const RUNTIME_NOTE = "<runtime_info>You are running in rpi through the Claude Code harness. Mention this only when asked.</runtime_info>";
+
+/**
+ * Split rpi's system prompt into what Claude Code should get on top of its own
+ * prompt and the session's working directory. rpi composes base, appended
+ * text, <project_context>, the skills listing and the cwd. The default
+ * scaffold (base) and the cwd go: Claude Code writes its own of both. A custom
+ * base stays. If the scaffold's end cannot be found, nothing is dropped.
+ */
+export function splitSystemPrompt(prompt = "") {
+	let rest = prompt, cwd;
+	// Current rpi: a final <cwd> section.
+	const tail = /(?:^|\n\n)<cwd>\n([^\n]*)\n<\/cwd>\s*$/.exec(rest);
+	if (tail) { cwd = tail[1]; rest = rest.slice(0, tail.index); }
+	const guidelines = rest.startsWith(SCAFFOLD) ? rest.indexOf("\nGuidelines:\n") : -1;
+	if (guidelines >= 0) {
+		let end = rest.indexOf("\n\n", guidelines + 1);
+		if (end < 0) end = rest.length;
+		// Released rpi (0.12 to 0.15) ends the scaffold with its cwd line instead.
+		const line = /^\n\nCurrent working directory: ([^\n]*)/.exec(rest.slice(end));
+		if (line) { cwd ??= line[1]; end += line[0].length; }
+		rest = rest.slice(end);
+	}
+	return { append: [RUNTIME_NOTE, rest.trim()].filter(Boolean).join("\n\n"), cwd };
+}
+
+// Claude Code features that duplicate rpi's (OpenCode turns off the same ones).
+const ISOLATION_ENV = {
+	CLAUDE_CODE_DISABLE_CLAUDE_MDS: "1",
+	CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1",
+	DISABLE_AUTO_COMPACT: "1",
+	CLAUDE_CODE_ENABLE_AWAY_SUMMARY: "0",
+	// Every rpi tool is an MCP tool; tool search would hide them all.
+	ENABLE_TOOL_SEARCH: "false",
+	CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
+	// rpi truncates tool output itself.
+	MAX_MCP_OUTPUT_TOKENS: "200000",
+};
+// Shell variables that would skip the subscription login, override rpi's effort, or time out long rpi tools.
+const CLEARED_ENV = ["CLAUDE_CODE_SIMPLE", "CLAUDE_CODE_EFFORT_LEVEL", "MCP_TOOL_TIMEOUT", "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN"];
+
 // ---- live queries ----------------------------------------------------------
 
 const sessions = new Map();
-let agentDir;
+let agentDir, workDir;
 
 class Live {
 	constructor(key, model, context, apiKey, effort) {
@@ -153,30 +229,38 @@ class Live {
 		this.toolIds = [];
 		const env = {
 			...process.env,
+			...ISOLATION_ENV,
 			CLAUDE_CODE_OAUTH_TOKEN: apiKey,
 			// Each rpi agent dir (one per account) keeps its own Claude Code state.
 			CLAUDE_CONFIG_DIR: process.env.CLAUDE_CONFIG_DIR ?? join(agentDir, "claude-code"),
 			CLAUDE_AGENT_SDK_CLIENT_APP: "rpi-claude-agent",
 		};
 		// The subscription token is the only credential; an API key in the environment would win over it.
-		delete env.ANTHROPIC_API_KEY;
-		delete env.ANTHROPIC_AUTH_TOKEN;
+		for (const name of CLEARED_ENV) delete env[name];
+		const { append, cwd } = splitSystemPrompt(context.systemPrompt);
 		const tools = (context.tools ?? []).map(tool => sdk.tool(tool.name, tool.description, schema(tool.parameters), (_args, extra) => this.toolCall(tool.name, extra)));
 		const input = this.input;
 		this.query = sdk.query({
 			prompt: (async function* () { for (;;) { const message = await input.next(); if (!message) return; yield message; } })(),
 			options: {
 				model: model.id,
-				systemPrompt: context.systemPrompt ?? "",
+				// snapshot: false renders the prompt on every request, so a changed append applies on resume.
+				systemPrompt: { type: "preset", preset: "claude_code", append, snapshot: false },
+				cwd: cwd ?? workDir,
 				tools: [],
 				settingSources: [],
+				settings: { disableAllHooks: true },
+				skills: [],
 				strictMcpConfig: true,
 				persistSession: false,
 				mcpServers: { [SERVER]: sdk.createSdkMcpServer({ name: SERVER, tools }) },
-				permissionMode: "default",
-				canUseTool: async (name, toolInput) => name.startsWith(PREFIX)
-					? { behavior: "allow", updatedInput: toolInput }
-					: { behavior: "deny", message: "Only the tools rpi provides are available." },
+				// Only rpi's tools run; dontAsk denies anything else without asking.
+				permissionMode: "dontAsk",
+				allowedTools: [`${PREFIX}*`],
+				// Summaries give rpi thinking text to show.
+				thinking: { type: "adaptive", display: "summarized" },
+				// rpi already expanded its prompts; Claude Code adds nothing to them.
+				verbatimPrompts: true,
 				includePartialMessages: true,
 				effort,
 				env,
@@ -260,7 +344,8 @@ async function stream({ model, context, options }, { emit, signal }) {
 
 	const aborted = new Promise(resolve => signal.addEventListener("abort", resolve, { once: true }));
 	const blocks = new Map();
-	let stopReason, apiError, rateLimited = false, resetsAt;
+	const counter = usageCounter();
+	let stopReason, apiError, rateLimited = false, resetsAt, response;
 	await emit({ type: "start" });
 	try {
 		for (;;) {
@@ -278,6 +363,7 @@ async function stream({ model, context, options }, { emit, signal }) {
 				rateLimited = true;
 				resetsAt = sdkMessage.rate_limit_info.resetsAt;
 			}
+			if (sdkMessage.type === "assistant" && !sdkMessage.parent_tool_use_id) counter.update(sdkMessage.message?.id, sdkMessage.message?.usage);
 			if (sdkMessage.type === "assistant" && sdkMessage.error && !sdkMessage.parent_tool_use_id) {
 				apiError = text(sdkMessage.message?.content) || sdkMessage.error;
 				rateLimited ||= sdkMessage.error === "rate_limit";
@@ -293,14 +379,12 @@ async function stream({ model, context, options }, { emit, signal }) {
 			}
 			if (sdkMessage.type !== "stream_event" || sdkMessage.parent_tool_use_id) continue;
 			const event = sdkMessage.event;
-			const add = (key, value) => { message.usage[key] += value ?? 0; };
 			switch (event.type) {
-				case "message_start": {
+				case "message_start":
 					blocks.clear();
-					const u = event.message?.usage ?? {};
-					add("input", u.input_tokens); add("cacheRead", u.cache_read_input_tokens); add("cacheWrite", u.cache_creation_input_tokens); add("output", u.output_tokens);
+					response = event.message?.id;
+					counter.update(response, event.message?.usage);
 					break;
-				}
 				case "content_block_start": {
 					const block = event.content_block;
 					const contentIndex = message.content.length;
@@ -344,7 +428,7 @@ async function stream({ model, context, options }, { emit, signal }) {
 				}
 				case "message_delta":
 					stopReason = event.delta?.stop_reason ?? stopReason;
-					add("output", event.usage?.output_tokens);
+					counter.update(response, event.usage);
 					break;
 				case "message_stop":
 					if (stopReason === "tool_use" && live.toolIds.length) return { ...message, stopReason: "tooluse" };
@@ -352,7 +436,7 @@ async function stream({ model, context, options }, { emit, signal }) {
 			}
 		}
 	} finally {
-		message.usage.totalTokens = message.usage.input + message.usage.output + message.usage.cacheRead + message.usage.cacheWrite;
+		counter.write(message.usage);
 	}
 }
 
@@ -362,20 +446,24 @@ function closeAll() {
 	for (const live of [...sessions.values()]) live.close();
 }
 
-const config = await readBootstrap();
-const closed = serve(config, async (method, input, call) => {
-	switch (method) {
-		case "runtime.open":
-			agentDir = input.agentDir;
-			await call.emit({ type: "ready", manifest: {} });
-			await new Promise(resolve => call.signal.addEventListener("abort", resolve, { once: true }));
-			closeAll();
-			return null;
-		case "runtime.configure": return {};
-		case "provider.stream": return await stream(input, call);
-		default: throw new Error(`unknown worker method ${method}`);
-	}
-});
-await closed;
-closeAll();
-process.exit(0);
+// Tests import this module for its pure helpers; only `node main.mjs` serves.
+if (import.meta.main !== false) {
+	const config = await readBootstrap();
+	const closed = serve(config, async (method, input, call) => {
+		switch (method) {
+			case "runtime.open":
+				agentDir = input.agentDir;
+				workDir = input.cwd;
+				await call.emit({ type: "ready", manifest: {} });
+				await new Promise(resolve => call.signal.addEventListener("abort", resolve, { once: true }));
+				closeAll();
+				return null;
+			case "runtime.configure": return {};
+			case "provider.stream": return await stream(input, call);
+			default: throw new Error(`unknown worker method ${method}`);
+		}
+	});
+	await closed;
+	closeAll();
+	process.exit(0);
+}
